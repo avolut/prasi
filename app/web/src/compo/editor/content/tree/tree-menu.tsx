@@ -1,4 +1,5 @@
 import { createId } from "@paralleldrive/cuid2";
+import get from "lodash.get";
 import { FC } from "react";
 import { useGlobal, useLocal } from "web-utils";
 import { syncronize } from "y-pojo";
@@ -13,9 +14,6 @@ import { Menu, MenuItem } from "../../../ui/context-menu";
 import { loadSingleComponent } from "../../comp/load-comp";
 import { newMap } from "../../tools/yjs-tools";
 import { wsdoc } from "../../ws/wsdoc";
-import set from "lodash.set";
-import { compress, decompress } from "lz-string";
-import get from "lodash.get";
 
 export const CETreeMenu: FC<{
   id: string;
@@ -24,21 +22,25 @@ export const CETreeMenu: FC<{
   onClose: () => void;
 }> = ({ contextMenu, onClose, item, id }) => {
   const c = useGlobal(CEGlobal, id);
-  const local = useLocal({}, async () => {
-    set(local, "paste", false);
-    set(local, "ready", false);
-    set(local, "content", null);
-    local.render();
-    navigator.clipboard.readText().then((e) => {
-      if (e) {
-        if (e.includes("_prasi")) {
-          set(local, "paste", true);
-        }
-      }
-      set(local, "ready", true);
+  const local = useLocal(
+    {
+      paste: false,
+      ready: false,
+      content: null,
+    },
+    async () => {
       local.render();
-    });
-  });
+      navigator.clipboard.readText().then((e) => {
+        if (e) {
+          if (e.includes("_prasi")) {
+            local.paste = true;
+          }
+        }
+        local.ready = true;
+        local.render();
+      });
+    }
+  );
   const type = item.get("type");
   const item_id = item.get("id");
   const comp = item.get("component");
@@ -177,11 +179,13 @@ export const CETreeMenu: FC<{
           onClick={async () => {
             if (type === "item" || type === "section") {
               navigator.clipboard.readText().then((e) => {
-                let desc = e.replaceAll("_prasi", "");
-                let jso = JSON.parse(desc) as IContent;
-                const map = newMap(fillID(jso)) as MContent;
-                child.push([map]);
-                c.render();
+                if (child) {
+                  let desc = e.replaceAll("_prasi", "");
+                  let jso = JSON.parse(desc) as IContent;
+                  const map = newMap(fillID(jso)) as MContent;
+                  child.push([map]);
+                  c.render();
+                }
               });
             }
           }}
