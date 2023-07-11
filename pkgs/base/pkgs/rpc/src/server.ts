@@ -27,6 +27,9 @@ export type ActionResult = {
   clientid: string;
 };
 
+function getRandomArbitrary(min: number, max: number) {
+  return Math.random() * (max - min) + min;
+}
 export const createRPC = async <T extends RPCAction>(
   name: string,
   action: T,
@@ -36,7 +39,9 @@ export const createRPC = async <T extends RPCAction>(
 ) => {
   let srv: null | Awaited<ReturnType<typeof createServer>> = null;
   if (!config.port) {
-    config.port = await getPort({ port: portNumbers(14000, 19000) });
+    config.port = await getPort({
+      port: portNumbers(getRandomArbitrary(11000, 14000), 19000),
+    });
     srv = await createServer();
   }
 

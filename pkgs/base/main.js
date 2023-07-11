@@ -39572,10 +39572,15 @@ ${import_chalk2.default.magenta("Installing")} deps:
   // pkgs/base/pkgs/rpc/src/server.ts
   var import_pretty_error = __toESM(require_PrettyError());
   var pe = new import_pretty_error.default();
+  function getRandomArbitrary(min, max2) {
+    return Math.random() * (max2 - min) + min;
+  }
   var createRPC = async (name, action2, opt) => {
     let srv = null;
     if (!config.port) {
-      config.port = await getPorts({ port: portNumbers(14e3, 19e3) });
+      config.port = await getPorts({
+        port: portNumbers(getRandomArbitrary(11e3, 14e3), 19e3)
+      });
       srv = await createServer();
     }
     let ws = await connect2(name, action2);
