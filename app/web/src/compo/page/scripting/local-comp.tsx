@@ -28,7 +28,17 @@ export const createLocal = (opt: {
 
     if (effect) {
       useEffect(() => {
-        return effect(local);
+        const result: any = effect(local);
+
+        if (typeof result === "function") {
+          return () => {};
+        } else {
+          return () => {
+            result.then((e: any) => {
+              if (typeof e === "function") e();
+            });
+          };
+        }
       }, deps || []);
     }
 

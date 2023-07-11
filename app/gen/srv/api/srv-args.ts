@@ -70,10 +70,6 @@ export const comp_create = {
   url: "/comp-create",
   args: ["arg"],
 }
-export const comp_update = {
-  url: "/comp-update",
-  args: ["comp","opt"],
-}
 export const compile_js = {
   url: "/compile-js",
   args: ["alljs"],

@@ -124,6 +124,15 @@ importers:
         specifier: workspace:^
         version: link:../../../../pkgs/service/pkgs/service-web/pkgs/web-init
 
+  app/gen:
+    dependencies:
+      '@types/react':
+        specifier: ^18.2.14
+        version: 18.2.14
+      typescript:
+        specifier: ^5.1.6
+        version: 5.1.6
+
   app/srv:
     dependencies:
       '@node-rs/argon2':
@@ -793,12 +802,18 @@ importers:
       '@qiwi/deep-proxy':
         specifier: 2.0.3
         version: 2.0.3
+      '@types/hash-sum':
+        specifier: ^1.0.0
+        version: 1.0.0
       csstype:
         specifier: 3.1.1
         version: 3.1.1
       goober:
         specifier: 2.1.12
         version: 2.1.12(csstype@3.1.1)
+      hash-sum:
+        specifier: ^2.0.0
+        version: 2.0.0
       hyper-express:
         specifier: 6.7.1
         version: 6.7.1
@@ -3362,6 +3377,10 @@ packages:
       '@types/serve-static': 1.15.2
     dev: false
 
+  /@types/hash-sum@1.0.0:
+    resolution: {integrity: sha512-FdLBT93h3kcZ586Aee66HPCVJ6qvxVjBlDWNmxSGSbCZe9hTsjRKdSsl4y1T+3zfujxo9auykQMnFsfyHWD7wg==}
+    dev: false
+
   /@types/hast@2.3.4:
     resolution: {integrity: sha512-wLEm0QvaoawEDoTRwzTXp4b4jpwiJDvR5KMnFnVodm3scufTlBOWRD6N1OBf9TZMhjlNsSfcO5V+7AF4+Vy+9g==}
     dependencies:
@@ -3492,7 +3511,7 @@ packages:
   /@types/react-dom@18.2.4:
     resolution: {integrity: sha512-G2mHoTMTL4yoydITgOGwWdWMVd8sNgyEP85xVmMKAPUBwQWm9wBPQUmvbeF4V3WBY1P7mmL4BkjQ0SqUpf1snw==}
     dependencies:
-      '@types/react': 18.2.9
+      '@types/react': 18.2.14
     dev: true
 
   /@types/react-dom@18.2.6:
@@ -3513,7 +3532,7 @@ packages:
     dependencies:
       '@types/prop-types': 15.7.5
       '@types/scheduler': 0.16.3
-      csstype: 3.1.2
+      csstype: 3.1.1
 
   /@types/react@18.2.9:
     resolution: {integrity: sha512-pL3JAesUkF7PEQGxh5XOwdXGV907te6m1/Qe1ERJLgomojS6Ne790QiA7GUl434JEkFA2aAaB6qJ5z4e1zJn/w==}
@@ -4262,7 +4281,6 @@ packages:
 
   /csstype@3.1.1:
     resolution: {integrity: sha512-DJR/VvkAvSZW9bTouZue2sSxDwdTN92uHjqeKVm+0dAqdfNykRzQ95tay8aXMBAAPpUiq4Qcug2L7neoRh2Egw==}
-    dev: false
 
   /csstype@3.1.2:
     resolution: {integrity: sha512-I7K1Uu0MBPzaFKg4nI5Q7Vs2t+3gWWW648spaF+Rg7pI9ds18Ugn+lvg4SHczUdKlHI5LWBXyqfS8+DufyBsgQ==}
@@ -5179,6 +5197,10 @@ packages:
     engines: {node: '>= 0.4.0'}
     dependencies:
       function-bind: 1.1.1
+
+  /hash-sum@2.0.0:
+    resolution: {integrity: sha512-WdZTbAByD+pHfl/g9QSsBIIwy8IT+EsPiKDs0KNX+zSHhdDLFKdZu0BQHljvO+0QI/BasbMSUa8wYNCZTvhslg==}
+    dev: false
 
   /hast-util-from-parse5@7.1.2:
     resolution: {integrity: sha512-Nz7FfPBuljzsN3tCQ4kCBKqdNhQE2l0Tn+X1ubgKBPRoiDIu1mL08Cfw4k7q71+Duyaw7DXDN+VTAp4Vh3oCOw==}

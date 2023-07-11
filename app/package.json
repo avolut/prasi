@@ -5,8 +5,8 @@
     "@parcel/watcher": "^2.2.0",
     "dir": "workspace:^",
     "fs-jetpack": "^5.1.0",
-    "service": "workspace:^",
     "typescript": "^5.1.6",
+    "service": "workspace:^",
     "web": "workspace:^"
   },
   "external": [

@@ -124,13 +124,6 @@ export const comp_create = {
   args: ["arg"],
   handler: import("../../../srv/api/comp-create")
 }
-export const comp_update = {
-  name: "comp_update",
-  url: "/comp-update",
-  path: "app/srv/api/comp-update.ts",
-  args: ["comp","opt"],
-  handler: import("../../../srv/api/comp-update")
-}
 export const compile_js = {
   name: "compile_js",
   url: "/compile-js",

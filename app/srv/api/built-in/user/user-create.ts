@@ -19,7 +19,6 @@ export const _ = {
         username: user.username.toLowerCase(),
         phone: "",
         password: await argon2.hash(user.password),
-        id_organization: user.org,
       },
     });
 

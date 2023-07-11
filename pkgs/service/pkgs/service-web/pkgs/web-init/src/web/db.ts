@@ -1,5 +1,6 @@
 import { waitUntil } from "web-utils";
 import { createFrameCors } from "./iframe-cors";
+import hash_sum from "hash-sum";
 
 export const dbClient = (name: string, dburl?: string) => {
   return new Proxy(
@@ -77,6 +78,9 @@ export const dbClient = (name: string, dburl?: string) => {
   );
 };
 
+const cachedQueryResult: Record<string, { timestamp: number; result: any }> =
+  {};
+
 export const fetchSendDb = async (
   name: string,
   params: any,
@@ -91,27 +95,6 @@ export const fetchSendDb = async (
   }
 
   const _base = dburl || w.serverurl;
-
-  if (isSSR) {
-    let data = params;
-    const headers: any = { "content-type": "application/json" };
-
-    const init = { body: data, headers, method: "POST" };
-    if (init && init.body && init.body instanceof File) {
-      const body = new FormData();
-      body.append("file", init.body);
-      init.body = body;
-    } else {
-      init.body = JSON.stringify(data);
-    }
-    const res = await fetch(_base + url, init);
-    const body = await res.text();
-    try {
-      return JSON.parse(body);
-    } catch (e) {
-      return body;
-    }
-  }
 
   if (!w.frmapi) {
     w.frmapi = {};
@@ -129,5 +112,17 @@ export const fetchSendDb = async (
     });
   }
 
-  return await frm.send(url, params, w.apiHeaders);
+  const hsum = hash_sum(params);
+  const cached = cachedQueryResult[hsum];
+  if (!cached || (cached && Date.now() - cached.timestamp > 1000)) {
+    cachedQueryResult[hsum] = {
+      timestamp: Date.now(),
+      result: null,
+    };
+    const result = await frm.send(url, params, w.apiHeaders);
+    cachedQueryResult[hsum].result = result;
+    return result;
+  }
+
+  return cached.result;
 };
