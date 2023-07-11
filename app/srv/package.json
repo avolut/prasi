@@ -8,7 +8,7 @@
     "dbgen": "../db/node_modules/.gen",
     "dir": "workspace:^",
     "fs-jetpack": "5.1.0",
-    "hyper-express": "6.5.8",
+    "hyper-express": "6.7.1",
     "immer": "^9.0.19",
     "lodash.get": "4.4.2",
     "lodash.set": "4.3.2",

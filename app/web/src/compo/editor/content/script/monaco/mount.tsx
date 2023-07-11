@@ -125,6 +125,8 @@ export const jsMount = async (
     });
   }
 
+  console.log(apiCache);
+
   const propTypes: string[] = [];
   const props: Record<string, { val?: any; type?: string }> = {};
 
@@ -292,6 +294,7 @@ const api: { [k in ApiName]: Awaited<Api[k]["handler"]>["_"]["api"] };
 const imports = async (monaco: Monaco, defs: Record<string, string>) => {
   const result = {} as Record<string, string>;
   for (const [module, url] of Object.entries(defs)) {
+    console.log(url);
     const res = await fetch(url);
     const src = await res.text();
     result[module] = src;

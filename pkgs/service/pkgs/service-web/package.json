@@ -8,7 +8,7 @@
     "dir": "workspace:^",
     "service-db": "workspace:^",
     "service-srv": "workspace:^",
-    "hyper-express": "6.5.8",
+    "hyper-express": "6.7.1",
     "ws": "8.12.1",
     "fs-jetpack": "5.1.0",
     "chalk": "5.2.0",

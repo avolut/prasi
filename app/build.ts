@@ -2,11 +2,13 @@ import { subscribe } from "@parcel/watcher";
 import { spawn } from "child_process";
 import { existsAsync } from "fs-jetpack";
 import { dir } from "../pkgs/base/pkgs/dir/export";
+import { cwd } from "process";
 
 export const build = async (mode: any) => {
   let timeout: NodeJS.Timeout;
   const gen = (delay?: number) => {
     if (timeout) clearTimeout(timeout);
+
     timeout = setTimeout(() => {
       spawn(
         "./tsc",

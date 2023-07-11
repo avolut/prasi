@@ -41,6 +41,7 @@
     "react-virtuoso": "^4.3.8",
     "service-srv": "workspace:^",
     "service-web": "workspace:^",
+    "svgo": "^3.0.2",
     "textdiff-create": "^1.0.9",
     "tinycolor2": "^1.6.0",
     "uuid": "9.0.0",
@@ -52,10 +53,10 @@
     "yjs-types": "^0.0.1"
   },
   "devDependencies": {
-    "@parcel/config-default": "2.9.2",
-    "@parcel/core": "2.9.2",
-    "@parcel/reporter-bundle-analyzer": "^2.9.2",
-    "@parcel/transformer-raw": "^2.9.2",
+    "@parcel/config-default": "2.9.3",
+    "@parcel/core": "2.9.3",
+    "@parcel/reporter-bundle-analyzer": "^2.9.3",
+    "@parcel/transformer-raw": "^2.9.3",
     "@tinijs/parcel-reporter-copy-public": "0.0.2",
     "@types/lodash.capitalize": "4.2.7",
     "@types/lodash.debounce": "^4.0.7",
@@ -68,7 +69,7 @@
     "@types/tinycolor2": "^1.4.3",
     "@types/uuid": "9.0.2",
     "@types/vscode": "^1.79.0",
-    "parcel": "2.9.2",
+    "parcel": "2.9.3",
     "parcel-bundler-splitable": "0.0.4",
     "postcss": "8.4.24",
     "tailwindcss": "3.3.2"
