@@ -28,7 +28,7 @@ export type ActionResult = {
 };
 
 function getRandomArbitrary(min: number, max: number) {
-  return Math.random() * (max - min) + min;
+  return Math.round(Math.random() * (max - min) + min);
 }
 export const createRPC = async <T extends RPCAction>(
   name: string,
