@@ -1,0 +1,35 @@
+{
+  "name": "service-web",
+  "main": "export.ts",
+  "private": true,
+  "dependencies": {
+    "service": "workspace:^",
+    "web-types": "workspace:^",
+    "dir": "workspace:^",
+    "service-db": "workspace:^",
+    "service-srv": "workspace:^",
+    "hyper-express": "6.5.8",
+    "ws": "8.12.1",
+    "fs-jetpack": "5.1.0",
+    "chalk": "5.2.0",
+    "lodash.padend": "4.6.1",
+    "lodash.trim": "4.5.1",
+    "lodash.get": "4.4.2",
+    "mime-types": "2.1.35",
+    "catch-exit": "1.2.2",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "lz-string": "1.5.0",
+    "radix3": "1.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "18.0.28",
+    "@types/ws": "8.5.4",
+    "@types/mime-types": "2.1.1",
+    "@types/lodash.padend": "4.6.7",
+    "@types/lodash.trim": "4.5.7",
+    "@types/lodash.get": "4.4.7",
+    "@types/react-dom": "18.0.11",
+    "@types/node": "18.14.0"
+  }
+}

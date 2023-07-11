@@ -1,0 +1,18 @@
+{
+  "name": "app",
+  "main": "app.ts",
+  "dependencies": {
+    "@parcel/watcher": "^2.1.0",
+    "dir": "workspace:^",
+    "fs-jetpack": "^5.1.0",
+    "service": "workspace:^",
+    "typescript": "^5.1.3",
+    "web": "workspace:^"
+  },
+  "external": [
+    "hyper-express",
+    "esbuild",
+    "@swc/core",
+    "@parcel/core"
+  ]
+}

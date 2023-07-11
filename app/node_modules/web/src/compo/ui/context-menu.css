@@ -1,0 +1,42 @@
+.ContextMenu {
+  outline: 0;
+  background: white;
+  border: 1px solid #ccc;
+}
+
+.MenuItem {
+  width: 100%;
+  display: block;
+}
+
+.MenuItem {
+  display: flex;
+  border-bottom: 1px solid #ececeb;
+  justify-content: space-between;
+  width: 100%;
+  background: white;
+  font-size: 14px;
+  padding: 3px 20px 3px 10px;
+  text-align: left;
+  line-height: 1.5;
+  margin: 0;
+  outline: 0;
+}
+
+.MenuItem:last-child {
+  border-bottom: 0px;
+}
+
+.MenuItem.open {
+  background: #ddd;
+}
+
+.MenuItem:disabled {
+  color: #ccc;
+}
+
+.MenuItem:focus,
+.MenuItem:not([disabled]):active {
+  background: rgb(82, 125, 255);
+  color: white;
+}

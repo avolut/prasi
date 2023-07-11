@@ -1,0 +1,112 @@
+import { FC, useEffect } from "react";
+import { useGlobal, useLocal } from "web-utils";
+import { CEGlobal } from "../../base/global/content-editor";
+import { component } from "../page/component";
+import { CEPage } from "../page/content-edit/ce-page";
+import { MContent } from "../types/general";
+import { Loading } from "../ui/loading";
+import { CECompEdit } from "./comp/comp-edit";
+import { CompManager } from "./comp/comp-manager";
+import { PageManager } from "./content/manager/page/PageManager";
+import { SiteManager } from "./content/manager/site/SiteManager";
+import { CEScriptEdit } from "./content/script/script-edit";
+import { CESide } from "./content/side/Side";
+import { CETree } from "./content/tree/tree";
+import { wsdoc } from "./ws/wsdoc";
+import { MItem } from "../types/item";
+
+export const ContentEditor: FC<{ id: string }> = ({ id }) => {
+  const c = useGlobal(CEGlobal, id);
+  const local = useLocal({ init: false });
+
+  useEffect(() => {
+    if (c.editor.active) {
+      localStorage.setItem(
+        `prasi-active-${id}`,
+        c.editor.active.get("id") || ""
+      );
+
+      let item = c.editor.active as MItem;
+      let oldCompID = c.editor.componentActiveID;
+      c.editor.componentActiveID = "";
+      while (item.parent) {
+        if (item) {
+          const isProp = item.get("isPropContent");
+          if (isProp) break;
+
+          const comp = item.get("component");
+          if (comp) {
+            const compid = comp.get("id");
+            if (compid) {
+              c.editor.componentActiveID = compid;
+              break;
+            }
+          }
+        }
+        item = item.parent as any;
+      }
+
+      if (oldCompID !== c.editor.componentActiveID) {
+        c.render();
+      }
+    }
+  }, [c.editor.active]);
+
+  if (!local.init) {
+    const active_id = localStorage.getItem(`prasi-active-${id}`);
+    if (active_id) {
+      const active = findID(c.root as any, active_id);
+      if (active) {
+        c.editor.active = active;
+      }
+    }
+    local.init = true;
+  }
+
+  if (id.startsWith("COMP")) {
+    if (wsdoc.page && component.edit.switching) {
+      return <Loading backdrop={false} />;
+    }
+
+    return (
+      <div className={cx("flex flex-1 flex-row", "editor-box")}>
+        <CETree id={id} />
+        <CEPage ceid={id} />
+        <CESide id={id} />
+        <CEScriptEdit id={id} />
+      </div>
+    );
+  }
+
+  return (
+    <div className={cx("flex flex-1 flex-row", "editor-box")}>
+      <CETree id={id} />
+      <CEPage ceid={id} />
+      <CESide id={id} />
+      <CEScriptEdit id={id} />
+      <CECompEdit id={id} />
+      {c.editor.manager.showSite && <SiteManager />}
+      {c.editor.manager.showPage && <PageManager />}
+      {c.editor.manager.showComp && <CompManager />}
+    </div>
+  );
+};
+
+const findID = (item: MContent, id: string) => {
+  if (item.get("id") === id) {
+    return item;
+  }
+
+  const childs = item.get("childs");
+  if (childs) {
+    let found: any = null;
+    childs.forEach((e) => {
+      const result = findID(e, id);
+      if (result) {
+        found = result;
+      }
+    });
+
+    if (found) return found;
+  }
+};

@@ -1,0 +1,12 @@
+{
+  "name": "template_service",
+  "version": "0.0.1",
+  "dependencies": {
+    "service-db": "../../pkgs/service/pkgs/service-db",
+    "prisma": "4.16.1"
+  },
+  "external": [
+    "hyper-express",
+    "prisma"
+  ]
+}

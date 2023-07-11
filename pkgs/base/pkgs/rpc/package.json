@@ -1,0 +1,22 @@
+{
+  "name": "rpc",
+  "main": "export.ts",
+  "private": "true",
+  "dependencies": {
+    "@paralleldrive/cuid2": "2.0.1",
+    "@qiwi/deep-proxy": "2.0.3",
+    "dir": "workspace:*",
+    "get-port": "^6.1.2",
+    "hyper-express": "^6.5.8",
+    "chalk": "5.2.0",
+    "lodash.get": "4.4.2",
+    "msgpackr": "1.8.3",
+    "pretty-error": "4.0.0",
+    "ws": "8.12.1"
+  },
+  "devDependencies": {
+    "@types/lodash.get": "4.4.7",
+    "@types/node": "^18.13.0",
+    "@types/ws": "8.5.4"
+  }
+}

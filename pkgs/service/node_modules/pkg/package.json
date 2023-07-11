@@ -1,0 +1,14 @@
+{
+  "name": "pkg",
+  "main": "export.ts",
+  "private": true,
+  "dependencies": {
+    "chalk": "^4",
+    "dir": "workspace:*",
+    "execa": "^7",
+    "fs-jetpack": "5.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.13.0"
+  }
+}

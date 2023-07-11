@@ -1,0 +1,110 @@
+#!/usr/bin/env node
+
+if (
+  !process.argv.includes("pre-commit") &&
+  !process.argv.includes("post-commit")
+) {
+  console.log(`
+▄▄▄         ▄· ▄▌ ▄▄▄· ▄▄▌
+▀▄ █·▪     ▐█▪██▌▐█ ▀█ ██•
+▐▀▀▄  ▄█▀▄ ▐█▌▐█▪▄█▀▀█ ██▪
+▐█•█▌▐█▌.▐▌ ▐█▀·.▐█ ▪▐▌▐█▌▐▌
+.▀  ▀ ▀█▄▀▪  ▀ •  ▀  ▀ .▀▀▀
+`);
+}
+
+const { spawn, fork } = require("child_process");
+const { existsSync } = require("fs");
+const { join, dirname } = require("path");
+
+const basePath = join(process.cwd(), ..."pkgs/base/main.js".split("/"));
+const args = process.argv.slice(2);
+
+let baseRestartable = false;
+
+const main = async () => {
+  if (!existsSync(join(process.cwd(), "node_modules"))) {
+    await new Promise((resolve) => {
+      const pnpm = spawn("pnpm", ["i"], { stdio: "inherit", shell: true });
+      pnpm.on("exit", resolve);
+    });
+  }
+
+  function exitHandler(options, exitCode) {
+    global.exiting = true;
+    if (!!global.base) global.base.kill(2);
+    if (!!global.build) global.build.kill(2);
+  }
+
+  //do something when app is closing
+  process.on("exit", exitHandler.bind(null, { cleanup: true }));
+
+  //catches ctrl+c event
+  process.on("SIGINT", exitHandler.bind(null, { exit: true }));
+
+  // catches "kill pid" (for example: nodemon restart)
+  process.on("SIGUSR1", exitHandler.bind(null, { exit: true }));
+  process.on("SIGUSR2", exitHandler.bind(null, { exit: true }));
+
+  //catches uncaught exceptions
+  process.on("uncaughtException", exitHandler.bind(null, { exit: true }));
+
+  if (args.includes("devbase") || !existsSync(basePath)) {
+    const buildBase = () => {
+      return new Promise((resolve) => {
+        let resolved = false;
+        global.build = fork(
+          join(process.cwd(), ..."pkgs/base/src/builder/base.mjs".split("/")),
+          args,
+          {
+            cwd: process.cwd(),
+          }
+        );
+        global.build.on("message", (m) => {
+          if (!resolved) {
+            resolved = true;
+            resolve();
+          } else if (baseRestartable) {
+            global.base.kill(2);
+            baseRestartable = false;
+          }
+        });
+      });
+    };
+    await buildBase();
+  }
+
+  runBase();
+};
+
+const runBase = () => {
+  baseRestartable = false;
+
+  global.base = fork(basePath, args, {
+    env: {
+      ...process.env,
+      NODE_PATH: join(dirname(basePath), "node_modules"),
+    },
+    cwd: process.cwd(),
+  });
+
+  global.base.on("message", (e) => {
+    if (e === "base-restartable") baseRestartable = true;
+  });
+
+  global.base.on("exit", (code) => {
+    if (global.exiting) return;
+
+    if (code === 1 || code === 2) {
+      if (!!global.build) {
+        global.build.kill();
+      }
+      process.exit();
+    } else {
+      console.log(`Base crashed ${code}, restarting...`);
+      runBase();
+    }
+  });
+};
+
+main();

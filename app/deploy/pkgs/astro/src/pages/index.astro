@@ -1,0 +1,16 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { RenderPage } from "web/src/compo/editor/render/ssr/page";
+---
+
+<Layout title="Welcome to Astro.">
+  <RenderPage
+    prop={{
+      res: {
+        pathname: "/",
+        params: {},
+        statusCode: 200,
+      },
+    }}
+  />
+</Layout>

@@ -1,0 +1,110 @@
+import { TypedMap } from "yjs-types";
+import { IItem, MItem } from "./item";
+
+export type FNLayout = {
+  dir: "row" | "col" | "row-reverse" | "col-reverse";
+  align: FNAlign;
+  gap: number | "auto";
+};
+
+export type FMLayout = TypedMap<FNLayout>;
+
+export type FNAdv = {
+  js?: string;
+  jsBuilt?: string;
+  css?: string;
+  html?: string;
+};
+
+export type FMAdv = TypedMap<FNAdv>;
+
+export type FNComponent = {
+  id: string;
+  group: {
+    id: string;
+    name: string;
+  };
+  props: Record<string, FNCompDef>;
+};
+
+export type FNCompDef = {
+  name: string;
+  type: string;
+  value: any;
+  valueBuilt: any;
+  content?: IItem;
+  meta?: FNCompMeta;
+};
+type FNCompMeta = {
+  type: "text" | "option" | "option-custom" | "content-element";
+  options?: string;
+  oldName?: string;
+};
+
+export type FMCompDef = TypedMap<
+  Omit<FNCompDef, "meta" | "content"> & {
+    content: MItem;
+    meta: TypedMap<FNCompMeta>;
+  }
+>;
+
+export type FMComponent = TypedMap<
+  Omit<FNComponent, "group" | "props"> & {
+    group: TypedMap<FNComponent["group"]>;
+    props: TypedMap<Record<string, FMCompDef>>;
+  }
+>;
+
+export type FNAlign =
+  | "top-left"
+  | "top-center"
+  | "top-right"
+  | "top"
+  | "left"
+  | "center"
+  | "right"
+  | "bottom"
+  | "bottom-left"
+  | "bottom-center"
+  | "bottom-right"
+  | "stretch";
+
+export type FNPadding = {
+  t?: number;
+  b?: number;
+  l?: number;
+  r?: number;
+};
+
+export type FMPadding = TypedMap<FNPadding>;
+
+export type FNDimension = {
+  w?: number | "fit" | "full";
+  h?: number | "fit" | "full";
+};
+export type FMDimension = TypedMap<FNDimension>;
+
+export type FNBackground = {
+  color?: string;
+  url?: string;
+  size?: "cover" | "contain" | "full" | "auto" | "%" | "px";
+  repeat?: "repeat" | "repeat-x" | "repeat-y" | "space" | "round" | "no-repeat";
+  pos?: "top" | "left" | "center" | "bottom" | "right";
+};
+
+export type FMBackground = TypedMap<FNBackground>;
+
+export type FNFont = {
+  color?: string;
+  size?: number;
+  family?: string;
+  height?: number | "auto";
+};
+export type FMFont = TypedMap<FNFont>;
+
+export type FNLinkTag = {
+  tag?: string;
+  link?: string;
+  class?: string;
+};
+export type FMLinkTag = TypedMap<FNLinkTag>;

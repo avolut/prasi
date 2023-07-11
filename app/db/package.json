@@ -1,0 +1,13 @@
+{
+  "name": "db",
+  "version": "0.0.1",
+  "dependencies": {
+    "@prisma/client": "4.16.1",
+    "prisma": "4.16.1",
+    "service-db": "../../pkgs/service/pkgs/service-db"
+  },
+  "external": [
+    "hyper-express",
+    "prisma"
+  ]
+}

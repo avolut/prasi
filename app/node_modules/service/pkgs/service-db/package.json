@@ -1,0 +1,17 @@
+{
+  "name": "service-db",
+  "dependencies": {
+    "dir": "workspace:^",
+    "pkg": "workspace:^",
+    "utility": "workspace:^",
+    "service": "workspace:^",
+    "lodash.padend": "4.6.1",
+    "fs-jetpack": "5.1.0",
+    "chalk": "5.2.0",
+    "@mrleebo/prisma-ast": "0.5.1"
+  },
+  "devDependencies": {
+    "@types/lodash.padend": "4.6.7"
+  },
+  "main": "export.ts"
+}

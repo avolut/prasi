@@ -1,0 +1,1 @@
+export const index = ["/**", import("../../../web/src/base/ssr/index")]

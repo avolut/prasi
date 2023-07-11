@@ -1,0 +1,246 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./node_modules/.gen"
+}
+
+generator client_app {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.gen"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = "postgresql://postgres:goperasidatabase123@db.goperasi.id:5432/prasi?schema=public&pool_timeout=0"
+}
+
+model page {
+  id           String       @id(map: "page_id") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name         String
+  url          String
+  content_tree Json
+  id_site      String       @db.Uuid
+  created_at   DateTime?    @default(now()) @db.Timestamp(6)
+  js_compiled  String?
+  js           String?
+  updated_at   DateTime?    @default(now()) @db.Timestamp(6)
+  id_folder    String?      @db.Uuid
+  is_deleted   Boolean      @default(false)
+  page_folder  page_folder? @relation(fields: [id_folder], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  site         site         @relation(fields: [id_site], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model site {
+  id             String           @id(map: "site_id") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name           String
+  colors         Json
+  favicon        String
+  domain         String           @unique(map: "site_domain")
+  id_user        String           @db.Uuid
+  created_at     DateTime?        @default(now()) @db.Timestamp(6)
+  id_org         String?          @db.Uuid
+  updated_at     DateTime?        @default(now()) @db.Timestamp(6)
+  js             String?          @default("")
+  css            String?          @default("")
+  js_compiled    String?          @default("")
+  config         Json             @default("{}")
+  is_deleted     Boolean          @default(false)
+  component_site component_site[]
+  page           page[]
+  page_folder    page_folder[]
+  org            org?             @relation(fields: [id_org], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "site_id_organization_fkey")
+  user           user             @relation(fields: [id_user], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  site_plugin    site_plugin[]
+  site_query     site_query[]
+}
+
+model user {
+  id                           String            @id(map: "user_id") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  username                     String            @unique(map: "user_username")
+  password                     String
+  phone                        String
+  email                        String
+  created_at                   DateTime?         @default(now()) @db.Timestamp(6)
+  token_reset_password         String?
+  token_reset_password_expired DateTime?         @db.Timestamp(6)
+  updated_at                   DateTime?         @default(now()) @db.Timestamp(6)
+  nominal_deposit              Decimal           @default(0) @db.Decimal(18, 3)
+  billing_account              billing_account[]
+  invoice                      invoice[]
+  org                          org[]
+  org_user                     org_user[]
+  site                         site[]
+}
+
+model feature {
+  id                 String         @id(map: "feature_id") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  feature            Json?
+  price              Decimal        @db.Decimal(18, 3)
+  created_at         DateTime?      @default(now()) @db.Timestamp(6)
+  updated_at         DateTime?      @default(now()) @db.Timestamp(6)
+  name               String
+  trial_duration     Int?
+  subscribe_duration Int?
+  invoice_item       invoice_item[]
+}
+
+model discount {
+  id           String         @id(map: "discount_id") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name         String
+  code         String         @unique(map: "discount_code")
+  date_start   DateTime       @db.Timestamp(6)
+  date_end     DateTime       @db.Timestamp(6)
+  price        Decimal?       @db.Decimal(18, 3)
+  percent      Float?         @db.Real
+  max_precent  Float?         @db.Real
+  description  String?
+  invoice_item invoice_item[]
+}
+
+model invoice {
+  id           String         @id(map: "invoice_id") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  code         String
+  user_id      String         @db.Uuid
+  status       String
+  total        Decimal        @default(0) @db.Decimal(18, 3)
+  due_date     DateTime?      @default(now()) @db.Timestamp(6)
+  created_at   DateTime?      @default(now()) @db.Timestamp(6)
+  updated_at   DateTime?      @default(now()) @db.Timestamp(6)
+  user         user           @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  invoice_item invoice_item[]
+  payment      payment[]
+}
+
+model invoice_item {
+  id           String    @id(map: "invoice_item_id") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  invoice_id   String    @db.Uuid
+  feature_id   String    @db.Uuid
+  discount_id  String?   @db.Uuid
+  price        Decimal   @default(0) @db.Decimal(18, 3)
+  discount_val Decimal   @default(0) @db.Decimal(18, 3)
+  created_at   DateTime? @default(now()) @db.Timestamp(6)
+  discount     discount? @relation(fields: [discount_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  feature      feature   @relation(fields: [feature_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  invoice      invoice   @relation(fields: [invoice_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model payment {
+  id                    String            @id(map: "payment_id") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  nominal               Decimal           @default(0) @db.Decimal(18, 3)
+  id_invoice            String            @db.Uuid
+  type                  String?           @db.VarChar(10)
+  payment_method        String            @default("CC") @db.VarChar(30)
+  payment_method_detail Json?
+  status                String
+  payment_date          DateTime?         @db.Timestamp(6)
+  expired_date          DateTime          @db.Timestamp(6)
+  description           String
+  created_at            DateTime?         @default(now()) @db.Timestamp(6)
+  updated_at            DateTime?         @default(now()) @db.Timestamp(6)
+  invoice               invoice           @relation(fields: [id_invoice], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  payment_history       payment_history[]
+}
+
+model payment_history {
+  id         String    @id(map: "payment_history_id") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  payment_id String    @db.Uuid
+  status     String
+  created_at DateTime? @default(now()) @db.Timestamp(6)
+  payment    payment   @relation(fields: [payment_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model billing_account {
+  id              String   @id(map: "billing_account_id") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id_organization String   @db.Uuid
+  user_created    String   @db.Uuid
+  payment_info    Json?
+  payment_method  String
+  is_default      Boolean
+  created_at      DateTime @default(now()) @db.Timestamp(6)
+  updated_at      DateTime @default(now()) @db.Timestamp(6)
+  organization    org      @relation(fields: [id_organization], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user            user     @relation(fields: [user_created], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model org {
+  id              String            @id(map: "organization_id") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name            String
+  created_at      DateTime?         @default(now()) @db.Timestamp(6)
+  updated_at      DateTime?         @db.Timestamp(6)
+  created_by      String?           @db.Uuid
+  billing_account billing_account[]
+  user            user?             @relation(fields: [created_by], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "organization_user_created_fkey")
+  org_user        org_user[]
+  site            site[]
+}
+
+model org_user {
+  id      Int    @id @default(autoincrement())
+  id_org  String @db.Uuid
+  id_user String @db.Uuid
+  role    String @default("member")
+  org     org    @relation(fields: [id_org], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user    user   @relation(fields: [id_user], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model plugin {
+  id          String        @id(map: "plugin_id") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String
+  desc        String
+  init_script String?       @default("")
+  site_plugin site_plugin[]
+}
+
+model site_plugin {
+  id_site   String @db.Uuid
+  id_plugin String @db.Uuid
+  config    Json
+  plugin    plugin @relation(fields: [id_plugin], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  site      site   @relation(fields: [id_site], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@id([id_site, id_plugin], map: "id_site_plugin")
+}
+
+model site_query {
+  id      String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id_site String? @db.Uuid
+  name    String?
+  query   String?
+  site    site?   @relation(fields: [id_site], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "site")
+}
+
+model page_folder {
+  id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name      String?
+  parent_id String? @db.Uuid
+  id_site   String  @db.Uuid
+  page      page[]
+  site      site    @relation(fields: [id_site], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model component {
+  id                 String           @id(map: "component_id") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name               String
+  content_tree       Json
+  created_at         DateTime?        @default(now()) @db.Timestamp(6)
+  updated_at         DateTime?        @default(now()) @db.Timestamp(6)
+  type               String           @default("item")
+  id_component_group String?          @db.Uuid
+  props              Json             @default("[]")
+  component_group    component_group? @relation(fields: [id_component_group], references: [id], onDelete: Cascade)
+}
+
+model component_group {
+  id             String           @id(map: "site_comp_group_id") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name           String
+  component      component[]
+  component_site component_site[]
+}
+
+model component_site {
+  id_component_group String          @db.Uuid
+  id_site            String          @db.Uuid
+  component_group    component_group @relation(fields: [id_component_group], references: [id], onDelete: Cascade)
+  site               site            @relation(fields: [id_site], references: [id], onDelete: Cascade)
+
+  @@id([id_component_group, id_site], map: "component_site_id_component_group_id_site")
+}
