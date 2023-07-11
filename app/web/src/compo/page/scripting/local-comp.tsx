@@ -1,13 +1,14 @@
 import { FC, ReactNode, useEffect, useRef } from "react";
-import { useLocal } from "web-utils";
-import { IContent } from "../../types/general";
 import { SingleScope } from "../../../base/global/content-editor";
+import { IContent } from "../../types/general";
 
 export type LocalFC = FC<{
   children: ReactNode;
   name: string;
   value: Record<string, any> & { render: () => void };
-  effect?: () => void | (() => void);
+  effect?: (
+    local: Record<string, any> & { render: () => void }
+  ) => void | (() => void);
   deps?: any[];
 }>;
 export const createLocal = (opt: {
@@ -26,7 +27,9 @@ export const createLocal = (opt: {
     if (!scope[name]) scope[name] = local;
 
     if (effect) {
-      useEffect(effect, deps || []);
+      useEffect(() => {
+        return effect(local);
+      }, deps || []);
     }
 
     return children;

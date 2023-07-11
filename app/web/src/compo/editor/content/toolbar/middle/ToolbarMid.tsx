@@ -1,8 +1,38 @@
+import { useLocal } from "web-utils";
+import { ToolbarBox } from "../../../../ui/box";
+import { Popover } from "../../../../ui/popover";
+import { APIConfig } from "./APIConfig";
 import { AddElement } from "./AddElement";
 
 export const ToolbarMid = () => {
+  const local = useLocal({
+    apiConfigOpen: false,
+  });
   return (
     <div className={cx("toolbar-mid", "flex")}>
+      <ToolbarBox
+        items={[
+          {
+            onClick: () => {
+              local.apiConfigOpen = true;
+              local.render();
+            },
+            content: (
+              <Popover
+                offset={12}
+                open={local.apiConfigOpen}
+                content={<APIConfig />}
+                onOpenChange={(open) => {
+                  local.apiConfigOpen = open;
+                  local.render();
+                }}
+              >
+                <div className={"api transition-all"}>API</div>
+              </Popover>
+            ),
+          },
+        ]}
+      />
       <AddElement id={"PAGE"} />
     </div>
   );

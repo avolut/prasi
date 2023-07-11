@@ -196,8 +196,10 @@ declare global {
   const Local: FC<{
     children: ReactNode;
     name: string;
-    value: Record<string, any>;
-    effect?: () => void | (() => void);
+    value: Record<string, any>; 
+    effect?: (
+      local: Record<string, any> & { render: () => void }
+    ) => void | (() => void);
     deps?: any[];
   }>;
   const cx = (...classNames: any[]) => string;
