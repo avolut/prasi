@@ -39573,7 +39573,7 @@ ${import_chalk2.default.magenta("Installing")} deps:
   var import_pretty_error = __toESM(require_PrettyError());
   var pe = new import_pretty_error.default();
   function getRandomArbitrary(min, max2) {
-    return Math.random() * (max2 - min) + min;
+    return Math.round(Math.random() * (max2 - min) + min);
   }
   var createRPC = async (name, action2, opt) => {
     let srv = null;
