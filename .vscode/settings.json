@@ -1,0 +1,40 @@
+{
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "search.exclude": {
+    "app/gen/**": true
+  },
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true,
+    "**/bun.lockb": true,
+    "**/go.sum": true,
+    ".output/.cache": true,
+    ".devcontainer.json": true,
+    ".hintrc": true,
+    "pre-commit": true,
+    "post-commit": true,
+    "pkgs/base/main.js": true,
+    "pkgs/base/main.js.map": true,
+    "**/.parcelrc": true,
+    "**/pnpm-lock.yaml": true,
+    "**/.gitignore": true,
+    "**/.npmrc": true,
+    "**/.postcssrc": true,
+    "**/pnpm-workspace.yaml": true,
+    "**/.vscode": true,
+    "**/build": true,
+    "**/node_modules": true,
+    "**/.htmlnanorc": true,
+    "**/.parcel-cache": true,
+    ".fleet": true,
+    ".vscode": true,
+    ".husky": true,
+    "app/gen": true
+  },
+  "hide-files.files": []
+}

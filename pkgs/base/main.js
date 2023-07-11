@@ -236,6 +236,7 @@
   var bundler;
   var init_global = __esm({
     "pkgs/base/pkgs/bundler/global.ts"() {
+      "use strict";
       bundler = globalThis;
       if (!bundler.runs)
         bundler.runs = {};
