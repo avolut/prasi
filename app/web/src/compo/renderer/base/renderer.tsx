@@ -30,16 +30,16 @@ export abstract class Renderer {
     router: null as null | RadixRouter<PrasiPage>,
   };
 
-  renderPage(id: PAGE_ID): ReactElement {
+  abstract changePage(page: { id: string; url: string }): Promise<void>;
+
+  renderPage(): ReactElement {
     return <></>;
   }
+
   renderComponent<K extends COMPONENT_ID>(
     id: K,
     props: COMPONENT_PROPS[K]
   ): ReactElement {
-    return <></>;
-  }
-  renderRoute(id: string): ReactElement {
     return <></>;
   }
 }

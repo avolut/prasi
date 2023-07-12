@@ -32,7 +32,7 @@ export const createLocal = (opt: {
 
         if (typeof result === "function") {
           return () => {};
-        } else {
+        } else if (typeof result === "object" && result instanceof Promise) {
           return () => {
             result.then((e: any) => {
               if (typeof e === "function") e();
