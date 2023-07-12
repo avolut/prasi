@@ -44,7 +44,10 @@ export function useModal({
   const click = useClick(context, {
     enabled: controlledOpen == null,
   });
-  const dismiss = useDismiss(context, { outsidePressEvent: "mousedown" });
+  const dismiss = useDismiss(context, {
+    outsidePressEvent: "mousedown",
+    escapeKey: false,
+  });
   const role = useRole(context);
 
   const interactions = useInteractions([click, dismiss, role]);

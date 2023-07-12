@@ -47,6 +47,7 @@ export const CEScriptEdit: FC<{ id: string }> = ({ id }) => {
     Promise.all([
       import("@monaco-editor/react").then((e) => {
         jscript.editor = e.Editor;
+        e.loader.config({ paths: { vs: "/min/vs" } });
       }),
       jscript.init(),
     ]).then(() => {

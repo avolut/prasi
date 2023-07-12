@@ -29,7 +29,6 @@ export const execElement = (arg: JsArg, api_url?: string) => {
       scriptEval(...Object.values(evalArgs));
     } catch (e) {
       error = true;
-      console.log(e);
     }
     return output.jsx;
   }

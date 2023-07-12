@@ -29,7 +29,7 @@ export const initScope = (
   const scopeRootID = scopeName || "root";
   let scope = c.scope[scopeRootID];
   if (!c.scope[scopeRootID]) {
-    c.scope[scopeRootID] = { tree: {}, value: {} };
+    c.scope[scopeRootID] = { tree: {}, effect: {}, value: {} };
     scope = c.scope[scopeRootID];
   }
   if (scope) {

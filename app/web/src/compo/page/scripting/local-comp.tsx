@@ -26,8 +26,15 @@ export const createLocal = (opt: {
 
     const local = scope[name] ? scope[name] : useRef(value).current;
     local.render = opt.render;
-    if (!local.__id) local.__id = createId();
     if (!scope[name]) scope[name] = local;
+
+    for (const [k, v] of Object.entries(local)) {
+      if (typeof value[k] === "undefined") delete local[k];
+    }
+
+    for (const [k, v] of Object.entries(value)) {
+      if (k !== "render") local[k] = v;
+    }
 
     if (effect) {
       if (!w.isEditor) {
