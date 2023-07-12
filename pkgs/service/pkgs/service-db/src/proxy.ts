@@ -57,14 +57,52 @@ export const dbs: DBProxy = (rpc) => {
         }
 
         if (table.startsWith("$")) {
-          return (...params: any[]) => {
-            //@ts-ignore
-            return root.action("db").query({
-              action: "query",
-              table,
-              params,
-            });
-          };
+          if (table === "$transaction") {
+            return async (transaction: any) => {
+              const txID = await rpc.startTx();
+              await transaction(
+                new Proxy(
+                  {},
+                  {
+                    get(_, table: string) {
+                      return new Proxy(
+                        {},
+                        {
+                          get(_, action: string) {
+                            return async (...params: any[]) => {
+                              if (table === "query") {
+                                table = action;
+                                action = "query";
+                              }
+                              //@ts-ignore
+                              return rpc.queryTx({
+                                action,
+                                table,
+                                params,
+                                txid: txID,
+                              });
+                            };
+                          },
+                        }
+                      );
+                    },
+                  }
+                )
+              );
+              await rpc.endTx(txID);
+            };
+          }
+
+          if (table === "$query") {
+            return (...params: any[]) => {
+              //@ts-ignore
+              return rpc.query({
+                action: "query",
+                table,
+                params,
+              });
+            };
+          }
         }
 
         return new Proxy(

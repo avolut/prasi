@@ -2,19 +2,21 @@ import { waitUntil } from "utility/wait-until";
 import { DBArg, DbDefCols, DbDefRels } from "../glbdb";
 import { inspectSchema } from "./inspect";
 
-export const execQuery = async (args: DBArg, obj: any, key: string) => {
+export const execQuery = async (args: DBArg, prismaLocal: any, key: string) => {
   const { table, action, params } = args;
 
-  if (!obj[key]) {
-    console.log("Waiting db to connect...");
-    await waitUntil(() => obj[key]);
+  if (!prismaLocal[key]) {
+    console.log(`Waiting db to connect...`);
+    await waitUntil(() => prismaLocal[key]);
   }
 
   if (table === "*") {
-    return obj["prisma"]._baseDmmf.datamodel.models.map((e: any) => e.name);
+    return prismaLocal["prisma"]._baseDmmf.datamodel.models.map(
+      (e: any) => e.name
+    );
   }
 
-  const tableInstance = (obj[key] as any)[table];
+  const tableInstance = (prismaLocal[key] as any)[table];
 
   if (tableInstance) {
     if (action === "query" && table.startsWith("$query")) {
@@ -22,7 +24,7 @@ export const execQuery = async (args: DBArg, obj: any, key: string) => {
         const q = params.shift();
         q.sql = true;
         Object.freeze(q);
-        return await tableInstance.bind(obj[key])(q, ...params);
+        return await tableInstance.bind(prismaLocal[key])(q, ...params);
       } catch (e) {
         console.log(e);
         return e;
@@ -30,7 +32,7 @@ export const execQuery = async (args: DBArg, obj: any, key: string) => {
     }
 
     if (action === "definition") {
-      const schema = await inspectSchema(table, obj, "prisma");
+      const schema = await inspectSchema(table, prismaLocal, "prisma");
       const rels = {} as DbDefRels;
       const columns = {} as DbDefCols;
 

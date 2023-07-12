@@ -1,14 +1,15 @@
 {
   "name": "service-db",
   "dependencies": {
-    "dir": "workspace:^",
-    "pkg": "workspace:^",
-    "utility": "workspace:^",
-    "service": "workspace:^",
-    "lodash.padend": "4.6.1",
-    "fs-jetpack": "5.1.0",
+    "@mrleebo/prisma-ast": "0.5.1",
+    "@paralleldrive/cuid2": "^2.2.1",
     "chalk": "5.2.0",
-    "@mrleebo/prisma-ast": "0.5.1"
+    "dir": "workspace:^",
+    "fs-jetpack": "5.1.0",
+    "lodash.padend": "4.6.1",
+    "pkg": "workspace:^",
+    "service": "workspace:^",
+    "utility": "workspace:^"
   },
   "devDependencies": {
     "@types/lodash.padend": "4.6.7"

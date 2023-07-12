@@ -24,7 +24,7 @@ export const attachCleanUp = () => {
         }
       }
       console.log("Exit because of:", this.cause);
-      process.exit(code);
+      process.exit(typeof code === "number" ? code : 0);
     }
   }
 
