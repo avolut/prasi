@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import { FNDimension } from "../../../../types/meta-fn";
 import { ISection } from "../../../../types/section";
 import { IItem } from "../../../../types/item";
@@ -6,28 +6,43 @@ import { IText } from "../../../../types/text";
 import { responsiveVal } from "../../../../page/tools/responsive-val";
 import { FieldNumUnit } from "../ui/FieldNumUnit";
 import { Button } from "../ui/Button";
-import { useLocal } from "web-utils";
+import { useGlobal, useLocal } from "web-utils";
 import { Tooltip } from "../../../../ui/tooltip";
 import { Menu, MenuItem } from "../../../../ui/context-menu";
+import { CEGlobal } from "../../../../../base/global/content-editor";
 
 type DimensionUpdate = {
   dim: FNDimension;
 };
 export const PanelDimension: FC<{
+  id: string;
   value: ISection | IItem | IText;
   mode: "desktop" | "mobile";
-  activeEl?: HTMLElement | null;
   update: <T extends keyof DimensionUpdate>(
     key: T,
     val: DimensionUpdate[T]
   ) => void;
-  w?: FNDimension["w"];
-}> = ({ value, update, w, mode, activeEl }) => {
-  const local = useLocal({ menuWidth: null as any, menuHeight: null as any });
-  const dim = responsiveVal<FNDimension>(value, "dim", mode, {
-    w: w || "fit",
-    h: "fit",
+}> = ({ value, update, mode, id }) => {
+  const c = useGlobal(CEGlobal, id);
+  const activeEl = c.editor.activeEl;
+  const local = useLocal({
+    menuWidth: null as any,
+    menuHeight: null as any,
+    activeWidth: 0,
+    activeHeight: 0,
+    dim: responsiveVal<FNDimension>(value, "dim", mode, {
+      w: "fit",
+      h: "fit",
+    }),
   });
+
+  if (activeEl) {
+    local.activeWidth = activeEl.offsetWidth;
+    local.activeHeight = activeEl.offsetHeight;
+  }
+
+  const dim = local.dim;
+
   return (
     <div
       className={cx(
@@ -55,15 +70,17 @@ export const PanelDimension: FC<{
             value={dim.w + "px"}
             unit="px"
             update={(val, setVal) => {
+              let _val = val;
               if (typeof dim.w !== "number" && setVal) {
-                const nval = activeEl?.offsetWidth || 0;
-                val = nval + "";
+                const nval = local.activeWidth || 0;
+                _val = nval + "";
                 setVal(nval);
               }
 
+              local.dim.w = parseInt(_val);
               update("dim", {
                 ...dim,
-                w: parseInt(val),
+                w: parseInt(_val),
               });
             }}
           />
@@ -79,6 +96,7 @@ export const PanelDimension: FC<{
             <MenuItem
               label="Fit"
               onClick={() => {
+                local.dim.w = "fit";
                 update("dim", {
                   ...dim,
                   w: "fit",
@@ -88,6 +106,7 @@ export const PanelDimension: FC<{
             <MenuItem
               label="Full"
               onClick={() => {
+                local.dim.w = "full";
                 update("dim", {
                   ...dim,
                   w: "full",
@@ -97,9 +116,10 @@ export const PanelDimension: FC<{
             <MenuItem
               label="Custom"
               onClick={() => {
+                local.dim.w = local.activeWidth || 0;
                 update("dim", {
                   ...dim,
-                  w: activeEl?.offsetWidth || 0,
+                  w: local.activeWidth || 0,
                 });
               }}
             />
@@ -173,15 +193,17 @@ export const PanelDimension: FC<{
             value={dim.h + "px"}
             unit="px"
             update={(val, setVal) => {
+              let _val = val;
               if (typeof dim.h !== "number" && setVal) {
-                const nval = activeEl?.offsetHeight || 0;
-                val = nval + "";
+                const nval = local.activeHeight || 0;
+                _val = nval + "";
                 setVal(nval);
               }
 
+              local.dim.h = parseInt(_val);
               update("dim", {
                 ...dim,
-                h: parseInt(val),
+                h: parseInt(_val),
               });
             }}
           />
@@ -197,6 +219,7 @@ export const PanelDimension: FC<{
             <MenuItem
               label="Fit"
               onClick={() => {
+                local.dim.h = "fit";
                 update("dim", {
                   ...dim,
                   h: "fit",
@@ -206,6 +229,7 @@ export const PanelDimension: FC<{
             <MenuItem
               label="Full"
               onClick={() => {
+                local.dim.h = "full";
                 update("dim", {
                   ...dim,
                   h: "full",
@@ -215,9 +239,10 @@ export const PanelDimension: FC<{
             <MenuItem
               label="Custom"
               onClick={() => {
+                local.dim.h = local.activeHeight || 0;
                 update("dim", {
                   ...dim,
-                  h: activeEl?.offsetHeight || 0,
+                  h: local.activeHeight || 0,
                 });
               }}
             />

@@ -1,6 +1,7 @@
 import { FC, ReactNode, useEffect, useRef } from "react";
 import { SingleScope } from "../../../base/global/content-editor";
-import { IContent } from "../../types/general";
+import { IContent, w } from "../../types/general";
+import { wsdoc } from "../../editor/ws/wsdoc";
 
 export type LocalFC = FC<{
   children: ReactNode;
@@ -11,6 +12,7 @@ export type LocalFC = FC<{
   ) => void | (() => void);
   deps?: any[];
 }>;
+
 export const createLocal = (opt: {
   item: IContent;
   scope: SingleScope;
@@ -27,19 +29,23 @@ export const createLocal = (opt: {
     if (!scope[name]) scope[name] = local;
 
     if (effect) {
-      useEffect(() => {
-        const result: any = effect(local);
+      if (!w.isEditor) {
+        useEffect(() => {
+          const result: any = effect(local);
 
-        if (typeof result === "function") {
-          return () => {};
-        } else if (typeof result === "object" && result instanceof Promise) {
-          return () => {
-            result.then((e: any) => {
-              if (typeof e === "function") e();
-            });
-          };
-        }
-      }, deps || []);
+          if (typeof result === "function") {
+            return () => {};
+          } else if (typeof result === "object" && result instanceof Promise) {
+            return () => {
+              result.then((e: any) => {
+                if (typeof e === "function") e();
+              });
+            };
+          }
+        }, deps || []);
+      } else {
+        // console.log(effect);
+      }
     }
 
     return children;

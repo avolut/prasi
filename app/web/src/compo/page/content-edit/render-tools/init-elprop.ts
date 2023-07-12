@@ -20,7 +20,7 @@ export const initElProp = (
   const elementProp = {
     className: cx(className),
     ref: (el: HTMLDivElement | HTMLAnchorElement | null) => {
-      if (c.editor.enabled && el && item.type !== "text") {
+      if (c.editor.enabled && el) {
         if (c.editor.active && c.editor.active.get("id") === item.id) {
           c.editor.activeEl = el;
         }

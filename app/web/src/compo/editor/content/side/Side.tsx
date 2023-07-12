@@ -162,7 +162,7 @@ export const CESide: FC<{ id: string }> = ({ id }) => {
                       <PanelDimension
                         value={active}
                         mode={wsdoc.mode}
-                        activeEl={c.editor.activeEl}
+                        id={id}
                         update={update}
                       />
                     </SideBox>

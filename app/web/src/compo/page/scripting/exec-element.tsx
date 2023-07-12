@@ -1,13 +1,12 @@
-import { ReactNode, Suspense, useCallback } from "react";
+import { ReactNode, Suspense } from "react";
 import { ErrorBoundary } from "web-init/src/web/error-boundary";
-import { createAPI, createDB } from "./api-db";
-import { consoleOverride } from "./console-override";
-import { createPassProps } from "./pass-props";
-import { IContent, w } from "../../types/general";
-import { Loading } from "../../ui/loading";
 import { SingleScope } from "../../../base/global/content-editor";
+import { IContent } from "../../types/general";
+import { Loading } from "../../ui/loading";
 import { findScope } from "../content-edit/render-tools/init-scope";
+import { createAPI, createDB } from "./api-db";
 import { createLocal } from "./local-comp";
+import { createPassProps } from "./pass-props";
 
 type JsArg = {
   item: IContent;
@@ -43,6 +42,7 @@ const produceEvalArgs = (
   api_url?: string
 ) => {
   const { item, children, output, scope, className, elementProp, render } = arg;
+
   const PassProp = createPassProps({ item, scope });
   const Local = createLocal({ item, scope, render });
 

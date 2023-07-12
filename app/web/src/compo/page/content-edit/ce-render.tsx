@@ -12,7 +12,7 @@ import { produceCSS } from "../css/gen";
 import { execElement } from "../scripting/exec-element";
 import { responsiveVal } from "../tools/responsive-val";
 import { initElProp } from "./render-tools/init-elprop";
-import { findScope, initScope } from "./render-tools/init-scope";
+import { initScope } from "./render-tools/init-scope";
 
 export const CERender: FC<{
   ceid: string;
@@ -36,6 +36,7 @@ export const CERender: FC<{
   }, []);
 
   const item = mitem.toJSON() as IContent;
+
   if (scopeName && scopeName !== "root") {
     item.id = scopeName;
   }
