@@ -192,11 +192,9 @@ export const CETreeMenu: FC<{
                       childs: jso.childs,
                     } as IItem;
                     obj = newItem;
-                    console.log(newItem);
                   } else {
                     obj = jso;
                   }
-                  console.log(jso);
                   const map = newMap(fillID(obj)) as MContent;
                   child.push([map]);
                   c.render();
