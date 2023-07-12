@@ -45,6 +45,22 @@ export const APIConfig = () => {
           local.status = "loading";
           local.render();
 
+          if (val === "") {
+            await db.site.update({
+              data: {
+                config: {
+                  api_url: val,
+                },
+              },
+              where: {
+                id: wsdoc.site?.id,
+              },
+            });
+            local.status = "valid";
+            local.render();
+            return;
+          }
+
           try {
             const res = await fetch(trim(val, "/") + "/_prasi/_");
             const json = await res.json();
