@@ -17,10 +17,17 @@ export const dbAction = {
     const promise = new Promise<void>((done) => {
       transactions[txid].done = done;
     });
+    let gotTx: any = () => {};
+    const shouldReturn = new Promise<void>((resolve) => {
+      gotTx = resolve;
+    });
     glbdb.prisma.$transaction(async (tx: Tx) => {
       transactions[txid].tx = tx;
+      gotTx();
       await promise;
     });
+
+    await shouldReturn;
     return txid;
   },
   queryTx: async (arg: DBArg & { txid: string }) => {
