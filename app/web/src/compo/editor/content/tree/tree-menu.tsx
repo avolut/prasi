@@ -1,5 +1,4 @@
 import { createId } from "@paralleldrive/cuid2";
-import get from "lodash.get";
 import { FC } from "react";
 import { useGlobal, useLocal } from "web-utils";
 import { syncronize } from "y-pojo";
@@ -52,8 +51,8 @@ export const CETreeMenu: FC<{
       isActiveComponent = true;
     }
   }
-  let paste = false;
-  if (!get(local, "ready"))
+
+  if (!local.ready)
     return (
       <>
         <Menu mouseEvent={contextMenu} onClose={onClose}>
@@ -167,7 +166,31 @@ export const CETreeMenu: FC<{
           }}
         />
       )}
-      {get(local, "paste") && (
+      <MenuItem
+        label="Duplicate"
+        onClick={() => {
+          item.parent.forEach((e: MContent, idx) => {
+            if (e === item) {
+              const json = e.toJSON() as IContent;
+              const map = newMap(fillID(json)) as MContent;
+              item.parent.insert(idx, [map]);
+            }
+          });
+          c.render();
+        }}
+      />
+      <MenuItem
+        label="Copy"
+        onClick={() => {
+          let icom = JSON.stringify(item.toJSON());
+          icom = icom;
+          // let comp = compress(icom);
+          let str = icom + "_prasi";
+          navigator.clipboard.writeText(str);
+        }}
+      />
+
+      {local.paste && (
         <MenuItem
           label={
             type === "item" || type === "section" ? (
@@ -204,29 +227,6 @@ export const CETreeMenu: FC<{
           }}
         />
       )}
-      <MenuItem
-        label="Duplicate"
-        onClick={() => {
-          item.parent.forEach((e: MContent, idx) => {
-            if (e === item) {
-              const json = e.toJSON() as IContent;
-              const map = newMap(fillID(json)) as MContent;
-              item.parent.insert(idx, [map]);
-            }
-          });
-          c.render();
-        }}
-      />
-      <MenuItem
-        label="Copy"
-        onClick={() => {
-          let icom = JSON.stringify(item.toJSON());
-          icom = icom;
-          // let comp = compress(icom);
-          let str = icom + "_prasi";
-          navigator.clipboard.writeText(str);
-        }}
-      />
       {(type === "text" || type === "item") && (
         <MenuItem
           label={`Wrap`}
