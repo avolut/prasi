@@ -193,15 +193,17 @@ declare global {
   const isEditor: boolean;
   const navigate: (url:string) => void;
   const PassProp: FC<Record<string,any> & {children: React.ReactNode}>;
-  const Local: FC<{
+
+  const Local: <T extends Record<string, any>>(arg: {
     children: ReactNode;
     name: string;
-    value: Record<string, any>; 
+    value: T; 
     effect?: (
-      local: Record<string, any> & { render: () => void }
+      local: T & { render: () => void }
     ) => void | (() => void) | Promise<void | (() => void)>;
     deps?: any[];
-  }>;
+  }) => React.ReactElement;
+
   const cx = (...classNames: any[]) => string;
   const css = (
     tag: CSSAttribute | TemplateStringsArray | string,
