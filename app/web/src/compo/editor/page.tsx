@@ -56,8 +56,6 @@ export const PageEditor: FC<{
     }
   }
 
-  console.log(component.edit);
-
   useEffect(() => {
     const keyDown = async (evt: KeyboardEvent) => {
       if (
