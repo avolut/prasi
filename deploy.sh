@@ -1,3 +1,4 @@
+nvm use 20
 git clean -fdx
 git reset --hard
 git pull
