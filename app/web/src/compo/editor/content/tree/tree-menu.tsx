@@ -181,8 +181,23 @@ export const CETreeMenu: FC<{
               navigator.clipboard.readText().then((e) => {
                 if (child) {
                   let desc = e.replaceAll("_prasi", "");
+                  let obj = {} as IContent;
                   let jso = JSON.parse(desc) as IContent;
-                  const map = newMap(fillID(jso)) as MContent;
+                  if (jso.type === "section") {
+                    const newItem = {
+                      id: createId(),
+                      name: jso.name,
+                      type: "item",
+                      dim: { w: "fit", h: "fit" },
+                      childs: jso.childs,
+                    } as IItem;
+                    obj = newItem;
+                    console.log(newItem);
+                  } else {
+                    obj = jso;
+                  }
+                  console.log(jso);
+                  const map = newMap(fillID(obj)) as MContent;
                   child.push([map]);
                   c.render();
                 }
