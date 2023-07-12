@@ -294,16 +294,18 @@ const api: { [k in ApiName]: Awaited<Api[k]["handler"]>["_"]["api"] };
 const imports = async (monaco: Monaco, defs: Record<string, string>) => {
   const result = {} as Record<string, string>;
   for (const [module, url] of Object.entries(defs)) {
-    const res = await fetch(url);
-    const src = await res.text();
-    result[module] = src;
+    try {
+      const res = await fetch(url);
+      const src = await res.text();
+      result[module] = src;
 
-    const uri = monaco.Uri.parse(`${module}`);
-    const added = monaco.editor
-      .getModels()
-      .find((e) => e.uri.toString() === uri.toString());
+      const uri = monaco.Uri.parse(`${module}`);
+      const added = monaco.editor
+        .getModels()
+        .find((e) => e.uri.toString() === uri.toString());
 
-    if (!added && !!src) monaco.editor.createModel(src, "typescript", uri);
+      if (!added && !!src) monaco.editor.createModel(src, "typescript", uri);
+    } catch (e) {}
   }
   return result;
 };

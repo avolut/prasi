@@ -1,7 +1,7 @@
 import { FC, ReactNode, useEffect, useRef } from "react";
 import { SingleScope } from "../../../base/global/content-editor";
 import { IContent, w } from "../../types/general";
-import { wsdoc } from "../../editor/ws/wsdoc";
+import { createId } from "@paralleldrive/cuid2";
 
 export type LocalFC = FC<{
   children: ReactNode;
@@ -26,6 +26,7 @@ export const createLocal = (opt: {
 
     const local = scope[name] ? scope[name] : useRef(value).current;
     local.render = opt.render;
+    if (!local.__id) local.__id = createId();
     if (!scope[name]) scope[name] = local;
 
     if (effect) {
@@ -44,7 +45,11 @@ export const createLocal = (opt: {
           }
         }, deps || []);
       } else {
-        // console.log(effect);
+        if (!opt.scope.effect) {
+          opt.scope.effect = {};
+        }
+
+        opt.scope.effect[opt.item.id] = effect;
       }
     }
 

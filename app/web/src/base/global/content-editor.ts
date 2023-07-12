@@ -69,6 +69,7 @@ export const CEGlobal = {
 
 export type SingleScope = {
   value: Record<string, any>;
+  effect: Record<string, (local: any) => any>;
   tree: Record<
     string,
     {
