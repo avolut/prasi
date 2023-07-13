@@ -14,10 +14,6 @@ export const _parsejs = {
   url: "/_parsejs",
   args: ["js"],
 }
-export const _prasi = {
-  url: "/_prasi/**",
-  args: [],
-}
 export const _upload = {
   url: "/_upload/:site",
   args: ["site"],

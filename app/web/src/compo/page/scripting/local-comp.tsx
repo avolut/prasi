@@ -26,7 +26,10 @@ export const createLocal = (opt: {
 
     const local = scope[name] ? scope[name] : useRef(value).current;
     local.render = opt.render;
-    if (!scope[name]) scope[name] = local;
+
+    if (!scope[name]) {
+      scope[name] = local;
+    }
 
     for (const [k, v] of Object.entries(local)) {
       if (typeof value[k] === "undefined") delete local[k];
@@ -56,7 +59,7 @@ export const createLocal = (opt: {
           opt.scope.effect = {};
         }
 
-        opt.scope.effect[opt.item.id] = effect;
+        opt.scope.effect[opt.item.id] = { name, effect };
       }
     }
 

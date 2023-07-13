@@ -6,11 +6,12 @@ import { CEGlobal } from "../../../../base/global/content-editor";
 import trim from "lodash.trim";
 import Delta from "quill-delta";
 import strDelta from "textdiff-create";
-import { FMAdv, FNComponent } from "../../../types/meta-fn";
-import { getMap } from "../../tools/yjs-tools";
-import { jsMount } from "./monaco/mount";
 import { component } from "../../../page/component";
 import { findScope } from "../../../page/content-edit/render-tools/init-scope";
+import { FMAdv, FNComponent } from "../../../types/meta-fn";
+import { getMap } from "../../tools/yjs-tools";
+import { monacoTypings } from "./monaco/typings";
+import { jsMount } from "./monaco/mount";
 export type FBuild = (
   entryFileName: string,
   src: string,
@@ -66,7 +67,7 @@ export const ScriptMonaco: FC<{
           let model = monaco.editor.createModel(
             value,
             "typescript",
-            monaco.Uri.parse("file:///model/1.tsx")
+            monaco.Uri.parse("ts:_active.tsx")
           );
           editor.setModel(model);
         }
@@ -103,17 +104,8 @@ export const ScriptMonaco: FC<{
           propVal[k] = v;
         }
 
-        await jsMount(
-          editor,
-          monaco,
-          {
-            types: propTypes,
-            values: propVal,
-          },
-          c.global.api_url,
-          "",
-          ""
-        );
+        await jsMount(editor, monaco);
+        await monacoTypings(editor, monaco);
       }}
       language={{ css: "scss", js: "typescript", html: "html" }[script.type]}
       onChange={(newsrc) => {

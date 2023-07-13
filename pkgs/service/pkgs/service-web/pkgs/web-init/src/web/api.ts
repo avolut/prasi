@@ -7,7 +7,7 @@ export const apiClient = (
   return new Proxy(
     {},
     {
-      get: (_, actionName: string) => { 
+      get: (_, actionName: string) => {
         return (...rest: any) => {
           return new Promise<any>(async (resolve) => {
             if (!api || !api[actionName]) {

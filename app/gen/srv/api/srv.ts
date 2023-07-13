@@ -26,13 +26,6 @@ export const _parsejs = {
   args: ["js"],
   handler: import("../../../srv/api/built-in/_parsejs")
 }
-export const _prasi = {
-  name: "_prasi",
-  url: "/_prasi/**",
-  path: "app/srv/api/built-in/_prasi.ts",
-  args: [],
-  handler: import("../../../srv/api/built-in/_prasi")
-}
 export const _upload = {
   name: "_upload",
   url: "/_upload/:site",

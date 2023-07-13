@@ -4,6 +4,8 @@ import { useLocal } from "web-utils";
 import { Loading } from "../../compo/ui/loading";
 import { site } from "dbgen";
 import { wsdoc } from "../../compo/editor/ws/wsdoc";
+import trim from "lodash.trim";
+import { w } from "../../compo/types/general";
 
 export default page({
   url: "/editor/:site/:page",
@@ -42,6 +44,30 @@ export default page({
         } else {
           site_id = params.site;
           local.site = await db.site.findFirst({ where: { id: params.site } });
+          const config = local.site?.config as { api_url: string };
+          if (!w.prasiApi) {
+            w.prasiApi = {};
+          }
+          if (config && config.api_url) {
+            try {
+              const apiTypes = await fetch(
+                trim(config.api_url, "/") + "/_prasi/api-types"
+              );
+              const apiEntry = await fetch(
+                trim(config.api_url, "/") + "/_prasi/api-entry"
+              );
+              const prismaEntry = await fetch(
+                trim(config.api_url, "/") + "/_prasi/prisma"
+              );
+              w.prasiApi[config.api_url] = {
+                apiEntry: (await apiEntry.json()).srv,
+                prisma: await prismaEntry.text(),
+                apiTypes: await apiTypes.text(),
+              };
+              wsdoc.apiDef = w.prasiApi[config.api_url];
+            } catch (e) {}
+          }
+
           local.init = true;
         }
 

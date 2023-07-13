@@ -1,6 +1,4 @@
 import type { OnMount } from "@monaco-editor/react";
-import trim from "lodash.trim";
-import { typeStringify } from "./type-stringify";
 import {
   MonacoJsxSyntaxHighlight,
   getWorker,
@@ -12,31 +10,29 @@ type CompilerOptions = Parameters<
   Parameters<OnMount>[1]["languages"]["typescript"]["typescriptDefaults"]["setCompilerOptions"]
 >[0];
 
-export const jsMount = async (
-  editor: MonacoEditor,
-  monaco: Monaco,
-  prop: { values: Record<string, any>; types: Record<string, string> },
-  api_url?: string,
-  site?: string,
-  page?: string
-) => {
+const w = window as unknown as {
+  importCache: {
+    prettier: any;
+    prettier_babel: any;
+  };
+};
+
+export const jsMount = async (editor: MonacoEditor, monaco: Monaco) => {
   const compilerOptions: CompilerOptions = {
-    allowJs: true,
-    allowSyntheticDefaultImports: true,
-    alwaysStrict: true,
     jsx: monaco.languages.typescript.JsxEmit.React,
     jsxFactory: "React.createElement",
     jsxFragmentFactory: "React.Fragment",
-    rootDir: "file:///",
+    target: monaco.languages.typescript.ScriptTarget.ES2015,
+    allowNonTsExtensions: true,
+    module: monaco.languages.typescript.ModuleKind.ESNext,
+    esModuleInterop: true,
     moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
   };
 
   const jsxHgController = new MonacoJsxSyntaxHighlight(getWorker(), monaco);
-
-  const { highlighter, dispose } = jsxHgController.highlighterBuilder({
+  const { highlighter } = jsxHgController.highlighterBuilder({
     editor: editor,
   });
-
   highlighter();
   editor.onDidChangeModelContent(() => {
     highlighter();
@@ -44,11 +40,20 @@ export const jsMount = async (
 
   monaco.languages.registerDocumentFormattingEditProvider("typescript", {
     async provideDocumentFormattingEdits(model, options, token) {
-      const prettier = await import("prettier/standalone");
-      const babylon = await import("prettier/parser-babel");
+      if (!w.importCache) {
+        w.importCache = { prettier_babel: "", prettier: "" };
+      }
+      if (!w.importCache.prettier_babel)
+        w.importCache.prettier_babel = await import("prettier/parser-babel");
+
+      if (!w.importCache.prettier)
+        w.importCache.prettier = await import("prettier/standalone");
+
+      const prettier = w.importCache.prettier;
+      const prettier_babel = w.importCache.prettier_babel;
       const text = prettier.format(model.getValue(), {
         parser: "babel",
-        plugins: [babylon],
+        plugins: [prettier_babel],
       });
 
       return [
@@ -98,214 +103,7 @@ export const jsMount = async (
     },
   });
 
-  await imports(monaco, {
-    "file:///node_modules/react/jsx-runtime.d.ts":
-      "https://cdn.jsdelivr.net/npm/@types/react@18.2.0/jsx-runtime.d.ts",
-    "file:///node_modules/react/index.d.ts":
-      "https://cdn.jsdelivr.net/npm/@types/react@18.2.0/index.d.ts",
-  });
-
-  const model = {
-    global: monaco.Uri.parse("file:///global.d.ts"),
-  };
-
-  const modelNames = Object.values(model).map((e) => e.toString());
-  monaco.editor.getModels().forEach((e) => {
-    const uri = e.uri.toString();
-    if (modelNames.includes(uri)) {
-      e.dispose();
-    }
-  });
-
-  let apiCache: Awaited<ReturnType<typeof imports>> = {};
-  if (api_url) {
-    apiCache = await imports(monaco, {
-      "file:///prisma.d.ts": trim(api_url, "/") + "/_prasi/prisma",
-      "file:///api.d.ts": trim(api_url, "/") + "/_prasi/api",
-    });
-  }
-
-  const propTypes: string[] = [];
-  const props: Record<string, { val?: any; type?: string }> = {};
-
-  if (prop) {
-    if (prop.types) {
-      for (const [k, v] of Object.entries(prop.types)) {
-        if (!props[k]) {
-          props[k] = {};
-        }
-        props[k].type = v;
-      }
-    }
-
-    if (prop.values) {
-      for (const [k, v] of Object.entries(prop.values)) {
-        if (!props[k]) {
-          props[k] = {};
-        }
-        props[k].val = v;
-      }
-    }
-  }
-
-  for (const [k, v] of Object.entries(props)) {
-    if (v.type) {
-      propTypes.push(`const ${k} = null as unknown as ${v.type};`);
-    } else if (v.val) {
-      propTypes.push(
-        `const ${k} = ${JSON.stringify(v.val, typeStringify)
-          .replaceAll('"___FFF||', "")
-          .replaceAll('||FFF___"', "")};`
-      );
-    }
-  }
-
-  monaco.editor.createModel(
-    `\
-import * as React from "react";
-${
-  apiCache["file:///prisma.d.ts"]
-    ? `\
-import { PrismaClient } from "./prisma";
-`
-    : ""
-}
-
-${
-  apiCache["file:///api.d.ts"]
-    ? `
-import "./api"
-import type * as SRVAPI from "app/gen/srv/api/srv";
-`
-    : ""
-}
-
-declare global {
-  type FC<T> = React.FC<T>;
-  const Fragment = React.Fragment;
-  const ReactNode = React.ReactNode;
-  const useCallback = React.useCallback;
-  const useMemo = React.useMemo;
-  const ReactElement = React.ReactElement;
-  const isValidElement = React.isValidElement;
-  const useEffect = React.useEffect;
-  const useState = React.useState;
-  const isEditor: boolean;
-  const navigate: (url:string) => void;
-  const PassProp: FC<Record<string,any> & {children: React.ReactNode}>;
-
-  const Local: <T extends Record<string, any>>(arg: {
-    children: ReactNode;
-    name: string;
-    value: T; 
-    effect?: (
-      local: T & { render: () => void }
-    ) => void | (() => void) | Promise<void | (() => void)>;
-    deps?: any[];
-  }) => React.ReactElement;
-
-  const cx = (...classNames: any[]) => string;
-  const css = (
-    tag: CSSAttribute | TemplateStringsArray | string,
-    ...props: Array<string | number | boolean | undefined | null>
-  ) => string[];
-  const useGlobal: <T extends object>(defaultValue: T, effectOrID?: (() => Promise<void | (() => void)> | void | (() => void)) | string, id?: string) => T & {
-    render: () => void;
-};
-
-  const useLocal: <T extends object>(data: T, effect?: ((arg: {
-    init: boolean;
-  }) => Promise<void | (() => void)> | void | (() => void)) | undefined, deps?: any[]) => { [K in keyof T]: T[K] extends Promise<any> ? Awaited<T[K]> | null : T[K]; } & {
-      render: () => void;
-  };
-
-  const Props: React.FC<any>;
-  const children: any;
-
-  const props: Record<string, any>;
-
-  ${propTypes.join("\n")}
-
-  ${site}
-
-  ${page}
-
-  ${
-    apiCache["file:///prisma.d.ts"]
-      ? `\
-type DbDefRels = Record<
-  string,
-  {
-    relation: "Model.BelongsToOneRelation" | "Model.HasManyRelation";
-    modelClass: string;
-    join: {
-      from: string;
-      to: string;
-    };
-  }
->;
-
-type DbDefCols = Record<
-  string,
-  {
-    name: string;
-    type: string;
-    rel?: "has-many" | "belongs-to";
-    pk: boolean;
-    nullable: boolean;
-  }
->;
-
-const db: PrismaClient & {
-  _tables: () => Promise<string[]>;
-  _definition: (
-    table: string
-  ) => Promise<{ db: { name: string }; rels: DbDefRels; columns: DbDefCols }>;
-};
-
-    `
-      : ""
-  }
-
-${
-  apiCache["file:///api.d.ts"]
-    ? `
-type Api = typeof SRVAPI;
-type ApiName = keyof Api;
-const api: { [k in ApiName]: Awaited<Api[k]["handler"]>["_"]["api"] };
-`
-    : ""
-}
-};
-`,
-    "typescript",
-    model.global
-  );
-
   monaco.languages.typescript.typescriptDefaults.setCompilerOptions(
     compilerOptions
   );
-
-  monaco.languages.typescript.javascriptDefaults.setCompilerOptions(
-    compilerOptions
-  );
-};
-
-const imports = async (monaco: Monaco, defs: Record<string, string>) => {
-  const result = {} as Record<string, string>;
-  for (const [module, url] of Object.entries(defs)) {
-    try {
-      const res = await fetch(url);
-      const src = await res.text();
-      result[module] = src;
-
-      const uri = monaco.Uri.parse(`${module}`);
-      const added = monaco.editor
-        .getModels()
-        .find((e) => e.uri.toString() === uri.toString());
-
-      if (!added && !!src) monaco.editor.createModel(src, "typescript", uri);
-    } catch (e) {}
-  }
-  return result;
 };

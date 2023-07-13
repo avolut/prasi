@@ -22,6 +22,7 @@ export const SiteEditor: FC<{
   wsdoc.site = site as any;
   wsdoc.mode = (localStorage.getItem("editor-mode") || "desktop") as any;
   w.isEditor = true;
+  if (!w.prasiApi) w.prasiApi = {};
 
   useEffect(() => {
     const keyDown = async (evt: KeyboardEvent) => {

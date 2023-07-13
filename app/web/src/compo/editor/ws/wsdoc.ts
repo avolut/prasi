@@ -19,6 +19,7 @@ export const wsdoc = {
     localIP: false,
   },
   ws: null as null | WebSocket,
+  apiDef: { apiEntry: null as any, prisma: "", apiTypes: "" },
   async wsend(payload: string) {
     const ws = this.ws;
     if (ws) {

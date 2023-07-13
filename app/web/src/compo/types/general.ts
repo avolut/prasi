@@ -1,8 +1,6 @@
 import { page as dbpage } from "dbgen";
-import { RadixRouter, page } from "web-init";
 import { TypedDoc, TypedMap } from "yjs-types";
 import { loadSite } from "../../../../srv/edit/tools/load-site";
-import { execGlobal } from "../page/scripting/exec-global";
 import { IItem, MItem } from "./item";
 import { IRoot, MRoot } from "./root";
 import { ISection, MSection } from "./section";
@@ -15,31 +13,7 @@ export type PageProps = {
 
 export const w = window as unknown as {
   isEditor: boolean;
-  isPreview: boolean;
-  prismaSchema?: string;
-  openedPopupID: Record<string, boolean>;
-  lastColorPicked: string;
-  textEditFocusID: string;
-  loadedFonts: any[];
-  prasiSite?: Parameters<typeof execGlobal>[0];
-  prasiPage?: {
-    id: string;
-    url: string;
-    js: string | null;
-    js_compiled: string | null;
-    content_tree: IRoot;
-    lastRefresh: number;
-  };
-  prasiRouter?: RadixRouter<
-    Omit<typeof page, "content_tree"> & {
-      id: string;
-      url: string;
-      js?: string | null;
-      js_compiled?: string | null;
-      content_tree?: null | IRoot;
-    }
-  >;
-  preview: boolean;
+  prasiApi: Record<string, { apiEntry: any; prisma: string; apiTypes: string }>;
 };
 
 export type Page = {

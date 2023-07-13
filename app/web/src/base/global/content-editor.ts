@@ -80,7 +80,7 @@ export const CEGlobal = {
 
 export type SingleScope = {
   value: Record<string, any>;
-  effect: Record<string, (local: any) => any>;
+  effect: Record<string, { name: string; effect: (local: any) => any }>;
   tree: Record<
     string,
     {
