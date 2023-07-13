@@ -22,7 +22,11 @@ export const initElProp = (
     ref: (el: HTMLDivElement | HTMLAnchorElement | null) => {
       if (c.editor.enabled && el) {
         if (c.editor.active && c.editor.active.get("id") === item.id) {
-          c.editor.activeEl = el;
+          if (c.editor.active.get("type") === "text") {
+            c.editor.activeEl = el.children.item(0) as any;
+          } else {
+            c.editor.activeEl = el;
+          }
         }
       }
     },

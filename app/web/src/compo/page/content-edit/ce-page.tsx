@@ -15,11 +15,13 @@ export const CEPage: FC<{ ceid: string }> = ({ ceid }) => {
   useEffect(() => {
     const scope = c.scope[c.editor.activeScopeName || "root"];
 
-    Object.entries(scope.effect).map(([k, v]) => {
-      if (scope.value[k]) {
-        v(scope.value[k].result);
-      }
-    });
+    if (scope) {
+      Object.entries(scope.effect).map(([k, v]) => {
+        if (scope.value[k]) {
+          v(scope.value[k].result);
+        }
+      });
+    }
   }, []);
 
   c.editor.page.render = local.render;

@@ -61,15 +61,14 @@ const CETextEditable: FC<{ ceid: string; item: MText }> = ({ ceid, item }) => {
           wsdoc.lastTypedTimeestamp = Date.now();
           item.set("html", e.currentTarget.innerHTML);
         }}
-        ref={(_el) => {
-          if (c.editor.active && c.editor.active.get("id") === item.get("id")) {
-            if (c.editor.activeEl !== _el) {
-              c.editor.activeEl = _el;
-            }
-          }
-        }}
         spellCheck={false}
-        className={cx(item.get("id"), "outline-none select-text")}
+        className={cx(
+          item.get("id"),
+          "outline-none select-text",
+          css`
+            min-width: 25px;
+          `
+        )}
       />
     </>
   );

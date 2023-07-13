@@ -61,17 +61,27 @@ export const AddElement: FC<{ id: string; disableSection?: boolean }> = ({
                     ed.active = map;
                   }
                 } else if (type === "text") {
+                  let done = false;
                   ed.active.parent.forEach((e, idx) => {
-                    if (e === c) {
+                    if (done) return;
+                    if (e === ed.active) {
                       const map = new Y.Map() as MContent;
                       if (map && ed.active) {
                         syncronize(map as any, fillID(json));
                         ed.active.parent.insert(idx + 1, [map]);
-                        ed.active = map;
+                        ed.active = ed.active.parent.get(idx + 1) as any;
+                        done = true;
                       }
                     }
                   });
                 }
+
+                setTimeout(() => {
+                  console.log(c.editor.activeEl);
+                  if (ed.active?.get("type") === "text") {
+                    c.editor.activeEl?.focus();
+                  }
+                }, 100);
               }
             },
             disabled: !canAdd || type === "section",
@@ -116,13 +126,16 @@ export const AddElement: FC<{ id: string; disableSection?: boolean }> = ({
                     ed.active = map;
                   }
                 } else {
+                  let done = false;
                   ed.active.parent.forEach((e, idx) => {
-                    if (e === c) {
+                    if (done) return;
+                    if (e === ed.active) {
                       const map = new Y.Map() as MContent;
                       if (map && ed.active) {
                         syncronize(map as any, fillID(json));
                         ed.active.parent.insert(idx + 1, [map]);
-                        ed.active = map;
+                        ed.active = ed.active.parent.get(idx + 1) as any;
+                        done = true;
                       }
                     }
                   });
