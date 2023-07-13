@@ -5,7 +5,7 @@ import { ResponsiveToggle } from "./ResponsiveToggle";
 export const ToolbarRight = () => {
   return (
     <div className={cx("toolbar-right", "flex mr-2")}>
-      <ToolbarBox
+      {/* <ToolbarBox
         items={[
           {
             content: "Preview",
@@ -22,7 +22,7 @@ export const ToolbarRight = () => {
             margin-right: 5px !important;
           `
         )}
-      />
+      /> */}
 
       <ResponsiveToggle />
     </div>
