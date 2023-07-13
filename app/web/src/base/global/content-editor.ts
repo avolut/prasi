@@ -42,7 +42,18 @@ export const CEGlobal = {
     componentActiveID: "",
     activeScopeName: undefined as undefined | string,
     active: null as null | MContent,
-    lastActive: { item: null as null | MContent },
+    multiple: {
+      active: null as null | Array<MContent>,
+      activeEl: null as null | Array<HTMLElement>,
+    },
+    lastActive: {
+      item: null as null | MContent,
+      multiple: {
+        active: null as null | Array<MContent>,
+        activeEl: null as null | Array<HTMLElement>,
+      },
+    },
+    copy: null as null | "multiple",
     activeEl: null as HTMLElement | null,
     hover: null as null | MContent,
     script: {

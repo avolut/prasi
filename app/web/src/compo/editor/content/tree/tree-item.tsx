@@ -39,7 +39,11 @@ export const CETreeItem: FC<{
   const item = data.content;
   const isActive = c.editor.active?.get("id") === item.get("id");
   const isHover = local.hover;
-
+  const multipleActive = c.editor.multiple.active || [];
+  const parentActive = multipleActive.find(
+    (e) => e.get("id") === item.get("id")
+  );
+  const isParentActive = parentActive ? true : false;
   const type = item.get("type");
   let childs = getArray<MContent>(item, "childs");
   const adv = getMap<FMAdv>(item, "adv")?.toJSON() || {};
@@ -97,10 +101,11 @@ export const CETreeItem: FC<{
         c.render();
       }}
       className={cx(
-        "item flex items-stretch cursor-pointer border-b relative",
+        "item flex items-stretch cursor-pointer border-b relative ",
+        isParentActive && !isActive && !isHover && "bg-blue-100",
         isComponent && !isActive && !isHover && "bg-purple-50",
         isActive && (isComponent ? "bg-purple-100" : "bg-blue-100"),
-        isHover && (isComponent ? "bg-purple-100" : "bg-blue-50"),
+        isHover && (isComponent ? "bg-purple-100" : "hover:bg-blue-50"),
         css`
           min-height: 28px;
           > div {
@@ -167,7 +172,10 @@ export const CETreeItem: FC<{
             padding-left: ${depth * DEPTH_WIDTH}px;
           `
         )}
-        onClick={onToggle}
+        onClick={(e) => {
+          e.stopPropagation();
+          onToggle();
+        }}
       ></div>
 
       <div
@@ -177,7 +185,10 @@ export const CETreeItem: FC<{
             width: 25px;
           `
         )}
-        onClick={onToggle}
+        onClick={(e) => {
+          e.stopPropagation();
+          onToggle();
+        }}
       >
         <div className="regular-icon">
           {type === "item" &&

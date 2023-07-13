@@ -12,7 +12,7 @@ import { componentShouldLoad, loadComponents } from "./load-comp";
 
 export const CECompEdit: FC<{ id: string }> = ({ id }) => {
   let c = useGlobal(CEGlobal, id);
-  
+
   if (!component.edit.show || !component.edit.id) {
     return true;
   }

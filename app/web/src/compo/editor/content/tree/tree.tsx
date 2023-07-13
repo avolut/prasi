@@ -3,6 +3,7 @@ import {
   DndProvider,
   DragPreviewRender,
   MultiBackend,
+  NodeModel,
   PlaceholderRender,
   getBackendOptions,
 } from "@minoru/react-dnd-treeview";
@@ -13,14 +14,18 @@ import { NodeContent, flattenTree } from "../../../page/tools/flatten-tree";
 import { MContent } from "../../../types/general";
 import { MRoot } from "../../../types/root";
 import { CETreeItem, DEPTH_WIDTH } from "./tree-item";
+import { wsdoc } from "../../ws/wsdoc";
 import { ErrorBoundary } from "web-init/src/web/error-boundary";
+import concat from "lodash.concat";
+import uniqBy from "lodash.uniqby";
+import findIndex from "lodash.findindex";
+import slice from "lodash.slice";
 
 export const CETree: FC<{ id: string }> = ({ id }) => {
   const c = useGlobal(CEGlobal, id);
   const local = useLocal({ childs: [] as string[], treeError: false });
   c.editor.tree.render = local.render;
   c.editor.tree.list = flattenTree(c.root as any);
-
   const TypedTree = DNDTree<NodeContent>;
 
   useEffect(() => {
@@ -188,29 +193,79 @@ export const CETree: FC<{ id: string }> = ({ id }) => {
                     render={(node, { depth, isOpen, onToggle }) => {
                       if (node.id === "root") return <></>;
                       return (
-                        <CETreeItem
-                          {...{
-                            id,
-                            node,
-                            depth,
-                            isOpen,
-                            onToggle,
-                            select: (item) => {
-                              c.editor.active = item;
-                              const focusText = (item: MContent) => {
-                                if (item.get("type") === "text") {
-                                  setTimeout(() => {
-                                    if (c.editor.activeEl?.focus) {
-                                      c.editor.activeEl.focus();
+                        <>
+                          <CETreeItem
+                            {...{
+                              id,
+                              node,
+                              depth,
+                              isOpen,
+                              onToggle,
+                              select: (item) => {
+                                const w = wsdoc;
+                                const focusText = (props: {
+                                  mode: "single" | "multiple";
+                                  item: MContent;
+                                }) => {
+                                  const { mode, item } = props;
+
+                                  if (mode === "multiple") {
+                                    c.editor.copy = "multiple";
+                                    let actives =
+                                      c.editor.multiple.active || [];
+                                    actives = concat(actives, item);
+                                    selectMultiple({ item, global: c });
+                                  } else {
+                                    c.editor.copy = null;
+                                    let type = item.get("type");
+                                    c.editor.multiple.active = [];
+                                    switch (type) {
+                                      case "text":
+                                        setTimeout(() => {
+                                          if (c.editor.activeEl?.focus) {
+                                            c.editor.activeEl.focus();
+                                          }
+                                        }, 100);
+                                        break;
+                                      case "section":
+                                        selectChildren({ item, global: c });
+                                        break;
+                                      case "item":
+                                        selectChildren({ item, global: c });
+                                        break;
+                                      default:
+                                        break;
                                     }
-                                  }, 100);
+                                  }
+                                };
+                                switch (true) {
+                                  case w.keyDown === "ctrl":
+                                    // c.editor.active = item;
+                                    focusText({
+                                      mode: "multiple",
+                                      item,
+                                    });
+                                    break;
+                                  case w.keyDown === "shift":
+                                    focusText({
+                                      mode: "multiple",
+                                      item,
+                                    });
+                                    break;
+                                  default:
+                                    c.editor.active = item;
+                                    focusText({
+                                      mode: "single",
+                                      item: c.editor.active,
+                                    });
+                                    break;
                                 }
-                              };
-                              focusText(c.editor.active);
-                              c.render();
-                            },
-                          }}
-                        />
+                                // focusText({ mode: "single", item: c.editor.active });
+                                c.render();
+                              },
+                            }}
+                          />
+                        </>
                       );
                     }}
                   />
@@ -223,7 +278,61 @@ export const CETree: FC<{ id: string }> = ({ id }) => {
     </div>
   );
 };
-
+export const selectMultiple = (props: { item: MContent; global: any }) => {
+  const { item, global } = props;
+  let child = walk(item);
+  let select = global.editor.multiple.active || [];
+  let find = select.find((e: MContent) => e.get("id") === item.get("id"));
+  let id = select.map((e: MContent) => e.get("name"));
+  if (find) {
+    select = select.filter(
+      (e: MContent) => !child.find((x) => e.get("id") === x)
+    );
+    global.editor.multiple.active = select;
+  } else {
+    selectChildren({ item, global });
+    global.editor.active = null;
+  }
+};
+const selectChildren = (props: { item: MContent; global: any }) => {
+  const w = wsdoc;
+  const { item, global } = props;
+  let child = walkContent(item);
+  let parent = global.editor.tree.list;
+  let selectBefore = global.editor.multiple.active || [];
+  let activeSingle = global.editor.active || [];
+  selectBefore = concat(selectBefore, activeSingle);
+  switch (true) {
+    case w.keyDown === "ctrl":
+      child = concat(child, selectBefore);
+      break;
+    case w.keyDown === "shift":
+      child = concat(child, selectBefore);
+      let pp = parent.filter((e: NodeModel) =>
+        child.find((x) => x.get("id") === e.id)
+      ) as NodeModel<NodeContent>[];
+      let startIdx = findIndex(parent, (e: NodeModel) => e.id === pp[0].id);
+      let endIdx = findIndex(
+        parent,
+        (e: NodeModel) => e.id === pp[pp.length - 1].id
+      );
+      let pps = slice(parent, startIdx, endIdx + 1);
+      child = pps.map((e: any) => e.data.content);
+      break;
+    default:
+      break;
+  }
+  child = uniqBy(child, (e) => e.get("id"));
+  global.editor.multiple.active = child;
+};
+const walkContent = (item: MContent, result?: Array<MContent>) => {
+  const _result = result || [];
+  _result.push(item);
+  item.get("childs")?.forEach((e) => {
+    walkContent(e, _result);
+  });
+  return _result;
+};
 const walk = (item: MContent, result?: string[]) => {
   const _result = result || [];
   _result.push(item.get("id") || "");

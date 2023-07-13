@@ -166,11 +166,17 @@ importers:
       '@tinijs/parcel-reporter-copy-public': 0.0.2
       '@tuplo/use-calendar': ^1.6.3
       '@types/lodash.capitalize': 4.2.7
+      '@types/lodash.concat': ^4.5.7
       '@types/lodash.debounce': ^4.0.7
+      '@types/lodash.find': ^4.6.7
+      '@types/lodash.findindex': ^4.6.7
       '@types/lodash.get': ^4.4.7
+      '@types/lodash.indexof': ^4.0.7
       '@types/lodash.set': ^4.3.7
+      '@types/lodash.slice': ^4.2.7
       '@types/lodash.throttle': ^4.1.7
       '@types/lodash.trim': 4.5.7
+      '@types/lodash.uniqby': ^4.7.7
       '@types/prettier': 2.7.3
       '@types/react': 18.2.9
       '@types/react-dom': 18.2.4
@@ -185,11 +191,17 @@ importers:
       js-base64: ^3.7.5
       lexical: ^0.11.1
       lodash.capitalize: ^4.2.1
+      lodash.concat: ^4.5.0
       lodash.debounce: ^4.0.8
+      lodash.find: ^4.6.0
+      lodash.findindex: ^4.6.0
       lodash.get: ^4.4.2
+      lodash.indexof: ^4.0.5
       lodash.set: ^4.3.2
+      lodash.slice: ^4.2.0
       lodash.throttle: ^4.1.1
       lodash.trim: 4.5.1
+      lodash.uniqby: ^4.7.0
       lz-string: 1.5.0
       monaco-editor: ^0.39.0
       monaco-jsx-syntax-highlight-v2: ^1.2.2
@@ -226,7 +238,13 @@ importers:
       '@paralleldrive/cuid2': 2.2.1
       '@swc/core': 1.3.68
       '@tuplo/use-calendar': 1.6.3_react@18.2.0
+      '@types/lodash.concat': 4.5.7
+      '@types/lodash.find': 4.6.7
+      '@types/lodash.findindex': 4.6.7
+      '@types/lodash.indexof': 4.0.7
+      '@types/lodash.slice': 4.2.7
       '@types/lodash.throttle': 4.1.7
+      '@types/lodash.uniqby': 4.7.7
       '@types/textdiff-create': 1.0.0
       date-fns: 2.30.0
       dbgen: link:../db/node_modules/.gen
@@ -235,11 +253,17 @@ importers:
       js-base64: 3.7.5
       lexical: 0.11.2
       lodash.capitalize: 4.2.1
+      lodash.concat: 4.5.0
       lodash.debounce: 4.0.8
+      lodash.find: 4.6.0
+      lodash.findindex: 4.6.0
       lodash.get: 4.4.2
+      lodash.indexof: 4.0.5
       lodash.set: 4.3.2
+      lodash.slice: 4.2.0
       lodash.throttle: 4.1.1
       lodash.trim: 4.5.1
+      lodash.uniqby: 4.7.0
       lz-string: 1.5.0
       monaco-editor: 0.39.0
       monaco-jsx-syntax-highlight-v2: 1.2.2
@@ -439,6 +463,7 @@ importers:
   pkgs/service/pkgs/service-db:
     specifiers:
       '@mrleebo/prisma-ast': 0.5.1
+      '@paralleldrive/cuid2': ^2.2.1
       '@types/lodash.padend': 4.6.7
       chalk: 5.2.0
       dir: workspace:^
@@ -449,6 +474,7 @@ importers:
       utility: workspace:^
     dependencies:
       '@mrleebo/prisma-ast': 0.5.1
+      '@paralleldrive/cuid2': 2.2.1
       chalk: 5.2.0
       dir: link:../../../base/pkgs/dir
       fs-jetpack: 5.1.0
@@ -3159,17 +3185,41 @@ packages:
       '@types/lodash': 4.14.195
     dev: true
 
+  /@types/lodash.concat/4.5.7:
+    resolution: {integrity: sha512-qgF1loqQByL+CW9UbSU1lTLOZmjnIdxQYn3EQsFpGaE/eZyIoOGdACM4jsG6WIAv8WZkto6QhvtAgl3v1wn3WQ==}
+    dependencies:
+      '@types/lodash': 4.14.195
+    dev: false
+
   /@types/lodash.debounce/4.0.7:
     resolution: {integrity: sha512-X1T4wMZ+gT000M2/91SYj0d/7JfeNZ9PeeOldSNoE/lunLeQXKvkmIumI29IaKMotU/ln/McOIvgzZcQ/3TrSA==}
     dependencies:
       '@types/lodash': 4.14.195
     dev: true
 
+  /@types/lodash.find/4.6.7:
+    resolution: {integrity: sha512-ESwK5k3nf9ufS+M2niH06/gjrREihHobyWQLs5c5+O93uar3N9s0rNx8bBfG9zLYVaPBJEsEIk06hm5ccstF5w==}
+    dependencies:
+      '@types/lodash': 4.14.195
+    dev: false
+
+  /@types/lodash.findindex/4.6.7:
+    resolution: {integrity: sha512-Rrcz/vl+yP0vl2vGiu2FCIeMNShoGTVMvG78o8oaxpg4oxwWuY0Pqz/itV3l/FhV6hPVAa3OmHYFQqy7FqSBWA==}
+    dependencies:
+      '@types/lodash': 4.14.195
+    dev: false
+
   /@types/lodash.get/4.4.7:
     resolution: {integrity: sha512-af34Mj+KdDeuzsJBxc/XeTtOx0SZHZNLd+hdrn+PcKGQs0EG2TJTzQAOTCZTgDJCArahlCzLWSy8c2w59JRz7Q==}
     dependencies:
       '@types/lodash': 4.14.195
     dev: true
+
+  /@types/lodash.indexof/4.0.7:
+    resolution: {integrity: sha512-yXJkKeJ/25z1y9IVLewC4mn3IfcpJvN3mEGLbjxCZ4GKwqFHMmFxI0DjpCBrNjhA9ON935/4TSHYAKw6Kzb3hQ==}
+    dependencies:
+      '@types/lodash': 4.14.195
+    dev: false
 
   /@types/lodash.padend/4.6.7:
     resolution: {integrity: sha512-LE7+ehyBpN/PwJ/zumlEyeU/pWqoNOmCsRmFRsRkQeLf1JLDRT+cv4sWeqwqs9Q0EFgUWdGJF0+jC4FZbFrsPQ==}
@@ -3183,6 +3233,12 @@ packages:
       '@types/lodash': 4.14.195
     dev: true
 
+  /@types/lodash.slice/4.2.7:
+    resolution: {integrity: sha512-fGnjdhc6KQqv304EXNLfAYPhT0vw6L2dmAZmd9KS/2yVunOchRqp6e3cFPK0wlkHwr/2V6+mV89mHwWjaV76Sw==}
+    dependencies:
+      '@types/lodash': 4.14.195
+    dev: false
+
   /@types/lodash.throttle/4.1.7:
     resolution: {integrity: sha512-znwGDpjCHQ4FpLLx19w4OXDqq8+OvREa05H89obtSyXyOFKL3dDjCslsmfBz0T2FU8dmf5Wx1QvogbINiGIu9g==}
     dependencies:
@@ -3194,6 +3250,12 @@ packages:
     dependencies:
       '@types/lodash': 4.14.195
     dev: true
+
+  /@types/lodash.uniqby/4.7.7:
+    resolution: {integrity: sha512-sv2g6vkCIvEUsK5/Vq17haoZaisfj2EWW8mP7QWlnKi6dByoNmeuHDDXHR7sabuDqwO4gvU7ModIL22MmnOocg==}
+    dependencies:
+      '@types/lodash': 4.14.195
+    dev: false
 
   /@types/lodash/4.14.195:
     resolution: {integrity: sha512-Hwx9EUgdwf2GLarOjQp5ZH8ZmblzcbTBC2wtQWNKARBSxM9ezRIAUpeDTgoQRAFB0+8CNWXVA9+MaSOzOF3nPg==}
@@ -5596,6 +5658,10 @@ packages:
     resolution: {integrity: sha512-H5ZhCF25riFd9uB5UCkVKo61m3S/xZk1x4wA6yp/L3RFP6Z/eHH1ymQcGLo7J3GMPfm0V/7m1tryHuGVxpqEBQ==}
     dev: false
 
+  /lodash.concat/4.5.0:
+    resolution: {integrity: sha512-US6b1Nqek3shg2qmv1IjTN5P7tPL1RKu77VpdGtVprxmnTI/HlsHGqI2Oa5Irznk0ZB5IXHwocMeMZK8vf4+CA==}
+    dev: false
+
   /lodash.debounce/4.0.8:
     resolution: {integrity: sha512-FT1yDzDYEoYWhnSGnpE/4Kj1fLZkDFyqRb7fNt6FdYOSxlUWAtp42Eh6Wb0rGIv/m9Bgo7x4GhQbm5Ys4SG5ow==}
     dev: false
@@ -5608,12 +5674,24 @@ packages:
     resolution: {integrity: sha512-dS2j+W26TQ7taQBGN8Lbbq04ssV3emRw4NY58WErlTO29pIqS0HmoT5aJ9+TUQ1N3G+JOZSji4eugsWwGp9yPA==}
     dev: false
 
+  /lodash.find/4.6.0:
+    resolution: {integrity: sha512-yaRZoAV3Xq28F1iafWN1+a0rflOej93l1DQUejs3SZ41h2O9UJBoS9aueGjPDgAl4B6tPC0NuuchLKaDQQ3Isg==}
+    dev: false
+
+  /lodash.findindex/4.6.0:
+    resolution: {integrity: sha512-9er6Ccz6sEST3bHFtUrCFWk14nE8cdL/RoW1RRDV1BxqN3qsmsT56L14jhfctAqhVPVcdJw4MRxEaVoAK+JVvw==}
+    dev: false
+
   /lodash.flatten/4.4.0:
     resolution: {integrity: sha512-C5N2Z3DgnnKr0LOpv/hKCgKdb7ZZwafIrsesve6lmzvZIRZRGaZ/l6Q8+2W7NaT+ZwO3fFlSCzCzrDCFdJfZ4g==}
     dev: false
 
   /lodash.get/4.4.2:
     resolution: {integrity: sha512-z+Uw/vLuy6gQe8cfaFWD7p0wVv8fJl3mbzXh33RS+0oW2wvUqiRXiQ69gLWSLpgB5/6sU+r6BlQR0MBILadqTQ==}
+    dev: false
+
+  /lodash.indexof/4.0.5:
+    resolution: {integrity: sha512-t9wLWMQsawdVmf6/IcAgVGqAJkNzYVcn4BHYZKTPW//l7N5Oq7Bq138BaVk19agcsPZePcidSgTTw4NqS1nUAw==}
     dev: false
 
   /lodash.isequal/4.5.0:
@@ -5632,6 +5710,10 @@ packages:
     resolution: {integrity: sha512-4hNPN5jlm/N/HLMCO43v8BXKq9Z7QdAGc/VGrRD61w8gN9g/6jF9A4L1pbUgBLCffi0w9VsXfTOij5x8iTyFvg==}
     dev: false
 
+  /lodash.slice/4.2.0:
+    resolution: {integrity: sha512-O8vEeMArbe0uoF9/RIs1FCmvC/Uz/VT4urFhuo+pnm5gu2Dx1lS+PKU6LkNokKjBUvDySPk+/iJ+hTH21ym+CQ==}
+    dev: false
+
   /lodash.throttle/4.1.1:
     resolution: {integrity: sha512-wIkUCfVKpVsWo3JSZlc+8MB5it+2AN5W8J7YVMST30UrvcQNZ1Okbj+rbVniijTWE6FGYy4XJq/rHkas8qJMLQ==}
     dev: false
@@ -5642,6 +5724,10 @@ packages:
 
   /lodash.union/4.6.0:
     resolution: {integrity: sha512-c4pB2CdGrGdjMKYLA+XiRDO7Y0PRQbm/Gzg8qMj+QH+pFVAoTp5sBpO0odL3FjoPCGjK96p6qsP+yQoiLoOBcw==}
+    dev: false
+
+  /lodash.uniqby/4.7.0:
+    resolution: {integrity: sha512-e/zcLx6CSbmaEgFHCA7BnoQKyCtKMxnuWrJygbwPs/AIn+IMKl66L8/s+wBUn5LRw2pZx3bUHibiV1b6aTWIww==}
     dev: false
 
   /lodash/4.17.21:

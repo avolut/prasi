@@ -41,6 +41,7 @@ export const wsdoc = {
   pendingDiffLocal: [] as WS_MSG_DIFF_LOCAL[],
   page: null as null | (typeof CEGlobal & { render: () => void }),
   compsResolveCallback: {} as Record<string, (changes: string) => void>,
+  keyDown: null as null | string,
   undoManager: {
     undo() {
       let sendmsg: WS_MSG_UNDO;

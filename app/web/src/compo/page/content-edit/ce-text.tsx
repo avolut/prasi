@@ -42,10 +42,10 @@ const CETextEditable: FC<{ ceid: string; item: MText }> = ({ ceid, item }) => {
         onFocus={(e) => {
           e.stopPropagation();
           e.preventDefault();
-
           c.editor.hover = null;
           c.editor.focusedTextID = item.get("id") || "";
           c.editor.active = item;
+          c.editor.multiple.active = [];
           c.render();
         }}
         onBlur={() => {

@@ -84,16 +84,38 @@ export const PageEditor: FC<{
       ) {
         wsdoc.undoManager.undo();
       }
+      if (wsdoc.keyDown !== "ctrl")
+        if (evt.ctrlKey || evt.metaKey) {
+          wsdoc.keyDown = "ctrl";
+          return;
+        }
+      if (wsdoc.keyDown !== "shift")
+        if (evt.shiftKey || evt.metaKey) {
+          wsdoc.keyDown = "shift";
+          return;
+        }
+    };
+    const keyUp = async (evt: KeyboardEvent) => {
+      if (wsdoc.keyDown === "ctrl")
+        if (!evt.ctrlKey) {
+          wsdoc.keyDown = null;
+        }
+      if (wsdoc.keyDown === "shift")
+        if (!evt.shiftKey) {
+          wsdoc.keyDown = null;
+        }
     };
     window.addEventListener("keydown", keyDown, true);
+    window.addEventListener("keyup", keyUp, true);
     return () => {
       window.removeEventListener("keydown", keyDown, true);
+      window.removeEventListener("keyup", keyUp, true);
     };
   }, []);
 
   return (
     <>
-      <Toolbar />
+      <Toolbar disable={true} />
       {page && <ContentEditor id={`PAGE`} />}
       {(component.edit.loading || !page) && <Loading />}
     </>

@@ -103,7 +103,7 @@ export const CEComponent: FC<{
             onClick={() => {
               let _c = c;
               const compid = item.get("component")?.get("id") || "";
-
+              // console.log("click component");
               if (ceid.startsWith("COMP") && wsdoc.page) {
                 _c = wsdoc.page;
                 component.edit.switching = true;

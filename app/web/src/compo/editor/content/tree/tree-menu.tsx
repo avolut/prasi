@@ -1,4 +1,5 @@
 import { createId } from "@paralleldrive/cuid2";
+import get from "lodash.get";
 import { FC } from "react";
 import { useGlobal, useLocal } from "web-utils";
 import { syncronize } from "y-pojo";
@@ -13,7 +14,8 @@ import { Menu, MenuItem } from "../../../ui/context-menu";
 import { loadSingleComponent } from "../../comp/load-comp";
 import { newMap } from "../../tools/yjs-tools";
 import { wsdoc } from "../../ws/wsdoc";
-
+import { selectMultiple } from "./tree";
+import { flatTree } from "../../../page/tools/flat-tree";
 export const CETreeMenu: FC<{
   id: string;
   item: MContent;
@@ -51,7 +53,6 @@ export const CETreeMenu: FC<{
       isActiveComponent = true;
     }
   }
-
   if (!local.ready)
     return (
       <>
@@ -182,9 +183,35 @@ export const CETreeMenu: FC<{
       <MenuItem
         label="Copy"
         onClick={() => {
-          let icom = JSON.stringify(item.toJSON());
-          icom = icom;
-          // let comp = compress(icom);
+          let mode = c.editor.copy;
+          let icom = "";
+          switch (mode) {
+            case "multiple":
+              let data: any = c.editor.multiple.active;
+              data = data.map((e: MContent) => {
+                let jso = e.toJSON();
+                if (jso.type === "section") {
+                  const newItem = {
+                    id: jso.id,
+                    name: jso.name,
+                    type: "item",
+                    dim: { w: "fit", h: "fit" },
+                    childs: jso.childs,
+                    component: get(jso, "component"),
+                    adv: jso.adv,
+                  } as IItem;
+                  return newItem;
+                }
+                return jso;
+              });
+              let rootContent = JSON.parse(JSON.stringify({ data }));
+              let res = flatTree(rootContent.data, rootContent.data);
+              icom = JSON.stringify({ data: res });
+              break;
+            default:
+              icom = JSON.stringify(item.toJSON());
+              break;
+          }
           let str = icom + "_prasi";
           navigator.clipboard.writeText(str);
         }}
@@ -206,21 +233,35 @@ export const CETreeMenu: FC<{
                   let desc = e.replaceAll("_prasi", "");
                   let obj = {} as IContent;
                   let jso = JSON.parse(desc) as IContent;
-                  if (jso.type === "section") {
-                    const newItem = {
-                      id: createId(),
-                      name: jso.name,
-                      type: "item",
-                      dim: { w: "fit", h: "fit" },
-                      childs: jso.childs,
-                    } as IItem;
-                    obj = newItem;
+                  if (get(jso, "data")) {
+                    let childs = get(jso, "data") as any;
+                    let maps: any = [];
+                    childs.map((e: any) => {
+                      const map = newMap(fillID(e)) as MContent;
+                      selectMultiple({ item: map, global: c });
+                      child.push([map]);
+                    });
+                    c.render();
                   } else {
-                    obj = jso;
+                    if (jso.type === "section") {
+                      const newItem = {
+                        id: createId(),
+                        name: jso.name,
+                        type: "item",
+                        dim: { w: "fit", h: "fit" },
+                        childs: jso.childs,
+                        component: get(jso, "component"),
+                        adv: jso.adv,
+                      } as IItem;
+                      obj = newItem;
+                    } else {
+                      obj = jso;
+                    }
+                    const map = newMap(fillID(obj)) as MContent;
+                    selectMultiple({ item: map, global: c });
+                    child.push([map]);
+                    c.render();
                   }
-                  const map = newMap(fillID(obj)) as MContent;
-                  child.push([map]);
-                  c.render();
                 }
               });
             }
