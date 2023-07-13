@@ -1,11 +1,11 @@
-import { page } from "web-init";
-import { SiteEditor } from "../../compo/editor/site";
-import { useLocal } from "web-utils";
-import { Loading } from "../../compo/ui/loading";
 import { site } from "dbgen";
-import { wsdoc } from "../../compo/editor/ws/wsdoc";
 import trim from "lodash.trim";
+import { page } from "web-init";
+import { useLocal } from "web-utils";
+import { SiteEditor } from "../../compo/editor/site";
+import { wsdoc } from "../../compo/editor/ws/wsdoc";
 import { w } from "../../compo/types/general";
+import { Loading } from "../../compo/ui/loading";
 
 export default page({
   url: "/editor/:site/:page",
@@ -50,18 +50,22 @@ export default page({
           }
           if (config && config.api_url) {
             try {
-              const apiTypes = await fetch(
-                trim(config.api_url, "/") + "/_prasi/api-types"
-              );
-              const apiEntry = await fetch(
-                trim(config.api_url, "/") + "/_prasi/api-entry"
-              );
-              const prismaEntry = await fetch(
-                trim(config.api_url, "/") + "/_prasi/prisma"
-              );
+              const base = trim(config.api_url, "/");
+              const apiTypes = await fetch(base + "/_prasi/api-types");
+              const apiEntry = await fetch(base + "/_prasi/api-entry");
               w.prasiApi[config.api_url] = {
                 apiEntry: (await apiEntry.json()).srv,
-                prisma: await prismaEntry.text(),
+                prismaTypes: {
+                  "prisma.d.ts": await loadText(
+                    `${base}/_prasi/prisma/index.d.ts`
+                  ),
+                  "runtime/index.d.ts": await loadText(
+                    `${base}/_prasi/prisma/runtime/index.d.ts`
+                  ),
+                  "runtime/library.d.ts": await loadText(
+                    `${base}/_prasi/prisma/runtime/library.d.ts`
+                  ),
+                },
                 apiTypes: await apiTypes.text(),
               };
               wsdoc.apiDef = w.prasiApi[config.api_url];
@@ -89,3 +93,8 @@ export default page({
     return <SiteEditor site={local.site} page_id={params.page} />;
   },
 });
+
+const loadText = async (url: string) => {
+  const res = await fetch(url);
+  return await res.text();
+};

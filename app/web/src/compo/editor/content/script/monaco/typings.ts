@@ -1,11 +1,8 @@
 import type { OnMount } from "@monaco-editor/react";
-import { baseTypings } from "./types/base";
 import { wsdoc } from "../../../ws/wsdoc";
+import { baseTypings } from "./types/base";
 export type MonacoEditor = Parameters<OnMount>[0];
 type Monaco = Parameters<OnMount>[1];
-type CompilerOptions = Parameters<
-  Parameters<OnMount>[1]["languages"]["typescript"]["typescriptDefaults"]["setCompilerOptions"]
->[0];
 
 export const monacoTypings = async (editor: MonacoEditor, monaco: Monaco) => {
   monaco.languages.typescript.typescriptDefaults.setExtraLibs([
@@ -23,6 +20,14 @@ export const monacoTypings = async (editor: MonacoEditor, monaco: Monaco) => {
     },
   ]);
 
+  for (const [k, v] of Object.entries(wsdoc.apiDef.prismaTypes)) {
+    monaco.editor.createModel(
+      `declare module '${k.replace(`\.d\.ts`, "")}' { ${v} } `,
+      "typescript",
+      monaco.Uri.parse(k)
+    );
+  }
+
   monaco.editor.createModel(
     wsdoc.apiDef.apiTypes,
     "typescript",
@@ -32,6 +37,8 @@ export const monacoTypings = async (editor: MonacoEditor, monaco: Monaco) => {
   monaco.editor.createModel(
     `\
 import React from 'react';
+import prisma from 'prisma';
+
 
 ${iftext(
   wsdoc.apiDef.apiTypes,
@@ -40,13 +47,21 @@ import "./api"
 import type * as SRVAPI from "app/gen/srv/api/srv";`
 )}
 
+
 declare global {
+  const db: prisma.PrismaClient; 
   
   ${baseTypings}
 
+  ${iftext(
+    wsdoc.apiDef.apiTypes,
+    `
   type Api = typeof SRVAPI;
   type ApiName = keyof Api;
   const api: { [k in ApiName]: Awaited<Api[k]["handler"]>["_"]["api"] };
+  `
+  )}
+
 }
 
   `,

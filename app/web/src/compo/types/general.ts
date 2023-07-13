@@ -11,9 +11,19 @@ export type PageProps = {
   params: any;
 };
 
+export type PrasiAPI = {
+  apiEntry: any;
+  prismaTypes: {
+    "prisma.d.ts": string;
+    "runtime/library.d.ts": string;
+    "runtime/index.d.ts": string;
+  };
+  apiTypes: string;
+};
+
 export const w = window as unknown as {
   isEditor: boolean;
-  prasiApi: Record<string, { apiEntry: any; prisma: string; apiTypes: string }>;
+  prasiApi: Record<string, PrasiAPI>;
 };
 
 export type Page = {

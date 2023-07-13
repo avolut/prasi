@@ -115,7 +115,7 @@ export const PageEditor: FC<{
 
   return (
     <>
-      <Toolbar disable={true} />
+      <Toolbar />
       {page && <ContentEditor id={`PAGE`} />}
       {(component.edit.loading || !page) && <Loading />}
     </>

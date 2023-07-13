@@ -1,7 +1,8 @@
 import { component_group, site } from "dbgen";
 import { CEGlobal } from "../../../base/global/content-editor";
-import { WS_MSG_DIFF_LOCAL, WS_MSG_REDO, WS_MSG_UNDO } from "./msg";
 import { component } from "../../page/component";
+import { PrasiAPI } from "../../types/general";
+import { WS_MSG_DIFF_LOCAL, WS_MSG_REDO, WS_MSG_UNDO } from "./msg";
 
 export const wsdoc = {
   site: null as
@@ -19,7 +20,7 @@ export const wsdoc = {
     localIP: false,
   },
   ws: null as null | WebSocket,
-  apiDef: { apiEntry: null as any, prisma: "", apiTypes: "" },
+  apiDef: { apiEntry: null as any, prismaTypes: {}, apiTypes: "" } as PrasiAPI,
   async wsend(payload: string) {
     const ws = this.ws;
     if (ws) {
