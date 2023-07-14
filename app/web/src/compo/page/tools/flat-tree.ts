@@ -1,28 +1,19 @@
-import { NodeModel } from "@minoru/react-dnd-treeview";
-import { IContent, MContent } from "../../types/general";
-import { component } from "../component";
-import { IItem, MItem } from "../../types/item";
-import * as Y from "yjs";
-import { createId } from "@paralleldrive/cuid2";
-import { syncronize } from "y-pojo";
-import { IRoot, MRoot } from "../../types/root";
-import { ISection } from "../../types/section";
-import { IText } from "../../types/text";
+import { IContent } from "../../types/general";
 import set from "lodash.set";
 import find from "lodash.find";
 import get from "lodash.get";
-export const flatTree = (item: Array<IContent>, rootChildren: any) => {
-  const children = rootChildren as any;
+export const flatTree = (item: Array<IContent>) => {
+  const children = item as Array<IContent>;
   let ls = structuredClone(item);
-  let sitem: any = ls.map((v: any) => {
+  let sitem: any = ls.map((v: IContent) => {
     if (v.type !== "text") {
       v.childs = [];
     }
     return { ...v };
   });
   let result = [] as any;
-  sitem.forEach((v: any) => {
-    let parent = children.filter((x: any) =>
+  sitem.forEach((v: IContent) => {
+    let parent = children.filter((x: IContent) =>
       find(get(x, "childs"), (x: IContent) => x.id === v.id)
     );
     if (get(parent, "length")) {

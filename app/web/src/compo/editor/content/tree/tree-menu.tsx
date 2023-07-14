@@ -14,7 +14,7 @@ import { Menu, MenuItem } from "../../../ui/context-menu";
 import { loadSingleComponent } from "../../comp/load-comp";
 import { newMap } from "../../tools/yjs-tools";
 import { wsdoc } from "../../ws/wsdoc";
-import { selectMultiple } from "./tree";
+import { selectMultiple, walkContent } from "./tree";
 import { flatTree } from "../../../page/tools/flat-tree";
 export const CETreeMenu: FC<{
   id: string;
@@ -205,7 +205,8 @@ export const CETreeMenu: FC<{
                 return jso;
               });
               let rootContent = JSON.parse(JSON.stringify({ data }));
-              let res = flatTree(rootContent.data, rootContent.data);
+              let flat = rootContent.data as Array<IContent>;
+              let res = flatTree(flat);
               icom = JSON.stringify({ data: res });
               break;
             default:
@@ -236,12 +237,17 @@ export const CETreeMenu: FC<{
                   if (get(jso, "data")) {
                     let childs = get(jso, "data") as any;
                     let maps: any = [];
+                    c.editor.multiple.active = [];
+                    let select = [] as Array<MContent>;
                     childs.map((e: any) => {
                       const map = newMap(fillID(e)) as MContent;
-                      selectMultiple({ item: map, global: c });
+                      let walk = walkContent(map) as Array<MContent>;
                       child.push([map]);
+                      select = select.concat(walk);
                     });
                     c.render();
+                    c.editor.active = null;
+                    c.editor.multiple.active = select;
                   } else {
                     if (jso.type === "section") {
                       const newItem = {

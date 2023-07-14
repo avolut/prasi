@@ -227,12 +227,6 @@ export const CETree: FC<{ id: string }> = ({ id }) => {
                                           }
                                         }, 100);
                                         break;
-                                      case "section":
-                                        selectChildren({ item, global: c });
-                                        break;
-                                      case "item":
-                                        selectChildren({ item, global: c });
-                                        break;
                                       default:
                                         break;
                                     }
@@ -252,8 +246,11 @@ export const CETree: FC<{ id: string }> = ({ id }) => {
                                     });
                                     break;
                                   default:
-                                    c.editor.multiple.active = [];
                                     c.editor.active = item;
+                                    doSelection({
+                                      mode: "single",
+                                      item,
+                                    });
                                     break;
                                 }
                                 c.render();
@@ -320,7 +317,7 @@ const selectChildren = (props: { item: MContent; global: any }) => {
   child = uniqBy(child, (e) => e.get("id"));
   global.editor.multiple.active = child;
 };
-const walkContent = (item: MContent, result?: Array<MContent>) => {
+export const walkContent = (item: MContent, result?: Array<MContent>) => {
   const _result = result || [];
   _result.push(item);
   item.get("childs")?.forEach((e) => {

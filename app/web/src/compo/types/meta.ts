@@ -1,6 +1,7 @@
 import {
   FMAdv,
   FMBackground,
+  FMBorder,
   FMComponent,
   FMDimension,
   FMFont,
@@ -8,6 +9,7 @@ import {
   FMLinkTag,
   FMPadding,
   FNBackground,
+  FNBorder,
   FNDimension,
   FNFont,
   FNPadding,
@@ -31,6 +33,7 @@ export type BasicItem = {
   bg?: FNBackground;
   font?: FNFont;
   dim?: FNDimension;
+  border?: FNBorder;
 };
 
 export type MBasicItem = {
@@ -39,8 +42,8 @@ export type MBasicItem = {
   font?: FMFont;
   component?: FMComponent;
   dim?: FMDimension;
-
   layout?: FMLayout;
   linktag?: FMLinkTag;
   adv?: FMAdv;
+  border?: FMBorder;
 };

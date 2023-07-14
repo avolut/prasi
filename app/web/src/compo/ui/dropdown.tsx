@@ -116,7 +116,15 @@ export const Dropdown: FC<
         <>
           {items.length > 0 ? (
             <List
-              className="min-h-[100px] max-h-[350px] min-w-[200px] flex-1 w-full"
+              className={`${
+                items.length > 3
+                  ? "min-h-[100px] max-h-[350px]"
+                  : items.length === 3
+                  ? "min-h-[85px]"
+                  : items.length === 1
+                  ? "min-h-[30px]"
+                  : "min-h-[57px]"
+              } min-w-[200px] flex-1 w-full`}
               data={items}
               ref={(el) => {
                 if (el && !local.scrolled) {

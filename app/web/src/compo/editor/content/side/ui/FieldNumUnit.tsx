@@ -26,7 +26,7 @@ export const FieldNumUnit: FC<{
   update,
   unit,
   hideUnit,
-  width = "23px",
+  width,
   disabled,
   positiveOnly,
   enableWhenDrag,
@@ -41,7 +41,7 @@ export const FieldNumUnit: FC<{
   const parseVal = useCallback(() => {
     let val = "";
     let unt = "";
-    if (value.length > 1) {
+    if (value.length >= 1) {
       let fillMode = "val" as "val" | "unit";
       for (let idx = 0; idx < value.length; idx++) {
         const c = value[idx];
@@ -57,13 +57,12 @@ export const FieldNumUnit: FC<{
       }
       if (!parseInt(val)) unt = "";
     }
-
     local.val = parseInt(val) || 0;
     if (positiveOnly && local.val < 0) {
       local.val = Math.max(0, local.val);
     }
-
     local.unit = unit || unt || "px";
+    local.render();
   }, [value, unit]);
 
   useEffect(() => {
@@ -130,7 +129,7 @@ export const FieldNumUnit: FC<{
 
   return (
     <>
-      <div className="field-num flex items-stretch justify-between space-x-1 bg-white border border-transparent btn-hover h-full">
+      <div className="field-num flex flex-row items-stretch justify-between space-x-1 bg-white border border-transparent btn-hover h-full">
         <div className="flex cursor-ew-resize" onPointerDown={onStart}>
           {icon && (
             <div
@@ -146,12 +145,12 @@ export const FieldNumUnit: FC<{
             </div>
           )}
         </div>
-        <div className="flex justify-between flex-1 items-center w-[42px] overflow-hidden">
+        <div className="flex justify-between flex-1 items-center flex-grow overflow-hidden">
           <input
             type="text"
             className={cx(
               css`
-                width: ${width};
+                width: ${width ? width : "23px"};
                 background: transparent;
                 outline: none;
                 font-size: 11px;

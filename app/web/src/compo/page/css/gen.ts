@@ -4,6 +4,7 @@ import { ISection } from "../../types/section";
 import { IText } from "../../types/text";
 import { cssAdv } from "./advanced";
 import { cssBackground } from "./background";
+import { cssBorder } from "./border";
 import { cssDimension } from "./dimension";
 import { cssEditor } from "./editor";
 import { cssFont } from "./font";
@@ -30,6 +31,7 @@ export const produceCSS = (
     cssLayout(item, arg.mode),
     cssPadding(item, arg.mode),
     cssDimension(item, arg.mode, arg?.editor),
+    cssBorder(item, arg.mode),
     cssBackground(item, arg.mode),
     cssFont(item, arg.mode),
     (arg?.hover || arg?.active) &&

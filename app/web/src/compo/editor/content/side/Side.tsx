@@ -17,6 +17,7 @@ import { PanelLink } from "./panel/link";
 import { PanelPadding } from "./panel/padding";
 import { SideBox } from "./ui/SideBox";
 import { SideLabel } from "./ui/SideLabel";
+import { PanelBorder } from "./panel/border";
 
 export const CESide: FC<{ id: string }> = ({ id }) => {
   const c = useGlobal(CEGlobal, id);
@@ -177,6 +178,14 @@ export const CESide: FC<{ id: string }> = ({ id }) => {
                     <SideLabel>FONT</SideLabel>
                     <SideBox>
                       <PanelFont
+                        value={active}
+                        mode={wsdoc.mode}
+                        update={update}
+                      />
+                    </SideBox>
+                    <SideLabel>BORDER</SideLabel>
+                    <SideBox>
+                      <PanelBorder
                         value={active}
                         mode={wsdoc.mode}
                         update={update}
