@@ -102,7 +102,15 @@ export const PanelBackground: FC<{
             }}
           />
         </Tooltip>
-        <Tooltip content={"Background Position"}>
+        <Tooltip
+          content={"Background Position"}
+          className={css`
+            .dropdown {
+              max-width: 90px;
+              overflow: hidden;
+            }
+          `}
+        >
           <Dropdown
             {...dropdownProp}
             value={bg.pos}

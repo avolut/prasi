@@ -118,7 +118,7 @@ export const Dropdown: FC<
             <List
               className={`${
                 items.length > 3
-                  ? "min-h-[100px] max-h-[350px]"
+                  ? "min-h-[140px] max-h-[350px]"
                   : items.length === 3
                   ? "min-h-[85px]"
                   : items.length === 1
