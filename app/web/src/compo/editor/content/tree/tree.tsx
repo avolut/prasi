@@ -240,14 +240,12 @@ export const CETree: FC<{ id: string }> = ({ id }) => {
                                 };
                                 switch (true) {
                                   case w.keyDown === "ctrl":
-                                    console.log("ctrl");
                                     doSelection({
                                       mode: "multiple",
                                       item,
                                     });
                                     break;
                                   case w.keyDown === "shift":
-                                    console.log("shift");
                                     doSelection({
                                       mode: "multiple",
                                       item,
