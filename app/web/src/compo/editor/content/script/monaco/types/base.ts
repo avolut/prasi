@@ -22,10 +22,10 @@ const children: ReactNode;
 const Local: <T extends Record<string, any>>(arg: {
   name: string;
   value: T;
-  children: ReactNode;
+  children: ((local: T & { render: () => void }) => any);
   effect?: (
     local: T & { render: () => void }
   ) => void | (() => void) | Promise<void | (() => void)>;
-}) => ReactNode
+}) => ReactNode;
 
 `;

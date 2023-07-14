@@ -42,8 +42,15 @@ const produceEvalArgs = (
 ) => {
   const { item, children, output, scope, className, elementProp, render } = arg;
 
-  const PassProp = createPassProps({ item, scope });
-  const Local = createLocal({ item, scope, render });
+  if (!scope.evargs[item.id]) {
+    scope.evargs[item.id] = {
+      local: createLocal({ item, scope, render }),
+      passprop: createPassProps({ item, scope }),
+    };
+  }
+
+  const PassProp = scope.evargs[item.id].passprop;
+  const Local = scope.evargs[item.id].local;
 
   const result: any = {
     PassProp,

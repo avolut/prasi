@@ -1,4 +1,3 @@
-import { ReactNode } from "react";
 import { CEGlobal } from "../../../../base/global/content-editor";
 import { IContent, MContent } from "../../../types/general";
 import { IItem } from "../../../types/item";
@@ -10,10 +9,6 @@ export const initScope = (
   item: IContent,
   mitem: MContent,
   c: typeof CEGlobal,
-  children: ReactNode,
-  className: string[],
-  elementProp: any,
-  render: () => void,
   scopeName?: string
 ) => {
   const i = item as IItem;
@@ -29,9 +24,10 @@ export const initScope = (
   const scopeRootID = scopeName || "root";
   let scope = c.scope[scopeRootID];
   if (!c.scope[scopeRootID]) {
-    c.scope[scopeRootID] = { tree: {}, effect: {}, value: {} };
+    c.scope[scopeRootID] = { tree: {}, effect: {}, value: {}, evargs: {} };
     scope = c.scope[scopeRootID];
   }
+
   if (scope) {
     if (!scope.tree[item.id]) {
       scope.tree[item.id] = {

@@ -48,17 +48,7 @@ export const CERender: FC<{
   const className = [produceCSS(item, { mode: wsdoc.mode })];
   const adv = item.adv;
   const elementProp = initElProp(c, className, item, elitem || mitem);
-  const scope = initScope(
-    ceid,
-    item,
-    elitem || mitem,
-    c,
-    _children,
-    className,
-    elementProp,
-    render,
-    scopeName
-  );
+  const scope = initScope(ceid, item, elitem || mitem, c, scopeName);
 
   if (adv) {
     const html = renderHTML(adv);

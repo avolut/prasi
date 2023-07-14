@@ -1,43 +1,38 @@
-import { FC, ReactNode, useEffect, useRef } from "react";
+import { ReactNode, useEffect, useRef } from "react";
 import { SingleScope } from "../../../base/global/content-editor";
 import { IContent, w } from "../../types/general";
-import { createId } from "@paralleldrive/cuid2";
 
-export type LocalFC = FC<{
-  children: ReactNode;
+export type LocalFC = <T extends Record<string, any>>(arg: {
   name: string;
-  value: Record<string, any> & { render: () => void };
+  value: T;
+  children: ReactNode | ((local: T & { render: () => void }) => ReactNode);
   effect?: (
-    local: Record<string, any> & { render: () => void }
-  ) => void | (() => void);
-  deps?: any[];
-}>;
+    local: T & { render: () => void }
+  ) => void | (() => void) | Promise<void | (() => void)>;
+}) => ReactNode;
 
 export const createLocal = (opt: {
   item: IContent;
   scope: SingleScope;
   render: () => void;
 }): LocalFC => {
-  return ({ name, children, value, effect, deps }) => {
+  return ({ name, children, value, effect }) => {
     if (!opt.scope.value[opt.item.id]) {
       opt.scope.value[opt.item.id] = {};
     }
     const scope = opt.scope.value[opt.item.id];
 
-    const local = scope[name] ? scope[name] : useRef(value).current;
-    local.render = opt.render;
-
     if (!scope[name]) {
-      scope[name] = local;
+      scope[name] = JSON.parse(JSON.stringify(value));
+      for (const [k, v] of Object.entries(scope[name])) {
+        if (typeof value[k] === "undefined") delete scope[name][k];
+      }
+      for (const [k, v] of Object.entries(value)) {
+        if (k !== "render") scope[name][k] = v;
+      }
     }
-
-    for (const [k, v] of Object.entries(local)) {
-      if (typeof value[k] === "undefined") delete local[k];
-    }
-
-    for (const [k, v] of Object.entries(value)) {
-      if (k !== "render") local[k] = v;
-    }
+    const local = scope[name];
+    local.render = opt.render;
 
     if (effect) {
       if (!w.isEditor) {
@@ -53,7 +48,7 @@ export const createLocal = (opt: {
               });
             };
           }
-        }, deps || []);
+        }, []);
       } else {
         if (!opt.scope.effect) {
           opt.scope.effect = {};
@@ -63,6 +58,9 @@ export const createLocal = (opt: {
       }
     }
 
+    if (typeof children === "function") {
+      return children(local);
+    }
     return children;
   };
 };

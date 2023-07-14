@@ -18,7 +18,9 @@ export const CEPage: FC<{ ceid: string }> = ({ ceid }) => {
     if (scope) {
       Object.entries(scope.effect).map(([k, v]) => {
         if (scope.value[k]) {
-          v.effect(scope.value[k][v.name]);
+          if (scope.value[k][v.name]) {
+            v.effect(scope.value[k][v.name]);
+          }
         }
       });
     }
