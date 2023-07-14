@@ -1,23 +1,23 @@
 import { ReactNode, Suspense } from "react";
 import { ErrorBoundary } from "web-init/src/web/error-boundary";
-import { IContent } from "../../types/general";
-import { SingleScope } from "../../types/script";
-import { Loading } from "../../ui/loading";
-import { findScope } from "../content-edit/render-tools/init-scope";
-import { createAPI, createDB } from "./api-db";
-import { createLocal } from "./local-comp";
-import { createPassProps } from "./pass-props";
+import { findScope } from "../../../page/content-edit/render-tools/init-scope";
+import { createAPI, createDB } from "../../../page/scripting/api-db";
+import { createLocal } from "../../../page/scripting/local-comp";
+import { createPassProps } from "../../../page/scripting/pass-props";
+import { IContent } from "../../../types/general";
+import { SingleScope } from "../../../types/script";
+import { RendererGlobal } from "../renderer-global";
 
 type JsArg = {
+  rg: typeof RendererGlobal;
   item: IContent;
   scope: SingleScope;
   children: ReactNode;
-  className: string[];
-  elementProp: any;
+  className: string;
   render: () => void;
 };
 
-export const execElement = (arg: JsArg, api_url?: string) => {
+export const scriptExec = (arg: JsArg, api_url?: string) => {
   const adv = arg.item.adv;
   if (adv && adv.jsBuilt) {
     const output = { jsx: null };
@@ -29,6 +29,7 @@ export const execElement = (arg: JsArg, api_url?: string) => {
       scriptEval(...Object.values(evalArgs));
     } catch (e) {
       error = true;
+      console.log(e);
     }
     return output.jsx;
   }
@@ -40,8 +41,8 @@ const produceEvalArgs = (
   arg: JsArg & { output: { jsx: ReactNode } },
   api_url?: string
 ) => {
-  const { item, children, output, scope, className, elementProp, render } = arg;
-
+  const { item, rg, children, output, scope, className, render } = arg;
+  7;
   if (!scope.evargs[item.id]) {
     scope.evargs[item.id] = {
       local: createLocal({ item, scope, render }),
@@ -58,7 +59,6 @@ const produceEvalArgs = (
     children,
     props: {
       className: cx(className),
-      ...elementProp,
     },
     render: (jsx: ReactNode) => {
       output.jsx = (
@@ -66,7 +66,7 @@ const produceEvalArgs = (
           <Suspense
             fallback={
               <div className="flex flex-1 items-center justify-center w-full h-full relative">
-                <Loading />
+                {rg.ui.loading}
               </div>
             }
           >

@@ -1,5 +1,6 @@
 import { ReactElement } from "react";
 import { RadixRouter } from "web-init";
+import { SingleScope } from "../../types/script";
 import { PRASI_PAGE } from "./renderer-types";
 
 export const RendererGlobal = {
@@ -8,8 +9,9 @@ export const RendererGlobal = {
     loading: null as null | ReactElement,
     notfound: null as null | ReactElement,
   },
-  site: { id: "" },
+  site: { id: "", api_url: "" },
   mode: "desktop" as "desktop" | "mobile",
+  scope: { tree: {}, effect: {}, value: {}, evargs: {} } as SingleScope,
   page: {
     active: null as null | PRASI_PAGE,
     list: {} as Record<string, PRASI_PAGE>,

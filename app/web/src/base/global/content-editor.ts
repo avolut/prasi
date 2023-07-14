@@ -7,6 +7,7 @@ import { MContent } from "../../compo/types/general";
 import { MItem } from "../../compo/types/item";
 import { FMComponent } from "../../compo/types/meta-fn";
 import { MRoot } from "../../compo/types/root";
+import { SingleScope } from "../../compo/types/script";
 export type CompMap = TypedMap<
   Omit<component, "content_tree" | "component"> & {
     content_tree: MItem;
@@ -76,23 +77,4 @@ export const CEGlobal = {
     scss: "",
     api_url: "",
   },
-};
-
-export type SingleScope = {
-  value: Record<string, any>;
-  effect: Record<
-    string,
-    { name: string; effect: (local: any) => any; }
-  >;
-  tree: Record<
-    string,
-    {
-      childs: Set<string>;
-      // type: string;
-      // name: string;
-      // lv: number;
-      parent_id: string;
-    }
-  >;
-  evargs: Record<string, { local: any; passprop: any }>;
 };

@@ -22,7 +22,7 @@ export const CEText: FC<{ ceid: string; item: MText; scopeName?: string }> = ({
             dangerouslySetInnerHTML={{
               __html: item.get("html") || "",
             }}
-            className={cx("outline-none select-text")}
+            className={cx("outline-none select-text whitespace-nowrap")}
           />
         )}
       </CERender>

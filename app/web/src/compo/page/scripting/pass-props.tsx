@@ -1,6 +1,6 @@
 import { FC, ReactNode } from "react";
-import { SingleScope } from "../../../base/global/content-editor";
 import { IContent } from "../../types/general";
+import { SingleScope } from "../../types/script";
 
 export const createPassProps: (opt: {
   item: IContent;

@@ -1,3 +1,4 @@
+import trim from "lodash.trim";
 import { ReactElement, useEffect } from "react";
 import { createRouter } from "web-init";
 import { useGlobal } from "web-utils";
@@ -8,6 +9,7 @@ import { Loading } from "./ui/loading";
 
 const w = window as unknown as {
   globalValueID: WeakMap<any, string>;
+  prasiApi: Record<string, any>;
 };
 
 export class Prasi extends Renderer {
@@ -19,7 +21,9 @@ export class Prasi extends Renderer {
       notfound?: (rg: typeof RendererGlobal) => ReactElement;
     };
     load: {
-      site: (rg: typeof RendererGlobal) => Promise<{ id: string }>;
+      site: (
+        rg: typeof RendererGlobal
+      ) => Promise<{ id: string; api_url: string }>;
       page: (
         rg: typeof RendererGlobal,
         id: string
@@ -53,6 +57,15 @@ export class Prasi extends Renderer {
           rg.loading = true;
           rg.render();
           rg.site = await arg.load.site(rg);
+
+          const apiEntry = await fetch(
+            trim(rg.site.api_url, "/") + "/_prasi/api-entry"
+          );
+          if (!w.prasiApi) w.prasiApi = {};
+          w.prasiApi[rg.site.api_url] = {
+            apiEntry: (await apiEntry.json()).srv,
+          };
+
           rg.page.list = await arg.load.pages(rg);
           rg.page.router = createRouter();
 

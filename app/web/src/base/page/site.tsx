@@ -9,22 +9,22 @@ export default page({
     const site = new Prasi({
       load: {
         async site() {
-          if (validate(params.name)) {
-            return { id: params.name };
-          }
-
           const site = await db.site.findFirst({
-            where: { domain: params.name },
+            where: validate(params.name)
+              ? { id: params.name }
+              : { domain: params.name },
             select: {
               id: true,
+              config: true,
             },
           });
           if (site) {
             return {
               id: site.id,
+              api_url: (site.config as any)?.api_url || "",
             };
           }
-          return { id: "" };
+          return { id: "", api_url: "" };
         },
         async page(rg, page_id) {
           const page = await db.page.findFirst({
@@ -66,7 +66,7 @@ export default page({
       },
     });
 
-    return site.renderPage(params._ === "_" ? "/" : params._);
+    return site.renderPage(params._ === "_" ? "/" : `/${params._}`);
     // const local = useLocal({});
     // if (params._ === "_") {
     //   params._ = "";

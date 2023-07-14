@@ -1,6 +1,6 @@
-import { ReactNode, useEffect, useRef } from "react";
-import { SingleScope } from "../../../base/global/content-editor";
+import { ReactNode, useEffect } from "react";
 import { IContent, w } from "../../types/general";
+import { SingleScope } from "../../types/script";
 
 export type LocalFC = <T extends Record<string, any>>(arg: {
   name: string;
