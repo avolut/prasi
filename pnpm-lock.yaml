@@ -271,6 +271,9 @@ importers:
       '@types/textdiff-create':
         specifier: ^1.0.0
         version: 1.0.0
+      '@types/ua-parser-js':
+        specifier: ^0.7.36
+        version: 0.7.36
       date-fns:
         specifier: ^2.30.0
         version: 2.30.0
@@ -3872,6 +3875,10 @@ packages:
   /@types/tinycolor2@1.4.3:
     resolution: {integrity: sha512-Kf1w9NE5HEgGxCRyIcRXR/ZYtDv0V8FVPtYHwLxl0O+maGX0erE77pQlD0gpP+/KByMZ87mOA79SjifhSB3PjQ==}
     dev: true
+
+  /@types/ua-parser-js@0.7.36:
+    resolution: {integrity: sha512-N1rW+njavs70y2cApeIw1vLMYXRwfBy+7trgavGuuTfOd7j1Yh7QTRc/yqsPl6ncokt72ZXuxEU0PiCp9bSwNQ==}
+    dev: false
 
   /@types/unist@2.0.7:
     resolution: {integrity: sha512-cputDpIbFgLUaGQn6Vqg3/YsJwxUwHLO13v3i5ouxT4lat0khip9AEWxtERujXV9wxIB1EyF97BSJFt6vpdI8g==}

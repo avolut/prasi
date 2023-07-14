@@ -6,7 +6,7 @@ import { Renderer } from "../base/renderer";
 import { RendererGlobal } from "../base/renderer-global";
 import { PRASI_PAGE } from "../base/renderer-types";
 import { Loading } from "./ui/loading";
-
+import parse from "ua-parser-js";
 const w = window as unknown as {
   globalValueID: WeakMap<any, string>;
   prasiApi: Record<string, any>;
@@ -51,6 +51,11 @@ export class Prasi extends Renderer {
       return await arg.load.page(rg, page_id);
     };
 
+    if (!rg.mode) {
+      const parsed = parse();
+      rg.mode = parsed.device.type === "mobile" ? "mobile" : "desktop";
+    }
+    
     useEffect(() => {
       (async () => {
         if (!rg.site.id) {

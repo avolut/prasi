@@ -10,7 +10,7 @@ export const RendererGlobal = {
     notfound: null as null | ReactElement,
   },
   site: { id: "", api_url: "" },
-  mode: "desktop" as "desktop" | "mobile",
+  mode: "" as "desktop" | "mobile",
   scope: { tree: {}, effect: {}, value: {}, evargs: {} } as SingleScope,
   page: {
     active: null as null | PRASI_PAGE,
