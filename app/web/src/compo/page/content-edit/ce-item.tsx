@@ -41,7 +41,7 @@ export const CEItem: FC<{
             return (
               <CEItem
                 ceid={ceid}
-                item={e}
+                item={e as MItem}
                 key={e.get("id")}
                 scopeName={scopeName}
               />

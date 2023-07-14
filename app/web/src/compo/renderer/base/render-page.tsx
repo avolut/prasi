@@ -1,3 +1,4 @@
+import { scanComponent } from "./components";
 import { RSection } from "./elements/r-section";
 import { RendererGlobal } from "./renderer-global";
 
@@ -10,20 +11,47 @@ export const PrasiPage = (props: {
   const { router } = page;
 
   if (router) {
-    page.active = router.lookup(pathname);
+    if (location.search.startsWith("?page_id=")) {
+      page.active = page.list[location.search.substring("?page_id=".length)];
+    } else {
+      page.active = router.lookup(pathname);
+    }
   }
 
-  if (page.active && typeof page.active.content_tree === "undefined") {
-    if (!rg.loading) {
-      rg.loading = true;
-      rg.page.load(page.active.id).then((loadedPage) => {
-        if (page.active) {
-          page.active.content_tree = loadedPage?.content_tree || null;
-          page.active.js_compiled = loadedPage?.js_compiled;
+  if (page.active) {
+    if (typeof page.active.content_tree === "undefined") {
+      if (!rg.loading) {
+        rg.loading = true;
+        rg.page.load(page.active.id).then((loadedPage) => {
+          if (page.active) {
+            page.active.content_tree = loadedPage?.content_tree || null;
+            page.active.js_compiled = loadedPage?.js_compiled;
+          }
+          rg.loading = false;
+          rg.render();
+        });
+      }
+    }
+
+    if (page.active.content_tree) {
+      const compids = scanComponent(page.active.content_tree);
+      const loadCompIds: string[] = [];
+      compids.forEach((id) => {
+        if (!rg.component.def[id]) {
+          loadCompIds.push(id);
         }
-        rg.loading = false;
-        rg.render();
       });
+
+      if (loadCompIds.length > 0) {
+        rg.loading = true;
+        rg.component.load(loadCompIds).then((comps) => {
+          comps.map((e) => {
+            rg.component.def[e.id] = e;
+          });
+          rg.loading = false;
+          rg.render();
+        });
+      }
     }
   }
 
@@ -31,7 +59,7 @@ export const PrasiPage = (props: {
   if (!page.active) return ui.notfound;
 
   return (
-    <div className="flex flex-col items-stretch flex-1 bg-white">
+    <div className="w-full h-full flex flex-col items-stretch flex-1 bg-white">
       {page.active.content_tree?.childs.map((e) => (
         <RSection key={e.id} item={e} />
       ))}

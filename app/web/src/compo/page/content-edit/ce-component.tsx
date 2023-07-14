@@ -3,15 +3,12 @@ import { useGlobal } from "web-utils";
 import { CEGlobal } from "../../../base/global/content-editor";
 import { getArray } from "../../editor/tools/yjs-tools";
 import { wsdoc } from "../../editor/ws/wsdoc";
-import { IItem, MItem } from "../../types/item";
+import { MItem } from "../../types/item";
 import { MText } from "../../types/text";
-import { component, component as gcomp } from "../component";
+import { component } from "../component";
 import { CEItem } from "./ce-item";
 import { CERender } from "./ce-render";
 import { CEText } from "./ce-text";
-import { createId } from "@paralleldrive/cuid2";
-import * as Y from "yjs";
-import { syncronize } from "y-pojo";
 
 export const CEComponent: FC<{
   ceid: string;
@@ -65,7 +62,12 @@ export const CEComponent: FC<{
           const type = e.get("type");
           if (type === "item") {
             return (
-              <CEItem ceid={ceid} item={e} key={idx} scopeName={scopeName} />
+              <CEItem
+                ceid={ceid}
+                item={e as MItem}
+                key={e.get("id")}
+                scopeName={scopeName}
+              />
             );
           } else if (type === "text") {
             return (

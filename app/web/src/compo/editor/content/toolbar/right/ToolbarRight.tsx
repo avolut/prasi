@@ -5,13 +5,13 @@ import { ResponsiveToggle } from "./ResponsiveToggle";
 export const ToolbarRight = () => {
   return (
     <div className={cx("toolbar-right", "flex mr-2")}>
-      {/* <ToolbarBox
+      <ToolbarBox
         items={[
           {
             content: "Preview",
             onClick: () => {
               window.open(
-                `/site/${wsdoc.site?.id}?p=${wsdoc.page_id}&preview=1`,
+                `/site/${wsdoc.site?.domain}?page_id=${wsdoc.page_id}`,
                 "_blank"
               );
             },
@@ -22,7 +22,7 @@ export const ToolbarRight = () => {
             margin-right: 5px !important;
           `
         )}
-      /> */}
+      />
 
       <ResponsiveToggle />
     </div>

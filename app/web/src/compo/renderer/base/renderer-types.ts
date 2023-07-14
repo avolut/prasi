@@ -1,3 +1,4 @@
+import { IItem } from "../../types/item";
 import { IRoot } from "../../types/root";
 
 export type COMPONENT_ID = string;
@@ -9,4 +10,10 @@ export type PRASI_PAGE = {
   name: string;
   js_compiled?: string;
   content_tree?: IRoot | null;
+};
+
+export type PRASI_COMPONENT = {
+  id: string;
+  name: string;
+  content_tree: IItem;
 };

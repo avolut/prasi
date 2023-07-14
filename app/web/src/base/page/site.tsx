@@ -1,7 +1,10 @@
 import { validate } from "uuid";
 import { page } from "web-init";
+import {
+  PRASI_COMPONENT,
+  PRASI_PAGE,
+} from "../../compo/renderer/base/renderer-types";
 import { Prasi } from "../../compo/renderer/prasi/prasi-renderer";
-import { PRASI_PAGE } from "../../compo/renderer/base/renderer-types";
 
 export default page({
   url: "/site/:name/**",
@@ -62,6 +65,18 @@ export default page({
           }
 
           return pages;
+        },
+        async components(rg, ids) {
+          const all = await db.component.findMany({
+            where: { id: { in: ids } },
+            select: {
+              id: true,
+              content_tree: true,
+              name: true,
+            },
+          });
+
+          return (all || []) as PRASI_COMPONENT[];
         },
       },
     });

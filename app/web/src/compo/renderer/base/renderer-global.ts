@@ -1,7 +1,8 @@
 import { ReactElement } from "react";
 import { RadixRouter } from "web-init";
 import { SingleScope } from "../../types/script";
-import { PRASI_PAGE } from "./renderer-types";
+import { PRASI_COMPONENT, PRASI_PAGE } from "./renderer-types";
+import { IItem } from "../../types/item";
 
 export const RendererGlobal = {
   loading: true,
@@ -12,6 +13,12 @@ export const RendererGlobal = {
   site: { id: "", api_url: "" },
   mode: "" as "desktop" | "mobile",
   scope: { tree: {}, effect: {}, value: {}, evargs: {} } as SingleScope,
+  component: {
+    def: {} as Record<string, { id: string; content_tree: IItem }>,
+    load: async (ids: string[]) => {
+      return [] as PRASI_COMPONENT[];
+    },
+  },
   page: {
     active: null as null | PRASI_PAGE,
     list: {} as Record<string, PRASI_PAGE>,
