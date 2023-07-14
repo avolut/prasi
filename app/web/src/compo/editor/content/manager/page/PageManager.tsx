@@ -126,6 +126,12 @@ export const PageManager = () => {
     }
   }
 
+  const rawexpanded = localStorage.getItem("prasi-page-expand");
+  let expanded = ["ROOT"];
+  if (rawexpanded) {
+    expanded = JSON.parse(rawexpanded);
+  }
+
   return (
     <>
       <div
@@ -217,10 +223,16 @@ export const PageManager = () => {
                   }
                   reloadPages();
                 }}
-                initialOpen
+                initialOpen={expanded}
                 classes={{
                   listItem: "row",
                   dropTarget: "dropping",
+                }}
+                onChangeOpen={(ids) => {
+                  localStorage.setItem(
+                    "prasi-page-expand",
+                    JSON.stringify(ids)
+                  );
                 }}
                 render={(node, { depth, isOpen, onToggle, hasChild }) => (
                   <div
