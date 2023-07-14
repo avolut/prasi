@@ -39,14 +39,19 @@ export const CEItem: FC<{
           const type = e.get("type");
           if (type === "item") {
             return (
-              <CEItem ceid={ceid} item={e} key={idx} scopeName={scopeName} />
+              <CEItem
+                ceid={ceid}
+                item={e}
+                key={e.get("id")}
+                scopeName={scopeName}
+              />
             );
           } else if (type === "text") {
             return (
               <CEText
                 ceid={ceid}
                 item={e as MText}
-                key={idx}
+                key={e.get("id")}
                 scopeName={scopeName}
               />
             );

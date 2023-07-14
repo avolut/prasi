@@ -242,7 +242,7 @@ export const PanelFont: FC<{
                 if (!w.loadedFonts) w.loadedFonts = [];
                 if (
                   !isSSR &&
-                  w.loadedFonts.indexOf(item) < 0 &&
+                  w.loadedFonts.indexOf(item.value) < 0 &&
                   item.value !== "DEFAULT"
                 ) {
                   w.loadedFonts.push(item.value);

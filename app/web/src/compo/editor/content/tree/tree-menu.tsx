@@ -16,6 +16,7 @@ import { newMap } from "../../tools/yjs-tools";
 import { wsdoc } from "../../ws/wsdoc";
 import { selectMultiple, walkContent } from "./tree";
 import { flatTree } from "../../../page/tools/flat-tree";
+
 export const CETreeMenu: FC<{
   id: string;
   item: MContent;
@@ -67,7 +68,7 @@ export const CETreeMenu: FC<{
 
   return (
     <Menu mouseEvent={contextMenu} onClose={onClose}>
-      {comp_id && (
+      {comp_id && !isActiveComponent && (
         <MenuItem
           label="Detach Component"
           onClick={() => {

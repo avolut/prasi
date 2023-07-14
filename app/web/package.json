@@ -62,6 +62,7 @@
     "svgo": "^3.0.2",
     "textdiff-create": "^1.0.9",
     "tinycolor2": "^1.6.0",
+    "ua-parser-js": "^1.0.35",
     "uuid": "9.0.0",
     "web-init": "workspace:^",
     "web-types": "workspace:^",

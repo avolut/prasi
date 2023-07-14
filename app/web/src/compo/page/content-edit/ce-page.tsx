@@ -72,8 +72,8 @@ export const CEPage: FC<{ ceid: string }> = ({ ceid }) => {
         {ceid.startsWith("COMP") ? (
           <CEItem ceid={ceid} item={c.root as MItem} preventRenderComponent />
         ) : (
-          getArray(c.root, "childs")?.map((e, idx) => {
-            return <CESection ceid={ceid} item={e} key={idx} />;
+          getArray(c.root, "childs")?.map((e) => {
+            return <CESection ceid={ceid} item={e} key={e.get("id")} />;
           })
         )}
       </div>

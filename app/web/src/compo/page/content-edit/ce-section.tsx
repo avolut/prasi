@@ -12,8 +12,8 @@ export const CESection: FC<{ ceid: string; item: MSection }> = ({
 }) => {
   return (
     <CERender ceid={ceid} item={item}>
-      {getArray<MItem | MText>(item, "childs")?.map((e, idx) => {
-        return <CEItem ceid={ceid} item={e} key={idx} />;
+      {getArray<MItem | MText>(item, "childs")?.map((e) => {
+        return <CEItem ceid={ceid} item={e} key={e.get("id")} />;
       })}
     </CERender>
   );

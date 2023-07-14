@@ -24,6 +24,7 @@ export type PrasiAPI = {
 export const w = window as unknown as {
   isEditor: boolean;
   prasiApi: Record<string, PrasiAPI>;
+  loadedFonts: string[];
 };
 
 export type Page = {

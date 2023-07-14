@@ -1,29 +1,72 @@
 import { validate } from "uuid";
-import { createRouter, page } from "web-init";
-import { useLocal } from "web-utils";
-import { w } from "../../compo/types/general";
-import { Loading } from "../../compo/ui/loading";
+import { page } from "web-init";
 import { Prasi } from "../../compo/renderer/prasi/prasi-renderer";
-
-const SELECT_FIELD = {
-  id: true,
-  js: true,
-  url: true,
-  js_compiled: true,
-  content_tree: true,
-};
+import { PRASI_PAGE } from "../../compo/renderer/base/renderer-types";
 
 export default page({
   url: "/site/:name/**",
   component: () => {
-    const page_id = validate(params._) ? params._ : null;
+    const site = new Prasi({
+      load: {
+        async site() {
+          if (validate(params.name)) {
+            return { id: params.name };
+          }
 
-    const prasi = new Prasi(
-      params.name,
-      page_id ? { id: page_id } : { urlpath: params._ }
-    );
+          const site = await db.site.findFirst({
+            where: { domain: params.name },
+            select: {
+              id: true,
+            },
+          });
+          if (site) {
+            return {
+              id: site.id,
+            };
+          }
+          return { id: "" };
+        },
+        async page(rg, page_id) {
+          const page = await db.page.findFirst({
+            where: { id: page_id },
+            select: {
+              id: true,
+              url: true,
+              name: true,
+              js_compiled: true,
+              content_tree: true,
+            },
+          });
 
-    return prasi.renderPage();
+          if (page) {
+            return page as Required<PRASI_PAGE>;
+          }
+          return null;
+        },
+        async pages(rg) {
+          const all = await db.page.findMany({
+            where: {
+              id_site: rg.site.id,
+              is_deleted: false,
+            },
+            select: {
+              id: true,
+              url: true,
+              name: true,
+            },
+          });
+
+          const pages: any = {};
+          for (const p of all) {
+            pages[p.id] = p;
+          }
+
+          return pages;
+        },
+      },
+    });
+
+    return site.renderPage(params._ === "_" ? "/" : params._);
     // const local = useLocal({});
     // if (params._ === "_") {
     //   params._ = "";

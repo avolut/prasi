@@ -1,39 +1,13 @@
-import { ReactElement } from "react";
-import { RadixRouter } from "web-init";
-import { IRoot } from "../../types/root";
-import { COMPONENT_ID, COMPONENT_PROPS, PAGE_ID } from "./renderer-types";
+import { ReactElement, ReactNode } from "react";
+import { RendererGlobal } from "./renderer-global";
+import { COMPONENT_ID, COMPONENT_PROPS } from "./renderer-types";
+import { PrasiPage } from "./render-page";
 
-type PrasiPage = {
-  id: string;
-  name: string;
-  content_tree: IRoot;
-  url: string;
-  js_compiled?: string;
-};
 export abstract class Renderer {
-  _internal = {
-    ready: false,
-    site: null as null | {
-      id: string;
-      domain: string;
-      js_compiled: string;
-    },
-    pages: {} as Record<string, PrasiPage>,
-    components: {} as Record<
-      string,
-      {
-        id: string;
-        name: string;
-        content_tree: IRoot;
-      }
-    >,
-    router: null as null | RadixRouter<PrasiPage>,
-  };
+  abstract rg: typeof RendererGlobal & { render: () => void };
 
-  abstract changePage(page: { id: string; url: string }): Promise<void>;
-
-  renderPage(): ReactElement {
-    return <></>;
+  renderPage(pathname: string): ReactElement {
+    return <PrasiPage rg={this.rg} pathname={pathname} />;
   }
 
   renderComponent<K extends COMPONENT_ID>(
