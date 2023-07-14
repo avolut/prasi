@@ -39,7 +39,6 @@ export const monacoTypings = async (editor: MonacoEditor, monaco: Monaco) => {
 import React from 'react';
 import prisma from 'prisma';
 
-
 ${iftext(
   wsdoc.apiDef.apiTypes,
   `\

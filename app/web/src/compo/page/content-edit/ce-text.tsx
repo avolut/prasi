@@ -39,23 +39,22 @@ const CETextEditable: FC<{ ceid: string; item: MText }> = ({ ceid, item }) => {
           __html: item.get("html") || "",
         }}
         contentEditable
-        onFocus={(e) => {
-          e.stopPropagation();
-          e.preventDefault();
-          c.editor.hover = null;
-          c.editor.focusedTextID = item.get("id") || "";
-          c.editor.active = item;
-          c.editor.multiple.active = [];
-          c.render();
-        }}
         onBlur={() => {
           c.editor.focusedTextID = "";
           c.render();
         }}
         onPointerDown={(e) => {
           e.stopPropagation();
-          c.editor.active = item;
-          c.render();
+          if (c.editor.active !== item) {
+            c.editor.hover = null;
+            c.editor.focusedTextID = item.get("id") || "";
+            c.editor.active = item;
+            c.editor.multiple.active = [];
+            c.render();
+            setTimeout(() => {
+              c.editor.activeEl?.focus();
+            }, 100);
+          }
         }}
         onInput={(e) => {
           wsdoc.lastTypedTimeestamp = Date.now();
@@ -64,7 +63,7 @@ const CETextEditable: FC<{ ceid: string; item: MText }> = ({ ceid, item }) => {
         spellCheck={false}
         className={cx(
           item.get("id"),
-          "outline-none select-text",
+          "outline-none select-text whitespace-nowrap",
           css`
             min-width: 25px;
           `

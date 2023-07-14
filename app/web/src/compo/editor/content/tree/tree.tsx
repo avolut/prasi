@@ -203,7 +203,7 @@ export const CETree: FC<{ id: string }> = ({ id }) => {
                               onToggle,
                               select: (item) => {
                                 const w = wsdoc;
-                                const focusText = (props: {
+                                const doSelection = (props: {
                                   mode: "single" | "multiple";
                                   item: MContent;
                                 }) => {
@@ -240,27 +240,24 @@ export const CETree: FC<{ id: string }> = ({ id }) => {
                                 };
                                 switch (true) {
                                   case w.keyDown === "ctrl":
-                                    // c.editor.active = item;
-                                    focusText({
+                                    console.log("ctrl");
+                                    doSelection({
                                       mode: "multiple",
                                       item,
                                     });
                                     break;
                                   case w.keyDown === "shift":
-                                    focusText({
+                                    console.log("shift");
+                                    doSelection({
                                       mode: "multiple",
                                       item,
                                     });
                                     break;
                                   default:
+                                    c.editor.multiple.active = [];
                                     c.editor.active = item;
-                                    focusText({
-                                      mode: "single",
-                                      item: c.editor.active,
-                                    });
                                     break;
                                 }
-                                // focusText({ mode: "single", item: c.editor.active });
                                 c.render();
                               },
                             }}

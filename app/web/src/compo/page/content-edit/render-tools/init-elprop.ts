@@ -69,20 +69,7 @@ export const initElProp = (
       ev.preventDefault();
 
       if (item) {
-        if (item.type === "text") {
-          const divs = document.getElementsByClassName(item.id);
-
-          if (divs[divs.length - 1]) {
-            setTimeout(() => {
-              (divs[divs.length - 1] as HTMLInputElement).focus();
-            }, 500);
-          }
-        }
         c.editor.active = mitem;
-        const active = document.activeElement as any;
-        if (active && active.blur) {
-          active.blur();
-        }
         c.render();
       }
     };
