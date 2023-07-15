@@ -138,3 +138,17 @@ export const site_load = {
   args: ["name","_page"],
   handler: import("../../../srv/api/site-load")
 }
+export const srvapi_check = {
+  name: "srvapi_check",
+  url: "/srvapi-check/:site_id",
+  path: "app/srv/api/srvapi-check.ts",
+  args: ["site_id"],
+  handler: import("../../../srv/api/srvapi-check")
+}
+export const srvapi_new = {
+  name: "srvapi_new",
+  url: "/srvapi-new/:site_id",
+  path: "app/srv/api/srvapi-new.ts",
+  args: ["site_id"],
+  handler: import("../../../srv/api/srvapi-new")
+}

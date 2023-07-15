@@ -2,10 +2,8 @@
   "name": "app",
   "main": "app.ts",
   "dependencies": {
-    "@parcel/watcher": "^2.2.0",
     "dir": "workspace:^",
     "fs-jetpack": "^5.1.0",
-    "typescript": "^5.1.6",
     "service": "workspace:^",
     "web": "workspace:^"
   },

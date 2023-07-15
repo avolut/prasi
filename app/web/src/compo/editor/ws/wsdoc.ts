@@ -4,9 +4,18 @@ import { component } from "../../page/component";
 import { PrasiAPI } from "../../types/general";
 import { WS_MSG_DIFF_LOCAL, WS_MSG_REDO, WS_MSG_UNDO } from "./msg";
 
+export type SiteConfig = {
+  api_url?: string;
+  prasi?: {
+    port: number;
+    dburl: string;
+  };
+};
 export const wsdoc = {
   site: null as
-    | (Omit<site, "config"> & { config: { api_url?: string } })
+    | (Omit<site, "config"> & {
+        config: SiteConfig;
+      })
     | null,
   page_id: "",
   mode: "desktop" as "mobile" | "desktop",

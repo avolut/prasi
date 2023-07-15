@@ -3,7 +3,7 @@ import trim from "lodash.trim";
 import { useLocal } from "web-utils";
 import { wsdoc } from "../../../../ws/wsdoc";
 
-export const ExistingApi = () => {
+export const ExternalAPI = () => {
   const local = useLocal({
     status: "ready" as "ready" | "loading" | "valid" | "invalid",
   });

@@ -1,13 +1,21 @@
-import get from "lodash.get";
-import trim from "lodash.trim";
 import { useLocal } from "web-utils";
+import { ExternalAPI } from "./External";
+import { InternalAPI } from "./Internal";
 import { wsdoc } from "../../../../ws/wsdoc";
-import { ExistingApi } from "./Existing";
 
 export const APIConfig = () => {
   const local = useLocal({
     mode: "" as "external" | "internal" | "",
   });
+
+  const config = wsdoc.site?.config;
+
+  if (config?.api_url) {
+    local.mode = "external";
+  }
+  if (config?.prasi?.port) {
+    local.mode = "internal";
+  }
 
   return (
     <div className="flex flex-col py-5 space-y-2 min-w-[350px] items-center">
@@ -35,7 +43,8 @@ export const APIConfig = () => {
         </>
       )}
 
-      {local.mode === "external" && <ExistingApi />}
+      {local.mode === "external" && <ExternalAPI />}
+      {local.mode === "internal" && <InternalAPI />}
     </div>
   );
 };

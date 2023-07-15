@@ -2,7 +2,13 @@ import { page, site } from "dbgen";
 import { validate as isValidUUID } from "uuid";
 import * as Y from "yjs";
 
-export type SiteConfig = { api_url?: string };
+export type SiteConfig = {
+  api_url?: string;
+  prasi?: {
+    port: number;
+    dburl: string;
+  };
+};
 export const loadSite = async (idOrDomain: string) => {
   let rname = idOrDomain;
   if (!rname) {
