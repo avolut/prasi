@@ -1,21 +1,19 @@
-import { useLocal } from "web-utils";
-import trim from "lodash.trim";
 import get from "lodash.get";
-import * as Y from "yjs";
-import { syncronize } from "y-pojo";
-import { wsdoc } from "../../../ws/wsdoc";
+import trim from "lodash.trim";
+import { useLocal } from "web-utils";
+import { wsdoc } from "../../../../ws/wsdoc";
 
-export const APIConfig = () => {
+export const ExistingApi = () => {
   const local = useLocal({
     status: "ready" as "ready" | "loading" | "valid" | "invalid",
   });
+
   const site = wsdoc.site;
   if (!site) return null;
-
   return (
-    <div className="flex flex-col items-stretch py-2 space-y-1">
+    <div className="flex flex-col flex-1 items-stretch space-y-1">
       <div className="flex justify-between">
-        <div>API URL:</div>
+        <div>Existing API URL:</div>
         {local.status === "loading" && (
           <div className="text-blue-600">Checking...</div>
         )}
@@ -30,6 +28,7 @@ export const APIConfig = () => {
       </div>
       <input
         type="text"
+        autoFocus
         className="p-1 border min-w-[350px] font-mono text-[11px]"
         disabled={local.status === "loading"}
         defaultValue={site.config?.api_url || ""}
@@ -66,21 +65,21 @@ export const APIConfig = () => {
             const json = await res.json();
             if (!!get(json, "prasi")) {
               local.status = "valid";
-
-              await db.site.update({
-                data: {
-                  config: {
-                    api_url: val,
-                  },
-                },
-                where: {
-                  id: wsdoc.site?.id,
-                },
-              });
             }
           } catch (e) {
             local.status = "invalid";
           }
+
+          await db.site.update({
+            data: {
+              config: {
+                api_url: val,
+              },
+            },
+            where: {
+              id: wsdoc.site?.id,
+            },
+          });
           local.render();
         }}
       />

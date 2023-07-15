@@ -1,7 +1,7 @@
 import { useLocal } from "web-utils";
 import { ToolbarBox } from "../../../../ui/box";
 import { Popover } from "../../../../ui/popover";
-import { APIConfig } from "./APIConfig";
+import { APIConfig } from "./api/APIConfig";
 import { AddElement } from "./AddElement";
 
 export const ToolbarMid = () => {
