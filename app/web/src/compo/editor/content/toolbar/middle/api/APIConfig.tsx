@@ -5,20 +5,20 @@ import { wsdoc } from "../../../../ws/wsdoc";
 
 export const APIConfig = () => {
   const local = useLocal({
-    mode: "" as "external" | "internal" | "",
+    mode: "internal" as "external" | "internal" | "",
   });
 
   const config = wsdoc.site?.config;
 
-  if (config?.api_url) {
-    local.mode = "external";
-  }
-  if (config?.prasi?.port) {
-    local.mode = "internal";
-  }
+  // if (config?.api_url) {
+  //   local.mode = "external";
+  // }
+  // if (config?.prasi?.port) {
+  //   local.mode = "internal";
+  // }
 
   return (
-    <div className="flex flex-col py-5 space-y-2 min-w-[350px] items-center">
+    <div className="flex flex-col py-2 space-y-2 min-w-[350px] items-center">
       {local.mode === "" && (
         <>
           <div

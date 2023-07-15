@@ -11,7 +11,8 @@ export type SiteConfig = {
     dburl: string;
   };
 };
-export const wsdoc = {
+
+const _wsdoc = {
   site: null as
     | (Omit<site, "config"> & {
         config: SiteConfig;
@@ -93,3 +94,9 @@ export const wsdoc = {
     },
   },
 };
+
+if (!(window as any).wsdoc) {
+  (window as any).wsdoc = _wsdoc;
+}
+
+export const wsdoc = (window as any).wsdoc;

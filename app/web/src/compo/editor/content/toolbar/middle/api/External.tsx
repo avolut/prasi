@@ -56,30 +56,33 @@ export const ExternalAPI = () => {
               },
             });
             local.status = "valid";
-            local.render();
-            return;
-          }
-
-          try {
-            const res = await fetch(trim(val, "/") + "/_prasi/_");
-            const json = await res.json();
-            if (!!get(json, "prasi")) {
-              local.status = "valid";
+          } else {
+            try {
+              const res = await fetch(trim(val, "/") + "/_prasi/_");
+              const json = await res.json();
+              if (!!get(json, "prasi")) {
+                local.status = "valid";
+              }
+            } catch (e) {
+              local.status = "invalid";
             }
-          } catch (e) {
-            local.status = "invalid";
+
+            await db.site.update({
+              data: {
+                config: {
+                  api_url: val,
+                },
+              },
+              where: {
+                id: wsdoc.site?.id,
+              },
+            });
+          }
+          if (wsdoc.site) {
+            wsdoc.site.config.api_url = val;
+            console.log("console", wsdoc.site.config);
           }
 
-          await db.site.update({
-            data: {
-              config: {
-                api_url: val,
-              },
-            },
-            where: {
-              id: wsdoc.site?.id,
-            },
-          });
           local.render();
         }}
       />
