@@ -99,4 +99,4 @@ if (!(window as any).wsdoc) {
   (window as any).wsdoc = _wsdoc;
 }
 
-export const wsdoc = (window as any).wsdoc;
+export const wsdoc = (window as any).wsdoc as typeof _wsdoc;

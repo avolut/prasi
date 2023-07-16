@@ -4,7 +4,15 @@ import { ExecaChildProcess } from "execa";
 export const glb = global as unknown as {
   lastUpdate: Record<string, number>;
   prasiSrv: {
-    installing: Set<string>;
+    status: Record<
+      string,
+      | "unavailable"
+      | "installing"
+      | "starting"
+      | "started"
+      | "stopped"
+      | "destroying"
+    >;
     running: Record<string, ExecaChildProcess>;
   };
 };

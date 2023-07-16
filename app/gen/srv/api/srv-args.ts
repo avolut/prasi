@@ -82,7 +82,15 @@ export const srvapi_check = {
   url: "/srvapi-check/:site_id",
   args: ["site_id"],
 }
+export const srvapi_destroy = {
+  url: "/srvapi-destroy",
+  args: ["site_id"],
+}
 export const srvapi_new = {
   url: "/srvapi-new/:site_id",
   args: ["site_id"],
+}
+export const srvapi_op = {
+  url: "/srvapi-op",
+  args: ["site_id","op"],
 }

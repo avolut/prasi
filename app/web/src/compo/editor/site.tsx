@@ -6,7 +6,7 @@ import { MPage, w } from "../types/general";
 import { PageEditor } from "./page";
 import { editorStyle } from "./style";
 import { connectWS } from "./ws/ws";
-import { wsdoc } from "./ws/wsdoc";
+import { SiteConfig, wsdoc } from "./ws/wsdoc";
 
 export const SiteEditor: FC<{
   site: site;
@@ -111,14 +111,16 @@ export const SiteEditor: FC<{
     );
   }
 
+  const config = site.config as SiteConfig;
+  let api_url = config.api_url;
+  if (config.prasi && config.prasi.port) {
+    api_url = `${location.protocol}//${location.hostname}:${config?.prasi?.port}`;
+  }
   return (
     <div
       className={cx("editor flex flex-1 flex-col items-stretch", editorStyle)}
     >
-      <PageEditor
-        page={local.page}
-        global={{ css: site.css, api_url: (site.config as any)?.api_url }}
-      />
+      <PageEditor page={local.page} global={{ css: site.css, api_url }} />
     </div>
   );
 };

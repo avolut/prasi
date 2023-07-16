@@ -145,10 +145,24 @@ export const srvapi_check = {
   args: ["site_id"],
   handler: import("../../../srv/api/srvapi-check")
 }
+export const srvapi_destroy = {
+  name: "srvapi_destroy",
+  url: "/srvapi-destroy",
+  path: "app/srv/api/srvapi-destroy.ts",
+  args: ["site_id"],
+  handler: import("../../../srv/api/srvapi-destroy")
+}
 export const srvapi_new = {
   name: "srvapi_new",
   url: "/srvapi-new/:site_id",
   path: "app/srv/api/srvapi-new.ts",
   args: ["site_id"],
   handler: import("../../../srv/api/srvapi-new")
+}
+export const srvapi_op = {
+  name: "srvapi_op",
+  url: "/srvapi-op",
+  path: "app/srv/api/srvapi-op.ts",
+  args: ["site_id","op"],
+  handler: import("../../../srv/api/srvapi-op")
 }

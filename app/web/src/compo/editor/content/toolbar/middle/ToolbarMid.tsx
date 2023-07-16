@@ -21,7 +21,14 @@ export const ToolbarMid = () => {
               <Popover
                 offset={12}
                 open={local.apiConfigOpen}
-                content={<APIConfig />}
+                content={
+                  <APIConfig
+                    close={() => {
+                      local.apiConfigOpen = false;
+                      local.render();
+                    }}
+                  />
+                }
                 onOpenChange={(open) => {
                   local.apiConfigOpen = open;
                   local.render();

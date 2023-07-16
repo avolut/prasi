@@ -13,11 +13,11 @@ function getRandomArbitrary(min: number, max: number) {
 
 export const _ = {
   url: "/srvapi-new/:site_id",
-  async api(site_id: string) {
+  async api(site_id: string): Promise<SiteConfig> {
     const { req, res } = apiContext(this);
 
     if (!glb.prasiSrv) {
-      glb.prasiSrv = { installing: new Set(), running: {} };
+      glb.prasiSrv = { status: {}, running: {} };
     }
 
     if (site_id) {
@@ -26,12 +26,7 @@ export const _ = {
           id: site_id,
         },
       });
-
-      if (glb.prasiSrv.installing.has(site_id)) {
-        return "still installing";
-      }
-
-      if (site && !glb.prasiSrv.installing.has(site_id)) {
+      if (site) {
         const config = site.config as SiteConfig;
 
         if (!config.prasi) {
@@ -44,10 +39,13 @@ export const _ = {
 
           await db.site.update({ where: { id: site.id }, data: { config } });
         }
+        if (glb.prasiSrv.status[site_id]) {
+          return site?.config || ({} as any);
+        }
 
-        glb.prasiSrv.installing.add(site_id);
+        if (!glb.prasiSrv.status[site_id]) {
+          glb.prasiSrv.status[site_id] = "installing";
 
-        (async () => {
           if (config.prasi) {
             try {
               const proc = glb.prasiSrv.running[site_id];
@@ -57,14 +55,14 @@ export const _ = {
               }
 
               const root = dir.path(`../prasi-api/${site_id}/app`);
+
+              await $`rm -rf ${dir.path(`../prasi-api/${site_id}`)}`;
+              await dirAsync(dir.path(`../prasi-api/${site_id}`));
+              await $`cp -r ${dir.path(`stencil/prasi-api`)} ${root}`;
+
               await writeAsync(join(root, "srv", "port.json"), {
                 port: config.prasi.port,
               });
-
-              await dirAsync(dir.path(`../prasi-api/${site_id}`));
-              if (!(await existsAsync(root))) {
-                await copyAsync(dir.path(`stencil/prasi-api`), root);
-              }
 
               await writeAsync(
                 dir.path(`../prasi-api/${site_id}/app/pnpm-workspace.yaml`),
@@ -95,16 +93,25 @@ datasource db {
               await $({ cwd: root })`pnpm i`;
               await $({ cwd: join(root, "db") })`pnpm prisma db pull`;
               await $({ cwd: join(root, "db") })`pnpm prisma generate`;
-              glb.prasiSrv.running[site_id] = $({ cwd: root })`node app.js`;
+              glb.prasiSrv.running[site_id] = $({
+                cwd: root,
+              })`node app.js`;
+
+              glb.prasiSrv.running[site_id].then(() => {
+                delete glb.prasiSrv.running[site_id];
+              });
             } catch (e) {
               console.log(e);
             }
 
-            glb.prasiSrv.installing.delete(site_id);
+            glb.prasiSrv.status[site_id] = "started";
+
+            return config;
           }
-        })();
+        }
+        return site.config as SiteConfig;
       }
     }
-    return "ok";
+    return {};
   },
 };
