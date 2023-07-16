@@ -199,7 +199,11 @@ export const PanelBorder: FC<{
             />
           </div>
         </Tooltip>
-        <Tooltip asChild content="Independect Padding" placement="top-end">
+        <Tooltip
+          asChild
+          content="Independent Rounded Corner"
+          placement="top-end"
+        >
           <div>
             <Button
               className={cx(
