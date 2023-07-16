@@ -7,8 +7,6 @@ export const _ = {
   async api(site_id: string, op: "start" | "stop") {
     const { req, res } = apiContext(this);
 
-    if (!glb.prasiSrv) glb.prasiSrv = { running: {}, status: {} };
-    const status = glb.prasiSrv.status[site_id] || "unavailable";
     const root = dir.path(`../prasi-api/${site_id}/app`);
 
     const start = () => {

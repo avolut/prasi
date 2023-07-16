@@ -7,7 +7,6 @@ export const _ = {
   url: "/srvapi-destroy",
   async api(site_id: string) {
     const { req, res } = apiContext(this);
-    if (!glb.prasiSrv) glb.prasiSrv = { status: {}, running: {} };
 
     glb.prasiSrv.status[site_id] = "destroying";
     const proc = glb.prasiSrv.running[site_id];

@@ -1,10 +1,8 @@
 import { createAPIServer } from "service-srv";
-import { IConnection } from "vscode-ws-jsonrpc/server";
 import { collabEditHandler } from "./edit/handler";
+import { glb } from "./global";
 
-const g = global as unknown as {
-  lsp: { conn: IConnection };
-};
+glb.prasiSrv = { status: {}, running: {} };
 
 export const main = createAPIServer({
   name: "srv",

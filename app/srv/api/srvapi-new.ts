@@ -16,10 +16,6 @@ export const _ = {
   async api(site_id: string): Promise<SiteConfig> {
     const { req, res } = apiContext(this);
 
-    if (!glb.prasiSrv) {
-      glb.prasiSrv = { status: {}, running: {} };
-    }
-
     if (site_id) {
       const site = await db.site.findFirst({
         where: {

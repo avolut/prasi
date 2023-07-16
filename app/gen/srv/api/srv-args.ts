@@ -82,6 +82,10 @@ export const srvapi_check = {
   url: "/srvapi-check/:site_id",
   args: ["site_id"],
 }
+export const srvapi_dbpull = {
+  url: "/srvapi-dbpull",
+  args: ["site_id","dburl"],
+}
 export const srvapi_destroy = {
   url: "/srvapi-destroy",
   args: ["site_id"],

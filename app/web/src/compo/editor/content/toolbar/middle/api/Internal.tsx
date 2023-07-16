@@ -3,6 +3,8 @@ import { useLocal } from "web-utils";
 import { wsdoc } from "../../../../ws/wsdoc";
 import { AutoHeightTextarea } from "../../../side/panel/link";
 import { Loading } from "../../../../../ui/loading";
+import trim from "lodash.trim";
+import { w } from "../../../../../types/general";
 
 export const InternalAPI: FC<{ close: () => void }> = ({ close }) => {
   const local = useLocal({ status: "...", loading: false });
@@ -105,17 +107,77 @@ export const InternalAPI: FC<{ close: () => void }> = ({ close }) => {
         )}
       </div>
       <div className="flex flex-col border-t space-y-2 -mx-2 px-2 pt-2">
-        <AutoHeightTextarea placeholder="DATABASE_URL" className="p-2 border" />
+        <AutoHeightTextarea
+          placeholder="DATABASE_URL"
+          className="p-2 border"
+          value={config?.prasi?.dburl || ""}
+          spellCheck={false}
+          onChange={(e) => {
+            if (config?.prasi) {
+              config.prasi.dburl = e.currentTarget.value;
+            }
+            local.render();
+          }}
+        />
 
         <div className="flex justify-between">
           <div className="flex space-x-1 items-center">
-            <div className="border border-slate-500 hover:bg-purple-100 hover:border-purple-500 px-2 rounded cursor-pointer">
-              DB Pull
-            </div>
+            {w.prasiApiDbPull ? (
+              "Pullling..."
+            ) : (
+              <div
+                className="border border-slate-500 hover:bg-purple-100 hover:border-purple-500 px-2 rounded cursor-pointer"
+                onClick={async () => {
+                  if (wsdoc.site) {
+                    w.prasiApiDbPull = true;
+                    local.render();
+                    await api.srvapi_dbpull(
+                      wsdoc.site.id,
+                      wsdoc.site.config.prasi?.dburl || ""
+                    );
 
-            <div className="border border-slate-500 hover:bg-purple-100 hover:border-purple-500 px-2 rounded cursor-pointer">
-              Generate
-            </div>
+                    w.prasiApiDbPull = false;
+                    local.render();
+
+                    try {
+                      if (config) {
+                        config.api_url = `${location.protocol}//${location.hostname}:${config?.prasi?.port}`;
+
+                        const base = trim(config.api_url, "/");
+                        const apiTypes = await fetch(
+                          base + "/_prasi/api-types"
+                        );
+                        const apiEntry = await fetch(
+                          base + "/_prasi/api-entry"
+                        );
+                        w.prasiApi[config.api_url] = {
+                          apiEntry: (await apiEntry.json()).srv,
+                          prismaTypes: {
+                            "prisma.d.ts": await loadText(
+                              `${base}/_prasi/prisma/index.d.ts`
+                            ),
+                            "runtime/index.d.ts": await loadText(
+                              `${base}/_prasi/prisma/runtime/index.d.ts`
+                            ),
+                            "runtime/library.d.ts": await loadText(
+                              `${base}/_prasi/prisma/runtime/library.d.ts`
+                            ),
+                          },
+                          apiTypes: await apiTypes.text(),
+                        };
+                        wsdoc.apiDef = w.prasiApi[config.api_url];
+                      }
+                    } catch (e) {
+                      console.log(e);
+                    }
+
+                    alert("DB PULL SUCCESS");
+                  }
+                }}
+              >
+                DB Pull
+              </div>
+            )}
           </div>
           <div
             className="border border-slate-500 hover:bg-red-100 hover:border-red-500 px-2 rounded cursor-pointer"
@@ -139,4 +201,9 @@ export const InternalAPI: FC<{ close: () => void }> = ({ close }) => {
       </div>
     </div>
   );
+};
+
+const loadText = async (url: string) => {
+  const res = await fetch(url);
+  return await res.text();
 };

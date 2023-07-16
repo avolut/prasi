@@ -145,6 +145,13 @@ export const srvapi_check = {
   args: ["site_id"],
   handler: import("../../../srv/api/srvapi-check")
 }
+export const srvapi_dbpull = {
+  name: "srvapi_dbpull",
+  url: "/srvapi-dbpull",
+  path: "app/srv/api/srvapi-dbpull.ts",
+  args: ["site_id","dburl"],
+  handler: import("../../../srv/api/srvapi-dbpull")
+}
 export const srvapi_destroy = {
   name: "srvapi_destroy",
   url: "/srvapi-destroy",

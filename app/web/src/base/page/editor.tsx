@@ -6,6 +6,7 @@ import { SiteEditor } from "../../compo/editor/site";
 import { wsdoc } from "../../compo/editor/ws/wsdoc";
 import { w } from "../../compo/types/general";
 import { Loading } from "../../compo/ui/loading";
+import { SiteConfig } from "../../../../srv/edit/tools/load-site";
 
 export default page({
   url: "/editor/:site/:page",
@@ -44,10 +45,16 @@ export default page({
         } else {
           site_id = params.site;
           local.site = await db.site.findFirst({ where: { id: params.site } });
-          const config = local.site?.config as { api_url: string };
+          const config = local.site?.config as SiteConfig;
+
+          if (config.prasi) {
+            config.api_url = `${location.protocol}//${location.hostname}:${config?.prasi?.port}`;
+          }
+
           if (!w.prasiApi) {
             w.prasiApi = {};
           }
+
           if (config && config.api_url) {
             try {
               const base = trim(config.api_url, "/");
@@ -69,7 +76,9 @@ export default page({
                 apiTypes: await apiTypes.text(),
               };
               wsdoc.apiDef = w.prasiApi[config.api_url];
-            } catch (e) {}
+            } catch (e) {
+              console.log(e);
+            }
           }
 
           local.init = true;

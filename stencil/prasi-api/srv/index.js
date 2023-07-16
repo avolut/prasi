@@ -5464,17 +5464,17 @@ async function getPorts(options) {
     }
   }
   const hosts = getLocalHosts();
-  for (const port of portCheckSequence(ports)) {
+  for (const port2 of portCheckSequence(ports)) {
     try {
-      if (exclude.has(port)) {
+      if (exclude.has(port2)) {
         continue;
       }
-      let availablePort = await getAvailablePort({ ...options, port }, hosts);
+      let availablePort = await getAvailablePort({ ...options, port: port2 }, hosts);
       while (lockedPorts.old.has(availablePort) || lockedPorts.young.has(availablePort)) {
-        if (port !== 0) {
-          throw new Locked(port);
+        if (port2 !== 0) {
+          throw new Locked(port2);
         }
-        availablePort = await getAvailablePort({ ...options, port }, hosts);
+        availablePort = await getAvailablePort({ ...options, port: port2 }, hosts);
       }
       lockedPorts.young.add(availablePort);
       return availablePort;
@@ -5500,8 +5500,8 @@ function portNumbers(from, to) {
     throw new RangeError("`to` must be greater than or equal to `from`");
   }
   const generator = function* (from2, to2) {
-    for (let port = from2; port <= to2; port++) {
-      yield port;
+    for (let port2 = from2; port2 <= to2; port2++) {
+      yield port2;
     }
   };
   return generator(from, to);
@@ -5512,8 +5512,8 @@ var init_get_port = __esm({
     import_node_net = __toESM(require("node:net"), 1);
     import_node_os2 = __toESM(require("node:os"), 1);
     Locked = class extends Error {
-      constructor(port) {
-        super(`${port} is locked`);
+      constructor(port2) {
+        super(`${port2} is locked`);
       }
     };
     lockedPorts = {
@@ -5538,9 +5538,9 @@ var init_get_port = __esm({
       server2.unref();
       server2.on("error", reject);
       server2.listen(options, () => {
-        const { port } = server2.address();
+        const { port: port2 } = server2.address();
         server2.close(() => {
-          resolve3(port);
+          resolve3(port2);
         });
       });
     });
@@ -22578,7 +22578,7 @@ var require_write = __commonJS({
         }).then(resolve3, reject);
       });
     };
-    var writeAsync3 = (path, data, options) => {
+    var writeAsync4 = (path, data, options) => {
       const opts = options || {};
       const processedData = serializeToJsonMaybe(data, opts.jsonIndent);
       let writeStrategy = writeFileAsync;
@@ -22589,7 +22589,7 @@ var require_write = __commonJS({
     };
     exports2.validateInput = validateInput;
     exports2.sync = writeSync;
-    exports2.async = writeAsync3;
+    exports2.async = writeAsync4;
   }
 });
 
@@ -48017,20 +48017,44 @@ var init_prasi = __esm({
             res.json({ prasi: "v1" });
           },
           prisma: async () => {
-            const pdir = dir.path("db/node_modules/.gen/index.d.ts");
+            const path = req.params._.split("/").slice(1).join("/");
+            const pdir = dir.path(`db/node_modules/.gen/${path}`);
             if (await (0, import_fs_jetpack10.existsAsync)(pdir)) {
               res.type("text/x.typescript");
               res.send(await (0, import_fs_jetpack10.readAsync)(pdir, "utf8"));
             }
           },
-          api: async () => {
+          "api-types": async () => {
             const pdir = dir.path("srv/api.d.ts");
             if (await (0, import_fs_jetpack10.existsAsync)(pdir)) {
               res.type("text/x.typescript");
-              res.send(await (0, import_fs_jetpack10.readAsync)(pdir, "utf8"));
+              let result = await (0, import_fs_jetpack10.readAsync)(pdir, "utf8");
+              if (result) {
+                if (!result.startsWith("/* DB-CLEANED */")) {
+                  const parr = result.split("\n");
+                  for (const [k, v] of Object.entries(parr)) {
+                    if (v.trim().startsWith("const db: WebGlobal")) {
+                      parr[k] = "";
+                    }
+                  }
+                  parr.unshift("/* DB-CLEANED */");
+                  result = parr.join("\n");
+                  await (0, import_fs_jetpack10.writeAsync)(pdir, result);
+                }
+              }
+              res.send(result);
+            }
+          },
+          "api-entry": async () => {
+            try {
+              const apiEntry = await Promise.resolve().then(() => (init_entry(), entry_exports));
+              res.type("application/json");
+              res.send(JSON.stringify(apiEntry));
+            } catch (e) {
+              return "API entry not found";
             }
           }
-        }[req.params._];
+        }[req.params._.split("/")[0]];
         if (action)
           await action();
       }
@@ -48447,7 +48471,7 @@ var init_server2 = __esm({
     init_api_frm();
     init_session();
     server = async ({
-      port,
+      port: port2,
       name,
       cookieKey,
       ws,
@@ -48575,7 +48599,7 @@ var init_server2 = __esm({
           })
         );
       }
-      server2.listen(port);
+      server2.listen(port2);
       return server2;
     };
   }
@@ -48612,7 +48636,7 @@ var init_create_srv = __esm({
     init_action3();
     createAPIServer = async ({
       name,
-      port,
+      port: port2,
       serverURL,
       cookieKey,
       ws
@@ -48622,13 +48646,13 @@ var init_create_srv = __esm({
         mode: "single",
         init: async ({ mode }) => {
           srv.name = name;
-          srv.port = port;
+          srv.port = port2;
           srv.cookieKey = cookieKey;
           if (serverURL) {
             srv.serverURL = serverURL(mode);
           }
           if (!srv.serverURL) {
-            srv.serverURL = `http://localhost:${port}`;
+            srv.serverURL = `http://localhost:${port2}`;
           }
           await createRPC(name, srvAction);
           await srv.init();
@@ -65825,9 +65849,14 @@ __export(main_exports, {
 });
 module.exports = __toCommonJS(main_exports);
 init_export6();
+var port = 4500;
+try {
+  port = require("./port").port;
+} catch (E) {
+}
 var main = createAPIServer({
   name: "srv",
-  port: require("./port.json").port,
+  port,
   // make sure cookieKey is different for each app
   // changing cookie key, will force all user to log out
   cookieKey: `ryl-sid-JgvCz3F4K6pfPNwM`

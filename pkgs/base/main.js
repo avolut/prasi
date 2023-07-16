@@ -37046,7 +37046,7 @@ ERROR: Async operation of type "${type}" was created in "process.exit" callback.
       init_export();
       import_fs_jetpack17 = __toESM(require_main());
       build = async () => {
-        if (!await (0, import_fs_jetpack17.existsAsync)(dir.root(".output/app/stencil"))) {
+        if (!await (0, import_fs_jetpack17.existsAsync)(dir.root(".output/app/stencil/prasi-api"))) {
           await (0, import_fs_jetpack17.copyAsync)(dir.root("stencil"), dir.root(".output/app/stencil"), {
             overwrite: true
           });

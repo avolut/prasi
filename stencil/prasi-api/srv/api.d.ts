@@ -1,3 +1,6 @@
+declare module "app/gen/srv/api/entry" {
+    export * as srv from "app/gen/srv/api/srv";
+}
 declare module "app/srv/api/built-in/_dbs" {
     export const _: {
         url: string;
@@ -79,7 +82,7 @@ declare module "app/srv/api/built-in/auth/login" {
         api(username: string, password: string): Promise<{
             status: string;
             session: {
-                id: any;
+                id: string;
             };
             reason?: undefined;
         } | {
