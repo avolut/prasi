@@ -5,6 +5,7 @@ import {
   PRASI_PAGE,
 } from "../../compo/renderer/base/renderer-types";
 import { Prasi } from "../../compo/renderer/prasi/prasi-renderer";
+import { SiteConfig } from "../../compo/editor/ws/wsdoc";
 
 export default page({
   url: "/site/:name/**",
@@ -22,9 +23,16 @@ export default page({
             },
           });
           if (site) {
+            const config = site.config as SiteConfig;
+
+            let api_url = config.api_url as string;
+            if (config.prasi && config.prasi.port) {
+              api_url = `https://${config?.prasi?.port}.prasi.world`;
+            }
+
             return {
               id: site.id,
-              api_url: (site.config as any)?.api_url || "",
+              api_url
             };
           }
           return { id: "", api_url: "" };
