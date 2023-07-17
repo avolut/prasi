@@ -154,7 +154,7 @@ export const PanelBorder: FC<{
             )}
           >
             <FieldColor
-              popupID="bg-color"
+              popupID="border-color"
               value={params.color}
               update={(color) => {
                 update("border", { ...params, color });
