@@ -38,6 +38,7 @@ export const CEGlobal = {
       render: () => {},
     },
     page: {
+      reload: false,
       render: () => {},
     },
     componentActiveID: "",

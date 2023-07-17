@@ -32,6 +32,13 @@ export const SiteEditor: FC<{
       ) {
         evt.preventDefault();
         evt.stopPropagation();
+
+        ce.editor.page.reload = true;
+        ce.editor.page.render();
+        setTimeout(() => {
+          ce.editor.page.reload = false;
+          ce.editor.page.render();
+        }, 100);
       }
     };
     window.addEventListener("keydown", keyDown, true);

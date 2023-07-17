@@ -61,11 +61,18 @@ export const initScope = (
     if (doc) {
       const comp = doc.getMap("map").get("content_tree")?.toJSON() as IItem;
 
+      const exec = (fn: string) => {
+        const parentScopeID = scope.tree[scopeRootID].parent_id;
+        const existingScope = findScope(c.scope[parentScopeID], item.id || "");
+        const f = new Function(...Object.keys(existingScope), `return ${fn}`);
+        return f(...Object.values(existingScope));
+      };
+
       if (!scope.value[item.id]) scope.value[item.id] = {};
       for (const [k, v] of Object.entries(comp.component?.props || {})) {
         let val = null;
         try {
-          eval(`val = ${v.valueBuilt || v.value}`);
+          val = exec(v.valueBuilt || v.value);
         } catch (e) {}
         scope.value[item.id][k] = val;
       }
@@ -78,18 +85,20 @@ export const initScope = (
             const v = p.toJSON();
             if (v) {
               let val = null;
-              if (v.meta.type === "content-element") {
+              const cprop = comp.component?.props[k];
+              const type = cprop?.meta?.type || v.meta?.type || "text";
+              if (type === "content-element") {
                 const content = p.get("content");
                 if (content) {
                   val = <CEItem ceid={ceid} item={content} />;
                 } else {
                   try {
-                    eval(`val = ${v.valueBuilt || v.value}`);
+                    val = exec(v.valueBuilt || v.value);
                   } catch (e) {}
                 }
               } else {
                 try {
-                  eval(`val = ${v.valueBuilt || v.value}`);
+                  val = exec(v.valueBuilt || v.value);
                 } catch (e) {}
               }
               scope.value[item.id][k] = val;

@@ -81,20 +81,22 @@ export const ScriptMonaco: FC<{
       {script.type === "js" && (
         <div
           className={cx(
-            "bg-slate-100 h-[35px] p-1 flex space-x-1 border-b text-xs items-center",
+            "bg-slate-100 h-[35px] p-1 flex space-x-1 border-b text-xs items-center justify-between",
             css`
               .prasi-btn {
                 width: auto;
-                padding: 0px 10px;
+                padding: 0px 5px;
+                height: 20px;
               }
             `
           )}
         >
-          <div className="pl-2">Wrap:</div>
-          <Button
-            onClick={() => {
-              doEdit(
-                `\
+          <div className="flex items-center space-x-1">
+            <div className="pl-2">Wrap:</div>
+            <Button
+              onClick={() => {
+                doEdit(
+                  `\
                 <Local 
                   name="local" 
                   value={{hello: "init"}}
@@ -105,18 +107,35 @@ export const ScriptMonaco: FC<{
                     }
                   }
                 >{children}</Local>`
-              );
-            }}
-          >
-            &lt;Local/&gt;
-          </Button>
-          <Button
-            onClick={() => {
-              doEdit(`<PassProp val={"yourval"}>{children}</PassProp>`);
-            }}
-          >
-            &lt;PassProp/&gt;
-          </Button>
+                );
+              }}
+            >
+              &lt;Local/&gt;
+            </Button>
+            <Button
+              onClick={() => {
+                doEdit(`<PassProp val={"yourval"}>{children}</PassProp>`);
+              }}
+            >
+              &lt;PassProp/&gt;
+            </Button>
+          </div>
+          <div>
+            <Button
+              onClick={() => {
+                c.editor.page.reload = true;
+                c.editor.page.render();
+                setTimeout(() => {
+                  c.editor.page.reload = false;
+                  c.editor.page.render();
+                }, 100);
+              }}
+            >
+              Reload Page (
+              {navigator.userAgent.indexOf("Mac OS X") != -1 ? "⌘" : "Ctrl"} +
+              S)
+            </Button>
+          </div>
         </div>
       )}
 

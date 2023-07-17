@@ -6,10 +6,10 @@ import { MItem } from "../../types/item";
 import { responsiveMode } from "../tools/responsive-mode";
 import { CEItem } from "./ce-item";
 import { CESection } from "./ce-section";
+import { Loading } from "../../ui/loading";
 
 export const CEPage: FC<{ ceid: string }> = ({ ceid }) => {
   const c = useGlobal(CEGlobal, ceid);
-  const local = useLocal({});
   const mode = responsiveMode();
 
   useEffect(() => {
@@ -25,8 +25,6 @@ export const CEPage: FC<{ ceid: string }> = ({ ceid }) => {
       });
     }
   }, []);
-
-  c.editor.page.render = local.render;
 
   return (
     <div

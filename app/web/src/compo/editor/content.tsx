@@ -63,6 +63,13 @@ export const ContentEditor: FC<{ id: string }> = ({ id }) => {
     local.init = true;
   }
 
+  c.editor.page.render = local.render;
+  const loading = (
+    <div className="relative w-full h-full flex">
+      <Loading backdrop={false} />
+    </div>
+  );
+
   if (id.startsWith("COMP")) {
     if (wsdoc.page && component.edit.switching) {
       return <Loading backdrop={false} />;
@@ -71,7 +78,7 @@ export const ContentEditor: FC<{ id: string }> = ({ id }) => {
     return (
       <div className={cx("flex flex-1 flex-row", "editor-box")}>
         <CETree id={id} />
-        <CEPage ceid={id} />
+        {c.editor.page.reload ? loading : <CEPage ceid={id} />}
         <CESide id={id} />
         <CEScriptEdit id={id} />
       </div>
@@ -81,7 +88,7 @@ export const ContentEditor: FC<{ id: string }> = ({ id }) => {
   return (
     <div className={cx("flex flex-1 flex-row", "editor-box")}>
       <CETree id={id} />
-      <CEPage ceid={id} />
+      {c.editor.page.reload ? loading : <CEPage ceid={id} />}
       <CESide id={id} />
       <CEScriptEdit id={id} />
       <CECompEdit id={id} />
