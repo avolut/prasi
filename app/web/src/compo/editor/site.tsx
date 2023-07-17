@@ -114,7 +114,7 @@ export const SiteEditor: FC<{
   const config = site.config as SiteConfig;
   let api_url = config.api_url;
   if (config.prasi && config.prasi.port) {
-    api_url = `${location.protocol}//${location.hostname}:${config?.prasi?.port}`;
+    api_url = `https://${config?.prasi?.port}.prasi.world`;
   }
   return (
     <div

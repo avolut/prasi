@@ -49,11 +49,11 @@ export const InternalAPI: FC<{ close: () => void }> = ({ close }) => {
           </div>
           {local.status === "started" && (
             <a
-              href={`${location.protocol}//${location.hostname}:${config?.prasi?.port}`}
+              href={`https://${config?.prasi?.port}.prasi.world`}
               target="_blank"
               className="text-blue-500 hover:underline border px-1"
             >
-              {location.protocol}//{location.hostname}:{config?.prasi?.port}
+              https://${config?.prasi?.port}.prasi.world
             </a>
           )}
         </div>
@@ -141,7 +141,7 @@ export const InternalAPI: FC<{ close: () => void }> = ({ close }) => {
 
                     try {
                       if (config) {
-                        config.api_url = `${location.protocol}//${location.hostname}:${config?.prasi?.port}`;
+                        config.api_url = `https://${config?.prasi?.port}.prasi.world`;
 
                         const base = trim(config.api_url, "/");
                         const apiTypes = await fetch(

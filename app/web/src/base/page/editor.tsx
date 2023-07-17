@@ -48,7 +48,7 @@ export default page({
           const config = local.site?.config as SiteConfig;
 
           if (config.prasi) {
-            config.api_url = `${location.protocol}//${location.hostname}:${config?.prasi?.port}`;
+            config.api_url = `https://${config?.prasi?.port}.prasi.world`;
           }
 
           if (!w.prasiApi) {
