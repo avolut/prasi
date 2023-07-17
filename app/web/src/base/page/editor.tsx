@@ -22,6 +22,7 @@ export default page({
           return;
         }
 
+        
         wsdoc.session = e;
         if (params.site.length < 4) {
           const res = await db.site.findFirst({

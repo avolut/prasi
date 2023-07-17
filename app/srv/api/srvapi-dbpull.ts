@@ -20,16 +20,17 @@ export const _ = {
     if (site) {
       const config = site.config as any;
       if (config) {
-        db.site.update({
+        await db.site.update({
           where: {
             id: site_id,
           },
           data: {
-            config: { ...config, prisma: { ...config.prisma, dburl } },
+            config: { ...config, prasi: { ...config.prasi, dburl } },
           },
         });
       }
     }
+
     if (dburl) {
       try {
         await writeAsync(
