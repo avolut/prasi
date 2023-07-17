@@ -1,3 +1,4 @@
+import { findScope } from "../../../page/content-edit/render-tools/init-scope";
 import { IContent } from "../../../types/general";
 import { IItem } from "../../../types/item";
 import { SingleScope } from "../../../types/script";
@@ -43,10 +44,17 @@ export const scriptScope = (
 
   if (i.component && i.component.id && comp) {
     if (!scope.value[item.id]) scope.value[item.id] = {};
+
+    const exec = (fn: string) => {
+      const existingScope = findScope(rg.scope, item.id || "");
+      const f = new Function(...Object.keys(existingScope), `return ${fn}`);
+      return f(...Object.values(existingScope));
+    };
+
     for (const [k, v] of Object.entries(comp.component?.props || {})) {
       let val = null;
       try {
-        eval(`val = ${v.valueBuilt || v.value}`);
+        val = exec(v.valueBuilt || v.value);
       } catch (e) {}
       scope.value[item.id][k] = val;
     }
@@ -61,12 +69,12 @@ export const scriptScope = (
               val = <RItem item={content} />;
             } else {
               try {
-                eval(`val = ${v.valueBuilt || v.value}`);
+                val = exec(v.valueBuilt || v.value);
               } catch (e) {}
             }
           } else {
             try {
-              eval(`val = ${v.valueBuilt || v.value}`);
+              val = exec(v.valueBuilt || v.value);
             } catch (e) {}
           }
           scope.value[item.id][k] = val;

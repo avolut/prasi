@@ -42,7 +42,7 @@ export const CERender: FC<{
     const html = renderHTML(adv);
     if (html) _children = html;
     else if (adv.jsBuilt && adv.js) {
-      return execElement(
+      const res = execElement(
         {
           item,
           scope,
@@ -53,6 +53,8 @@ export const CERender: FC<{
         },
         c.global.api_url
       );
+
+      return res;
     }
   }
 
