@@ -1,6 +1,7 @@
 import { CEGlobal } from "../../../../base/global/content-editor";
 import { IContent, MContent } from "../../../types/general";
 import { IItem } from "../../../types/item";
+import { FNCompDef } from "../../../types/meta-fn";
 import { component } from "../../component";
 import { CEItem } from "../ce-item";
 
@@ -56,6 +57,7 @@ export const initScope = (
 
   if (i.component && i.component.id) {
     const doc = component.docs[i.component.id];
+
     if (doc) {
       const comp = doc.getMap("map").get("content_tree")?.toJSON() as IItem;
 
@@ -71,27 +73,28 @@ export const initScope = (
       if (i.component.props) {
         const props = mitem.get("component")?.get("props");
 
-        for (const [k, v] of Object.entries(i.component.props)) {
-          let val = null;
-
-          if (v.meta?.type === "content-element") {
-            const prop = props?.get(k);
-            if (prop) {
-              const mcontent = prop.get("content");
-              if (mcontent) {
-                val = <CEItem ceid={ceid} item={mcontent} />;
+        if (props) {
+          props.forEach((p, k) => {
+            const v = p.toJSON();
+            if (v) {
+              let val = null;
+              if (v.meta.type === "content-element") {
+                const content = p.get("content");
+                if (content) {
+                  val = <CEItem ceid={ceid} item={content} />;
+                } else {
+                  try {
+                    eval(`val = ${v.valueBuilt || v.value}`);
+                  } catch (e) {}
+                }
               } else {
                 try {
                   eval(`val = ${v.valueBuilt || v.value}`);
                 } catch (e) {}
               }
+              scope.value[item.id][k] = val;
             }
-          } else {
-            try {
-              eval(`val = ${v.valueBuilt || v.value}`);
-            } catch (e) {}
-          }
-          scope.value[item.id][k] = val;
+          });
         }
       }
     }

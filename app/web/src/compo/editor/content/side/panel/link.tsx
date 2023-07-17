@@ -28,22 +28,17 @@ export const PanelLink: FC<{
 
   return (
     <>
-      <Popover
-        autoFocus={false}
-        className="flex"
-        content={<div className="p-2">Hello world</div>}
-      >
-        <AutoHeightTextarea
-          spellCheck={false}
-          className={cx("flex-1 border border-slate-300 p-1")}
-          value={linktag.link || ""}
-          placeholder="Link Href"
-          onChange={(e) => {
-            e.stopPropagation();
-            update("linktag", { ...linktag, link: e.currentTarget.value });
-          }}
-        />
-      </Popover>
+      <AutoHeightTextarea
+        spellCheck={false}
+        minRows={1}
+        className={cx("flex-1 border border-slate-300 p-1 h-[25px]")}
+        value={linktag.link || ""}
+        placeholder="Link Href"
+        onChange={(e) => {
+          e.stopPropagation();
+          update("linktag", { ...linktag, link: e.currentTarget.value });
+        }}
+      />
     </>
   );
 };

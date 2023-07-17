@@ -73,6 +73,18 @@ export const CETree: FC<{ id: string }> = ({ id }) => {
             }
           `
         )}
+        onMouseLeave={() => {
+          wsdoc.keyDown = "";
+
+          if ((c.editor.multiple.active || []).length > 0) {
+            c.editor.active = (c.editor.multiple.active as any)[0];
+            c.editor.multiple = {
+              active: null,
+              activeEl: null,
+            };
+            c.render();
+          }
+        }}
       >
         <ErrorBoundary
           onError={() => {

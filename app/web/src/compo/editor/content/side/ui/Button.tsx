@@ -16,7 +16,7 @@ export const Button: FC<ButtonProp> = ({
   return (
     <button
       className={cx(
-        "transition-all flex items-center justify-center border select-none outline-none",
+        "transition-all flex items-center justify-center border select-none outline-none prasi-btn",
         css`
           height: 25px;
           width: 28px;

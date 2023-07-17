@@ -17,8 +17,6 @@ export const CEComponent: FC<{
 }> = ({ ceid, item, compItem }) => {
   const c = useGlobal(CEGlobal, ceid);
 
-  if (!item && !compItem) return null;
-
   const compid = item.get("component")?.get("id");
   const props = item.get("component")?.get("props");
   const cprops = compItem.get("component")?.get("props");
@@ -54,6 +52,7 @@ export const CEComponent: FC<{
   }
 
   const scopeName = item.get("id");
+  if (!item && !compItem) return null;
 
   return (
     <CERender ceid={ceid} item={compItem} elitem={item} scopeName={scopeName}>

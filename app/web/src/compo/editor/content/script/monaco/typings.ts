@@ -26,22 +26,19 @@ export const monacoTypings = async (
   ]);
 
   for (const [k, v] of Object.entries(wsdoc.apiDef.prismaTypes)) {
-    monaco.editor.createModel(
+    register(
+      monaco,
       `declare module '${k.replace(`\.d\.ts`, "")}' { ${v} } `,
-      "typescript",
-      monaco.Uri.parse(k)
+      `ts:${k}`
     );
   }
 
-  monaco.editor.createModel(
-    wsdoc.apiDef.apiTypes,
-    "typescript",
-    monaco.Uri.parse("api.d.ts")
-  );
+  register(monaco, wsdoc.apiDef.apiTypes, "ts:api.d.ts");
 
   const propText = extractProp(prop);
 
-  monaco.editor.createModel(
+  register(
+    monaco,
     `\
 import React from 'react';
 import prisma from 'prisma';
@@ -72,8 +69,7 @@ declare global {
 }
 
   `,
-    "typescript",
-    monaco.Uri.parse("global.d.ts")
+    "ts:global.d.ts"
   );
 };
 
@@ -87,4 +83,14 @@ const iftext = (condition: any, text: string) => {
     return text;
   }
   return "";
+};
+
+const register = (monaco: Monaco, source: string, uri: string) => {
+  const model = monaco.editor.getModels().find((e) => {
+    return e.uri.toString() === uri;
+  });
+  if (model) {
+    model.dispose();
+  }
+  monaco.editor.createModel(source, "typescript", monaco.Uri.parse(uri));
 };

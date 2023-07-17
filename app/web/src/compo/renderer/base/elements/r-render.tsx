@@ -45,6 +45,7 @@ export const RRender: FC<{
   }
 
   const linktag = responsiveVal<FNLinkTag>(item, "linktag", rg.mode, {});
+
   if (linktag && linktag.link) {
     let href = linktag.link || "";
     if (href.startsWith("/")) {

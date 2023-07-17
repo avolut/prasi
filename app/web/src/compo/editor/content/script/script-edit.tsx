@@ -107,7 +107,7 @@ export const CEScriptEdit: FC<{ id: string }> = ({ id }) => {
                   color: #4e7ca1;
                 }
                 .jsx-tag-order-3 {
-                  color: #fb8b05;
+                  color: #020360;
                 }
                 .jsx-tag-attribute-key {
                   color: #6f42c1;
