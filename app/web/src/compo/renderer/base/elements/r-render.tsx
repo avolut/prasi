@@ -15,19 +15,8 @@ export const RRender: FC<{
   children: ReactNode;
 }> = ({ item: mitem, children, original }) => {
   const rg = useGlobal(RendererGlobal, "PRASI_SITE");
-  const [_, setRender] = useState({});
-  const ref = useRef({ mounted: true });
-  const render = () => {
-    if (ref.current.mounted) {
-      setRender({});
-    }
-  };
+
   let _children = children;
-  useEffect(() => {
-    return () => {
-      ref.current.mounted = false;
-    };
-  }, []);
 
   let item = mitem;
   if (original) {
@@ -48,7 +37,7 @@ export const RRender: FC<{
           children: _children,
           rg,
           className,
-          render,
+          render: rg.render,
         },
         rg.site.api_url
       );
