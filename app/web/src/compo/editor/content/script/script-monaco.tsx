@@ -105,7 +105,10 @@ export const ScriptMonaco: FC<{
         }
 
         await jsMount(editor, monaco);
-        await monacoTypings(editor, monaco);
+        await monacoTypings(editor, monaco, {
+          values: propVal,
+          types: propTypes,
+        });
       }}
       language={{ css: "scss", js: "typescript", html: "html" }[script.type]}
       onChange={(newsrc) => {

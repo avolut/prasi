@@ -28,7 +28,13 @@ export const createLocal = (opt: {
         if (typeof value[k] === "undefined") delete scope[name][k];
       }
       for (const [k, v] of Object.entries(value)) {
-        if (k !== "render") scope[name][k] = v;
+        if (k !== "render") {
+          if (typeof v === "function") {
+            scope[name][k] = v;
+          } else {
+            scope[name][k] = v;
+          }
+        }
       }
     }
     const local = scope[name];

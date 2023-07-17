@@ -22,18 +22,6 @@ export const CERender: FC<{
   scopeName?: string;
 }> = ({ ceid, children, item: mitem, scopeName, elitem }) => {
   const c = useGlobal(CEGlobal, ceid);
-  const [_, setRender] = useState({});
-  const ref = useRef({ mounted: true });
-  const render = () => {
-    if (ref.current.mounted) {
-      setRender({});
-    }
-  };
-  useEffect(() => {
-    return () => {
-      ref.current.mounted = false;
-    };
-  }, []);
 
   const item = mitem.toJSON() as IContent;
 
@@ -61,7 +49,7 @@ export const CERender: FC<{
           children: _children,
           className,
           elementProp,
-          render,
+          render: c.render,
         },
         c.global.api_url
       );

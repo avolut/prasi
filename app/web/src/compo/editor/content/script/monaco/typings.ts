@@ -1,10 +1,15 @@
 import type { OnMount } from "@monaco-editor/react";
 import { wsdoc } from "../../../ws/wsdoc";
 import { baseTypings } from "./types/base";
+import { extractProp } from "./types/prop";
 export type MonacoEditor = Parameters<OnMount>[0];
 type Monaco = Parameters<OnMount>[1];
 
-export const monacoTypings = async (editor: MonacoEditor, monaco: Monaco) => {
+export const monacoTypings = async (
+  editor: MonacoEditor,
+  monaco: Monaco,
+  prop: { values: Record<string, any>; types: Record<string, string> }
+) => {
   monaco.languages.typescript.typescriptDefaults.setExtraLibs([
     {
       filePath: "react.d.ts",
@@ -34,6 +39,8 @@ export const monacoTypings = async (editor: MonacoEditor, monaco: Monaco) => {
     monaco.Uri.parse("api.d.ts")
   );
 
+  const propText = extractProp(prop);
+
   monaco.editor.createModel(
     `\
 import React from 'react';
@@ -52,6 +59,8 @@ declare global {
   
   ${baseTypings}
 
+  ${propText.join("\n")}
+
   ${iftext(
     wsdoc.apiDef.apiTypes,
     `
@@ -60,7 +69,6 @@ declare global {
   const api: { [k in ApiName]: Awaited<Api[k]["handler"]>["_"]["api"] };
   `
   )}
-
 }
 
   `,

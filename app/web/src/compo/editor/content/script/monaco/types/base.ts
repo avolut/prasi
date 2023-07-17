@@ -8,9 +8,14 @@ const ReactElement = React.ReactElement;
 const isValidElement = React.isValidElement;
 const useEffect = React.useEffect;
 const useState = React.useState;
+
 const isEditor: boolean;
 const navigate: (url:string) => void;
-const PassProp: FC<Record<string,any> & {children: React.ReactNode}>;
+const cx = (...classNames: any[]) => string;
+const css = (
+  tag: CSSAttribute | TemplateStringsArray | string,
+  ...props: Array<string | number | boolean | undefined | null>
+) => string[];
 
 const props: {
   className: string;
@@ -19,6 +24,8 @@ const props: {
   onPointerLeave?: () => void;
 }; 
 const children: ReactNode; 
+
+const PassProp: FC<Record<string,any> & {children: React.ReactNode}>;
 const Local: <T extends Record<string, any>>(arg: {
   name: string;
   value: T;
