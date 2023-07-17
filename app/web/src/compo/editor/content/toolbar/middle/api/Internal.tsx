@@ -131,6 +131,7 @@ export const InternalAPI: FC<{ close: () => void }> = ({ close }) => {
                   if (wsdoc.site) {
                     w.prasiApiDbPull = true;
                     local.render();
+
                     await api.srvapi_dbpull(
                       wsdoc.site.id,
                       wsdoc.site.config.prasi?.dburl || ""

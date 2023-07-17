@@ -10,6 +10,26 @@ export const _ = {
     const { req, res } = apiContext(this);
 
     const root = dir.path(`../prasi-api/${site_id}/app`);
+    const site = await db.site.findFirst({
+      where: {
+        id: site_id,
+      },
+      select: { config: true },
+    });
+
+    if (site) {
+      const config = site.config as any;
+      if (config) {
+        db.site.update({
+          where: {
+            id: site_id,
+          },
+          data: {
+            config: { ...config, prisma: { ...config.prisma, dburl } },
+          },
+        });
+      }
+    }
     if (dburl) {
       try {
         await writeAsync(
