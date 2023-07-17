@@ -53,7 +53,7 @@ export const InternalAPI: FC<{ close: () => void }> = ({ close }) => {
               target="_blank"
               className="text-blue-500 hover:underline border px-1"
             >
-              https://${config?.prasi?.port}.prasi.world
+              https://{config?.prasi?.port}.prasi.world
             </a>
           )}
         </div>
