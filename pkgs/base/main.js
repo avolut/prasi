@@ -4858,9 +4858,9 @@
     }
   });
 
-  // node_modules/.pnpm/chalk@4.0.0/node_modules/chalk/source/util.js
+  // node_modules/.pnpm/chalk@4.1.2/node_modules/chalk/source/util.js
   var require_util = __commonJS({
-    "node_modules/.pnpm/chalk@4.0.0/node_modules/chalk/source/util.js"(exports2, module2) {
+    "node_modules/.pnpm/chalk@4.1.2/node_modules/chalk/source/util.js"(exports2, module2) {
       "use strict";
       var stringReplaceAll3 = (string, substring, replacer) => {
         let index = string.indexOf(substring);
@@ -4897,9 +4897,9 @@
     }
   });
 
-  // node_modules/.pnpm/chalk@4.0.0/node_modules/chalk/source/templates.js
+  // node_modules/.pnpm/chalk@4.1.2/node_modules/chalk/source/templates.js
   var require_templates = __commonJS({
-    "node_modules/.pnpm/chalk@4.0.0/node_modules/chalk/source/templates.js"(exports2, module2) {
+    "node_modules/.pnpm/chalk@4.1.2/node_modules/chalk/source/templates.js"(exports2, module2) {
       "use strict";
       var TEMPLATE_REGEX = /(?:\\(u(?:[a-f\d]{4}|\{[a-f\d]{1,6}\})|x[a-f\d]{2}|.))|(?:\{(~)?(\w+(?:\([^)]*\))?(?:\.\w+(?:\([^)]*\))?)*)(?:[ \t]|(?=\r?\n)))|(\})|((?:.|[\r\n\f])+?)/gi;
       var STYLE_REGEX = /(?:^|\.)(\w+)(?:\(([^)]*)\))?/g;
@@ -5011,9 +5011,9 @@
     }
   });
 
-  // node_modules/.pnpm/chalk@4.0.0/node_modules/chalk/source/index.js
+  // node_modules/.pnpm/chalk@4.1.2/node_modules/chalk/source/index.js
   var require_source = __commonJS({
-    "node_modules/.pnpm/chalk@4.0.0/node_modules/chalk/source/index.js"(exports2, module2) {
+    "node_modules/.pnpm/chalk@4.1.2/node_modules/chalk/source/index.js"(exports2, module2) {
       "use strict";
       var ansiStyles3 = require_ansi_styles();
       var { stdout: stdoutColor3, stderr: stderrColor3 } = require_supports_color();
@@ -5021,6 +5021,7 @@
         stringReplaceAll: stringReplaceAll3,
         stringEncaseCRLFWithFirstIndex: stringEncaseCRLFWithFirstIndex3
       } = require_util();
+      var { isArray } = Array;
       var levelMapping3 = [
         "ansi",
         "ansi",
@@ -5128,6 +5129,9 @@
       };
       var createBuilder3 = (self2, _styler, _isEmpty) => {
         const builder = (...arguments_) => {
+          if (isArray(arguments_[0]) && isArray(arguments_[0].raw)) {
+            return applyStyle3(builder, chalkTag(builder, ...arguments_));
+          }
           return applyStyle3(builder, arguments_.length === 1 ? "" + arguments_[0] : arguments_.join(" "));
         };
         Object.setPrototypeOf(builder, proto3);
@@ -5160,7 +5164,7 @@
       var template;
       var chalkTag = (chalk6, ...strings) => {
         const [firstString] = strings;
-        if (!Array.isArray(firstString)) {
+        if (!isArray(firstString) || !isArray(firstString.raw)) {
           return strings.join(" ");
         }
         const arguments_ = strings.slice(1);

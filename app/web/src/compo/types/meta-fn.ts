@@ -95,9 +95,15 @@ export type FNBackground = {
 export type FMBackground = TypedMap<FNBackground>;
 export type FNBorder = {
   style?: "solid" | "dash";
-  stroke?: number;
+  stroke?: FNBorderCorner;
   rounded?: FNRounded;
   color?: string;
+};
+export type FNBorderCorner = {
+  t?: number;
+  b?: number;
+  l?: number;
+  r?: number;
 };
 export type FNRounded = {
   tr?: number;

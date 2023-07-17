@@ -16,6 +16,7 @@ import { newMap } from "../../tools/yjs-tools";
 import { wsdoc } from "../../ws/wsdoc";
 import { selectMultiple, walkContent } from "./tree";
 import { flatTree } from "../../../page/tools/flat-tree";
+import { filterFlatTree } from "../../../page/tools/filter-tree";
 
 export const CETreeMenu: FC<{
   id: string;
@@ -321,6 +322,27 @@ export const CETreeMenu: FC<{
           }}
         />
       )}
+      <MenuItem
+        label={"Delete"}
+        onClick={() => {
+          let mode = c.editor.copy;
+          let root = c.root as any;
+          switch (mode) {
+            case "multiple":
+              let childs = c.editor.tree.list;
+              let iSelect = get(c, "editor.multiple.active") as Array<MContent>;
+              filterFlatTree(iSelect, childs);
+              break;
+            default:
+              item.parent.forEach((e, idx) => {
+                if (e === item) {
+                  item.parent.delete(idx);
+                }
+              });
+              break;
+          }
+        }}
+      />
     </Menu>
   );
 };

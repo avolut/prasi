@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import { useLocal } from "web-utils";
 import { responsiveVal } from "../../../../page/tools/responsive-val";
 import { IItem } from "../../../../types/item";
@@ -28,7 +28,18 @@ export const PanelBorder: FC<{
   const params = responsiveVal<FNBorder>(value, "border", mode, {
     style: "solid",
   });
-
+  const detectMixed = (round: any) => {
+    let rounded: any = round;
+    let corner: any = [];
+    transform(rounded, (r, v, k) => {
+      corner.push(v);
+    });
+    let uniqueCorner = uniq(corner);
+    if (uniqueCorner.length > 1 && corner.length === 4) {
+      return true;
+    }
+    return false;
+  };
   const detectMixedCorner = (round: any) => {
     let rounded: any = round;
     let corner: any = [];
@@ -69,34 +80,55 @@ export const PanelBorder: FC<{
     {
       colorOpen: false,
       isMix: false,
+      isBorderMix: false,
       open: false,
       corner: null as any,
+      borderVal: null as any,
       ready: false,
+      border: false,
     },
     () => {
       let isMixed = detectMixedCorner(params.rounded);
       local.isMix = isMixed.isMix;
-      local.corner = isMixed.value;
+
       if (isMixed.isMix) local.open = true;
+      let mixStroke = detectMixedCorner(params.stroke);
+      local.isBorderMix = mixStroke.isMix;
+
+      if (mixStroke.isMix) local.border = true;
       local.render();
     }
   );
 
   return (
     <div className="flex flex-col space-y-2">
-      <div className={cx("flex flex-row items-stretch space-x-2 text-xs ")}>
+      <div className={cx("flex flex-row justify-between text-xs ")}>
         <Tooltip content={"Background Size"}>
-          <Dropdown
-            {...dropdownProp}
-            value={params.style}
-            items={[
-              { value: "solid", label: "Solid" },
-              { value: "dash", label: "Dash" },
-            ]}
-            onChange={(val) => {
-              update("border", { ...params, style: val as any });
-            }}
-          />
+          <div
+            className={cx(
+              "bg-white p-[2px] border border-gray-300 flex items-stretch",
+              css`
+                .border {
+                  width: 70px !important;
+                }
+                input {
+                  width: 100%;
+                }
+              `
+            )}
+          >
+            <Dropdown
+              {...dropdownProp}
+              value={params.style}
+              items={[
+                { value: "solid", label: "Solid" },
+                { value: "dash", label: "Dash" },
+              ]}
+              onChange={(val) => {
+                update("border", { ...params, style: val as any });
+              }}
+            />
+          </div>
         </Tooltip>
         <Tooltip content={"Stroke"} asChild>
           <div
@@ -104,10 +136,10 @@ export const PanelBorder: FC<{
               "bg-white p-[2px] border border-gray-300 flex items-stretch",
               css`
                 input {
-                  width: 20px !important;
+                  width: 100% !important;
                 }
                 .field-num {
-                  width: 55px !important;
+                  width: 60px !important;
                 }
               `
             )}
@@ -121,20 +153,207 @@ export const PanelBorder: FC<{
                   className="text-lg text-gray-700"
                 />
               }
-              value={params.stroke + "px"}
+              value={
+                get(detectMixedCorner(params.stroke), "isMix")
+                  ? ""
+                  : get(detectMixedCorner(params.stroke), "value") + ""
+              }
+              disabled={
+                get(detectMixedCorner(params.stroke), "isMix") ? "Mixed" : false
+              }
               update={(val) => {
+                let value = parseInt(val.replaceAll("px", ""));
+                let data = {
+                  t: value,
+                  b: value,
+                  l: value,
+                  r: value,
+                };
                 update("border", {
                   ...params,
-                  stroke: parseInt(val.replaceAll("px", "")) as any,
+                  stroke: data,
                 });
+                let mixStroke = detectMixedCorner(data);
+                local.isBorderMix = mixStroke.isMix;
+
+                local.render();
               }}
             />
           </div>
         </Tooltip>
+        <Tooltip asChild content="Toggle Border" placement="top-end">
+          <div>
+            <Button
+              className={cx(
+                "flex-1",
+                css`
+                  width: 30px;
+                  max-width: 30px;
+                  height: 35px;
+                  min-width: 0px !important;
+                  background: ${local.border ? "#3c82f6" : "#fff"} !important;
+                  border-color: ${local.border
+                    ? "#7baeff"
+                    : "#d1d1d1"} !important;
+                `
+              )}
+              onClick={() => {
+                local.border = !local.border;
+                local.render();
+              }}
+            >
+              <Icon
+                icon="tabler:border-sides"
+                className="text-lg text-gray-700"
+              />
+            </Button>
+          </div>
+        </Tooltip>
       </div>
+      {local.border ? (
+        <>
+          <div
+            className={cx(
+              "flex flex-row text-xs ",
+              css`
+                .field-num {
+                  height: 25px;
+                  border: 1px solid #d1d1d1;
+                }
+              `,
+              css`
+                .field-num {
+                  width: 45px !important;
+                  border-right: 0px !important;
+                }
+              `
+            )}
+          >
+            <Tooltip asChild content="Border Left">
+              <div>
+                <FieldNumUnit
+                  positiveOnly
+                  hideUnit
+                  icon={
+                    <Icon
+                      icon="uim:border-left"
+                      className="text-lg text-gray-700"
+                    />
+                  }
+                  value={get(params, "stroke.l") + "px"}
+                  update={(val) => {
+                    let data = {
+                      ...params.stroke,
+                      l: parseInt(val.replaceAll("px", "")),
+                    };
+                    update("border", {
+                      ...params,
+                      stroke: data as any,
+                    });
+                    let isMixed = detectMixedCorner(data);
+                    local.isBorderMix = isMixed.isMix;
+                    local.borderVal = isMixed.value;
+                    local.render();
+                  }}
+                />
+              </div>
+            </Tooltip>
+
+            <Tooltip asChild content="Border Top">
+              <div>
+                <FieldNumUnit
+                  positiveOnly
+                  hideUnit
+                  icon={
+                    <Icon
+                      icon="uim:border-top"
+                      className="text-lg text-gray-700"
+                    />
+                  }
+                  value={get(params, "stroke.t") + "px"}
+                  update={(val) => {
+                    let data = {
+                      ...params.stroke,
+                      t: parseInt(val.replaceAll("px", "")),
+                    };
+                    update("border", {
+                      ...params,
+                      stroke: data as any,
+                    });
+                    let isMixed = detectMixedCorner(data);
+                    local.isBorderMix = isMixed.isMix;
+                    local.borderVal = isMixed.value;
+                    local.render();
+                  }}
+                />
+              </div>
+            </Tooltip>
+            <Tooltip asChild content="Border Right">
+              <div>
+                <FieldNumUnit
+                  positiveOnly
+                  hideUnit
+                  icon={
+                    <Icon
+                      icon="uim:border-right"
+                      className="text-lg text-gray-700"
+                    />
+                  }
+                  value={get(params, "stroke.r") + "px"}
+                  update={(val) => {
+                    let data = {
+                      ...params.stroke,
+                      r: parseInt(val.replaceAll("px", "")),
+                    };
+                    update("border", {
+                      ...params,
+                      stroke: data as any,
+                    });
+                    let isMixed = detectMixedCorner(data);
+                    local.isBorderMix = isMixed.isMix;
+                    local.borderVal = isMixed.value;
+                    local.render();
+                  }}
+                />
+              </div>
+            </Tooltip>
+            <Tooltip asChild content="Border Bottom">
+              <div>
+                <FieldNumUnit
+                  positiveOnly
+                  hideUnit
+                  icon={
+                    <Icon
+                      icon="uim:border-bottom"
+                      className="text-lg text-gray-700"
+                    />
+                  }
+                  value={get(params, "stroke.b") + "px"}
+                  update={(val) => {
+                    let data = {
+                      ...params.stroke,
+                      b: parseInt(val.replaceAll("px", "")),
+                    };
+                    update("border", {
+                      ...params,
+                      stroke: data as any,
+                    });
+                    let isMixed = detectMixedCorner(data);
+                    local.isBorderMix = isMixed.isMix;
+                    local.borderVal = isMixed.value;
+                    local.render();
+                  }}
+                />
+              </div>
+            </Tooltip>
+          </div>
+        </>
+      ) : (
+        <></>
+      )}
       <div
         className={cx(
-          "flex flex-row items-stretch space-x-2 text-xs ",
+          "flex flex-row items-stretch justify-between text-xs ",
           css`
             .field-num {
               border: 1px solid #d1d1d1;
@@ -149,12 +368,13 @@ export const PanelBorder: FC<{
               css`
                 .color-box {
                   height: 25px !important;
+                  width: 50px;
                 }
               `
             )}
           >
             <FieldColor
-              popupID="border-color"
+              popupID="bg-color"
               value={params.color}
               update={(color) => {
                 update("border", { ...params, color });
@@ -184,16 +404,24 @@ export const PanelBorder: FC<{
                 />
               }
               width={"100%"}
-              disabled={local.isMix ? "Mixed" : false}
               enableWhenDrag
-              value={local.corner + ""}
+              value={
+                get(detectMixedCorner(params.rounded), "isMix")
+                  ? ""
+                  : get(detectMixedCorner(params.rounded), "value") + ""
+              }
+              disabled={
+                get(detectMixedCorner(params.rounded), "isMix")
+                  ? "Mixed"
+                  : false
+              }
               update={(val, setVal) => {
                 let result = updateAllCorner({
                   value: parseInt(val.replaceAll("px", "")),
                 });
                 let isMixed = detectMixedCorner(result);
                 local.isMix = isMixed.isMix;
-                local.corner = isMixed.value;
+
                 local.render();
               }}
             />
@@ -275,7 +503,7 @@ export const PanelBorder: FC<{
                       tr: parseInt(val.replaceAll("px", "")),
                     });
                     local.isMix = isMixed.isMix;
-                    local.corner = isMixed.value;
+
                     local.render();
                   }}
                 />
@@ -307,7 +535,7 @@ export const PanelBorder: FC<{
                       tl: parseInt(val.replaceAll("px", "")),
                     });
                     local.isMix = isMixed.isMix;
-                    local.corner = isMixed.value;
+
                     local.render();
                   }}
                 />
@@ -338,7 +566,7 @@ export const PanelBorder: FC<{
                       bl: parseInt(val.replaceAll("px", "")),
                     });
                     local.isMix = isMixed.isMix;
-                    local.corner = isMixed.value;
+
                     local.render();
                   }}
                 />
@@ -369,7 +597,7 @@ export const PanelBorder: FC<{
                       br: parseInt(val.replaceAll("px", "")),
                     });
                     local.isMix = isMixed.isMix;
-                    local.corner = isMixed.value;
+
                     local.render();
                   }}
                 />
@@ -382,16 +610,4 @@ export const PanelBorder: FC<{
       )}
     </div>
   );
-};
-
-const getImgMeta = (url: string) => {
-  return new Promise<null | HTMLImageElement>((resolve, reject) => {
-    const img = new Image();
-    img.onload = () => resolve(img);
-    img.onerror = (err) => {
-      console.error(err, url);
-      resolve(null);
-    };
-    img.src = url;
-  });
 };

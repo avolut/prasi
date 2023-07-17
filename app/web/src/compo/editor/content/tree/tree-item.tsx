@@ -43,7 +43,8 @@ export const CETreeItem: FC<{
   const parentActive = multipleActive.find(
     (e) => e.get("id") === item.get("id")
   );
-  const isParentActive = parentActive ? true : false;
+  const isParentActive =
+    c.editor.copy === "multiple" && parentActive ? true : false;
   const type = item.get("type");
   let childs = getArray<MContent>(item, "childs");
   const adv = getMap<FMAdv>(item, "adv")?.toJSON() || {};

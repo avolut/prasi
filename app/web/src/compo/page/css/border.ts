@@ -19,7 +19,24 @@ export const cssBorder = (
   });
   return cx(
     css`
-      border-width: ${border.stroke ? border.stroke : 0}px;
+      border-left-width: ${get(border, "stroke.l")
+        ? get(border, "stroke.l")
+        : 0}px;
+    `,
+    css`
+      border-right-width: ${get(border, "stroke.r")
+        ? get(border, "stroke.r")
+        : 0}px;
+    `,
+    css`
+      border-bottom-width: ${get(border, "stroke.b")
+        ? get(border, "stroke.b")
+        : 0}px;
+    `,
+    css`
+      border-top-width: ${get(border, "stroke.t")
+        ? get(border, "stroke.t")
+        : 0}px;
     `,
     css`
       border-color: ${border.color ? border.color : "transparent"};

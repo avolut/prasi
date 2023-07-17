@@ -227,6 +227,12 @@ export const CETree: FC<{ id: string }> = ({ id }) => {
                                           }
                                         }, 100);
                                         break;
+                                      case "section":
+                                        selectChildren({ item, global: c });
+                                        break;
+                                      case "item":
+                                        selectChildren({ item, global: c });
+                                        break;
                                       default:
                                         break;
                                     }
