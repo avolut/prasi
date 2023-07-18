@@ -10,7 +10,7 @@ export const main = createAPIServer({
 
   serverURL(mode) {
     if (mode === "dev") return "";
-    return `https://apinew.lmtd.id`;
+    return `https://apilmtd.goperasi.id`;
   },
 
   // make sure cookieKey is different for each app
