@@ -1,15 +1,23 @@
 export type Req = ReturnType<typeof prepReq>;
+import { existsSync, mkdirSync } from "fs";
 import { open } from "lmdb";
+import { join } from "path";
+import { cwd } from "process";
 type Cache = {
   content: string;
   prasi: { site_id: string; page_id: string };
   timestamp: number;
 };
+
+const lmdbDir = join(cwd(), "lmdb");
+if (!existsSync(lmdbDir)) {
+  mkdirSync(lmdbDir);
+}
 export const db = open<
   Cache,
   [domain: string, method: string, pathname: string]
 >({
-  path: "lmdb/cache.lmdb",
+  path: join(cwd(), "lmdb", "cache.lmdb"),
   compression: true,
 });
 
