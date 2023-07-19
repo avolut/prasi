@@ -1,6 +1,5 @@
 import { compressToBase64 as compress } from "lz-string";
 import React from "react";
-import { dbs } from "service-db";
 import { ssr } from "web-init";
 import { g } from "web-init/src/types";
 import { initRouter } from "web-types/router";

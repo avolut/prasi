@@ -1,5 +1,11 @@
 import { createId } from "@paralleldrive/cuid2";
-import { createContext, startTransition, useContext, useEffect } from "react";
+import {
+  createContext,
+  startTransition,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 const w = window as unknown as {
   globalValueID: WeakMap<any, string>;
@@ -9,6 +15,7 @@ export const GlobalContext = createContext({
   global: {} as Record<string, any>,
   render: () => {},
 });
+export const uState = useState;
 export const useGlobal = <T extends object>(
   defaultValue: T,
   effectOrID?:
