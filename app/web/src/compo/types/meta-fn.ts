@@ -20,10 +20,7 @@ export type FMAdv = TypedMap<FNAdv>;
 
 export type FNComponent = {
   id: string;
-  group: {
-    id: string;
-    name: string;
-  };
+  name: string;
   props: Record<string, FNCompDef>;
 };
 
@@ -50,7 +47,6 @@ export type FMCompDef = TypedMap<
 
 export type FMComponent = TypedMap<
   Omit<FNComponent, "group" | "props"> & {
-    group: TypedMap<FNComponent["group"]>;
     props: TypedMap<Record<string, FMCompDef>>;
   }
 >;

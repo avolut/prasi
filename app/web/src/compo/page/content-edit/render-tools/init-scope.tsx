@@ -9,8 +9,7 @@ export const initScope = (
   ceid: string,
   item: IContent,
   mitem: MContent,
-  c: typeof CEGlobal,
-  scopeName?: string
+  c: typeof CEGlobal
 ) => {
   const i = item as IItem;
 
@@ -22,12 +21,7 @@ export const initScope = (
       ?.toJSON() as any;
   }
 
-  const scopeRootID = scopeName || "root";
-  let scope = c.scope[scopeRootID];
-  if (!c.scope[scopeRootID]) {
-    c.scope[scopeRootID] = { tree: {}, effect: {}, value: {}, evargs: {} };
-    scope = c.scope[scopeRootID];
-  }
+  let scope = c.scope;
 
   if (scope) {
     if (!scope.tree[item.id]) {
@@ -62,8 +56,7 @@ export const initScope = (
       const comp = doc.getMap("map").get("content_tree")?.toJSON() as IItem;
 
       const exec = (fn: string) => {
-        const parentScopeID = scope.tree[scopeRootID].parent_id;
-        const existingScope = findScope(c.scope[parentScopeID], item.id || "");
+        const existingScope = findScope(c.scope, item.id || "");
         const f = new Function(...Object.keys(existingScope), `return ${fn}`);
         return f(...Object.values(existingScope));
       };

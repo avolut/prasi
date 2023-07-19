@@ -1,19 +1,18 @@
 import { FC, useEffect } from "react";
-import { useGlobal, useLocal } from "web-utils";
+import { useGlobal } from "web-utils";
 import { CEGlobal } from "../../../base/global/content-editor";
 import { getArray } from "../../editor/tools/yjs-tools";
 import { MItem } from "../../types/item";
 import { responsiveMode } from "../tools/responsive-mode";
 import { CEItem } from "./ce-item";
 import { CESection } from "./ce-section";
-import { Loading } from "../../ui/loading";
 
 export const CEPage: FC<{ ceid: string }> = ({ ceid }) => {
   const c = useGlobal(CEGlobal, ceid);
   const mode = responsiveMode();
 
   useEffect(() => {
-    const scope = c.scope[c.editor.activeScopeName || "root"];
+    const scope = c.scope;
 
     if (scope) {
       Object.entries(scope.effect).map(([k, v]) => {

@@ -1,4 +1,4 @@
-import { FC, ReactNode, useEffect, useRef, useState } from "react";
+import { FC, ReactNode } from "react";
 import { useGlobal } from "web-utils";
 import { CEGlobal } from "../../../base/global/content-editor";
 import { renderHTML } from "../../editor/tools/render-html";
@@ -19,24 +19,20 @@ export const CERender: FC<{
   children: ReactNode;
   item: MItem | MText | MSection;
   elitem?: MItem | MText | MSection;
-  scopeName?: string;
-}> = ({ ceid, children, item: mitem, scopeName, elitem }) => {
+}> = ({ ceid, children, item: mitem, elitem }) => {
   const c = useGlobal(CEGlobal, ceid);
 
   const item = mitem.toJSON() as IContent;
 
-  if (scopeName && scopeName !== "root") {
-    item.id = scopeName;
-  }
-  if (c.editor.active && c.editor.active.get("id") === item.id) {
-    c.editor.activeScopeName = scopeName;
+  if (elitem) {
+    item.id = elitem.get("id") || "";
   }
 
   let _children = children;
   const className = [produceCSS(item, { mode: wsdoc.mode })];
   const adv = item.adv;
   const elementProp = initElProp(c, className, item, elitem || mitem);
-  const scope = initScope(ceid, item, elitem || mitem, c, scopeName);
+  const scope = initScope(ceid, item, elitem || mitem, c);
 
   if (adv) {
     const html = renderHTML(adv);

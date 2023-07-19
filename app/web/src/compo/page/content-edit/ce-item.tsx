@@ -11,8 +11,7 @@ export const CEItem: FC<{
   ceid: string;
   item: MItem;
   preventRenderComponent?: boolean;
-  scopeName?: string;
-}> = ({ ceid, item, preventRenderComponent, scopeName }) => {
+}> = ({ ceid, item, preventRenderComponent }) => {
   if (!preventRenderComponent) {
     const comp = item.get("component");
     if (comp) {
@@ -33,28 +32,14 @@ export const CEItem: FC<{
   if (!item) return null;
   const _item: MItem = item as any;
   return (
-    <CERender ceid={ceid} item={item} scopeName={scopeName}>
+    <CERender ceid={ceid} item={item}>
       {getArray<MItem | MText>(_item, "childs")?.map(
         (e: MItem | MText, idx) => {
           const type = e.get("type");
           if (type === "item") {
-            return (
-              <CEItem
-                ceid={ceid}
-                item={e as MItem}
-                key={e.get("id")}
-                scopeName={scopeName}
-              />
-            );
+            return <CEItem ceid={ceid} item={e as MItem} key={e.get("id")} />;
           } else if (type === "text") {
-            return (
-              <CEText
-                ceid={ceid}
-                item={e as MText}
-                key={e.get("id")}
-                scopeName={scopeName}
-              />
-            );
+            return <CEText ceid={ceid} item={e as MText} key={e.get("id")} />;
           }
         }
       )}

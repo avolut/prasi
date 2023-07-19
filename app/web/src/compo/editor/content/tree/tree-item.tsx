@@ -10,7 +10,7 @@ import { MItem } from "../../../types/item";
 import {
   FMAdv,
   FMComponent,
-  FMLinkTag,
+  FNCompDef,
   FNComponent,
 } from "../../../types/meta-fn";
 import { Tooltip } from "../../../ui/tooltip";
@@ -80,13 +80,27 @@ export const CETreeItem: FC<{
   if (childs && childs.length > 0) {
     hasChilds = true;
   }
+  let itemName = item.get("name");
   if (isComponent) {
-    for (const v of Object.values(itemComponent.props || {})) {
-      if (v.meta?.type === "content-element") {
+    const props = component.docs[itemComponent.id || ""]
+      ?.getMap("map")
+      .get("content_tree")
+      ?.get("component")
+      ?.get("props")
+      ?.toJSON() as Record<string, FNCompDef>;
+    for (const [k, v] of Object.entries(itemComponent.props || {})) {
+      let prop = null as null | FNCompDef;
+      let type = v.meta?.type
+      if (props && props[k]) {
+        prop = props[k];
+        type = prop.meta?.type;
+      }
+      if (type === "content-element") {
         hasChilds = true;
         break;
       }
     }
+    if (itemComponent.name) itemName = itemComponent.name;
   }
 
   let isPropContent = false;
@@ -242,13 +256,15 @@ export const CETreeItem: FC<{
             if (!isComponent) {
               item.set("name", local.newname);
             } else {
+              const comp = item.get("component");
+              item.set("name", local.newname);
             }
           }}
           autoFocus
         />
       ) : (
         <div className="text-sm flex-1 ">
-          <>{item.get("name")}</>
+          <>{itemName}</>
         </div>
       )}
 
@@ -360,6 +376,18 @@ export const CETreeItem: FC<{
                     <>Edit</>
                   </Tooltip>
                 )}
+
+                <Tooltip
+                  content="Rename"
+                  className="flex items-center p-1 h-full text-blue-700"
+                  onClick={() => {
+                    local.renaming = true;
+                    local.newname = item.get("name") || "";
+                    local.render();
+                  }}
+                >
+                  <Rename />
+                </Tooltip>
               </>
             )}
 

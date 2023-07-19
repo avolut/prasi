@@ -217,10 +217,7 @@ export const ScriptMonaco: FC<{
               }
             }
 
-            const scope = findScope(
-              c.scope[c.editor.activeScopeName || "root"],
-              c.editor.active?.get("id") || ""
-            );
+            const scope = findScope(c.scope, c.editor.active?.get("id") || "");
             for (const [k, v] of Object.entries(scope)) {
               propVal[k] = v;
             }

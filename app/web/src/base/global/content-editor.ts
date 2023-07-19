@@ -42,7 +42,6 @@ export const CEGlobal = {
       render: () => {},
     },
     componentActiveID: "",
-    activeScopeName: undefined as undefined | string,
     active: null as null | MContent,
     multiple: {
       active: null as null | Array<MContent>,
@@ -73,7 +72,7 @@ export const CEGlobal = {
       },
     },
   },
-  scope: {} as Record<string, SingleScope>,
+  scope: { tree: {}, effect: {}, value: {}, evargs: {} } as SingleScope,
   global: {
     scss: "",
     api_url: "",

@@ -39012,6 +39012,8 @@ ${import_chalk2.default.magenta("Installing")} deps:
                     }
                   }
                 };
+                ws.removeAllListeners("close");
+                ws.removeAllListeners("message");
                 ws.once("close", resend);
                 ws.on("message", onmsg);
                 ws.send(

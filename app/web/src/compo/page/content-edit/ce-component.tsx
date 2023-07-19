@@ -55,28 +55,14 @@ export const CEComponent: FC<{
   if (!item && !compItem) return null;
 
   return (
-    <CERender ceid={ceid} item={compItem} elitem={item} scopeName={scopeName}>
+    <CERender ceid={ceid} item={compItem} elitem={item}>
       {getArray<MItem | MText>(compItem, "childs")?.map(
         (e: MItem | MText, idx) => {
           const type = e.get("type");
           if (type === "item") {
-            return (
-              <CEItem
-                ceid={ceid}
-                item={e as MItem}
-                key={e.get("id")}
-                scopeName={scopeName}
-              />
-            );
+            return <CEItem ceid={ceid} item={e as MItem} key={e.get("id")} />;
           } else if (type === "text") {
-            return (
-              <CEText
-                ceid={ceid}
-                item={e as MText}
-                key={idx}
-                scopeName={scopeName}
-              />
-            );
+            return <CEText ceid={ceid} item={e as MText} key={idx} />;
           }
         }
       )}
