@@ -1,6 +1,6 @@
 const g = globalThis as any;
 import { createRouter } from "radix3";
-import type { PrismaClient } from "../../../app/db/node_modules/.gen/index";
+import type { PrismaClient } from "../../db/node_modules/.gen/index";
 import { Page, Site } from "../lib/site";
 
 export const initPrasi = async () => {
@@ -8,7 +8,7 @@ export const initPrasi = async () => {
   g.isSSR = true;
 
   const { dbClient } = await import(
-    "../../../pkgs/service/pkgs/service-web/pkgs/web-init/src/web/db"
+    "service/pkgs/service-web/pkgs/web-init/src/web/db"
   );
 
   g.db = dbClient("db", "http://127.0.0.1:12300") as PrismaClient;
