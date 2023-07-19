@@ -54,7 +54,7 @@ export const _ = {
 
               await $`rm -rf ${dir.path(`../prasi-api/${site_id}`)}`;
               await dirAsync(dir.path(`../prasi-api/${site_id}`));
-              await $`cp -r ${dir.path(`stencil/prasi-api`)} ${root}`;
+              await $`cp -r ${dir.path(`prasi-api`)} ${root}`;
 
               await writeAsync(join(root, "srv", "port.json"), {
                 port: config.prasi.port,

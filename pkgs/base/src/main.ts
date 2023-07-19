@@ -123,6 +123,7 @@ const baseMain = async () => {
     await runner.run({
       path: app.output,
       cwd: app.cwd,
+      args: [baseGlobal.mode],
     });
 
     await Promise.all(app.serviceNames.map(async (e) => await postRun(e)));

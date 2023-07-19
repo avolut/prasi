@@ -52,6 +52,7 @@ ${src}
       if (res && typeof res.build === "function") {
         console.log("› Run app/build.ts");
       }
+
       g.afterBuild = await res.build(baseGlobal.mode);
     } catch (e) {
       console.error("Failed to run app/build.ts", e);

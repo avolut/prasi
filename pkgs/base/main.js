@@ -37049,11 +37049,24 @@ ERROR: Async operation of type "${type}" was created in "process.exit" callback.
       "use strict";
       init_export();
       import_fs_jetpack17 = __toESM(require_main());
-      build = async () => {
-        if (!await (0, import_fs_jetpack17.existsAsync)(dir.root(".output/app/stencil/prasi-api"))) {
-          await (0, import_fs_jetpack17.copyAsync)(dir.root("stencil"), dir.root(".output/app/stencil"), {
-            overwrite: true
-          });
+      build = async (mode) => {
+        if (!await (0, import_fs_jetpack17.existsAsync)(dir.root(".output/app/prasi-api"))) {
+          await (0, import_fs_jetpack17.copyAsync)(
+            dir.root("app/prasi-api"),
+            dir.root(".output/app/prasi-api"),
+            {
+              overwrite: true
+            }
+          );
+        }
+        if (mode !== "dev") {
+          await (0, import_fs_jetpack17.copyAsync)(
+            dir.root("app/prasi-site"),
+            dir.root(".output/app/prasi-site"),
+            {
+              overwrite: true
+            }
+          );
         }
       };
     }
@@ -44342,7 +44355,8 @@ Build done: ${source_default.green(`.output/app`)}`);
       }
       await runner.run({
         path: app.output,
-        cwd: app.cwd
+        cwd: app.cwd,
+        args: [baseGlobal.mode]
       });
       await Promise.all(app.serviceNames.map(async (e) => await postRun(e)));
       await new Promise(() => {

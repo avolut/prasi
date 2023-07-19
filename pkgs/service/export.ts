@@ -14,7 +14,9 @@ import { SERVICE_NAME } from "./src/types";
 export * from "./src/create-service";
 export * from "./src/service-module";
 
-export const initialize = async (fn: () => Promise<void>) => {
+export const initialize = async (
+  fn: (mode: "dev" | "prod") => Promise<void>
+) => {
   attachSpawnCleanup("root");
 
   await pkg.install(dir.path(), { deep: true });
@@ -23,7 +25,11 @@ export const initialize = async (fn: () => Promise<void>) => {
   const root = await createRPC("root", rootAction);
   await svc.init();
 
-  await fn();
+  if (process.argv[process.argv.length - 1] === "dev") {
+    await fn("dev");
+  } else {
+    await fn("prod");
+  }
 
   if (process.send) process.send("::RUNNING::");
 

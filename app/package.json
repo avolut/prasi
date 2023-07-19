@@ -3,6 +3,7 @@
   "main": "app.ts",
   "dependencies": {
     "dir": "workspace:^",
+    "execa": "^7.1.1",
     "fs-jetpack": "^5.1.0",
     "service": "workspace:^",
     "web": "workspace:^"
