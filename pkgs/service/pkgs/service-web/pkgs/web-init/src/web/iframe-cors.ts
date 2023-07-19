@@ -10,7 +10,7 @@ export const createFrameCors = async (url: string, win?: any) => {
   const document = w.document;
 
   const id = `__` + url.replace(/\W/g, "");
-  if (!document.querySelector(`#${id}`)) {
+  if (typeof document !== "undefined" && !document.querySelector(`#${id}`)) {
     const iframe = document.createElement("iframe");
     iframe.style.display = "none";
     iframe.id = id;
@@ -38,45 +38,47 @@ export const createFrameCors = async (url: string, win?: any) => {
     input: RequestInfo | URL,
     init?: RequestInit | undefined
   ) => {
-    const iframe = w.document.querySelector(`#${id}`) as HTMLIFrameElement;
+    if (w.document && w.document.querySelector) {
+      const iframe = w.document.querySelector(`#${id}`) as HTMLIFrameElement;
 
-    if (
-      !iframe ||
-      !iframe.contentWindow ||
-      (iframe && iframe.getAttribute("loaded") !== "y")
-    ) {
-      await waitUntil(
-        () =>
-          iframe &&
-          iframe.contentWindow &&
-          iframe.getAttribute("loaded") === "y"
-      );
-    }
-
-    return await new Promise((resolve, reject) => {
-      if (iframe && iframe.contentWindow) {
-        const id = cuid();
-        wm[id] = (e: any) => {
-          if (id === e.data.id) {
-            w.removeEventListener("message", wm[id]);
-            delete wm[id];
-            if (e.data.error) {
-              let err = e.data.error;
-              reject(
-                err.replace(
-                  /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
-                  ""
-                )
-              );
-            } else {
-              resolve(e.data.result);
-            }
-          }
-        };
-        w.addEventListener("message", wm[id]);
-        iframe.contentWindow.postMessage({ input, init, id }, "*");
+      if (
+        !iframe ||
+        !iframe.contentWindow ||
+        (iframe && iframe.getAttribute("loaded") !== "y")
+      ) {
+        await waitUntil(
+          () =>
+            iframe &&
+            iframe.contentWindow &&
+            iframe.getAttribute("loaded") === "y"
+        );
       }
-    });
+
+      return await new Promise((resolve, reject) => {
+        if (iframe && iframe.contentWindow) {
+          const id = cuid();
+          wm[id] = (e: any) => {
+            if (id === e.data.id) {
+              w.removeEventListener("message", wm[id]);
+              delete wm[id];
+              if (e.data.error) {
+                let err = e.data.error;
+                reject(
+                  err.replace(
+                    /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
+                    ""
+                  )
+                );
+              } else {
+                resolve(e.data.result);
+              }
+            }
+          };
+          w.addEventListener("message", wm[id]);
+          iframe.contentWindow.postMessage({ input, init, id }, "*");
+        }
+      });
+    }
   };
 
   return {
