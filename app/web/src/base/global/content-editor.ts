@@ -36,6 +36,7 @@ export const CEGlobal = {
       method: null as TreeMethods | null,
       list: [] as NodeModel<NodeContent>[],
       render: () => {},
+      reload: false,
     },
     page: {
       reload: false,

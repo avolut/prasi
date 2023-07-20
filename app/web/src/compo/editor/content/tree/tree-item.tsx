@@ -82,6 +82,7 @@ export const CETreeItem: FC<{
   }
   let itemName = item.get("name");
   if (isComponent) {
+    hasChilds = false;
     const props = component.docs[itemComponent.id || ""]
       ?.getMap("map")
       .get("content_tree")
@@ -90,7 +91,7 @@ export const CETreeItem: FC<{
       ?.toJSON() as Record<string, FNCompDef>;
     for (const [k, v] of Object.entries(itemComponent.props || {})) {
       let prop = null as null | FNCompDef;
-      let type = v.meta?.type
+      let type = v.meta?.type;
       if (props && props[k]) {
         prop = props[k];
         type = prop.meta?.type;
@@ -253,11 +254,33 @@ export const CETreeItem: FC<{
           }}
           onBlur={() => {
             local.renaming = false;
-            if (!isComponent) {
-              item.set("name", local.newname);
-            } else {
+
+            if (isComponent) {
               const comp = item.get("component");
+              if (comp) comp.set("name", local.newname);
+            } else {
               item.set("name", local.newname);
+            }
+
+            if (
+              !isComponent &&
+              rootComponentID === itemComponent.id &&
+              rootComponentID
+            ) {
+              const doc = component.docs[rootComponentID];
+              if (doc) {
+                doc.transact(() => {
+                  const comp = doc.getMap("map");
+                  comp.set("name", local.newname);
+                  const ctree = comp.get("content_tree");
+                  if (ctree) {
+                    const ccomp = ctree.get("component");
+                    if (ccomp) {
+                      ccomp.set("name", local.newname);
+                    }
+                  }
+                });
+              }
             }
           }}
           autoFocus

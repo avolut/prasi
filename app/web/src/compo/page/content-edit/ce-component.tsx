@@ -28,10 +28,11 @@ export const CEComponent: FC<{
     const newcomp = fillID(compItem.toJSON() as any) as IItem;
     newcomp.id = item.get("id") as any;
     if (newcomp.component) {
-      newcomp.component.props = item
-        .get("component")
-        ?.get("props")
-        ?.toJSON() as any;
+      const comp = item.get("component");
+      if (comp) {
+        newcomp.component.name = comp.get("name") || "";
+        newcomp.component.props = comp.get("props")?.toJSON() as any;
+      }
     }
     syncronize(item as any, newcomp);
     local.instanced = true;

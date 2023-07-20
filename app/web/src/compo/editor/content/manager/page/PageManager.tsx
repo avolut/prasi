@@ -344,8 +344,7 @@ export const PageManager = () => {
                         <div className="pr-5">{node.text}</div>
                         <div
                           className={cx(
-                            "flex flex-1 items-stretch  space-x-1 pr-[20px]",
-                            !node.droppable && "justify-end"
+                            "flex flex-1 items-stretch space-x-1 pr-[20px] justify-end"
                           )}
                         >
                           {node.id !== "ROOT" && (

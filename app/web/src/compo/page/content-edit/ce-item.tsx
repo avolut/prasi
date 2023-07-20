@@ -27,9 +27,7 @@ export const CEItem: FC<{
         }
       }
     }
-  } else {
-    console.log(item);
-  }
+  } 
 
   if (!item) return null;
   return (
