@@ -41,6 +41,14 @@ export const PanelDimension: FC<{
     local.activeHeight = activeEl.offsetHeight;
   }
 
+  useEffect(() => {
+    local.dim = responsiveVal<FNDimension>(value, "dim", mode, {
+      w: "fit",
+      h: "fit",
+    });
+    local.render();
+  }, [value]);
+
   const dim = local.dim;
 
   return (

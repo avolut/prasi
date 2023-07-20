@@ -1,10 +1,9 @@
-import { component_group } from "dbgen";
+import { Fragment } from "react";
 import { useGlobal, useLocal } from "web-utils";
 import { CEGlobal } from "../../../base/global/content-editor";
+import { Dropdown } from "../../ui/dropdown";
 import { Loading } from "../../ui/loading";
 import { wsdoc } from "../ws/wsdoc";
-import { Dropdown } from "../../ui/dropdown";
-import { Fragment } from "react";
 
 export const CompManager = () => {
   const c = useGlobal(CEGlobal, "PAGE");

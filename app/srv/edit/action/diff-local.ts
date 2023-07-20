@@ -42,13 +42,14 @@ export const diffLocal = (ws: Websocket, msg: any) => {
       }, 1500);
     } else if (msg.mode === "comp") {
       eg.edit.comp[msg.id].saveTimeout = setTimeout(() => {
+        const comp = eg.edit.comp[msg.id].doc.getMap("map").toJSON();
         db.component.update({
           where: {
             id: msg.id,
           },
           data: {
-            content_tree: eg.edit.comp[msg.id].doc.getMap("map").toJSON()
-              .content_tree,
+            name: comp.name,
+            content_tree: comp.content_tree,
           },
         });
       }, 1500);

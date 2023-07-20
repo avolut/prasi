@@ -9,7 +9,7 @@ export const RText: FC<{ item: IText }> = ({ item }) => {
         dangerouslySetInnerHTML={{
           __html: item.html || "",
         }}
-        className={cx("outline-none select-text whitespace-nowrap")}
+        className={cx("outline-none select-text")}
       ></div>
     </RRender>
   );

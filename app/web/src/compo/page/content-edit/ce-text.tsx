@@ -18,7 +18,7 @@ export const CEText: FC<{ ceid: string; item: MText }> = ({ ceid, item }) => {
             dangerouslySetInnerHTML={{
               __html: item.get("html") || "",
             }}
-            className={cx("outline-none select-text whitespace-nowrap")}
+            className={cx("outline-none select-text")}
           />
         )}
       </CERender>
@@ -59,7 +59,7 @@ const CETextEditable: FC<{ ceid: string; item: MText }> = ({ ceid, item }) => {
         spellCheck={false}
         className={cx(
           item.get("id"),
-          "outline-none select-text whitespace-nowrap",
+          "outline-none select-text",
           css`
             min-width: 25px;
           `

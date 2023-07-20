@@ -280,6 +280,14 @@ export const CETreeItem: FC<{
                     }
                   }
                 });
+
+                for (const g of Object.values(wsdoc.compGroup)) {
+                  for (const c of g.comps) {
+                    if (c.id === rootComponentID) {
+                      c.name = local.newname;
+                    }
+                  }
+                }
               }
             }
           }}
@@ -312,7 +320,26 @@ export const CETreeItem: FC<{
           )}
           {!!adv.css && (
             <Tooltip content="Has CSS">
-              <div className="bg-green-800 w-[7px] h-[7px] mr-[3px]"></div>
+              <div
+                className="bg-green-700 w-[7px] h-[7px] mr-[3px] hover:bg-green-900"
+                onClick={() => {
+                  c.editor.active = item;
+                  const map = getMap<FMAdv>(c.editor.active, "adv");
+                  c.editor.script.active = {
+                    src: getMText(map, "css"),
+                    type: "css",
+                    default: `\
+  & {
+    display: flex;
+    
+    &:hover {
+      display: flex;
+    }
+  }`,
+                  };
+                  c.render();
+                }}
+              ></div>
             </Tooltip>
           )}
 
@@ -339,7 +366,18 @@ export const CETreeItem: FC<{
 
           {!!adv.html && (
             <Tooltip content="Has HTML">
-              <div className="bg-blue-600 w-[7px] h-[7px] mr-[3px]"></div>
+              <div
+                className="bg-blue-600 w-[7px] h-[7px] mr-[3px] hover:bg-blue-800"
+                onClick={() => {
+                  c.editor.active = item;
+                  const map = getMap<FMAdv>(c.editor.active, "adv");
+                  c.editor.script.active = {
+                    src: getMText(map, "html"),
+                    type: "html",
+                  };
+                  c.render();
+                }}
+              ></div>
             </Tooltip>
           )}
         </>
