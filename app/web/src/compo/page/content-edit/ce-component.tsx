@@ -24,6 +24,11 @@ export const CEComponent: FC<{
   const compid = item.get("component")?.get("id");
   const props = item.get("component")?.get("props");
 
+  if (local.instanced && compid && wsdoc.reloadComponentId.has(compid)) {
+    local.instanced = false;
+    wsdoc.reloadComponentId.delete(compid);
+  }
+
   if (!local.instanced) {
     const newcomp = fillID(compItem.toJSON() as any) as IItem;
     newcomp.id = item.get("id") as any;

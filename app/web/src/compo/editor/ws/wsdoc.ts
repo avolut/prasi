@@ -31,6 +31,7 @@ const _wsdoc = {
   },
   ws: null as null | WebSocket,
   apiDef: { apiEntry: null as any, prismaTypes: {}, apiTypes: "" } as PrasiAPI,
+  reloadComponentId: new Set<string>(),
   async wsend(payload: string) {
     const ws = this.ws;
     if (ws) {

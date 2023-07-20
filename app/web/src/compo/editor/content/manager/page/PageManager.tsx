@@ -20,6 +20,12 @@ export type PageItem = {
   id_folder: null | string;
 };
 
+const data = {
+  all: [] as PageItem[],
+  folder: {} as Record<string, page_folder>,
+  pages: [] as NodeModel<PageItem>[],
+};
+
 export const PageManager = () => {
   const c = useGlobal(CEGlobal, "PAGE");
   const local = useLocal({
@@ -33,9 +39,6 @@ export const PageManager = () => {
     newFolder: { parentID: "", name: "" },
     search: "",
     init: false,
-    all: [] as PageItem[],
-    folder: {} as Record<string, page_folder>,
-    pages: [] as NodeModel<PageItem>[],
   });
 
   const reloadPages = async () => {
@@ -44,12 +47,12 @@ export const PageManager = () => {
         id_site: wsdoc.site?.id,
       },
     });
-    local.folder = {};
+    data.folder = {};
     for (const f of folders) {
-      local.folder[f.id] = { ...f };
+      data.folder[f.id] = { ...f };
     }
 
-    local.all = await db.page.findMany({
+    data.all = await db.page.findMany({
       where: {
         id_site: wsdoc.site?.id,
         is_deleted: false,
@@ -65,13 +68,13 @@ export const PageManager = () => {
     local.loading = false;
     local.render();
   };
-  if (local.all.length === 0) {
+  if (data.all.length === 0) {
     reloadPages();
     local.loading = true;
   }
 
   if (!local.init && !local.loading) {
-    local.pages = [
+    data.pages = [
       {
         id: "ROOT",
         parent: "",
@@ -81,9 +84,9 @@ export const PageManager = () => {
     ];
     const folders = new Set<string>();
 
-    for (const page of local.all) {
+    for (const page of data.all) {
       const fid = page.id_folder || "-";
-      const folder = local.folder[fid];
+      const folder = data.folder[fid];
 
       if (
         local.search &&
@@ -94,7 +97,7 @@ export const PageManager = () => {
         continue;
       }
 
-      local.pages.push({
+      data.pages.push({
         id: page.id,
         parent: folder?.id || "ROOT",
         text: page.name,
@@ -103,10 +106,10 @@ export const PageManager = () => {
       });
     }
 
-    for (const folder of Object.values(local.folder)) {
+    for (const folder of Object.values(data.folder)) {
       if (!folders.has(folder.id)) {
         folders.add(folder.id);
-        local.pages.push({
+        data.pages.push({
           id: folder.id,
           parent: folder.parent_id || "ROOT",
           text: folder.name || "",
@@ -117,7 +120,7 @@ export const PageManager = () => {
     }
 
     if (local.newFolder.parentID) {
-      local.pages.push({
+      data.pages.push({
         id: "F-NEW-FOLDER",
         parent: local.newFolder.parentID,
         text: "",
@@ -184,12 +187,12 @@ export const PageManager = () => {
             </div>
             <DndProvider backend={MultiBackend} options={getBackendOptions()}>
               <Tree
-                tree={local.pages}
+                tree={data.pages}
                 dragPreviewRender={() => <></>}
                 rootId=""
                 onDrop={async (newTree: NodeModel<PageItem>[], opt) => {
                   local.init = true;
-                  local.pages = newTree;
+                  data.pages = newTree;
                   local.render();
 
                   if (!opt.dragSource?.droppable) {
@@ -286,7 +289,7 @@ export const PageManager = () => {
                           local.editFolderID = "";
                           if (local.newFolder.parentID) {
                             if (local.newFolder.name) {
-                              const firstPage = local.all[0];
+                              const firstPage = data.all[0];
                               db.page_folder
                                 .create({
                                   data: {
@@ -437,7 +440,7 @@ export const PageManager = () => {
                           )}
 
                           {((node.droppable && !hasChild) ||
-                            (!node.droppable && local.all.length > 1)) && (
+                            (!node.droppable && data.all.length > 1)) && (
                             <div
                               onClick={async (e) => {
                                 e.stopPropagation();
@@ -449,7 +452,7 @@ export const PageManager = () => {
                                 ) {
                                   if (node.droppable) {
                                     local.init = false;
-                                    delete local.folder[node.id];
+                                    delete data.folder[node.id];
                                     local.render();
                                     db.page_folder.delete({
                                       where: { id: node.id as string },

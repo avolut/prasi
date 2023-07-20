@@ -15,6 +15,7 @@ export const diffLocal = async (msg: WS_MSG_DIFF_LOCAL) => {
     if (page && page.doc) Y.applyUpdate(page.doc as any, diff_local, "remote");
   } else if (msg.mode === "comp") {
     const comp = component.docs[msg.id];
+    wsdoc.reloadComponentId.add(msg.id);
     if (comp) Y.applyUpdate(comp as any, diff_local, "remote");
   }
 };
