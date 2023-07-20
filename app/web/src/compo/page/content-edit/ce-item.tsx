@@ -27,22 +27,21 @@ export const CEItem: FC<{
         }
       }
     }
+  } else {
+    console.log(item);
   }
 
   if (!item) return null;
-  const _item: MItem = item as any;
   return (
     <CERender ceid={ceid} item={item}>
-      {getArray<MItem | MText>(_item, "childs")?.map(
-        (e: MItem | MText, idx) => {
-          const type = e.get("type");
-          if (type === "item") {
-            return <CEItem ceid={ceid} item={e as MItem} key={e.get("id")} />;
-          } else if (type === "text") {
-            return <CEText ceid={ceid} item={e as MText} key={e.get("id")} />;
-          }
+      {getArray<MItem | MText>(item, "childs")?.map((e: MItem | MText, idx) => {
+        const type = e.get("type");
+        if (type === "item") {
+          return <CEItem ceid={ceid} item={e as MItem} key={e.get("id")} />;
+        } else if (type === "text") {
+          return <CEText ceid={ceid} item={e as MText} key={e.get("id")} />;
         }
-      )}
+      })}
     </CERender>
   );
 };

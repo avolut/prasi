@@ -13,14 +13,6 @@ export const initScope = (
 ) => {
   const i = item as IItem;
 
-  let comp = null as unknown as IItem;
-  if (i.component && component.docs[i.component.id]) {
-    comp = component.docs[i.component.id]
-      ?.getMap("map")
-      .get("content_tree")
-      ?.toJSON() as any;
-  }
-
   let scope = c.scope;
 
   if (scope) {
@@ -34,7 +26,7 @@ export const initScope = (
       };
     }
     if (item.type !== "text") {
-      for (const c of (comp || item).childs) {
+      for (const c of item.childs) {
         if (!scope.tree[c.id]) {
           scope.tree[c.id] = {
             childs: new Set(),

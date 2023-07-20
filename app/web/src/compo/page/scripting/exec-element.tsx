@@ -51,7 +51,7 @@ const produceEvalArgs = (
 
   const PassProp = scope.evargs[item.id].passprop;
   const Local = scope.evargs[item.id].local;
-
+  const scopeProps = findScope(scope, item.id);
   const result: any = {
     PassProp,
     Local,
@@ -75,7 +75,7 @@ const produceEvalArgs = (
         </ErrorBoundary>
       );
     },
-    ...findScope(scope, item.id),
+    ...scopeProps,
   };
 
   if (api_url) {

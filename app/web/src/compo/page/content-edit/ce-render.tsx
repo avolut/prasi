@@ -18,21 +18,16 @@ export const CERender: FC<{
   ceid: string;
   children: ReactNode;
   item: MItem | MText | MSection;
-  elitem?: MItem | MText | MSection;
-}> = ({ ceid, children, item: mitem, elitem }) => {
+}> = ({ ceid, children, item: mitem }) => {
   const c = useGlobal(CEGlobal, ceid);
 
   const item = mitem.toJSON() as IContent;
 
-  if (elitem) {
-    item.id = elitem.get("id") || "";
-  }
-
   let _children = children;
   const className = [produceCSS(item, { mode: wsdoc.mode })];
   const adv = item.adv;
-  const elementProp = initElProp(c, className, item, elitem || mitem);
-  const scope = initScope(ceid, item, elitem || mitem, c);
+  const elementProp = initElProp(c, className, item, mitem);
+  const scope = initScope(ceid, item, mitem, c);
 
   if (adv) {
     const html = renderHTML(adv);

@@ -1,20 +1,16 @@
-import { FC, useEffect } from "react";
-import { useGlobal, useLocal } from "web-utils";
+import { FC } from "react";
+import { useGlobal } from "web-utils";
 import { CEGlobal } from "../../../base/global/content-editor";
+import { wsdoc } from "../../editor/ws/wsdoc";
 import { MText } from "../../types/text";
 import { CERender } from "./ce-render";
-import { wsdoc } from "../../editor/ws/wsdoc";
 
-export const CEText: FC<{ ceid: string; item: MText; scopeName?: string }> = ({
-  ceid,
-  item,
-  scopeName,
-}) => {
+export const CEText: FC<{ ceid: string; item: MText }> = ({ ceid, item }) => {
   const c = useGlobal(CEGlobal, ceid);
 
   return (
     <>
-      <CERender ceid={ceid} item={item} scopeName={scopeName}>
+      <CERender ceid={ceid} item={item}>
         {c.editor.enabled ? (
           <CETextEditable ceid={ceid} item={item} />
         ) : (

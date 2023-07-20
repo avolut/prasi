@@ -61,6 +61,12 @@ importers:
         specifier: ../../pkgs/service/pkgs/service-db
         version: link:../../pkgs/service/pkgs/service-db
 
+  app/prasi-api:
+    dependencies:
+      hyper-express:
+        specifier: 6.7.1
+        version: 6.7.1
+
   app/prasi-site:
     dependencies:
       lmdb:
@@ -2820,7 +2826,7 @@ packages:
   /@types/busboy@0.3.2:
     resolution: {integrity: sha512-iEvdm9Z9KdSs/ozuh1Z7ZsXrOl8F4M/CLMXPZHr3QuJ4d6Bjn+HBMC5EMKpwpAo8oi8iK9GZfFoHaIMrrZgwVw==}
     dependencies:
-      '@types/node': 16.18.38
+      '@types/node': 18.14.0
     dev: false
 
   /@types/command-exists@1.2.0:
@@ -2976,7 +2982,6 @@ packages:
 
   /@types/node@18.14.0:
     resolution: {integrity: sha512-5EWrvLmglK+imbCJY0+INViFWUHg1AHel1sq4ZVSfdcNqGy9Edv3UB9IIzzg+xPaUcAgZYcfVs2fBcwDeZzU0A==}
-    dev: true
 
   /@types/node@18.16.19:
     resolution: {integrity: sha512-IXl7o+R9iti9eBW4Wg2hx1xQDig183jj7YLn8F7udNceyfkbn1ZxmzZXuak20gR40D7pIkIY1kYGx5VIGbaHKA==}
