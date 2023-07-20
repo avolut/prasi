@@ -14,7 +14,6 @@ export const _ = {
     } catch (e: any) {
       res.sendStatus(500);
       res.json(e);
-      throw new Error(e.trim());
     }
   },
 };
