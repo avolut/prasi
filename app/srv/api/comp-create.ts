@@ -127,10 +127,7 @@ export const _ = {
             childs: [],
             component: {
               id: newcomp.id,
-              group: {
-                id: group.id,
-                name: group.name,
-              },
+              name: "",
               props: {},
             },
           } as IItem
@@ -161,6 +158,11 @@ export const _ = {
             },
           });
         }
+
+        return {
+          id: newcomp.id,
+          group_id: group.id,
+        };
       }
     }
   },

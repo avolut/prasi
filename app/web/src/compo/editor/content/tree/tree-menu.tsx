@@ -161,7 +161,10 @@ export const CETreeMenu: FC<{
                         ? id.substring(5)
                         : undefined,
                     })
-                    .then(() => {
+                    .then((e) => {
+                      if (e) {
+                        wsdoc.compGroup = {};
+                      }
                       c.render();
                     });
                 } else {
