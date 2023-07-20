@@ -159,29 +159,33 @@ export const CompProps: FC<{
           )}
         </div>
       </SideLabel>
-      {Object.entries(propJSON).map(([key, value], idx) => {
-        const prop = value as FNCompDef;
-        return (
-          <PropItem
-            mode={mode}
-            key={key}
-            name={key}
-            idx={idx}
-            prop={prop}
-            props={props}
-            doc={component.docs[active.component?.id || ""]}
-            render={c.editor.page.render}
-            reload={() => {
-              local.loading = true;
-              local.render();
-              setTimeout(() => {
-                local.loading = false;
+      {Object.entries(propJSON)
+        .sort((a, b) => {
+          return a[0].localeCompare(b[0]);
+        })
+        .map(([key, value], idx) => {
+          const prop = value as FNCompDef;
+          return (
+            <PropItem
+              mode={mode}
+              key={key}
+              name={key}
+              idx={idx}
+              prop={prop}
+              props={props}
+              doc={component.docs[active.component?.id || ""]}
+              render={c.editor.page.render}
+              reload={() => {
+                local.loading = true;
                 local.render();
-              }, 10);
-            }}
-          />
-        );
-      })}
+                setTimeout(() => {
+                  local.loading = false;
+                  local.render();
+                }, 10);
+              }}
+            />
+          );
+        })}
     </div>
   );
 };
