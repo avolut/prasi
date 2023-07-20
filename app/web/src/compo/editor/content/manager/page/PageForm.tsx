@@ -9,7 +9,7 @@ import { Input } from "../../../../ui/form/input";
 export const PageForm: FC<{
   page: Partial<page>;
   onClose: () => void;
-  onSave: () => void;
+  onSave: (res: any) => void;
 }> = ({ page, onClose, onSave }) => {
   const c = useGlobal(CEGlobal, "PAGE");
   const local = useLocal({ init: false, saving: false });
@@ -38,7 +38,7 @@ export const PageForm: FC<{
               let id_folder = form.id_folder;
               if (!id_folder || id_folder === "ROOT") id_folder = null;
               if (!form.id) {
-                await db.page.create({
+                const res = await db.page.create({
                   data: {
                     content_tree: {
                       childs: [],
@@ -51,16 +51,17 @@ export const PageForm: FC<{
                     id_folder,
                   },
                 });
+                onSave(res);
               } else {
-                await db.page.update({
+                const res = await db.page.update({
                   data: {
                     name: form.name,
                     url: form.url || "",
                   },
                   where: { id: form.id },
                 });
+                onSave(res);
               }
-              onSave();
 
               local.saving = false;
               local.render();
@@ -73,7 +74,16 @@ export const PageForm: FC<{
         >
           <label>
             <span>Name</span>
-            <Input form={form} autoFocus name={"name"} />
+            <Input
+              form={form}
+              autoFocus
+              name={"name"}
+              onChange={(val) => {
+                form.url = `/${slugify(val)}`;
+                console.log(form);
+                form.render();
+              }}
+            />
           </label>
           <label>
             <span>url</span>
@@ -96,7 +106,7 @@ export const PageForm: FC<{
                 className="bg-red-600 w-[40px] flex justify-center items-center"
                 onClick={async () => {
                   if (confirm("Are you sure ?")) {
-                    await db.page.update({
+                    const res = await db.page.update({
                       where: {
                         id: page.id,
                       },
@@ -104,7 +114,7 @@ export const PageForm: FC<{
                         is_deleted: true,
                       },
                     });
-                    onSave();
+                    onSave(res);
                   }
                 }}
               >
@@ -129,4 +139,16 @@ export const PageForm: FC<{
       </div>
     </>
   );
+};
+
+const slugify = (...args: string[]): string => {
+  const value = args.join(" ");
+
+  return value
+    .normalize("NFD") // split an accented letter in the base letter and the acent
+    .replace(/[\u0300-\u036f]/g, "") // remove all previously split accents
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9 ]/g, "") // remove all chars not letters, numbers and spaces (to be replaced)
+    .replace(/\s+/g, "-"); // separator
 };

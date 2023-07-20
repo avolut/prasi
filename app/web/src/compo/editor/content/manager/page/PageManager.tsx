@@ -509,14 +509,8 @@ export const PageManager = () => {
               local.page.data = null;
               local.render();
             }}
-            onSave={async () => {
-              local.page.data = null;
-              local.loading = true;
-              local.render();
-              await reloadPages();
-              local.init = false;
-              local.loading = false;
-              local.render();
+            onSave={async (res) => {
+              location.href = `/editor/${wsdoc.site?.id}/${res.id}`;
             }}
             page={local.page.data}
           />

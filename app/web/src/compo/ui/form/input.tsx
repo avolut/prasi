@@ -7,7 +7,7 @@ export const Input: FC<
   > & {
     form: Record<string, any> & { render: () => void };
     name: string;
-    onChange?: (text: string) => string;
+    onChange?: (text: string) => string | void;
   }
 > = (arg) => {
   const prop: any = { ...arg };
@@ -17,7 +17,7 @@ export const Input: FC<
 
   let onChange: ((text: string) => string) | null = null;
   if (prop.onChange) {
-    onChange = null;
+    onChange = prop.onChange;
     delete prop.onChange;
   }
 
@@ -29,7 +29,10 @@ export const Input: FC<
         form[name] = e.currentTarget.value;
 
         if (onChange) {
-          form[name] = onChange(e.currentTarget.value);
+          const result = onChange(e.currentTarget.value);
+          if (typeof result !== "undefined") {
+            form[name] = result;
+          }
         }
 
         form.render();
