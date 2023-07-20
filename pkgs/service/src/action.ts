@@ -14,6 +14,9 @@ export const rootAction = {
       path: dir.path(`${arg.name}/index.js`),
       args: [arg.pid],
       cwd: dir.path(),
+      onStop: (e) => {
+        rootAction.start(arg);
+      },
     });
 
     if (!running) {
