@@ -232,6 +232,7 @@ model component {
 model component_group {
   id             String           @id(map: "site_comp_group_id") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name           String
+  shared         Boolean          @default(false)
   component      component[]
   component_site component_site[]
 }
@@ -239,6 +240,7 @@ model component_group {
 model component_site {
   id_component_group String          @db.Uuid
   id_site            String          @db.Uuid
+  is_owner           Boolean         @default(true)
   component_group    component_group @relation(fields: [id_component_group], references: [id], onDelete: Cascade)
   site               site            @relation(fields: [id_site], references: [id], onDelete: Cascade)
 

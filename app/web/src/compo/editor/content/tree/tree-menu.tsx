@@ -8,15 +8,16 @@ import { CEGlobal } from "../../../../base/global/content-editor";
 import { component } from "../../../page/component";
 import { fillID } from "../../../page/tools/fill-id";
 import { IContent, MContent } from "../../../types/general";
-import { IItem } from "../../../types/item";
+import { IItem, MItem } from "../../../types/item";
 import { IText } from "../../../types/text";
 import { Menu, MenuItem } from "../../../ui/context-menu";
 import { loadSingleComponent } from "../../comp/load-comp";
-import { newMap } from "../../tools/yjs-tools";
+import { getMap, newMap } from "../../tools/yjs-tools";
 import { wsdoc } from "../../ws/wsdoc";
 import { selectMultiple, walkContent } from "./tree";
 import { flatTree } from "../../../page/tools/flat-tree";
 import { filterFlatTree } from "../../../page/tools/filter-tree";
+import { FMComponent, FNComponent } from "../../../types/meta-fn";
 
 export const CETreeMenu: FC<{
   id: string;
@@ -55,6 +56,14 @@ export const CETreeMenu: FC<{
       isActiveComponent = true;
     }
   }
+
+  const rootComponentID = (c.root as MItem).get("component")?.get("id");
+  let itemComponent: Partial<FNComponent> =
+    getMap<FMComponent>(item, "component")?.toJSON() || {};
+
+  if (rootComponentID === itemComponent.id && rootComponentID)
+    return <Menu mouseEvent={contextMenu} onClose={onClose}></Menu>;
+
   if (!local.ready)
     return (
       <>

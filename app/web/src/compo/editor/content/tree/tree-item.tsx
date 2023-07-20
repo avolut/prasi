@@ -66,6 +66,7 @@ export const CETreeItem: FC<{
   }
 
   let isComponent = false;
+  let canDelete = true;
 
   if (itemComponent && itemComponent.id) {
     if (type !== "item") {
@@ -73,9 +74,12 @@ export const CETreeItem: FC<{
     } else {
       isComponent = rootComponentID === itemComponent.id ? false : true;
     }
+
+    if (rootComponentID && rootComponentID === itemComponent.id) {
+      canDelete = false;
+    }
   }
 
-  let canDelete = true;
   let hasChilds = false;
   if (childs && childs.length > 0) {
     hasChilds = true;

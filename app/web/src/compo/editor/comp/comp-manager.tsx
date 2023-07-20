@@ -4,6 +4,8 @@ import { CEGlobal } from "../../../base/global/content-editor";
 import { Dropdown } from "../../ui/dropdown";
 import { Loading } from "../../ui/loading";
 import { wsdoc } from "../ws/wsdoc";
+import { Modal } from "../../ui/modal";
+import { CompUseShared } from "./comp-use-shared";
 
 export const CompManager = () => {
   const c = useGlobal(CEGlobal, "PAGE");
@@ -19,6 +21,7 @@ export const CompManager = () => {
     search: "",
     trash_id: "",
     collapsed: new Set(),
+    sharedPopup: false,
   });
 
   const toggleCollapse = (id: string) => {
@@ -55,12 +58,30 @@ export const CompManager = () => {
             },
           },
         },
+        select: {
+          name: true,
+          id: true,
+          shared: true,
+          component_site: {
+            select: {
+              is_owner: true,
+            },
+            where: {
+              id_site: wsdoc.site.id,
+            },
+          },
+        },
       });
 
       if (group) {
         local.group = {};
         for (const g of group) {
-          local.group[g.id] = { info: g, comps: [] };
+          local.group[g.id] = {
+            info: g,
+            shared: g.shared,
+            isOwner: g.component_site[0].is_owner,
+            comps: [],
+          };
 
           if (g.name === "__TRASH__") {
             local.trash_id = g.id;
@@ -143,7 +164,41 @@ export const CompManager = () => {
               `
             )}
           >
-            <div className="fixed top-0 right-0 bg-white z-10 m-[8px]">
+            <Modal
+              open={local.sharedPopup}
+              onOpenChange={(open) => {
+                local.sharedPopup = open;
+                local.render();
+              }}
+            >
+              <CompUseShared
+                onChange={async (group_id) => {
+                  local.sharedPopup = false;
+                  local.loading = true;
+                  local.render();
+
+                  await db.component_site.create({
+                    data: {
+                      id_component_group: group_id,
+                      id_site: wsdoc.site?.id || "",
+                      is_owner: false,
+                    },
+                  });
+                  wsdoc.compGroup = {};
+                  reloadComps();
+                }}
+              />
+            </Modal>
+            <div className="fixed top-0 right-0 bg-white z-10 m-[8px] flex">
+              <div
+                className="hover:bg-blue-500 hover:text-white text-xs flex items-center px-2 cursor-pointer border text-blue-500 border-blue-200 mr-1"
+                onClick={() => {
+                  local.sharedPopup = true;
+                  local.render();
+                }}
+              >
+                Browse Shared
+              </div>
               <input
                 type="search"
                 value={local.search}
@@ -237,16 +292,81 @@ export const CompManager = () => {
                                 g.info.name
                               )}
                             </div>
-                            <div
-                              className="act cursor-pointer border flex items-center hover:bg-blue-100 hover:border-blue-500 hover:text-blue-600 px-1 h-[20px]"
-                              onClick={() => {
-                                local.renaming.id = g.info.id;
-                                local.renaming.text = g.info.name;
-                                local.render();
-                              }}
-                            >
-                              <Rename />
-                            </div>
+
+                            {g.shared && !g.isOwner && (
+                              <div
+                                className="cursor-pointer border text-xs px-1 hover:bg-red-100 hover:border-red-500 hover:text-red-600 flex items-center h-[20px]"
+                                onClick={async () => {
+                                  if (confirm("Are you sure ?")) {
+                                    delete local.group[g.info.id];
+                                    local.render();
+                                    await db.component_site.delete({
+                                      where: {
+                                        id_component_group_id_site: {
+                                          id_component_group: g.info.id,
+                                          id_site: wsdoc.site?.id || "",
+                                        },
+                                      },
+                                    });
+                                  }
+                                }}
+                              >
+                                Detach
+                              </div>
+                            )}
+
+                            {g.shared && g.isOwner && (
+                              <div
+                                className="cursor-pointer border ml-1 border-transparent bg-blue-500 text-white text-xs px-1 hover:bg-blue-100 hover:border-blue-500 hover:text-blue-600 flex items-center h-[20px]"
+                                onClick={async () => {
+                                  g.shared = false;
+
+                                  db.component_group.update({
+                                    where: {
+                                      id: g.info.id,
+                                    },
+                                    data: {
+                                      shared: g.shared,
+                                    },
+                                  });
+                                  local.render();
+                                }}
+                              >
+                                Public
+                              </div>
+                            )}
+                            {!g.shared && g.isOwner && (
+                              <div
+                                className="act cursor-pointer ml-1 border text-xs px-1 hover:bg-blue-100 hover:border-blue-500 hover:text-blue-600 flex items-center h-[20px]"
+                                onClick={async () => {
+                                  g.shared = true;
+
+                                  db.component_group.update({
+                                    where: {
+                                      id: g.info.id,
+                                    },
+                                    data: {
+                                      shared: g.shared,
+                                    },
+                                  });
+                                  local.render();
+                                }}
+                              >
+                                Share
+                              </div>
+                            )}
+                            {g.isOwner && (
+                              <div
+                                className="act cursor-pointer border flex items-center hover:bg-blue-100 hover:border-blue-500 hover:text-blue-600 px-1 h-[20px]"
+                                onClick={() => {
+                                  local.renaming.id = g.info.id;
+                                  local.renaming.text = g.info.name;
+                                  local.render();
+                                }}
+                              >
+                                <Rename />
+                              </div>
+                            )}
 
                             <div
                               className="act cursor-pointer border text-xs px-1 hover:bg-blue-100 hover:border-blue-500 hover:text-blue-600 flex items-center h-[20px]"
@@ -268,6 +388,8 @@ export const CompManager = () => {
                                   if (res) {
                                     local.group[res.id] = {
                                       comps: [],
+                                      shared: false,
+                                      isOwner: true,
                                       info: res,
                                     };
                                     local.render();
@@ -285,9 +407,12 @@ export const CompManager = () => {
                                   if (confirm("Are you sure ?")) {
                                     delete local.group[g.info.id];
                                     local.render();
-                                    await db.component_group.delete({
+                                    await db.component_site.delete({
                                       where: {
-                                        id: g.info.id,
+                                        id_component_group_id_site: {
+                                          id_component_group: g.info.id,
+                                          id_site: wsdoc.site?.id || "",
+                                        },
                                       },
                                     });
                                   }

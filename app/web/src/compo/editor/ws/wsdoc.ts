@@ -22,7 +22,12 @@ const _wsdoc = {
   mode: "desktop" as "mobile" | "desktop",
   compGroup: {} as Record<
     string,
-    { info: component_group; comps: { id: string; name: string }[] }
+    {
+      info: component_group;
+      shared: boolean;
+      isOwner: boolean;
+      comps: { id: string; name: string }[];
+    }
   >,
   retry: {
     disabled: false,

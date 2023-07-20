@@ -24,12 +24,13 @@ export const CEItem: FC<{
           if (mitem) {
             return <CEComponent ceid={ceid} item={item} compItem={mitem} />;
           }
+        } else {
+          // item.delete("component");
         }
       }
     }
-  } 
+  }
 
-  if (!item) return null;
   return (
     <CERender ceid={ceid} item={item}>
       {getArray<MItem | MText>(item, "childs")?.map((e: MItem | MText, idx) => {
