@@ -107,38 +107,46 @@ export const CETreeMenu: FC<{
         <MenuItem
           label="Replace with Component"
           onClick={() => {
-            c.editor.manager.showComp = true;
-            c.editor.manager.compCallback = (comp) => {
-              if (comp?.id === comp_id) {
-                alert(
-                  "WARNING: Failed to add self, preventing recursive component!"
-                );
-                return;
-              }
-              c.doc.transact(async () => {
-                if (comp) {
-                  let compitem = component.docs[comp.id];
+            const ccid = (c.root as MItem).get("component")?.get("id") || "";
 
-                  if (!compitem) {
-                    component.docs[comp.id] = await loadSingleComponent(
-                      comp.id
-                    );
-                    compitem = component.docs[comp.id];
-                  }
-
-                  syncronize(item as any, {
-                    id: item.get("id"),
-                    name: comp.name,
-                    component: {
-                      id: comp.id,
-                      props: {},
-                    },
-                    type: item.get("type"),
-                  });
+            const pick = () => {
+              c.editor.manager.showComp = true;
+              c.editor.manager.compCallback = (comp) => {
+                if (ccid && comp?.id === ccid) {
+                  alert(
+                    "WARNING: Failed to add self, preventing recursive component!"
+                  );
+                  setTimeout(() => {
+                    pick();
+                  }, 100);
+                  return;
                 }
-              });
+                c.doc.transact(async () => {
+                  if (comp) {
+                    let compitem = component.docs[comp.id];
+
+                    if (!compitem) {
+                      component.docs[comp.id] = await loadSingleComponent(
+                        comp.id
+                      );
+                      compitem = component.docs[comp.id];
+                    }
+
+                    syncronize(item as any, {
+                      id: item.get("id"),
+                      name: comp.name,
+                      component: {
+                        id: comp.id,
+                        props: {},
+                      },
+                      type: item.get("type"),
+                    });
+                  }
+                });
+              };
+              c.render();
             };
-            c.render();
+            pick();
           }}
         />
       )}
