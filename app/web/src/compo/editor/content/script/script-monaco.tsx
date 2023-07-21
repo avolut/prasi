@@ -42,7 +42,7 @@ export const ScriptMonaco: FC<{
   const script = c.editor.script.active;
   if (!script) return null;
 
-  const doEdit = async (newval: string) => {
+  const doEdit = async (newval: string, all?: boolean) => {
     if (local.editor) {
       if (!w.importCache) {
         w.importCache = { prettier_babel: "", prettier: "" };
@@ -56,7 +56,9 @@ export const ScriptMonaco: FC<{
       const prettier = w.importCache.prettier;
       const prettier_babel = w.importCache.prettier_babel;
       const text = prettier.format(
-        local.editor?.getValue().replace(/\{\s*children\s*\}/gi, newval),
+        all
+          ? newval
+          : local.editor?.getValue().replace(/\{\s*children\s*\}/gi, newval),
         {
           parser: "babel",
           plugins: [prettier_babel],
@@ -130,7 +132,21 @@ export const ScriptMonaco: FC<{
                 );
               }}
             >
-              Map &lt;PassProp/&gt;
+              &lt;Map /&gt;
+            </Button>
+
+            <Button
+              onClick={() => {
+                doEdit(
+                  `\
+<div {...props}>
+  {children}
+</div>`,
+                  true
+                );
+              }}
+            >
+              Reset
             </Button>
           </div>
           <div>
@@ -236,7 +252,6 @@ export const ScriptMonaco: FC<{
             }
 
             await jsMount(editor, monaco);
-            console.log(propVal, propTypes);
             await monacoTypings(editor, monaco, {
               values: propVal,
               types: propTypes,
