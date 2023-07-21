@@ -76,7 +76,9 @@ export const CETreeItem: FC<{
     }
 
     if (rootComponentID && rootComponentID === itemComponent.id) {
-      canDelete = false;
+      if ((c.root as MItem).get("id") === item.get("id")) {
+        canDelete = false;
+      }
     }
   }
 

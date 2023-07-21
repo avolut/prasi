@@ -18,7 +18,8 @@ export const CEComponent: FC<{
   ceid: string;
   item: MItem;
   compItem: MItem;
-}> = ({ ceid, item, compItem }) => {
+  parentCompIds: string[];
+}> = ({ ceid, item, compItem, parentCompIds }) => {
   const c = useGlobal(CEGlobal, ceid);
   const local = useLocal({ instanced: false });
   const compid = item.get("component")?.get("id");
@@ -27,20 +28,6 @@ export const CEComponent: FC<{
   if (local.instanced && compid && wsdoc.reloadComponentId.has(compid)) {
     local.instanced = false;
     wsdoc.reloadComponentId.delete(compid);
-  }
-
-  if (!local.instanced) {
-    const newcomp = fillID(compItem.toJSON() as any) as IItem;
-    newcomp.id = item.get("id") as any;
-    if (newcomp.component) {
-      const comp = item.get("component");
-      if (comp) {
-        newcomp.component.name = comp.get("name") || "";
-        newcomp.component.props = comp.get("props")?.toJSON() as any;
-      }
-    }
-    syncronize(item as any, newcomp);
-    local.instanced = true;
   }
 
   const cprops = compItem.get("component")?.get("props");
@@ -77,6 +64,32 @@ export const CEComponent: FC<{
     }
   }, [propNames.join("-")]);
 
+  if (compid) {
+    if (parentCompIds.includes(compid)) {
+      return (
+        <div className="border border-red-600 p-2 text-red-600 m-2 text-xs font-bold text-center">
+          WARNING: Recursive Component
+          <br /> &lt;{item.get("name")}/&gt;
+        </div>
+      );
+    } else {
+      parentCompIds.push(compid);
+    }
+  }
+  if (!local.instanced) {
+    const newComp = fillID(compItem.toJSON() as any) as IItem;
+
+    newComp.id = item.get("id") as any;
+    if (newComp.component) {
+      const comp = item.get("component");
+      if (comp) {
+        newComp.component.name = comp.get("name") || "";
+        newComp.component.props = comp.get("props")?.toJSON() as any;
+      }
+    }
+    syncronize(item as any, newComp);
+    local.instanced = true;
+  }
   if (!item && !compItem) return null;
 
   return (
@@ -90,6 +103,7 @@ export const CEComponent: FC<{
               item={e as MItem}
               preventRenderComponent={true}
               key={e.get("id")}
+              parentCompIds={parentCompIds}
             />
           );
         } else if (type === "text") {

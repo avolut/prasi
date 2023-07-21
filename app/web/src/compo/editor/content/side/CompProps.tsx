@@ -110,6 +110,7 @@ export const CompProps: FC<{
                 let i = 0;
                 let prop: any = null;
                 while (true) {
+
                   prop = props.get(`new_prop${i === 0 ? "" : `_${i}`}`);
                   if (prop) {
                     i++;

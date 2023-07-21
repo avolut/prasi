@@ -10,7 +10,8 @@ export const SiteForm: FC<{
   site: Partial<site>;
   onClose: () => void;
   onSave: () => void;
-}> = ({ site, onClose, onSave }) => {
+  group_id: string;
+}> = ({ site, onClose, onSave, group_id }) => {
   const c = useGlobal(CEGlobal, "PAGE");
   const local = useLocal({ init: false, saving: false });
   const form = useLocal({} as Partial<site>);
@@ -45,7 +46,7 @@ export const SiteForm: FC<{
                       favicon: "",
                       domain: form.domain || "",
                       id_user: wsdoc.session.data.user.id,
-                      id_org: wsdoc.session.data.user.org[0].id,
+                      id_org: group_id,
                     },
                   });
                 } catch (e) {
@@ -74,8 +75,11 @@ export const SiteForm: FC<{
               form={form}
               autoFocus
               name={"name"}
-              onChange={(text) => {
-                return text.replace(/\W/g, "");
+              onBlur={() => {
+                if (!form.domain) {
+                  form.domain = (form.name || "").replace(/\W/g, "");
+                  form.render();
+                }
               }}
             />
           </label>

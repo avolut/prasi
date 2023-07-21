@@ -109,6 +109,12 @@ export const CETreeMenu: FC<{
           onClick={() => {
             c.editor.manager.showComp = true;
             c.editor.manager.compCallback = (comp) => {
+              if (comp?.id === comp_id) {
+                alert(
+                  "WARNING: Failed to add self, preventing recursive component!"
+                );
+                return;
+              }
               c.doc.transact(async () => {
                 if (comp) {
                   let compitem = component.docs[comp.id];

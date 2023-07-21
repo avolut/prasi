@@ -17,10 +17,12 @@ export const fillID = (
   }
   object.id = cuid();
   if (object.type !== "text") {
-    for (const child of object.childs) {
-      fillID(child, ignoreComponentChilds, modify, depthLimit, {
-        currentDepth: _depth,
-      });
+    if (object.childs && Array.isArray(object.childs)) {
+      for (const child of object.childs) {
+        fillID(child, ignoreComponentChilds, modify, depthLimit, {
+          currentDepth: _depth,
+        });
+      }
     }
   }
 

@@ -19,6 +19,7 @@ export const SiteManager = () => {
     loading: true,
     sites: [] as SiteItem[],
     orgs: {} as Record<string, org>,
+    active_org: "",
   });
 
   const reloadSites = async () => {
@@ -146,6 +147,7 @@ export const SiteManager = () => {
                           ev.preventDefault();
                           ev.stopPropagation();
 
+                          local.active_org = org.id;
                           local.edit = {};
                           local.render();
                         }}
@@ -180,6 +182,7 @@ export const SiteManager = () => {
           <SiteForm
             onClose={() => {
               local.edit = null;
+              local.active_org = "";
               local.render();
             }}
             onSave={async () => {
@@ -192,6 +195,7 @@ export const SiteManager = () => {
               local.render();
             }}
             site={local.edit}
+            group_id={local.active_org}
           />
         )}
       </div>

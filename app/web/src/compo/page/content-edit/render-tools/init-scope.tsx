@@ -76,9 +76,6 @@ export const initScope = (
               try {
                 val = exec(jrop.valueBuilt || jrop.value);
               } catch (e) {}
-              if (ceid !== "PAGE") {
-                console.log(scope.value, jrop, val);
-              }
             }
           }
         } else {
@@ -103,6 +100,7 @@ export const findScope = (
 
   const root_id = itemID;
   let item_id = itemID;
+  let itemset = new Set<string>();
   while (true) {
     if (scope.value[item_id]) {
       if (root_id !== item_id) {
@@ -112,6 +110,12 @@ export const findScope = (
 
     if (scope.tree[item_id] && scope.tree[scope.tree[item_id].parent_id]) {
       item_id = scope.tree[item_id].parent_id;
+
+      if (itemset.has(item_id)) {
+        break;
+      } else {
+        itemset.add(item_id);
+      }
     } else {
       break;
     }
