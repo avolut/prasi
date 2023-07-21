@@ -1,5 +1,5 @@
 import { FC, useEffect } from "react";
-import { useGlobal } from "web-utils";
+import { useGlobal, useLocal } from "web-utils";
 import { CEGlobal } from "../../../base/global/content-editor";
 import { getArray } from "../../editor/tools/yjs-tools";
 import { MItem } from "../../types/item";
@@ -10,6 +10,9 @@ import { CESection } from "./ce-section";
 export const CEPage: FC<{ ceid: string }> = ({ ceid }) => {
   const c = useGlobal(CEGlobal, ceid);
   const mode = responsiveMode();
+  const local = useLocal({ effects: new WeakSet<any>() });
+
+  useEffect(() => {}, [local.effects]);
 
   useEffect(() => {
     const scope = c.scope;
@@ -18,7 +21,9 @@ export const CEPage: FC<{ ceid: string }> = ({ ceid }) => {
       Object.entries(scope.effect).map(([k, v]) => {
         if (scope.value[k]) {
           if (scope.value[k][v.name]) {
-            v.effect(scope.value[k][v.name]);
+            // if (typeof v.effect === "function") {
+            //   v.effect(scope.value[k][v.name]);
+            // }
           }
         }
       });

@@ -14,6 +14,7 @@ import { wsdoc } from "../../ws/wsdoc";
 import { jscript } from "../script/script-edit";
 import { AutoHeightTextarea } from "./panel/link";
 import { SideLabel } from "./ui/SideLabel";
+import { CPInstance } from "./CPInstance";
 
 export const CompProps: FC<{
   id: string;
@@ -110,7 +111,6 @@ export const CompProps: FC<{
                 let i = 0;
                 let prop: any = null;
                 while (true) {
-
                   prop = props.get(`new_prop${i === 0 ? "" : `_${i}`}`);
                   if (prop) {
                     i++;
@@ -166,6 +166,28 @@ export const CompProps: FC<{
         })
         .map(([key, value], idx) => {
           const prop = value as FNCompDef;
+
+          if (mode === "instance")
+            return (
+              <CPInstance
+                key={key}
+                name={key}
+                idx={idx}
+                prop={prop}
+                props={props}
+                doc={component.docs[active.component?.id || ""]}
+                render={c.editor.page.render}
+                reload={() => {
+                  local.loading = true;
+                  local.render();
+                  setTimeout(() => {
+                    local.loading = false;
+                    local.render();
+                  }, 10);
+                }}
+              />
+            );
+            
           return (
             <PropItem
               mode={mode}

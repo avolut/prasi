@@ -333,17 +333,20 @@ export const CETreeItem: FC<{
               </svg>
             </Tooltip>
           )}
-          {!!adv.css ? (
-            <Tooltip content="Has CSS">
-              <div
-                className="bg-green-700 w-[7px] h-[7px] mr-[3px] hover:bg-green-900"
-                onClick={() => {
-                  c.editor.active = item;
-                  const map = getMap<FMAdv>(c.editor.active, "adv");
-                  c.editor.script.active = {
-                    src: getMText(map, "css"),
-                    type: "css",
-                    default: `\
+
+          {!isComponent && (
+            <>
+              {!!adv.css ? (
+                <Tooltip content="Has CSS">
+                  <div
+                    className="bg-green-700 w-[7px] h-[7px] mr-[3px] hover:bg-green-900"
+                    onClick={() => {
+                      c.editor.active = item;
+                      const map = getMap<FMAdv>(c.editor.active, "adv");
+                      c.editor.script.active = {
+                        src: getMText(map, "css"),
+                        type: "css",
+                        default: `\
   & {
     display: flex;
     
@@ -351,22 +354,22 @@ export const CETreeItem: FC<{
       display: flex;
     }
   }`,
-                  };
-                  c.render();
-                }}
-              ></div>
-            </Tooltip>
-          ) : (
-            <div className="pre-action flex items-center">
-              <div
-                className="bg-green-300 w-[7px] h-[7px] mr-[3px] hover:bg-green-500"
-                onClick={() => {
-                  c.editor.active = item;
-                  const map = getMap<FMAdv>(c.editor.active, "adv");
-                  c.editor.script.active = {
-                    src: getMText(map, "css"),
-                    type: "css",
-                    default: `\
+                      };
+                      c.render();
+                    }}
+                  ></div>
+                </Tooltip>
+              ) : (
+                <div className="pre-action flex items-center">
+                  <div
+                    className="bg-green-700 w-[7px] h-[7px] mr-[3px] hover:bg-green-800 opacity-50 hover:opacity-100"
+                    onClick={() => {
+                      c.editor.active = item;
+                      const map = getMap<FMAdv>(c.editor.active, "adv");
+                      c.editor.script.active = {
+                        src: getMText(map, "css"),
+                        type: "css",
+                        default: `\
 & {
 display: flex;
 
@@ -374,68 +377,72 @@ display: flex;
 display: flex;
 }
 }`,
-                  };
-                  c.render();
-                }}
-              ></div>
-            </div>
-          )}
+                      };
+                      c.render();
+                    }}
+                  ></div>
+                </div>
+              )}
 
-          {!!adv.js && !adv.html ? (
-            <Tooltip content="Has JS">
-              <div
-                className="bg-orange-600 w-[7px] h-[7px] mr-[3px] hover:bg-orange-800"
-                onClick={() => {
-                  c.editor.active = item;
-                  const map = getMap<FMAdv>(c.editor.active, "adv");
-                  c.editor.script.active = {
-                    src: getMText(map, "js"),
-                    type: "js",
-                    default: `\
+              {!!adv.js && !adv.html ? (
+                <Tooltip content="Has JS">
+                  <div
+                    className="bg-orange-600 w-[7px] h-[7px] mr-[3px] hover:bg-orange-800"
+                    onClick={() => {
+                      c.editor.active = item;
+                      const map = getMap<FMAdv>(c.editor.active, "adv");
+                      c.editor.script.active = {
+                        src: getMText(map, "js"),
+                        type: "js",
+                        default: `\
 <div {...props}>
   {children}
 </div>`,
-                  };
-                  c.render();
-                }}
-              ></div>
-            </Tooltip>
-          ) : (
-            <div className="pre-action flex items-center">
-              <div
-                className=" bg-orange-200 w-[7px] h-[7px] mr-[3px] hover:bg-orange-500 self-center"
-                onClick={() => {
-                  c.editor.active = item;
-                  const map = getMap<FMAdv>(c.editor.active, "adv");
-                  c.editor.script.active = {
-                    src: getMText(map, "js"),
-                    type: "js",
-                    default: `\
+                      };
+                      c.render();
+                    }}
+                  ></div>
+                </Tooltip>
+              ) : (
+                <>
+                  <div className="pre-action flex items-center">
+                    <div
+                      className=" bg-orange-500 w-[7px] h-[7px] mr-[3px] hover:bg-orange-800 opacity-50 hover:opacity-100 self-center"
+                      onClick={() => {
+                        c.editor.active = item;
+                        const map = getMap<FMAdv>(c.editor.active, "adv");
+                        c.editor.script.active = {
+                          src: getMText(map, "js"),
+                          type: "js",
+                          default: `\
 <div {...props}>
 {children}
 </div>`,
-                  };
-                  c.render();
-                }}
-              ></div>
-            </div>
-          )}
+                        };
+                        c.render();
+                      }}
+                    ></div>
+                  </div>
+                </>
+              )}
 
-          {!!adv.html && (
-            <Tooltip content="Has HTML">
-              <div
-                className="bg-blue-600 w-[7px] h-[7px] mr-[3px] hover:bg-blue-800"
-                onClick={() => {
-                  c.editor.active = item;
-                  const map = getMap<FMAdv>(c.editor.active, "adv");
-                  c.editor.script.active = {
-                    src: getMText(map, "html"),
-                    type: "html",
-                  };
-                  c.render();
-                }}
-              ></div>
-            </Tooltip>
+              {!!adv.html && (
+                <Tooltip content="Has HTML">
+                  <div
+                    className="bg-blue-600 w-[7px] h-[7px] mr-[3px] hover:bg-blue-800"
+                    onClick={() => {
+                      c.editor.active = item;
+                      const map = getMap<FMAdv>(c.editor.active, "adv");
+                      c.editor.script.active = {
+                        src: getMText(map, "html"),
+                        type: "html",
+                      };
+                      c.render();
+                    }}
+                  ></div>
+                </Tooltip>
+              )}
+            </>
           )}
         </>
       )}

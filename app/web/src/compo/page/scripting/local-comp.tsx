@@ -2,6 +2,13 @@ import { ReactNode, useEffect } from "react";
 import { IContent, w } from "../../types/general";
 import { SingleScope } from "../../types/script";
 
+export type LocalEffects<T extends Record<string, any>> = {
+  effect: (
+    local: T & { render: () => void }
+  ) => void | (() => void) | Promise<void | (() => void)>;
+  deps: any[];
+}[];
+
 export type LocalFC = <T extends Record<string, any>>(arg: {
   name: string;
   value: T;
@@ -9,6 +16,8 @@ export type LocalFC = <T extends Record<string, any>>(arg: {
   effect?: (
     local: T & { render: () => void }
   ) => void | (() => void) | Promise<void | (() => void)>;
+
+  effects?: LocalEffects<T>;
 }) => ReactNode;
 
 export const createLocal = (opt: {
@@ -16,7 +25,7 @@ export const createLocal = (opt: {
   scope: SingleScope;
   render: () => void;
 }): LocalFC => {
-  return ({ name, children, value, effect }) => {
+  return ({ name, children, value, effect, effects }) => {
     if (!opt.scope.value[opt.item.id]) {
       opt.scope.value[opt.item.id] = {};
     }
@@ -40,8 +49,8 @@ export const createLocal = (opt: {
     const local = scope[name];
     local.render = opt.render;
 
-    if (effect) {
-      if (!w.isEditor) {
+    if (!w.isEditor) {
+      if (effect) {
         useEffect(() => {
           const result: any = effect(local);
 
@@ -55,13 +64,29 @@ export const createLocal = (opt: {
             };
           }
         }, []);
-      } else {
-        if (!opt.scope.effect) {
-          opt.scope.effect = {};
-        }
-
-        opt.scope.effect[opt.item.id] = { name, effect };
       }
+
+      if (effects) {
+        for (const f of effects) {
+          useEffect(() => {
+            const result: any = f.effect(local);
+
+            if (typeof result === "function") {
+              return () => {};
+            } else if (
+              typeof result === "object" &&
+              result instanceof Promise
+            ) {
+              return () => {
+                result.then((e: any) => {
+                  if (typeof e === "function") e();
+                });
+              };
+            }
+          }, f.deps);
+        }
+      }
+    } else {
     }
 
     if (typeof children === "function") {
