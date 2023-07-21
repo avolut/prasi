@@ -152,8 +152,17 @@ export const CETreeItem: FC<{
             opacity: 0.2;
           }
 
-          &:hover .action {
-            opacity: 1;
+          .pre-action {
+            display: none;
+          }
+
+          &:hover {
+            .pre-action {
+              display: flex;
+            }
+            .action {
+              opacity: 1;
+            }
           }
         `
       )}
@@ -324,7 +333,7 @@ export const CETreeItem: FC<{
               </svg>
             </Tooltip>
           )}
-          {!!adv.css && (
+          {!!adv.css ? (
             <Tooltip content="Has CSS">
               <div
                 className="bg-green-700 w-[7px] h-[7px] mr-[3px] hover:bg-green-900"
@@ -347,9 +356,32 @@ export const CETreeItem: FC<{
                 }}
               ></div>
             </Tooltip>
+          ) : (
+            <div className="pre-action flex items-center">
+              <div
+                className="bg-green-300 w-[7px] h-[7px] mr-[3px] hover:bg-green-500"
+                onClick={() => {
+                  c.editor.active = item;
+                  const map = getMap<FMAdv>(c.editor.active, "adv");
+                  c.editor.script.active = {
+                    src: getMText(map, "css"),
+                    type: "css",
+                    default: `\
+& {
+display: flex;
+
+&:hover {
+display: flex;
+}
+}`,
+                  };
+                  c.render();
+                }}
+              ></div>
+            </div>
           )}
 
-          {!!adv.js && !adv.html && (
+          {!!adv.js && !adv.html ? (
             <Tooltip content="Has JS">
               <div
                 className="bg-orange-600 w-[7px] h-[7px] mr-[3px] hover:bg-orange-800"
@@ -368,6 +400,25 @@ export const CETreeItem: FC<{
                 }}
               ></div>
             </Tooltip>
+          ) : (
+            <div className="pre-action flex items-center">
+              <div
+                className=" bg-orange-200 w-[7px] h-[7px] mr-[3px] hover:bg-orange-500 self-center"
+                onClick={() => {
+                  c.editor.active = item;
+                  const map = getMap<FMAdv>(c.editor.active, "adv");
+                  c.editor.script.active = {
+                    src: getMText(map, "js"),
+                    type: "js",
+                    default: `\
+<div {...props}>
+{children}
+</div>`,
+                  };
+                  c.render();
+                }}
+              ></div>
+            </div>
           )}
 
           {!!adv.html && (
