@@ -101,10 +101,10 @@ export const ScriptMonaco: FC<{
                   `\
                 <Local 
                   name="local" 
-                  value={{hello: "init"}}
+                  value={{data: []}}
                   effect={
                     async (local) => {
-                      local.hello = "world!"
+                      local.data = ["world!"]
                       local.render();
                     }
                   }
@@ -125,7 +125,7 @@ export const ScriptMonaco: FC<{
               onClick={() => {
                 doEdit(
                   `\
-{[1,2,3].map((item, idx) => (
+{(local.data || []).map((item, idx) => (
   <PassProp item={item} key={idx}>{children}</PassProp>
 ))}      
 `
