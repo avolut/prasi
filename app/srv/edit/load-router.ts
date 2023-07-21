@@ -11,7 +11,7 @@ export const loadRouter = async (site_id: string) => {
 
   if (!eg.router[site_id]) {
     const pages = await db.page.findMany({
-      where: { id_site: site_id },
+      where: { id_site: site_id, is_deleted: false },
       select: { id: true, url: true },
     });
     const router = createRouter<any>();

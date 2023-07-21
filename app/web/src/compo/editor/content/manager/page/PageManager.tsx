@@ -45,6 +45,7 @@ export const PageManager = () => {
     const folders = await db.page_folder.findMany({
       where: {
         id_site: wsdoc.site?.id,
+        is_deleted: false,
       },
     });
     data.folder = {};
@@ -454,8 +455,11 @@ export const PageManager = () => {
                                     local.init = false;
                                     delete data.folder[node.id];
                                     local.render();
-                                    db.page_folder.delete({
+                                    db.page_folder.update({
                                       where: { id: node.id as string },
+                                      data: {
+                                        is_deleted: true,
+                                      },
                                     });
                                   } else {
                                     local.loading = true;

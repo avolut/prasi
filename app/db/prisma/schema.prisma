@@ -209,12 +209,13 @@ model site_query {
 }
 
 model page_folder {
-  id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name      String?
-  parent_id String? @db.Uuid
-  id_site   String  @db.Uuid
-  page      page[]
-  site      site    @relation(fields: [id_site], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name       String?
+  parent_id  String? @db.Uuid
+  id_site    String  @db.Uuid
+  is_deleted Boolean @default(false)
+  page       page[]
+  site       site    @relation(fields: [id_site], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model component {

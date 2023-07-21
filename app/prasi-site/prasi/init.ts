@@ -30,7 +30,7 @@ export const loadSite = async (domain: string) => {
 
 export const loadRouter = async (site: Site) => {
   const pages = await db.page.findMany({
-    where: { id_site: site.id },
+    where: { id_site: site.id, is_deleted: false },
     select: {
       id: true,
       name: true,
