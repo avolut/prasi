@@ -76,13 +76,41 @@ export const SiteEditor: FC<{
           },
           select: { id: true },
         })
-        .then((page) => {
+        .then(async (page) => {
           if (page) {
             navigate(`/editor/${site.id}/${page.id}`);
           } else {
-            local.init = false;
-            local.loading = false;
-            local.render();
+            let folder = await db.page_folder.findFirst({
+              where: {
+                id_site: site.id,
+              },
+            });
+            if (!folder) {
+              folder = await db.page_folder.create({
+                data: {
+                  id_site: site.id,
+                  name: "All",
+                },
+              });
+            }
+
+            if (folder) {
+              const res = await db.page.create({
+                data: {
+                  content_tree: {
+                    childs: [],
+                    id: "root",
+                    type: "root",
+                  },
+                  name: "Home",
+                  url: "/",
+                  id_site: site.id,
+                  id_folder: folder.id,
+                },
+              });
+
+              navigate(`/editor/${site.id}/${res.id}`);
+            }
           }
         });
     }

@@ -119,6 +119,19 @@ export const ScriptMonaco: FC<{
             >
               &lt;PassProp/&gt;
             </Button>
+            <Button
+              onClick={() => {
+                doEdit(
+                  `\
+{[1,2,3].map((item, idx) => (
+  <PassProp item={item} key={idx}>{children}</PassProp>
+))}      
+`
+                );
+              }}
+            >
+              Map &lt;PassProp/&gt;
+            </Button>
           </div>
           <div>
             <Button
@@ -223,6 +236,7 @@ export const ScriptMonaco: FC<{
             }
 
             await jsMount(editor, monaco);
+            console.log(propVal, propTypes);
             await monacoTypings(editor, monaco, {
               values: propVal,
               types: propTypes,
