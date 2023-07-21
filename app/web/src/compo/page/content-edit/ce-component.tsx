@@ -44,15 +44,16 @@ export const CEComponent: FC<{
   }
 
   const cprops = compItem.get("component")?.get("props");
-
+  const propNames: string[] = [];
   if (cprops) {
-    const propNames: string[] = [];
     cprops?.forEach((mprop, name) => {
       if (mprop?.get("meta")?.get("type") === "content-element") {
         propNames.push(name);
       }
     });
-    useEffect(() => {
+  }
+  useEffect(() => {
+    if (cprops) {
       c.doc.transact(() => {
         cprops?.forEach((_, name) => {
           const mprop = props?.get(name);
@@ -73,8 +74,8 @@ export const CEComponent: FC<{
           }
         });
       });
-    }, [propNames.join("-")]);
-  }
+    }
+  }, [propNames.join("-")]);
 
   if (!item && !compItem) return null;
 

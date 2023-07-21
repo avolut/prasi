@@ -85,7 +85,6 @@ const ComponentEditor: FC<{
       component.edit.loading = true;
       loadComponents(c.map.get("content_tree")?.toJSON() as IContent).then(
         (comps) => {
-          console.log("done");
           for (const [k, v] of Object.entries(comps)) {
             if (!component.docs[k]) component.docs[k] = v;
           }

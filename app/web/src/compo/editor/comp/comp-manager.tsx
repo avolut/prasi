@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { FC, Fragment } from "react";
 import { useGlobal, useLocal } from "web-utils";
 import { CEGlobal } from "../../../base/global/content-editor";
 import { Dropdown } from "../../ui/dropdown";
@@ -7,8 +7,8 @@ import { wsdoc } from "../ws/wsdoc";
 import { Modal } from "../../ui/modal";
 import { CompUseShared } from "./comp-use-shared";
 
-export const CompManager = () => {
-  const c = useGlobal(CEGlobal, "PAGE");
+export const CompManager: FC<{ id: string }> = ({ id }) => {
+  const c = useGlobal(CEGlobal, id);
   const local = useLocal({
     loading: true,
     group: wsdoc.compGroup,

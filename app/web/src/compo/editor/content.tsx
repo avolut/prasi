@@ -81,6 +81,8 @@ export const ContentEditor: FC<{ id: string }> = ({ id }) => {
         {c.editor.page.reload ? loading : <CEPage ceid={id} />}
         <CESide id={id} />
         <CEScriptEdit id={id} />
+
+        {c.editor.manager.showComp && <CompManager id={id} />}
       </div>
     );
   }
@@ -94,7 +96,7 @@ export const ContentEditor: FC<{ id: string }> = ({ id }) => {
       <CECompEdit id={id} />
       {c.editor.manager.showSite && <SiteManager />}
       {c.editor.manager.showPage && <PageManager />}
-      {c.editor.manager.showComp && <CompManager />}
+      {c.editor.manager.showComp && <CompManager id={id} />}
     </div>
   );
 };

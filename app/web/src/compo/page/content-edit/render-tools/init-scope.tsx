@@ -54,42 +54,40 @@ export const initScope = (
       };
 
       if (!scope.value[item.id]) scope.value[item.id] = {};
+      const props = mitem.get("component")?.get("props");
       for (const [k, v] of Object.entries(comp.component?.props || {})) {
         let val = null;
-        try {
-          val = exec(v.valueBuilt || v.value);
-        } catch (e) {}
-        scope.value[item.id][k] = val;
-      }
-
-      if (i.component.props) {
-        const props = mitem.get("component")?.get("props");
-
-        if (props) {
-          props.forEach((p, k) => {
-            const v = p.toJSON();
-            if (v) {
-              let val = null;
-              const cprop = comp.component?.props[k];
-              const type = cprop?.meta?.type || v.meta?.type || "text";
-              if (type === "content-element") {
-                const content = p.get("content");
-                if (content) {
-                  val = <CEItem ceid={ceid} item={content} />;
-                } else {
-                  try {
-                    val = exec(v.valueBuilt || v.value);
-                  } catch (e) {}
-                }
+        const prop = props?.get(k);
+        if (prop) {
+          const jrop = prop.toJSON();
+          if (jrop) {
+            const cprop = comp.component?.props[k];
+            const type = cprop?.meta?.type || v.meta?.type || "text";
+            if (type === "content-element") {
+              const content = jrop.get("content");
+              if (content) {
+                val = <CEItem ceid={ceid} item={content} />;
               } else {
                 try {
-                  val = exec(v.valueBuilt || v.value);
+                  val = exec(jrop.valueBuilt || jrop.value);
                 } catch (e) {}
               }
-              scope.value[item.id][k] = val;
+            } else {
+              try {
+                val = exec(jrop.valueBuilt || jrop.value);
+              } catch (e) {}
+              if (ceid !== "PAGE") {
+                console.log(scope.value, jrop, val);
+              }
             }
-          });
+          }
+        } else {
+          try {
+            val = exec(v.valueBuilt || v.value);
+          } catch (e) {}
         }
+
+        scope.value[item.id][k] = val;
       }
     }
   }
@@ -99,13 +97,17 @@ export const initScope = (
 
 export const findScope = (
   scope: ReturnType<typeof initScope>,
-  item_id: string
+  itemID: string
 ) => {
   const scopes = [];
 
+  const root_id = itemID;
+  let item_id = itemID;
   while (true) {
     if (scope.value[item_id]) {
-      scopes.push(scope.value[item_id]);
+      if (root_id !== item_id) {
+        scopes.push(scope.value[item_id]);
+      }
     }
 
     if (scope.tree[item_id] && scope.tree[scope.tree[item_id].parent_id]) {

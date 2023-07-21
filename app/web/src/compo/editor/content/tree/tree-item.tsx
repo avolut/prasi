@@ -410,7 +410,7 @@ export const CETreeItem: FC<{
               </>
             ) : (
               <>
-                {!isPropContent && (
+                {!isPropContent && rootComponentID !== itemComponent.id && (
                   <Tooltip
                     content="Edit Component"
                     className="flex items-center border border-slate-500 bg-white rounded-sm text-[10px] px-[2px]"

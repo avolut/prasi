@@ -33,6 +33,7 @@ export const CEItem: FC<{
 
   return (
     <CERender ceid={ceid} item={item}>
+      {item.get("id")}
       {getArray<MItem | MText>(item, "childs")?.map((e: MItem | MText, idx) => {
         const type = e.get("type");
         if (type === "item") {

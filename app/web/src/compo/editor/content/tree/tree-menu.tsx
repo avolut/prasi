@@ -109,7 +109,6 @@ export const CETreeMenu: FC<{
           onClick={() => {
             c.editor.manager.showComp = true;
             c.editor.manager.compCallback = (comp) => {
-              const map = new Y.Map();
               c.doc.transact(async () => {
                 if (comp) {
                   let compitem = component.docs[comp.id];
