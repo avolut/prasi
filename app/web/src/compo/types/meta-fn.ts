@@ -33,7 +33,7 @@ export type FNCompDef = {
   meta?: FNCompMeta;
 };
 type FNCompMeta = {
-  type: "text" | "option" | "option-custom" | "content-element";
+  type: "text" | "option" | "content-element";
   options?: string;
   oldName?: string;
 };

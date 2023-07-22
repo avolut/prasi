@@ -11,8 +11,7 @@ export const CEItem: FC<{
   ceid: string;
   item: MItem;
   preventRenderComponent?: boolean;
-  parentCompIds?: string[];
-}> = ({ ceid, item, preventRenderComponent, parentCompIds }) => {
+}> = ({ ceid, item, preventRenderComponent }) => {
   if (!preventRenderComponent) {
     const comp = item.get("component");
     if (comp) {
@@ -23,16 +22,9 @@ export const CEItem: FC<{
           const mitem = doc.getMap("map").get("content_tree");
 
           if (mitem) {
-            return (
-              <CEComponent
-                ceid={ceid}
-                item={item}
-                compItem={mitem}
-                parentCompIds={parentCompIds || []}
-              />
-            );
+            return <CEComponent ceid={ceid} item={item} compItem={mitem} />;
           }
-        } 
+        }
       }
     }
   }
@@ -42,14 +34,7 @@ export const CEItem: FC<{
       {getArray<MItem | MText>(item, "childs")?.map((e: MItem | MText, idx) => {
         const type = e.get("type");
         if (type === "item") {
-          return (
-            <CEItem
-              ceid={ceid}
-              item={e as MItem}
-              key={e.get("id")}
-              parentCompIds={parentCompIds}
-            />
-          );
+          return <CEItem ceid={ceid} item={e as MItem} key={e.get("id")} />;
         } else if (type === "text") {
           return <CEText ceid={ceid} item={e as MText} key={e.get("id")} />;
         }

@@ -77,7 +77,6 @@ export const AddElement: FC<{ id: string; disableSection?: boolean }> = ({
                 }
 
                 setTimeout(() => {
-                  console.log(c.editor.activeEl);
                   if (ed.active?.get("type") === "text") {
                     c.editor.activeEl?.focus();
                   }

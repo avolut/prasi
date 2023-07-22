@@ -18,8 +18,7 @@ export const CEComponent: FC<{
   ceid: string;
   item: MItem;
   compItem: MItem;
-  parentCompIds: string[];
-}> = ({ ceid, item, compItem, parentCompIds }) => {
+}> = ({ ceid, item, compItem }) => {
   const c = useGlobal(CEGlobal, ceid);
   const local = useLocal({ instanced: false });
   const compid = item.get("component")?.get("id");
@@ -27,6 +26,24 @@ export const CEComponent: FC<{
 
   if (local.instanced && compid && wsdoc.reloadComponentId.has(compid)) {
     local.instanced = false;
+    const id = item.get("id") || "";
+
+    const ids = [];
+    const walk = (s: Set<string>) => {
+      ids.push(s);
+      s.forEach((e) => {
+        if (c.scope.tree[e]) {
+          walk(c.scope.tree[e].childs);
+        }
+      });
+    };
+    ids.push(id);
+    walk(c.scope.tree[id].childs);
+    for (const i of ids) {
+      delete c.scope.value[i];
+      delete c.scope.tree[i];
+    }
+
     wsdoc.reloadComponentId.delete(compid);
   }
 
@@ -34,18 +51,22 @@ export const CEComponent: FC<{
   const propNames: string[] = [];
   if (cprops) {
     cprops?.forEach((mprop, name) => {
-      if (mprop?.get("meta")?.get("type") === "content-element") {
-        propNames.push(name);
-      }
+      propNames.push(`${name}_${mprop?.get("meta")?.get("type")}`);
     });
   }
   useEffect(() => {
     if (cprops) {
       c.doc.transact(() => {
-        cprops?.forEach((_, name) => {
-          const mprop = props?.get(name);
-          if (mprop?.get("meta")?.get("type") === "content-element") {
-            if (!mprop?.get("content")) {
+        cprops?.forEach((cprop, name) => {
+          let mprop = props?.get(name);
+          if (cprop?.get("meta")?.get("type") === "content-element") {
+            if (!mprop) {
+              props?.set(name, new Y.Map() as any);
+              mprop = props?.get(name);
+              syncronize(mprop as any, cprop.toJSON());
+            }
+
+            if (mprop && !mprop?.get("content")) {
               const json = {
                 id: createId(),
                 name: name,
@@ -62,20 +83,8 @@ export const CEComponent: FC<{
         });
       });
     }
-  }, [propNames.join("-")]);
+  }, [propNames.join("|")]);
 
-  if (compid) {
-    if (parentCompIds.includes(compid)) {
-      return (
-        <div className="border border-red-600 p-2 text-red-600 m-2 text-xs font-bold text-center">
-          WARNING: Recursive Component
-          <br /> &lt;{item.get("name")}/&gt;
-        </div>
-      );
-    } else {
-      parentCompIds.push(compid);
-    }
-  }
   if (!local.instanced) {
     const newComp = fillID(compItem.toJSON() as any) as IItem;
 
@@ -103,7 +112,6 @@ export const CEComponent: FC<{
               item={e as MItem}
               preventRenderComponent={true}
               key={e.get("id")}
-              parentCompIds={parentCompIds}
             />
           );
         } else if (type === "text") {

@@ -362,7 +362,7 @@ export const CETreeItem: FC<{
               ) : (
                 <div className="pre-action flex items-center">
                   <div
-                    className="bg-green-700 w-[7px] h-[7px] mr-[3px] hover:bg-green-800 opacity-50 hover:opacity-100"
+                    className="bg-green-500 w-[7px] h-[7px] mr-[3px] hover:bg-green-800 opacity-50 hover:opacity-100"
                     onClick={() => {
                       c.editor.active = item;
                       const map = getMap<FMAdv>(c.editor.active, "adv");

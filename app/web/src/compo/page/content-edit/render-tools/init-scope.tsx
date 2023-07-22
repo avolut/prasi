@@ -1,7 +1,7 @@
 import { CEGlobal } from "../../../../base/global/content-editor";
 import { IContent, MContent } from "../../../types/general";
 import { IItem } from "../../../types/item";
-import { FNCompDef } from "../../../types/meta-fn";
+import { FNCompDef, FNComponent } from "../../../types/meta-fn";
 import { component } from "../../component";
 import { CEItem } from "../ce-item";
 
@@ -59,12 +59,12 @@ export const initScope = (
         let val = null;
         const prop = props?.get(k);
         if (prop) {
-          const jrop = prop.toJSON();
+          const jrop = prop.toJSON() as FNCompDef;
           if (jrop) {
             const cprop = comp.component?.props[k];
             const type = cprop?.meta?.type || v.meta?.type || "text";
             if (type === "content-element") {
-              const content = jrop.get("content");
+              const content = prop.get("content");
               if (content) {
                 val = <CEItem ceid={ceid} item={content} />;
               } else {

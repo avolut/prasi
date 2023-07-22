@@ -187,7 +187,7 @@ export const CompProps: FC<{
                 }}
               />
             );
-            
+
           return (
             <PropItem
               mode={mode}
@@ -408,7 +408,7 @@ const PropItem: FC<{
                 "border text-sm max-w-[150px] h-[130px] overflow-hidden ",
               itemClassName: "border-b p-1 hover:bg-blue-100",
             }}
-            items={["text", "option", "option-custom", "content-element"]}
+            items={["text", "option", "content-element"]}
             value={prop.meta?.type || "text"}
             onChange={(v) => {
               if (!local.prop.meta) {
@@ -449,11 +449,7 @@ const PropItem: FC<{
         }}
         className={cx(
           "p-1 font-mono text-[11px] border border-slate-300",
-          mode === "root" &&
-            (prop.meta?.type === "option" ||
-              prop.meta?.type === "option-custom")
-            ? ""
-            : "hidden"
+          mode === "root" && prop.meta?.type === "option" ? "" : "hidden"
         )}
         onChange={(e) => {
           if (!local.prop.meta) {
@@ -467,41 +463,35 @@ const PropItem: FC<{
           local.render();
         }}
       />
-      {mode === "instance" &&
-        (metaType === "option" || metaType === "option-custom") && (
-          <div className="flex items-center space-x-1">
-            {Array.isArray(metaOptions) &&
-              metaOptions.map((item, idx) => {
-                return (
-                  <div
-                    key={idx}
-                    className={cx(
-                      "flex px-2 py-1 text-xs border rounded-sm cursor-pointer  justify-center ",
-                      item.value !== value
-                        ? "bg-white  text-blue-700 hover:bg-blue-50 hover:border-blue-500"
-                        : "bg-blue-700 text-white"
-                    )}
-                    onClick={() => {
-                      const val = JSON.stringify(item.value);
-                      update("valueBuilt", val);
-                      update("value", val);
-                      local.prop.value = val;
-                      if (metaType === "option-custom") {
-                        reload();
-                      } else {
-                        local.render();
-                      }
-                    }}
-                  >
-                    {item.label}
-                  </div>
-                );
-              })}
-          </div>
-        )}
+      {mode === "instance" && metaType === "option" && (
+        <div className="flex items-center space-x-1">
+          {Array.isArray(metaOptions) &&
+            metaOptions.map((item, idx) => {
+              return (
+                <div
+                  key={idx}
+                  className={cx(
+                    "flex px-2 py-1 text-xs border rounded-sm cursor-pointer  justify-center ",
+                    item.value !== value
+                      ? "bg-white  text-blue-700 hover:bg-blue-50 hover:border-blue-500"
+                      : "bg-blue-700 text-white"
+                  )}
+                  onClick={() => {
+                    const val = JSON.stringify(item.value);
+                    update("valueBuilt", val);
+                    update("value", val);
+                    local.prop.value = val;
+                    local.render();
+                  }}
+                >
+                  {item.label}
+                </div>
+              );
+            })}
+        </div>
+      )}
       {((mode === "root" && metaType !== "content-element") ||
-        (mode === "instance" &&
-          (metaType === "text" || metaType === "option-custom"))) && (
+        (mode === "instance" && metaType === "text")) && (
         <AutoHeightTextarea
           defaultValue={local.prop.value}
           onChange={async (e) => {

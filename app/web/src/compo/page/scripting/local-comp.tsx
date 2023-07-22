@@ -32,7 +32,19 @@ export const createLocal = (opt: {
     const scope = opt.scope.value[opt.item.id];
 
     if (!scope[name]) {
-      scope[name] = JSON.parse(JSON.stringify(value));
+      const cache: any[] = [];
+      scope[name] = JSON.parse(
+        JSON.stringify(value, (key, value) => {
+          if (typeof value === "object" && value !== null) {
+            // Duplicate reference found, discard key
+            if (cache.includes(value)) return;
+
+            // Store value in our collection
+            cache.push(value);
+          }
+          return value;
+        })
+      );
       for (const [k, v] of Object.entries(scope[name])) {
         if (typeof value[k] === "undefined") delete scope[name][k];
       }
