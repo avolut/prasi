@@ -4,13 +4,13 @@ import {
   PRASI_COMPONENT,
   PRASI_PAGE,
 } from "../../compo/renderer/base/renderer-types";
-import { Prasi } from "../../compo/renderer/prasi/prasi-renderer";
+import { PrasiRenderer } from "../../compo/renderer/prasi/prasi-renderer";
 import { SiteConfig } from "../../compo/editor/ws/wsdoc";
 
 export default page({
   url: "/site/:name/**",
   component: () => {
-    const site = new Prasi({
+    const site = new PrasiRenderer({
       load: {
         async site() {
           const site = await db.site.findFirst({

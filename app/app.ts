@@ -15,8 +15,8 @@ initialize(async (mode) => {
   await service.srv._process.start();
   await service.web._process.start();
 
-  if (mode === "dev") {
-    await $({ cwd: dir.root("app/prasi-site") })`bun i`;
-    $({ cwd: dir.root("app/prasi-site"), stdio: "inherit" })`bun run dev`;
-  }
+  // if (mode === "dev") {
+  //   await $({ cwd: dir.root("app/prasi-site") })`bun i`;
+  //   $({ cwd: dir.root("app/prasi-site"), stdio: "inherit" })`bun run dev`;
+  // }
 });

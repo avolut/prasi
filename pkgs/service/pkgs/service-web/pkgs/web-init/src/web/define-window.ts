@@ -3,7 +3,7 @@ import JSXDevRuntime from "react/jsx-dev-runtime";
 import JSXRuntime from "react/jsx-runtime";
 import { apiClient } from "./api";
 import { dbClient } from "./db";
-
+import { css } from "goober";
 export const defineWindow = async (baseurl?: URL) => {
   const w = typeof window === "object" ? window : (globalThis as any);
 
@@ -24,6 +24,7 @@ export const defineWindow = async (baseurl?: URL) => {
   w.baseurl = scheme + "://" + host + (port ? ":" + port : "") + "/";
   w.basepath = "/";
   w.React = React;
+  w.css = css;
   w.JSXRuntime = JSXRuntime;
   w.JSXDevRuntime = JSXDevRuntime;
 

@@ -12,7 +12,7 @@ const w = window as unknown as {
   prasiApi: Record<string, any>;
 };
 
-export class Prasi extends Renderer {
+export class PrasiRenderer extends Renderer {
   rg = useGlobal(RendererGlobal, "PRASI_SITE");
 
   constructor(arg: {
@@ -72,24 +72,26 @@ export class Prasi extends Renderer {
           rg.site = await arg.load.site(rg);
           if (!w.prasiApi) w.prasiApi = {};
 
-          try {
-            const apiEntry = await fetch(
-              trim(rg.site.api_url, "/") + "/_prasi/api-entry"
-            );
-            w.prasiApi[rg.site.api_url] = {
-              apiEntry: (await apiEntry.json()).srv,
-            };
-          } catch (e) {
-            console.log("Failed to get api-entry");
+          if (rg.site.api_url) {
+            try {
+              const apiEntry = await fetch(
+                trim(rg.site.api_url, "/") + "/_prasi/api-entry"
+              );
+              w.prasiApi[rg.site.api_url] = {
+                apiEntry: (await apiEntry.json()).srv,
+              };
+            } catch (e) {
+              console.log("Failed to get api-entry");
+            }
           }
+          if (rg.site.id) {
+            rg.page.list = await arg.load.pages(rg);
+            rg.page.router = createRouter();
 
-          rg.page.list = await arg.load.pages(rg);
-          rg.page.router = createRouter();
-
-          for (const page of Object.values(rg.page.list)) {
-            rg.page.router.insert(page.url, page);
+            for (const page of Object.values(rg.page.list)) {
+              rg.page.router.insert(page.url, page);
+            }
           }
-
           rg.loading = false;
           rg.render();
         }
