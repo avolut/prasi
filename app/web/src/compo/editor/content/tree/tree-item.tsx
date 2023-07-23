@@ -316,30 +316,6 @@ export const CETreeItem: FC<{
 
       {!local.renaming && (
         <>
-          {item.get("hidden") === "only-editor" && (
-            <Tooltip content="Hidden: Only in Editor">
-              <div
-                className="mr-1"
-                onClick={() => {
-                  item.set("hidden", "all");
-                }}
-              >
-                <HideEditor />
-              </div>
-            </Tooltip>
-          )}
-          {item.get("hidden") === "all" && (
-            <Tooltip content="Hidden: All">
-              <div
-                className="mr-1"
-                onClick={() => {
-                  item.set("hidden", false);
-                }}
-              >
-                <HideAll />
-              </div>
-            </Tooltip>
-          )}
           {!!link && (
             <Tooltip content="Has Link">
               <svg
@@ -473,6 +449,30 @@ display: flex;
 
       {!local.renaming && (
         <div className="flex items-stretch action pl-[3px]">
+          {item.get("hidden") === "only-editor" && (
+            <Tooltip content="Hidden: Only in Editor">
+              <div
+                className="mr-1"
+                onClick={() => {
+                  item.set("hidden", "all");
+                }}
+              >
+                <HideEditor />
+              </div>
+            </Tooltip>
+          )}
+          {item.get("hidden") === "all" && (
+            <Tooltip content="Hidden: All">
+              <div
+                className="mr-1"
+                onClick={() => {
+                  item.set("hidden", false);
+                }}
+              >
+                <HideAll />
+              </div>
+            </Tooltip>
+          )}
           <>
             {canDelete && !isComponent ? (
               <>
