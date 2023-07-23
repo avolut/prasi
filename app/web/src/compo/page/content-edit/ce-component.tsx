@@ -132,7 +132,7 @@ export const CEComponent: FC<{
         >
           <div
             className={cx(
-              "flex items-center border border-slate-500 bg-white rounded-sm text-[13px] px-[2px] min-h-[20px] text-center leading-3 absolute cursor-pointer z-10",
+              "flex items-center border border-slate-500 bg-white text-black rounded-sm text-[13px] px-[2px] min-h-[20px] text-center leading-3 absolute cursor-pointer z-10",
               css`
                 font-family: "Source Sans Pro", system-ui, -apple-system,
                   BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
@@ -164,7 +164,7 @@ export const CEComponent: FC<{
               _c.render();
             }}
           >
-            Edit Component
+            Edit
           </div>
         </div>
       )}
