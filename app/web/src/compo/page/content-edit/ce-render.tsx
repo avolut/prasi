@@ -29,10 +29,6 @@ export const CERender: FC<{
   const elementProp = initElProp(c, className, item, mitem);
   const scope = initScope(ceid, item, mitem, c);
 
-  if (item.name === "New Player") {
-    console.log(item.id, findScope(c.scope, item.id || "").c);
-  }
-
   if (adv) {
     const html = renderHTML(adv);
     if (html) _children = html;
@@ -51,6 +47,10 @@ export const CERender: FC<{
 
       return res;
     }
+  }
+
+  if (item.hidden) {
+    return null;
   }
 
   if (!c.editor.enabled) {

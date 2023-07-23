@@ -194,6 +194,24 @@ export const CETreeMenu: FC<{
           }}
         />
       )}
+      {!item.get("hidden") && (
+        <MenuItem
+          label="Hide"
+          onClick={() => {
+            item.set("hidden", "only-editor");
+            c.render();
+          }}
+        />
+      )}
+      {item.get("hidden") && (
+        <MenuItem
+          label="Show"
+          onClick={() => {
+            item.set("hidden", false);
+            c.render();
+          }}
+        />
+      )}
       <MenuItem
         label="Duplicate"
         onClick={() => {

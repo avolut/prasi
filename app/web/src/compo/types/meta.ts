@@ -25,6 +25,7 @@ export type MetaItem = {
   deleted?: true;
   html?: string;
   text?: string;
+  hidden?: "only-editor" | "all" | false;
   isPropContent?: boolean;
 };
 
