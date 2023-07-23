@@ -21,6 +21,7 @@ import uniqBy from "lodash.uniqby";
 import findIndex from "lodash.findindex";
 import slice from "lodash.slice";
 import { Loading } from "../../../ui/loading";
+import get from "lodash.get";
 
 export const CETree: FC<{ id: string }> = ({ id }) => {
   const c = useGlobal(CEGlobal, id);
@@ -134,45 +135,54 @@ export const CETree: FC<{ id: string }> = ({ id }) => {
                         _,
                         { dragSource, dropTargetId, dropTarget }
                       ) => {
-                        const parentSource = dragSource?.data?.content.parent
-                          .parent as MContent;
-                        if (parentSource.get("id") === "root") {
-                          return false;
-                        }
-                        if (dropTargetId === "root") {
+                        try {
+                          const parentSource: MContent | undefined = get(
+                            dragSource,
+                            "data.content.parent.parent"
+                          ) as any;
                           if (
-                            dragSource?.data &&
-                            dragSource.data.content.get("type") === "section"
-                          ) {
-                            return true;
-                          }
-                          return false;
-                        } else if (dragSource?.data && dropTarget?.data) {
-                          const from = dragSource.data.content.get("type");
-                          const to = dropTarget.data.content.get("type");
-
-                          if (
-                            local.childs.includes(
-                              dropTarget.data.content.get("id") || ""
-                            )
+                            parentSource &&
+                            parentSource.get &&
+                            parentSource.get("id") === "root"
                           ) {
                             return false;
                           }
-
-                          if (from === "section" || to === "text") {
-                            return false;
-                          } else if (from === "item") {
-                            if (to === "section" || to === "item") {
+                          if (dropTargetId === "root") {
+                            const ds = get(dragSource, "data.content");
+                            if (ds && ds.get && ds.get("type") === "section") {
                               return true;
-                            } else {
+                            }
+                            return false;
+                          } else if (dragSource?.data && dropTarget?.data) {
+                            const from = dragSource.data.content.get("type");
+                            const to = dropTarget.data.content.get("type");
+
+                            if (
+                              local.childs.includes(
+                                dropTarget.data.content.get("id") || ""
+                              )
+                            ) {
                               return false;
                             }
-                          } else if (from === "text") {
-                            if (to === "item") {
-                              return true;
-                            }
-                          }
 
+                            if (from === "section" || to === "text") {
+                              return false;
+                            } else if (from === "item") {
+                              if (to === "section" || to === "item") {
+                                return true;
+                              } else {
+                                return false;
+                              }
+                            } else if (from === "text") {
+                              if (to === "item") {
+                                return true;
+                              }
+                            }
+
+                            return false;
+                          }
+                        } catch (e) {
+                          console.log(e);
                           return false;
                         }
                       }}

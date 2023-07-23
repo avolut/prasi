@@ -85,15 +85,6 @@ export const SiteEditor: FC<{
                 id_site: site.id,
               },
             });
-            if (!folder) {
-              folder = await db.page_folder.create({
-                data: {
-                  id_site: site.id,
-                  name: "All",
-                },
-              });
-            }
-
             if (folder) {
               const res = await db.page.create({
                 data: {
@@ -105,7 +96,6 @@ export const SiteEditor: FC<{
                   name: "Home",
                   url: "/",
                   id_site: site.id,
-                  id_folder: folder.id,
                 },
               });
 
