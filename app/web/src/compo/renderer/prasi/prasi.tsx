@@ -3,6 +3,8 @@ import { defineWindow } from "web-init/src/web/define-window";
 import { GlobalContext, useLocal } from "web-utils";
 import { PrasiLiveArg, createPrasiLive } from "./prasi-live";
 
+export { useGlobal, useLocal } from "web-utils";
+
 const w = window as unknown as {
   __SRV_URL__: string;
   siteApiUrl: string;

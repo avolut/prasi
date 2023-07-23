@@ -1,5 +1,7 @@
 import React from "react";
 import JSXDevRuntime from "react/jsx-dev-runtime";
+import ReactDOMServer from "react-dom/server";
+import ReactDOM from "react-dom";
 import JSXRuntime from "react/jsx-runtime";
 import { apiClient } from "./api";
 import { dbClient } from "./db";
@@ -27,6 +29,8 @@ export const defineWindow = async (baseurl?: URL) => {
   w.css = css;
   w.JSXRuntime = JSXRuntime;
   w.JSXDevRuntime = JSXDevRuntime;
+  w.ReactDOMServer = ReactDOMServer;
+  w.ReactDOM = ReactDOM;
 
   w.pathname = location.pathname;
 

@@ -15,7 +15,7 @@ const cx = (...classNames: any[]) => string;
 const css = (
   tag: CSSAttribute | TemplateStringsArray | string,
   ...props: Array<string | number | boolean | undefined | null>
-) => string[];
+) => string;
 
 const props: {
   className: string;

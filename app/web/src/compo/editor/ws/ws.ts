@@ -116,7 +116,6 @@ export const connectWS = async (page: {
     });
 
     ws.addEventListener("open", () => {
-      console.log("Connected");
       wsdoc.retry.disabled = false;
       ws.send(
         JSON.stringify({
