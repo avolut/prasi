@@ -1,19 +1,17 @@
-import { FC, ReactNode, useEffect, useRef, useState } from "react";
+import { FC, ReactNode } from "react";
 import { useGlobal } from "web-utils";
 import { produceCSS } from "../../../page/css/gen";
-import { IContent } from "../../../types/general";
-import { RendererGlobal } from "../renderer-global";
-import { FNAdv, FNLinkTag } from "../../../types/meta-fn";
-import { scriptScope } from "./script-scope";
-import { scriptExec } from "./script-exec";
-import { IItem } from "../../../types/item";
 import { responsiveVal } from "../../../page/tools/responsive-val";
+import { IContent } from "../../../types/general";
+import { FNAdv, FNLinkTag } from "../../../types/meta-fn";
+import { RendererGlobal } from "../renderer-global";
+import { scriptExec } from "./script-exec";
+import { scriptScope } from "./script-scope";
 
 export const RRender: FC<{
   item: IContent;
-  original?: IItem;
   children: ReactNode;
-}> = ({ item: mitem, children, original }) => {
+}> = ({ item: mitem, children }) => {
   const rg = useGlobal(RendererGlobal, "PRASI_SITE");
 
   let _children = children;
@@ -22,15 +20,12 @@ export const RRender: FC<{
   if (item.hidden === "all") {
     return null;
   }
-  if (original) {
-    item = { ...mitem, id: original.id };
-  }
 
   const className = produceCSS(item, { mode: rg.mode });
   const adv = item.adv;
   if (adv) {
     const html = renderHTML(adv);
-    const scope = scriptScope(original || item, rg);
+    const scope = scriptScope(item, rg);
     if (html) _children = html;
     else if (adv.jsBuilt && adv.js) {
       return scriptExec(
