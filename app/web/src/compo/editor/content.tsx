@@ -9,7 +9,7 @@ import { CECompEdit } from "./comp/comp-edit";
 import { CompManager } from "./comp/comp-manager";
 import { PageManager } from "./content/manager/page/PageManager";
 import { SiteManager } from "./content/manager/site/SiteManager";
-import { CEScriptEdit } from "./content/script/script-edit";
+import { CEScriptElement } from "./content/script/script-element";
 import { CESide } from "./content/side/Side";
 import { CETree } from "./content/tree/tree";
 import { wsdoc } from "./ws/wsdoc";
@@ -60,6 +60,20 @@ export const ContentEditor: FC<{ id: string }> = ({ id }) => {
         c.editor.active = active;
       }
     }
+
+    if (wsdoc.site) {
+      db.site
+        .findFirst({
+          where: { id: wsdoc.site.id },
+          select: { js: true, js_compiled: true },
+        })
+        .then((e) => {
+          if (e && wsdoc.site) {
+            wsdoc.site.js = e.js;
+            wsdoc.site.js_compiled = e.js_compiled;
+          }
+        });
+    }
     local.init = true;
   }
 
@@ -80,7 +94,7 @@ export const ContentEditor: FC<{ id: string }> = ({ id }) => {
         <CETree id={id} />
         {c.editor.page.reload ? loading : <CEPage ceid={id} />}
         <CESide id={id} />
-        <CEScriptEdit id={id} />
+        <CEScriptElement id={id} />
 
         {c.editor.manager.showComp && <CompManager id={id} />}
       </div>
@@ -92,7 +106,7 @@ export const ContentEditor: FC<{ id: string }> = ({ id }) => {
       <CETree id={id} />
       {c.editor.page.reload ? loading : <CEPage ceid={id} />}
       <CESide id={id} />
-      <CEScriptEdit id={id} />
+      <CEScriptElement id={id} />
       <CECompEdit id={id} />
       {c.editor.manager.showSite && <SiteManager />}
       {c.editor.manager.showPage && <PageManager />}

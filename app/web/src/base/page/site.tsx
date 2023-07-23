@@ -20,6 +20,7 @@ export default page({
             select: {
               id: true,
               config: true,
+              js_compiled: true,
             },
           });
           if (site) {
@@ -33,9 +34,10 @@ export default page({
             return {
               id: site.id,
               api_url,
+              js_compiled: site.js_compiled || "",
             };
           }
-          return { id: "", api_url: "" };
+          return { id: "", api_url: "", js_compiled: "" };
         },
         async page(rg, page_id) {
           const page = await db.page.findFirst({

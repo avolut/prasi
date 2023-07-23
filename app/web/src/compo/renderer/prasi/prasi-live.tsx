@@ -30,6 +30,7 @@ export const createPrasiLive = (arg: {
           select: {
             id: true,
             config: true,
+            js_compiled: true,
           },
         });
         if (site) {
@@ -43,9 +44,10 @@ export const createPrasiLive = (arg: {
           return {
             id: site.id,
             api_url,
+            js_compiled: site.js_compiled || "",
           };
         }
-        return { id: "", api_url: "" };
+        return { id: "", api_url: "", js_compiled: "" };
       },
       async page(rg, page_id) {
         const page = await db.page.findFirst({

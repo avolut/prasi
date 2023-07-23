@@ -6,29 +6,44 @@ import { MItem } from "../../types/item";
 import { responsiveMode } from "../tools/responsive-mode";
 import { CEItem } from "./ce-item";
 import { CESection } from "./ce-section";
+import { wsdoc } from "../../editor/ws/wsdoc";
+import { createAPI, createDB } from "../scripting/api-db";
 
 export const CEPage: FC<{ ceid: string }> = ({ ceid }) => {
   const c = useGlobal(CEGlobal, ceid);
   const mode = responsiveMode();
-  const local = useLocal({ effects: new WeakSet<any>() });
+  const local = useLocal({ init: false, effects: new WeakSet<any>() });
 
   useEffect(() => {}, [local.effects]);
 
-  useEffect(() => {
+  if (!local.init) {
+    local.init = true;
     const scope = c.scope;
-
-    if (scope) {
-      Object.entries(scope.effect).map(([k, v]) => {
-        if (scope.value[k]) {
-          if (scope.value[k][v.name]) {
-            // if (typeof v.effect === "function") {
-            //   v.effect(scope.value[k][v.name]);
-            // }
-          }
+    if (scope && wsdoc.site) {
+      if (wsdoc.site.js_compiled) {
+        const api_url = wsdoc.site.config.api_url;
+        const args: any = {};
+        if (api_url) {
+          args["api"] = createAPI(api_url);
+          args["db"] = createDB(api_url);
         }
-      });
+
+        const exports = {};
+        const types = {};
+        const fn = new Function(
+          ...Object.keys(args),
+          "exports",
+          "types",
+          wsdoc.site.js_compiled
+        );
+        try {
+          fn(...Object.values(args), exports, types);
+          scope.types.root = types;
+          scope.value.root = exports;
+        } catch (e) {}
+      }
     }
-  }, []);
+  }
 
   return (
     <div

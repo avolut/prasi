@@ -64,16 +64,15 @@ export const CEGlobal = {
         type: "js" | "css" | "html";
         default?: string;
       },
-      tab: {
-        list: [] as {
-          name: string;
-          type: "js" | "css" | "html";
-        }[],
-        idx: 0,
-      },
     },
   },
-  scope: { tree: {}, effect: {}, value: {}, evargs: {} } as SingleScope,
+  scope: {
+    tree: {},
+    effect: {},
+    value: {},
+    evargs: {},
+    types: {},
+  } as SingleScope,
   global: {
     scss: "",
     api_url: "",

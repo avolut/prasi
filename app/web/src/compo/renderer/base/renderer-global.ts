@@ -10,9 +10,16 @@ export const RendererGlobal = {
     loading: null as null | ReactElement,
     notfound: null as null | ReactElement,
   },
-  site: { id: "", api_url: "" },
+  site: { id: "", api_url: "", js_compiled: "" },
+  init: false,
   mode: "" as "desktop" | "mobile",
-  scope: { tree: {}, effect: {}, value: {}, evargs: {} } as SingleScope,
+  scope: {
+    tree: {},
+    effect: {},
+    value: {},
+    evargs: {},
+    types: {},
+  } as SingleScope,
   component: {
     def: {} as Record<string, { id: string; content_tree: IItem }>,
     load: async (ids: string[]) => {

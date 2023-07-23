@@ -1,18 +1,18 @@
 import type { Editor as MonacoEditor } from "@monaco-editor/react";
 import { FC } from "react";
 import { useGlobal, useLocal } from "web-utils";
-import { CEGlobal } from "../../../../base/global/content-editor";
+import { CEGlobal } from "../../../../../base/global/content-editor";
 
 import trim from "lodash.trim";
 import Delta from "quill-delta";
 import strDelta from "textdiff-create";
-import { component } from "../../../page/component";
-import { findScope } from "../../../page/content-edit/render-tools/init-scope";
-import { FMAdv, FNComponent } from "../../../types/meta-fn";
-import { getMap } from "../../tools/yjs-tools";
-import { monacoTypings } from "./monaco/typings";
-import { jsMount } from "./monaco/mount";
-import { Button } from "../side/ui/Button";
+import { component } from "../../../../page/component";
+import { findScope } from "../../../../page/content-edit/render-tools/init-scope";
+import { FMAdv, FNComponent } from "../../../../types/meta-fn";
+import { getMap } from "../../../tools/yjs-tools";
+import { monacoTypings } from "./typings";
+import { jsMount } from "./mount";
+import { Button } from "../../side/ui/Button";
 import type { OnMount } from "@monaco-editor/react";
 export type MonacoEditor = Parameters<OnMount>[0];
 
@@ -29,7 +29,7 @@ export type FBuild = (
   files?: Record<string, string>
 ) => Promise<string>;
 
-export const ScriptMonaco: FC<{
+export const ScriptMonacoElement: FC<{
   id: string;
   Editor: typeof MonacoEditor;
   build: FBuild;
@@ -249,6 +249,11 @@ export const ScriptMonaco: FC<{
             const scope = findScope(c.scope, c.editor.active?.get("id") || "");
             for (const [k, v] of Object.entries(scope)) {
               propVal[k] = v;
+            }
+            if (c.scope.types.root) {
+              for (const [k, v] of Object.entries(c.scope.types.root)) {
+                if (!propTypes[k]) propTypes[k] = v;
+              }
             }
 
             await jsMount(editor, monaco);

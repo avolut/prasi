@@ -6,14 +6,85 @@ import { AddElement } from "./AddElement";
 import { CEGlobal } from "base/global/content-editor";
 import { component } from "../../../../page/component";
 import { loadSingleComponent } from "../../../comp/load-comp";
+import { Modal } from "../../../../ui/modal";
+import { ScriptCustom } from "../../script/script-custom";
+import { wsdoc } from "../../../ws/wsdoc";
 
 export const ToolbarMid = () => {
   const c = useGlobal(CEGlobal, "PAGE");
   const local = useLocal({
     apiConfigOpen: false,
+    siteJS: { open: true, timeout: null as any },
   });
   return (
     <div className={cx("toolbar-mid", "flex")}>
+      <Modal
+        open={local.siteJS.open}
+        onOpenChange={(open) => {
+          if (!open) {
+            local.siteJS.open = false;
+            local.render();
+          }
+        }}
+      >
+        <div className="bg-white w-[80vw] h-[80vh] flex">
+          <ScriptCustom
+            id={"PAGE"}
+            src={wsdoc.site?.js || ""}
+            wrap={(src) => {
+              return `${src}`;
+            }}
+            onChange={(src, built) => {
+              if (wsdoc.site) {
+                wsdoc.site.js = src;
+                wsdoc.site.js_compiled = built;
+                wsdoc.site.updated_at = new Date();
+              }
+              clearTimeout(local.siteJS.timeout);
+              local.siteJS.timeout = setTimeout(() => {
+                db.site.update({
+                  where: {
+                    id: wsdoc.site?.id || "",
+                  },
+                  data: {
+                    js: src,
+                    js_compiled: built,
+                    updated_at: new Date(),
+                  },
+                  select: {
+                    id: true,
+                  },
+                });
+              }, 1000);
+            }}
+            propTypes={{
+              exports: "Record<string, any>",
+              types: "Record<string, string>",
+            }}
+          />
+        </div>
+      </Modal>
+      <ToolbarBox
+        items={[
+          {
+            content: (
+              <>
+                <div className="flex font-mono text-[10px]">
+                  <div>Site</div>
+                  <div className="text-slate-400">JS</div>
+                </div>
+              </>
+            ),
+            onClick() {
+              local.siteJS.open = true;
+              local.render();
+            },
+          },
+        ]}
+      />
+
+      <div className="w-[5px] h-1"></div>
+
       <ToolbarBox
         items={[
           {
@@ -38,7 +109,7 @@ export const ToolbarMid = () => {
                   local.render();
                 }}
               >
-                <div className={"api transition-all"}>API</div>
+                <div className={"api font-mono text-[10px]"}>API</div>
               </Popover>
             ),
           },
@@ -129,20 +200,3 @@ export const ToolbarMid = () => {
     </div>
   );
 };
-
-// const IconPlus = () => (
-//   <svg
-//     xmlns="http://www.w3.org/2000/svg"
-//     width="15"
-//     height="15"
-//     fill="none"
-//     viewBox="0 0 15 15"
-//   >
-//     <path
-//       fill="currentColor"
-//       fillRule="evenodd"
-//       d="M8 2.75a.5.5 0 00-1 0V7H2.75a.5.5 0 000 1H7v4.25a.5.5 0 001 0V8h4.25a.5.5 0 000-1H8V2.75z"
-//       clipRule="evenodd"
-//     ></path>
-//   </svg>
-// );

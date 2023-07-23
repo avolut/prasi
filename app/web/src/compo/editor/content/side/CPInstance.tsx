@@ -6,7 +6,7 @@ import * as Y from "yjs";
 import { TypedMap } from "yjs-types";
 import { CompDoc } from "../../../../base/global/content-editor";
 import { FMCompDef, FNCompDef } from "../../../types/meta-fn";
-import { jscript } from "../script/script-edit";
+import { jscript } from "../script/script-element";
 import { AutoHeightTextarea } from "./panel/link";
 import { Menu, MenuItem } from "../../../ui/context-menu";
 import { Popover } from "../../../ui/popover";

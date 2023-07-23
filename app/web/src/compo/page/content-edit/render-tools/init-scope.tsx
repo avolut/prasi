@@ -121,6 +121,10 @@ export const findScope = (
     }
   }
   const result: any = {};
+  if (scope.value.root) {
+    scopes.push(scope.value.root);
+  }
+
   for (const scope of scopes.reverse()) {
     for (const [k, v] of Object.entries(scope)) {
       result[k] = v;

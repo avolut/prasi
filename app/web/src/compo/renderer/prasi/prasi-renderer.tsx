@@ -23,7 +23,7 @@ export class PrasiRenderer extends Renderer {
     load: {
       site: (
         rg: typeof RendererGlobal
-      ) => Promise<{ id: string; api_url: string }>;
+      ) => Promise<{ id: string; api_url: string; js_compiled: string }>;
       components: (
         rg: typeof RendererGlobal,
         ids: string[]

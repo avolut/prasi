@@ -11,7 +11,7 @@ import { Dropdown } from "../../../ui/dropdown";
 import { Loading } from "../../../ui/loading";
 import { Tooltip } from "../../../ui/tooltip";
 import { wsdoc } from "../../ws/wsdoc";
-import { jscript } from "../script/script-edit";
+import { jscript } from "../script/script-element";
 import { AutoHeightTextarea } from "./panel/link";
 import { SideLabel } from "./ui/SideLabel";
 import { CPInstance } from "./CPInstance";

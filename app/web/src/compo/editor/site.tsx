@@ -19,7 +19,7 @@ export const SiteEditor: FC<{
     loading: false,
   });
 
-  wsdoc.site = site as any;
+  if (!wsdoc.site || wsdoc.site.id !== site.id) wsdoc.site = site as any;
   wsdoc.mode = (localStorage.getItem("editor-mode") || "desktop") as any;
   w.isEditor = true;
   if (!w.prasiApi) w.prasiApi = {};

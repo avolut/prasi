@@ -1,13 +1,12 @@
 import type { Editor as MonacoEditor } from "@monaco-editor/react";
+import type { BuildOptions } from "esbuild-wasm";
 import { FC } from "react";
 import { useGlobal } from "web-utils";
 import { CEGlobal } from "../../../../base/global/content-editor";
 import { Loading } from "../../../ui/loading";
 import { Modal } from "../../../ui/modal";
-import { FBuild, ScriptMonaco } from "./script-monaco";
-import { ScriptTab } from "./script-tab";
-import type { BuildOptions } from "esbuild-wasm";
 import { initJS } from "./monaco/init";
+import { FBuild, ScriptMonacoElement } from "./monaco/monaco-element";
 
 export const jscript = {
   editor: null as typeof MonacoEditor | null,
@@ -40,7 +39,7 @@ export const jscript = {
   },
 };
 
-export const CEScriptEdit: FC<{ id: string }> = ({ id }) => {
+export const CEScriptElement: FC<{ id: string }> = ({ id }) => {
   const c = useGlobal(CEGlobal, id);
 
   if (!jscript.editor) {
@@ -67,7 +66,6 @@ export const CEScriptEdit: FC<{ id: string }> = ({ id }) => {
       }}
     >
       <div className="bg-white w-[80vw] h-[80vh] flex">
-        {c.editor.script.tab.list.length > 1 && <ScriptTab id={id} />}
         <div
           className={cx(
             "flex flex-1",
@@ -122,7 +120,7 @@ export const CEScriptEdit: FC<{ id: string }> = ({ id }) => {
           {!jscript.editor || !jscript.build ? (
             <Loading backdrop={false} />
           ) : (
-            <ScriptMonaco
+            <ScriptMonacoElement
               id={id}
               Editor={jscript.editor}
               build={jscript.build}

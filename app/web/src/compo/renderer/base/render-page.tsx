@@ -1,6 +1,8 @@
+import { useEffect } from "react";
 import { scanComponent } from "./components";
 import { RSection } from "./elements/r-section";
 import { RendererGlobal } from "./renderer-global";
+import { createAPI, createDB } from "../../page/scripting/api-db";
 
 export const PrasiPage = (props: {
   rg: typeof RendererGlobal & { render: () => void };
@@ -51,6 +53,34 @@ export const PrasiPage = (props: {
           rg.loading = false;
           rg.render();
         });
+      }
+    }
+  }
+
+  if (!rg.init) {
+    rg.init = true;
+    const scope = rg.scope;
+    if (scope && rg.site) {
+      if (rg.site.js_compiled) {
+        const api_url = rg.site.api_url;
+        const args: any = {};
+        if (api_url) {
+          args["api"] = createAPI(api_url);
+          args["db"] = createDB(api_url);
+        }
+
+        const exports = {};
+        const types = {};
+        const fn = new Function(
+          ...Object.keys(args),
+          "exports",
+          "types",
+          rg.site.js_compiled
+        );
+        try {
+          fn(...Object.values(args), exports, types);
+          scope.value.root = exports;
+        } catch (e) {}
       }
     }
   }
