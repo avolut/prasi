@@ -79,7 +79,11 @@ export const PrasiPage = (props: {
         );
         try {
           fn(...Object.values(args), exports, types);
-          scope.value.root = exports;
+          if (!scope.value.root) scope.value.root = {};
+
+          for (const [k, v] of Object.entries(exports)) {
+            scope.value.root[k] = v;
+          }
         } catch (e) {}
       }
     }

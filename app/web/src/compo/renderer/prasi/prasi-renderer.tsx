@@ -16,6 +16,7 @@ export class PrasiRenderer extends Renderer {
   rg = useGlobal(RendererGlobal, "PRASI_SITE");
 
   constructor(arg: {
+    props?: any;
     component?: {
       loading?: (rg: typeof RendererGlobal) => ReactElement;
       notfound?: (rg: typeof RendererGlobal) => ReactElement;
@@ -37,6 +38,9 @@ export class PrasiRenderer extends Renderer {
   }) {
     super();
     const rg = this.rg;
+    if (arg.props) {
+      rg.scope.value.root = arg.props;
+    }
     rg.ui.loading = arg.component?.loading ? (
       arg.component?.loading(rg)
     ) : (

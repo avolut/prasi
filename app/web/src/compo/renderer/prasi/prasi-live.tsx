@@ -11,14 +11,16 @@ export const createPrasiLive = (arg: {
   Loading: any;
   NotFound: any;
   live: PrasiLiveArg;
+  props?: any;
 }) => {
-  const { live, Loading, NotFound } = arg;
+  const { live, Loading, NotFound, props } = arg;
 
   if (!(live.site_id || live.domain)) {
     return null;
   }
 
   return new PrasiRenderer({
+    props,
     component: {
       loading: Loading,
       notfound: NotFound,

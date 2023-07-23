@@ -514,7 +514,8 @@ export const PageManager = () => {
               local.render();
             }}
             onSave={async (res) => {
-              location.href = `/editor/${wsdoc.site?.id}/${res.id}`;
+              local.page.data = null;
+              local.render();
             }}
             page={local.page.data}
           />

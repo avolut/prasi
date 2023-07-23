@@ -53,14 +53,27 @@ export const PageForm: FC<{
                 });
                 onSave(res);
               } else {
-                const res = await db.page.update({
-                  data: {
-                    name: form.name,
-                    url: form.url || "",
-                  },
-                  where: { id: form.id },
-                });
-                onSave(res);
+                if (wsdoc.page_id === form.id && wsdoc.page) {
+                  wsdoc.page.doc.transact(() => {
+                    if (wsdoc.page) {
+                      const page = wsdoc.page.doc.getMap("map");
+                      if (page) {
+                        (page as any).set("name", form.name);
+                        (page as any).set("url", form.url);
+                      }
+                      onSave(page.toJSON());
+                    }
+                  });
+                } else {
+                  const res = await db.page.update({
+                    data: {
+                      name: form.name,
+                      url: form.url || "",
+                    },
+                    where: { id: form.id },
+                  });
+                  onSave(res);
+                }
               }
 
               local.saving = false;
@@ -79,8 +92,9 @@ export const PageForm: FC<{
               autoFocus
               name={"name"}
               onChange={(val) => {
-                form.url = `/${slugify(val)}`;
-                console.log(form);
+                if (!form.url) {
+                  form.url = `/${slugify(val)}`;
+                }
                 form.render();
               }}
             />

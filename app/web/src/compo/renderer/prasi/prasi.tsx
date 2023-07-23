@@ -12,7 +12,8 @@ export const Prasi: FC<{
   notfound?: ReactElement;
   loading?: ReactElement;
   live?: PrasiLiveArg;
-}> = ({ live, loading, notfound }) => {
+  props?: Record<string, any>;
+}> = ({ live, loading, notfound, props }) => {
   const NotFound = () => {
     if (notfound) return notfound;
     return <>Not Found</>;
@@ -25,7 +26,12 @@ export const Prasi: FC<{
   if (live) {
     return (
       <Root>
-        <PrasiLive NotFound={NotFound} Loading={Loading} live={live} />
+        <PrasiLive
+          NotFound={NotFound}
+          Loading={Loading}
+          live={live}
+          props={props}
+        />
       </Root>
     );
   }
@@ -33,18 +39,19 @@ export const Prasi: FC<{
   return <Loading />;
 };
 
-const PrasiLive: FC<{ NotFound: any; Loading: any; live: PrasiLiveArg }> = ({
-  NotFound,
-  Loading,
-  live,
-}) => {
+const PrasiLive: FC<{
+  NotFound: any;
+  Loading: any;
+  live: PrasiLiveArg;
+  props?: any;
+}> = ({ NotFound, Loading, live, props }) => {
   if (typeof __SRV_URL__ === "undefined") {
     w.__SRV_URL__ = "https://apilmtd.goperasi.id/";
     w.siteApiUrl = __SRV_URL__;
     defineWindow();
   }
 
-  const site = createPrasiLive({ Loading, NotFound, live });
+  const site = createPrasiLive({ Loading, NotFound, live, props });
   if (!site) return <NotFound />;
   return site.renderPage(live.pathname);
 };
