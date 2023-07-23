@@ -1,8 +1,8 @@
-import { useEffect } from "react";
+import { createAPI, createDB } from "../../page/scripting/api-db";
+import importModule from "../../page/tools/dynamic-import";
 import { scanComponent } from "./components";
 import { RSection } from "./elements/r-section";
 import { RendererGlobal } from "./renderer-global";
-import { createAPI, createDB } from "../../page/scripting/api-db";
 
 export const PrasiPage = (props: {
   rg: typeof RendererGlobal & { render: () => void };
@@ -75,10 +75,12 @@ export const PrasiPage = (props: {
           ...Object.keys(args),
           "exports",
           "types",
+          "load",
+          "render",
           rg.site.js_compiled
         );
         try {
-          fn(...Object.values(args), exports, types);
+          fn(...Object.values(args), exports, types, importModule, rg.render);
           if (!scope.value.root) scope.value.root = {};
 
           for (const [k, v] of Object.entries(exports)) {

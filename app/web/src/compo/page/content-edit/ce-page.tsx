@@ -8,6 +8,7 @@ import { CEItem } from "./ce-item";
 import { CESection } from "./ce-section";
 import { wsdoc } from "../../editor/ws/wsdoc";
 import { createAPI, createDB } from "../scripting/api-db";
+import importModule from "../tools/dynamic-import";
 
 export const CEPage: FC<{ ceid: string }> = ({ ceid }) => {
   const c = useGlobal(CEGlobal, ceid);
@@ -34,10 +35,18 @@ export const CEPage: FC<{ ceid: string }> = ({ ceid }) => {
           ...Object.keys(args),
           "exports",
           "types",
+          "load",
+          "render",
           wsdoc.site.js_compiled
         );
         try {
-          fn(...Object.values(args), exports, types);
+          fn(
+            ...Object.values(args),
+            exports,
+            types,
+            importModule,
+            local.render
+          );
           scope.types.root = types;
           scope.value.root = exports;
         } catch (e) {}

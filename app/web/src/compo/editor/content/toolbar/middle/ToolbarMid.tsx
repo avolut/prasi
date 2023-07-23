@@ -60,6 +60,8 @@ export const ToolbarMid = () => {
             propTypes={{
               exports: "Record<string, any>",
               types: "Record<string, string>",
+              load: "(src: string) => Promise<any>",
+              render: "() => void",
             }}
           />
         </div>
