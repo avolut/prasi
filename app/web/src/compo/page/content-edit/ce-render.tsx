@@ -12,7 +12,7 @@ import { produceCSS } from "../css/gen";
 import { execElement } from "../scripting/exec-element";
 import { responsiveVal } from "../tools/responsive-val";
 import { initElProp } from "./render-tools/init-elprop";
-import { initScope } from "./render-tools/init-scope";
+import { findScope, initScope } from "./render-tools/init-scope";
 
 export const CERender: FC<{
   ceid: string;
@@ -28,6 +28,10 @@ export const CERender: FC<{
   const adv = item.adv;
   const elementProp = initElProp(c, className, item, mitem);
   const scope = initScope(ceid, item, mitem, c);
+
+  if (item.name === "New Player") {
+    console.log(item.id, findScope(c.scope, item.id || "").c);
+  }
 
   if (adv) {
     const html = renderHTML(adv);

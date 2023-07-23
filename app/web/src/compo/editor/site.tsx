@@ -34,6 +34,7 @@ export const SiteEditor: FC<{
         evt.stopPropagation();
 
         ce.editor.page.reload = true;
+        ce.scope = { effect: {}, evargs: {}, tree: {}, types: {}, value: {} };
         ce.editor.page.render();
         setTimeout(() => {
           ce.editor.page.reload = false;

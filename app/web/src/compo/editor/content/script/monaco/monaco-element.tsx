@@ -153,6 +153,13 @@ export const ScriptMonacoElement: FC<{
             <Button
               onClick={() => {
                 c.editor.page.reload = true;
+                c.scope = {
+                  effect: {},
+                  evargs: {},
+                  tree: {},
+                  types: {},
+                  value: {},
+                };
                 c.editor.page.render();
                 setTimeout(() => {
                   c.editor.page.reload = false;

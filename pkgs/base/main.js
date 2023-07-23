@@ -37059,15 +37059,6 @@ ERROR: Async operation of type "${type}" was created in "process.exit" callback.
             }
           );
         }
-        if (mode !== "dev") {
-          await (0, import_fs_jetpack17.copyAsync)(
-            dir.root("app/prasi-site"),
-            dir.root(".output/app/prasi-site"),
-            {
-              overwrite: true
-            }
-          );
-        }
       };
     }
   });
