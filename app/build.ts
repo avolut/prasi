@@ -13,13 +13,13 @@ export const build = async (mode: string) => {
     );
   }
 
-  if (mode !== "dev") {
-    await copyAsync(
-      dir.root("app/prasi-site"),
-      dir.root(".output/app/prasi-site"),
-      {
-        overwrite: true,
-      }
-    );
-  }
+  // if (mode !== "dev") {
+  //   await copyAsync(
+  //     dir.root("app/prasi-site"),
+  //     dir.root(".output/app/prasi-site"),
+  //     {
+  //       overwrite: true,
+  //     }
+  //   );
+  // }
 };
