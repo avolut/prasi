@@ -57,7 +57,7 @@ export const PrasiPage = (props: {
     }
   }
 
-  if (!rg.init) {
+  if (!rg.init && rg.site.id) {
     rg.init = true;
     const scope = rg.scope;
     if (scope && rg.site) {
@@ -69,7 +69,7 @@ export const PrasiPage = (props: {
           args["db"] = createDB(api_url);
         }
 
-        const exports = {};
+        const exports = scope.value.root || {};
         const types = {};
         const fn = new Function(
           ...Object.keys(args),
