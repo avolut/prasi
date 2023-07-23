@@ -10,10 +10,11 @@ import "../../../../../../.output/app/web/public/index.css";
 const w = window as unknown as {
   __SRV_URL__: string;
   siteApiUrl: string;
+  isEditor: false;
 };
 
 export const Prasi: FC<{
-  notfound?: ReactElement; 
+  notfound?: ReactElement;
   loading?: ReactElement;
   live?: PrasiLiveArg;
   props?: Record<string, any>;
@@ -52,6 +53,7 @@ const PrasiLive: FC<{
   if (typeof __SRV_URL__ === "undefined") {
     w.__SRV_URL__ = "https://apilmtd.goperasi.id/";
     w.siteApiUrl = __SRV_URL__;
+    w.isEditor = false;
     defineWindow();
   }
 
