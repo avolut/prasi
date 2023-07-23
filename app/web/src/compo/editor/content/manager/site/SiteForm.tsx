@@ -77,7 +77,10 @@ export const SiteForm: FC<{
               name={"name"}
               onBlur={() => {
                 if (!form.domain) {
-                  form.domain = (form.name || "").replace(/\W/g, "");
+                  form.domain = (form.name || "")
+                    .toLowerCase()
+                    .replace(/[^a-z0-9\-_\.]/g, "");
+
                   form.render();
                 }
               }}
@@ -89,7 +92,7 @@ export const SiteForm: FC<{
               form={form}
               name={"domain"}
               onChange={(text) => {
-                return text.replace(/\W/g, "");
+                return text.replace(/[^a-z0-9\-_\.]/g, "");
               }}
             />
           </label>
