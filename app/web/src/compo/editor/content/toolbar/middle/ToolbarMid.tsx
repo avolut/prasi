@@ -14,7 +14,7 @@ export const ToolbarMid = () => {
   const c = useGlobal(CEGlobal, "PAGE");
   const local = useLocal({
     apiConfigOpen: false,
-    siteJS: { open: true, timeout: null as any },
+    siteJS: { open: false, timeout: null as any },
   });
   return (
     <div className={cx("toolbar-mid", "flex")}>
