@@ -61,7 +61,7 @@ const CETextEditable: FC<{ ceid: string; item: MText }> = ({ ceid, item }) => {
           item.get("id"),
           "outline-none select-text",
           css`
-            min-width: 25px;
+            min-width: 5px;
           `
         )}
       />
