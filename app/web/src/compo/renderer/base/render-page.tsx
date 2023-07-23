@@ -81,7 +81,9 @@ export const PrasiPage = (props: {
         );
         try {
           fn(...Object.values(args), exports, types, importModule, rg.render);
-          if (!scope.value.root) scope.value.root = {};
+          if (!scope.value.root) {
+            scope.value.root = exports;
+          }
 
           for (const [k, v] of Object.entries(exports)) {
             scope.value.root[k] = v;
@@ -90,7 +92,6 @@ export const PrasiPage = (props: {
       }
     }
   }
-
   if (rg.loading) return ui.loading || <></>;
   if (!page.active) return ui.notfound;
 

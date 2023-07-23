@@ -5,13 +5,15 @@ import { PrasiLiveArg, createPrasiLive } from "./prasi-live";
 
 export { useGlobal, useLocal } from "web-utils";
 
+import "../../../../../../.output/app/web/public/index.css";
+
 const w = window as unknown as {
   __SRV_URL__: string;
   siteApiUrl: string;
 };
 
 export const Prasi: FC<{
-  notfound?: ReactElement;
+  notfound?: ReactElement; 
   loading?: ReactElement;
   live?: PrasiLiveArg;
   props?: Record<string, any>;
