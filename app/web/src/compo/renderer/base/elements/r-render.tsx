@@ -19,6 +19,9 @@ export const RRender: FC<{
   let _children = children;
 
   let item = mitem;
+  if (item.hidden === "all") {
+    return null;
+  }
   if (original) {
     item = { ...mitem, id: original.id };
   }
@@ -46,9 +49,6 @@ export const RRender: FC<{
 
   const linktag = responsiveVal<FNLinkTag>(item, "linktag", rg.mode, {});
 
-  if (item.hidden === "all") {
-    return null;
-  }
   if (linktag && linktag.link) {
     let href = linktag.link || "";
     if (href.startsWith("/")) {

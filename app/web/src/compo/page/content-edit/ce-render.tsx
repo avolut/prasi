@@ -23,6 +23,10 @@ export const CERender: FC<{
 
   const item = mitem.toJSON() as IContent;
 
+  if (item.hidden) {
+    return null;
+  }
+  
   let _children = children;
   const className = [produceCSS(item, { mode: wsdoc.mode })];
   const adv = item.adv;
@@ -49,9 +53,6 @@ export const CERender: FC<{
     }
   }
 
-  if (item.hidden) {
-    return null;
-  }
 
   if (!c.editor.enabled) {
     const linktag = responsiveVal<FNLinkTag>(item, "linktag", wsdoc.mode, {});
