@@ -39,6 +39,8 @@ export const produceCSS = (
         cssEditor({ item, hover: arg?.hover, active: arg?.active }),
       cssAdv(item, arg.mode),
     ]);
-  } catch (e) {}
+  } catch (e) {
+    console.log(e);
+  }
   return cx([]);
 };
