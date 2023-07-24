@@ -25,17 +25,20 @@ export const produceCSS = (
     className = item.mobile?.linktag?.class;
   }
 
-  return cx([
-    "flex relative",
-    className?.trim(),
-    cssLayout(item, arg.mode),
-    cssPadding(item, arg.mode),
-    cssDimension(item, arg.mode, arg?.editor),
-    cssBorder(item, arg.mode),
-    cssBackground(item, arg.mode),
-    cssFont(item, arg.mode),
-    (arg?.hover || arg?.active) &&
-      cssEditor({ item, hover: arg?.hover, active: arg?.active }),
-    cssAdv(item, arg.mode),
-  ]);
+  try {
+    return cx([
+      "flex relative",
+      className?.trim(),
+      cssLayout(item, arg.mode),
+      cssPadding(item, arg.mode),
+      cssDimension(item, arg.mode, arg?.editor),
+      cssBorder(item, arg.mode),
+      cssBackground(item, arg.mode),
+      cssFont(item, arg.mode),
+      (arg?.hover || arg?.active) &&
+        cssEditor({ item, hover: arg?.hover, active: arg?.active }),
+      cssAdv(item, arg.mode),
+    ]);
+  } catch (e) {}
+  return cx([]);
 };
