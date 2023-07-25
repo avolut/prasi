@@ -10,7 +10,7 @@ generator client_app {
 
 datasource db {
   provider = "postgresql"
-  url      = "postgresql://postgres:goperasidatabase123@db.goperasi.id:5432/prasi?schema=public&pool_timeout=0"
+  url      = "postgresql://postgres:goperasidatabase123@139.99.124.135:5432/prasi?schema=public&pool_timeout=0"
 }
 
 model page {

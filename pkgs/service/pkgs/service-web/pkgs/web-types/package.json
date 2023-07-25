@@ -3,6 +3,6 @@
   "main": "export.ts",
   "dependencies": {
     "@types/react": "18.0.28",
-    "hyper-express": "6.7.1"
+    "hyper-express": "6.8.0"
   }
 }

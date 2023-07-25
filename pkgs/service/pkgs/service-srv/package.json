@@ -13,7 +13,7 @@
     "pkg": "workspace:*",
     "bundler": "workspace:^",
     "catch-exit": "1.2.2",
-    "hyper-express": "6.7.1",
+    "hyper-express": "6.8.0",
     "radix3": "1.0.0",
     "@paralleldrive/cuid2": "2.2.0",
     "lmdb": "2.7.9",

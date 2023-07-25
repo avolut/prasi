@@ -22,7 +22,6 @@ export const RComponent: FC<{
   let comp = rg.component.def[compid];
   if (!comp) {
     if (!rg.component.loading[compid]) {
-      console.log(compid);
       rg.component.loading[compid] = true;
 
       rg.component.load([compid]).then((comps) => {
