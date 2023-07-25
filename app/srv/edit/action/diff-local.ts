@@ -9,25 +9,26 @@ export const diffLocal = (ws: Websocket, msg: any) => {
       .split(",")
       .map((x) => parseInt(x, 10))
   );
-  let doc = null as any;
+  let doc = null as unknown as Y.Doc;
   let wss: Set<Websocket> = null as any;
   let um: Y.UndoManager = null as any;
   if (msg.mode === "page") {
-    doc = eg.edit.page[msg.id].doc;
+    doc = eg.edit.page[msg.id].doc as any;
     wss = eg.edit.page[msg.id].ws;
     um = eg.edit.page[msg.id].undoManager;
   } else if (msg.mode === "comp") {
-    doc = eg.edit.comp[msg.id].doc;
+    doc = eg.edit.comp[msg.id].doc as any;
     wss = eg.edit.comp[msg.id].ws;
     um = eg.edit.comp[msg.id].undoManager;
   } else if (msg.mode === "site") {
-    doc = eg.edit.site[msg.id].doc;
+    doc = eg.edit.site[msg.id].doc as any;
     wss = eg.edit.site[msg.id].ws;
     um = eg.edit.site[msg.id].undoManager;
   }
 
   if (doc && wss) {
     Y.applyUpdate(doc, diff_local);
+
     if (msg.mode === "page") {
       clearTimeout(eg.edit.page[msg.id].saveTimeout);
       eg.edit.page[msg.id].saveTimeout = setTimeout(() => {

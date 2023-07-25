@@ -9,6 +9,7 @@ export const loadPage = async (page_id: string) => {
       name: true,
       url: true,
       js_compiled: true,
+      updated_at: true,
       content_tree: true,
     },
   })) as unknown as null | Page;

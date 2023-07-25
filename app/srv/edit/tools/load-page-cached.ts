@@ -27,6 +27,7 @@ export const loadCachedPage = async (site_id: string, page_id: string) => {
           js: true,
           id: true,
           url: true,
+          updated_at: true,
           js_compiled: true,
           content_tree: true,
         },

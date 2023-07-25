@@ -24,7 +24,6 @@ export const collabEditHandler = (ws: Websocket) => {
   ws.on("message", (raw: string) => {
     const msg = JSON.parse(raw) as WS_MSG;
 
-    console.log(msg.type);
     switch (msg.type) {
       case "get_page":
         getPage(ws, msg);

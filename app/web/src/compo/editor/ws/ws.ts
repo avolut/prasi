@@ -66,7 +66,13 @@ export const connectWS = async (page: {
             doc.on(
               "update",
               throttle(async (e, origin) => {
-                if (!origin) {
+                if (!origin && origin !== "updated_at") {
+                  doc.transact(() => {
+                    doc
+                      .getMap("map")
+                      .set("updated_at", new Date().toISOString());
+                  }, "updated_at");
+
                   const sendmsg: WS_MSG_SV_LOCAL = {
                     type: "sv_local",
                     mode: "page",

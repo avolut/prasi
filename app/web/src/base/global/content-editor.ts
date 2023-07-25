@@ -9,9 +9,10 @@ import { FMComponent } from "../../compo/types/meta-fn";
 import { MRoot } from "../../compo/types/root";
 import { SingleScope } from "../../compo/types/script";
 export type CompMap = TypedMap<
-  Omit<component, "content_tree" | "component"> & {
+  Omit<component, "content_tree" | "component" | "updated_at"> & {
     content_tree: MItem;
     component: FMComponent;
+    updated_at: string;
   }
 >;
 export type CompDoc = TypedDoc<{

@@ -12,6 +12,7 @@ import {
 import { ContentEditor } from "./content";
 import { Toolbar } from "./content/toolbar/Toolbar";
 import { wsdoc } from "./ws/wsdoc";
+import { component } from "../page/component";
 
 export const PageEditor: FC<{
   page?: MPage | null;
@@ -44,7 +45,11 @@ export const PageEditor: FC<{
       }
     }
   } else {
-    if (!local.loading && componentShouldLoad(c, c.root)) {
+    if (
+      !local.loading &&
+      !component.edit.id &&
+      componentShouldLoad(c, c.root)
+    ) {
       local.loading = true;
       loadComponents(c.map.get("content_tree")).then(componentOnLoad);
     }

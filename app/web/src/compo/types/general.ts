@@ -36,8 +36,9 @@ export type Page = {
 };
 export type MPage = TypedDoc<{
   map: TypedMap<
-    Omit<dbpage, "content_tree"> & {
+    Omit<dbpage, "content_tree" | "updated_at"> & {
       content_tree: MRoot;
+      updated_at: string;
     }
   >;
 }>;

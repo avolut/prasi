@@ -88,8 +88,10 @@ export const CETreeMenu: FC<{
         <MenuItem
           label="Detach"
           onClick={() => {
-            item.delete("component");
-            console.log(item.toJSON());
+            const id = item.get("id");
+            if (id) {
+              console.log(c.instances[id]);
+            }
           }}
         />
       )}
