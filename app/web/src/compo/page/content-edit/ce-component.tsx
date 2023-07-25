@@ -17,6 +17,7 @@ export const CEComponent: FC<{
 }> = ({ ceid, item, compItem }) => {
   const c = useGlobal(CEGlobal, ceid);
   const compid = item.get("component")?.get("id");
+
   if (compid && wsdoc.reloadComponentId.has(compid)) {
     const id = item.get("id") || "";
     delete c.instances[id];
@@ -45,8 +46,9 @@ export const CEComponent: FC<{
       <Loading backdrop={false} />
     </div>
   );
-  if (!item && !compItem) return loading;
 
+  if (item.get("hidden")) return null;
+  if (!item && !compItem) return loading;
   const id = item.get("id");
   if (!id || (id && !c.instances[id])) return loading;
 
@@ -59,7 +61,6 @@ export const CEComponent: FC<{
         if (e.type === "text")
           return <CCText key={e.id} ceid={ceid} item={e} />;
       })}
-
       {c.editor.componentActiveID === compid && (
         <div
           className={cx(

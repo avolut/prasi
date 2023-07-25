@@ -45,6 +45,8 @@ export const RComponent: FC<{
     local.instanced = true;
   }
 
+  if (item.hidden === "all") return null;
+
   return (
     <RRender item={item}>
       {item.childs.map((e) => {

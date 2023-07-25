@@ -18,6 +18,8 @@ import { selectMultiple, walkContent } from "./tree";
 import { flatTree } from "../../../page/tools/flat-tree";
 import { filterFlatTree } from "../../../page/tools/filter-tree";
 import { FMComponent, FNComponent } from "../../../types/meta-fn";
+import { detachComp } from "./detach";
+import { jscript } from "../script/script-element";
 
 export const CETreeMenu: FC<{
   id: string;
@@ -87,10 +89,12 @@ export const CETreeMenu: FC<{
       {comp_id && !isActiveComponent && (
         <MenuItem
           label="Detach"
-          onClick={() => {
-            const id = item.get("id");
-            if (id) {
-              console.log(c.instances[id]);
+          onClick={async () => {
+            if (!jscript.build) {
+              await jscript.init();
+            }
+            if (jscript.build) {
+              detachComp(c, item as MItem, jscript.build);
             }
           }}
         />
