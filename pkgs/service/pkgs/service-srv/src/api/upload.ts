@@ -14,11 +14,7 @@ export const generateUploadPath = (
   prefix?: string
 ) => {
   const date = new Date();
-  const subdir = join(
-    prefix || "",
-    format(date, "yyyy-LL").toLowerCase(),
-    format(date, "dd")
-  );
+  const subdir = join(prefix || "");
   const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
 
   const filename =

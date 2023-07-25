@@ -2,6 +2,7 @@ import { FC, useEffect } from "react";
 import { useLocal } from "web-utils";
 import { FilePicker } from "./FilePicker";
 import { Button } from "./Button";
+import { FileImageGallery } from "./FileImageGallery";
 
 export const FieldImg: FC<{
   value?: string;
@@ -27,9 +28,10 @@ export const FieldImg: FC<{
         Image
       </Button>
       {local.open && (
-        <FilePicker
+        <FileImageGallery
           value={value}
           update={update}
+          meta={local}
           onClose={() => {
             local.open = false;
             local.render();

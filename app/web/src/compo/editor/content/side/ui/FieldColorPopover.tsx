@@ -13,11 +13,6 @@ export const FieldColorPicker: FC<{
   showHistory?: boolean;
 }> = ({ children, value, update, open, onClose, onOpen, showHistory }) => {
   const local = useLocal({ show: open || false });
-  // const handleOpenChange: PopoverProps["onOpenChange"] = (e, data) => {
-  //   local.show = data.open || false;
-  //   local.render();
-  // };
-
   useEffect(() => {
     if (value) {
       local.show = open || false;
