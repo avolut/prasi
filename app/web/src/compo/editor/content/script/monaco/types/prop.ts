@@ -1,5 +1,5 @@
 import { typeStringify } from "./type-stringify";
-
+import { ReactElement, isValidElement } from "react";
 export const extractProp = (prop: {
   values: Record<string, any>;
   types: Record<string, string>;
@@ -31,13 +31,17 @@ export const extractProp = (prop: {
     if (v.type) {
       propTypes.push(`const ${k} = null as unknown as ${v.type};`);
     } else if (v.val) {
-      try {
-        propTypes.push(
-          `const ${k} = ${JSON.stringify(v.val, typeStringify)
-            .replaceAll('"___FFF||', "")
-            .replaceAll('||FFF___"', "")};`
-        );
-      } catch (e) {}
+      if (typeof v.val === "object" && isValidElement(v.val)) {
+        propTypes.push(`const ${k}: ReactElement;`);
+      } else {
+        try {
+          propTypes.push(
+            `const ${k} = ${JSON.stringify(v.val, typeStringify)
+              .replaceAll('"___FFF||', "")
+              .replaceAll('||FFF___"', "")};`
+          );
+        } catch (e) {}
+      }
     }
   }
 

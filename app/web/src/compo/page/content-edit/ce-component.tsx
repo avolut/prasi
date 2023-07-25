@@ -203,7 +203,7 @@ export const CCItem: FC<{ ceid: string; item: IItem }> = ({ ceid, item }) => {
   );
 };
 
-const CCText: FC<{ ceid: string; item: IText }> = ({ ceid, item }) => {
+export const CCText: FC<{ ceid: string; item: IText }> = ({ ceid, item }) => {
   return (
     <CERender ceid={ceid} citem={item}>
       <div

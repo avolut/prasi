@@ -7,6 +7,7 @@ import { createPassProps } from "../../../page/scripting/pass-props";
 import { IContent } from "../../../types/general";
 import { SingleScope } from "../../../types/script";
 import { RendererGlobal } from "../renderer-global";
+import { createPassChild } from "../../../page/scripting/pass-child-r";
 
 type JsArg = {
   rg: typeof RendererGlobal;
@@ -47,15 +48,18 @@ const produceEvalArgs = (
     scope.evargs[item.id] = {
       local: createLocal({ item, scope, render }),
       passprop: createPassProps({ item, scope }),
+      passchild: createPassChild({ item }),
     };
   }
 
   const PassProp = scope.evargs[item.id].passprop;
   const Local = scope.evargs[item.id].local;
+  const PassChild = scope.evargs[item.id].passchild;
 
   const result: any = {
     PassProp,
     Local,
+    PassChild,
     children,
     props: {
       className: cx(className),

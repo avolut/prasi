@@ -15,5 +15,5 @@ export type SingleScope = {
       parent_id: string;
     }
   >;
-  evargs: Record<string, { local: any; passprop: any }>;
+  evargs: Record<string, { local: any; passprop: any; passchild: any }>;
 };

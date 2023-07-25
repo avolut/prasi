@@ -7,8 +7,10 @@ import { findScope } from "../content-edit/render-tools/init-scope";
 import { createAPI, createDB } from "./api-db";
 import { createLocal } from "./local-comp";
 import { createPassProps } from "./pass-props";
+import { createPassChild } from "./pass-child-ce";
 
 type JsArg = {
+  ceid: string;
   item: IContent;
   scope: SingleScope;
   children: ReactNode;
@@ -29,6 +31,7 @@ export const execElement = (arg: JsArg, api_url?: string) => {
       scriptEval(...Object.values(evalArgs));
     } catch (e) {
       error = true;
+      console.warn(e);
     }
     return output.jsx;
   }
@@ -46,16 +49,19 @@ const produceEvalArgs = (
     scope.evargs[item.id] = {
       local: createLocal({ item, scope, render }),
       passprop: createPassProps({ item, scope }),
+      passchild: createPassChild({ item, ceid: arg.ceid }),
     };
   }
 
   const PassProp = scope.evargs[item.id].passprop;
+  const PassChild = scope.evargs[item.id].passchild;
   const Local = scope.evargs[item.id].local;
   const scopeProps = findScope(scope, item.id);
   const result: any = {
     PassProp,
     Local,
     children,
+    PassChild,
     props: {
       className: cx(className),
       ...elementProp,

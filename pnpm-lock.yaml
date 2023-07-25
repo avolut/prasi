@@ -67,19 +67,6 @@ importers:
         specifier: 6.7.1
         version: 6.7.1
 
-  app/prasi-site:
-    dependencies:
-      lmdb:
-        specifier: ^2.8.3
-        version: 2.8.3
-      radix3:
-        specifier: ^1.0.1
-        version: 1.0.1
-    devDependencies:
-      bun-types:
-        specifier: latest
-        version: 0.6.14
-
   app/srv:
     dependencies:
       '@node-rs/argon2':
@@ -1294,14 +1281,6 @@ packages:
     dev: false
     optional: true
 
-  /@lmdb/lmdb-darwin-arm64@2.8.3:
-    resolution: {integrity: sha512-idMOl/mg1fdVwgz5tSVFy49oySmq2mxDZg26qk+C3rBJNXKwBqJHbDlbrUZWJOH0tD/Rw8+0nbJJ7qrl8JFMqQ==}
-    cpu: [arm64]
-    os: [darwin]
-    requiresBuild: true
-    dev: false
-    optional: true
-
   /@lmdb/lmdb-darwin-x64@2.7.11:
     resolution: {integrity: sha512-jhj1aB4K8ycRL1HOQT5OtzlqOq70jxUQEWRN9Gqh3TIDN30dxXtiHi6EWF516tzw6v2+3QqhDMJh8O6DtTGG8Q==}
     cpu: [x64]
@@ -1312,14 +1291,6 @@ packages:
 
   /@lmdb/lmdb-darwin-x64@2.7.9:
     resolution: {integrity: sha512-luf5OZrxTtWc59Ku+1fimRoWW1taUYWGM4Prma2sydyTifAsmKGYontJxJqG2o12L4QZULpxgH/ghzdw46ooCQ==}
-    cpu: [x64]
-    os: [darwin]
-    requiresBuild: true
-    dev: false
-    optional: true
-
-  /@lmdb/lmdb-darwin-x64@2.8.3:
-    resolution: {integrity: sha512-wlMLHEdj1n8bGXLmGLboXeXJaxu8QpUsazgWvjP49w9w364Ha/rRtD6htZQmyMPOS9fOH0CQ5gw8c3R/8nSWWA==}
     cpu: [x64]
     os: [darwin]
     requiresBuild: true
@@ -1342,14 +1313,6 @@ packages:
     dev: false
     optional: true
 
-  /@lmdb/lmdb-linux-arm64@2.8.3:
-    resolution: {integrity: sha512-BEjajsAma7+OI+xl0Kyjp3Ta6hIHId8CzVFXoygS4tGdVG1eEomtS15JuP8v5PY42y4hsFSBOdUfdkz80jcHVA==}
-    cpu: [arm64]
-    os: [linux]
-    requiresBuild: true
-    dev: false
-    optional: true
-
   /@lmdb/lmdb-linux-arm@2.7.11:
     resolution: {integrity: sha512-dHfLFVSrw/v5X5lkwp0Vl7+NFpEeEYKfMG2DpdFJnnG1RgHQZngZxCaBagFoaJGykRpd2DYF1AeuXBFrAUAXfw==}
     cpu: [arm]
@@ -1360,14 +1323,6 @@ packages:
 
   /@lmdb/lmdb-linux-arm@2.7.9:
     resolution: {integrity: sha512-Y71NC8ZfRQosH9MpBX0aTV6YnJWdsnhRy+KxQeWQRd/D+Y0gwFVmXFghJwx21OuE5fnSW8oJYCearRFRum/C5w==}
-    cpu: [arm]
-    os: [linux]
-    requiresBuild: true
-    dev: false
-    optional: true
-
-  /@lmdb/lmdb-linux-arm@2.8.3:
-    resolution: {integrity: sha512-w4IfpSY81RBqXa9gGXzlfRulm0XLHHTZV3KtxVT4ZeoLokm7CxGf5stkSAx5UWHdRbQziAVDdUSRlI2Wj8Ubqg==}
     cpu: [arm]
     os: [linux]
     requiresBuild: true
@@ -1390,14 +1345,6 @@ packages:
     dev: false
     optional: true
 
-  /@lmdb/lmdb-linux-x64@2.8.3:
-    resolution: {integrity: sha512-J34jcJoCE89bFw2diRwmY3TPv/MYlxaZMeIJm8OPwnDkFD+RI5BKxFNZb1SRFBqTbcLSruRrl6YxONZ4THL0/w==}
-    cpu: [x64]
-    os: [linux]
-    requiresBuild: true
-    dev: false
-    optional: true
-
   /@lmdb/lmdb-win32-x64@2.7.11:
     resolution: {integrity: sha512-BJwkHlSUgtB+Ei52Ai32M1AOMerSlzyIGA/KC4dAGL+GGwVMdwG8HGCOA2TxP3KjhbgDPMYkv7bt/NmOmRIFng==}
     cpu: [x64]
@@ -1408,14 +1355,6 @@ packages:
 
   /@lmdb/lmdb-win32-x64@2.7.9:
     resolution: {integrity: sha512-qz5WyPikCS0siyoMjV4x6cHS0AMErh6mqBS4hgWUgTMebG3qn1AuBw4eQpmTMf32ES9fVMFeDhZBjC5eHoC3Og==}
-    cpu: [x64]
-    os: [win32]
-    requiresBuild: true
-    dev: false
-    optional: true
-
-  /@lmdb/lmdb-win32-x64@2.8.3:
-    resolution: {integrity: sha512-o5t8RuBjG4CfWRX+0c25ibD6K81rQo6pQr2JogD1rZrxUltudSGY8csy5W2OHLISk0l8i3/3/QMk/iUL86SWgQ==}
     cpu: [x64]
     os: [win32]
     requiresBuild: true
@@ -3258,10 +3197,6 @@ packages:
       ieee754: 1.2.1
     dev: false
 
-  /bun-types@0.6.14:
-    resolution: {integrity: sha512-sRdvu+t59+H/TVOe7FSGFWYITbqkhiCx9NxVUHt2+JOXM9gUOe5uMPvVvcr/hGngnh+/yb5a7uPE4JaS6uxujg==}
-    dev: true
-
   /busboy@1.6.0:
     resolution: {integrity: sha512-8SFQbg/0hQ9xy3UNTB0YEnsNBbWfhf7RtnzpL7TkBiTBRfrQ9Fxcnz7VJsleJpyp6rVLvXiuORqjlHi5q+PYuA==}
     engines: {node: '>=10.16.0'}
@@ -4378,26 +4313,6 @@ packages:
       '@lmdb/lmdb-win32-x64': 2.7.9
     dev: false
 
-  /lmdb@2.8.3:
-    resolution: {integrity: sha512-EtGgDAJk53nZztdP2blg2UPh9LaGTadIV8DMzaKyYr0z5hZRQ/y3Qf2HcaTUrG+83lZHyALyiT386TzQ185eEw==}
-    hasBin: true
-    requiresBuild: true
-    dependencies:
-      msgpackr: 1.9.5
-      node-addon-api: 6.1.0
-      node-gyp-build-optional-packages: 5.1.0
-      ordered-binary: 1.4.1
-      weak-lru-cache: 1.2.2
-      yarn: 1.22.19
-    optionalDependencies:
-      '@lmdb/lmdb-darwin-arm64': 2.8.3
-      '@lmdb/lmdb-darwin-x64': 2.8.3
-      '@lmdb/lmdb-linux-arm': 2.8.3
-      '@lmdb/lmdb-linux-arm64': 2.8.3
-      '@lmdb/lmdb-linux-x64': 2.8.3
-      '@lmdb/lmdb-win32-x64': 2.8.3
-    dev: false
-
   /lodash.capitalize@4.2.1:
     resolution: {integrity: sha512-kZzYOKspf8XVX5AvmQF94gQW0lejFVgb80G85bU4ZWzoJ6C03PQg3coYAUpSTpQWelrZELd3XWgHzw4Ck5kaIw==}
     dev: false
@@ -4626,6 +4541,7 @@ packages:
     resolution: {integrity: sha512-/IJ3cFSN6Ci3eG2wLhbFEL6GT63yEaoN/R5My2QkV6zro+OJaVRLPlwvxY7EtHYSmDlQpk8stvOQTL2qJFkDRg==}
     optionalDependencies:
       msgpackr-extract: 3.0.2
+    dev: true
 
   /mz@2.7.0:
     resolution: {integrity: sha512-z81GNO7nnYMEhrGh9LeymoE4+Yr0Wn5McHIZMK5cfQCl+NDX08sCZgUc9/6MHni9IWuFLm1Z3HTCXu2z9fN62Q==}
@@ -4675,13 +4591,6 @@ packages:
     resolution: {integrity: sha512-YlCCc6Wffkx0kHkmam79GKvDQ6x+QZkMjFGrIMxgFNILFvGSbCp2fCBC55pGTT9gVaz8Na5CLmxt/urtzRv36w==}
     hasBin: true
     optional: true
-
-  /node-gyp-build-optional-packages@5.1.0:
-    resolution: {integrity: sha512-Jy0ZKyeFh3QwhJT2augyHuhn0WZ15osYBKNw4U6WAp8nadAgcB60uKJ80Y7HG2OkKnTNOtiUwqNZbSKW/nkvKg==}
-    hasBin: true
-    dependencies:
-      detect-libc: 2.0.1
-    dev: false
 
   /node-releases@2.0.13:
     resolution: {integrity: sha512-uYr7J37ae/ORWdZeQ1xxMJe3NtdmqMC/JZK+geofDrkLUApKRHPd18/TxtBOJ4A0/+uUIliorNrfYV6s1b02eQ==}
@@ -5033,10 +4942,6 @@ packages:
 
   /radix3@1.0.0:
     resolution: {integrity: sha512-6n3AEXth91ASapMVKiEh2wrbFJmI+NBilrWE0AbiGgfm0xet0QXC8+a3K19r1UVYjUjctUgB053c3V/J6V0kCQ==}
-    dev: false
-
-  /radix3@1.0.1:
-    resolution: {integrity: sha512-y+AcwZ3HcUIGc9zGsNVf5+BY/LxL+z+4h4J3/pp8jxSmy1STaCocPS3qrj4tA5ehUSzqtqK+0Aygvz/r/8vy4g==}
     dev: false
 
   /range-parser@1.2.1:
@@ -5715,13 +5620,6 @@ packages:
     resolution: {integrity: sha512-2eHWfjaoXgTBC2jNM1LRef62VQa0umtvRiDSk6HSzW7RvS5YtkabJrwYLLEKWBc8a5U2PTSCs+dJjUTJdlHsWQ==}
     engines: {node: '>= 14'}
     dev: true
-
-  /yarn@1.22.19:
-    resolution: {integrity: sha512-/0V5q0WbslqnwP91tirOvldvYISzaqhClxzyUKXYxs07yUILIs5jx/k6CFe8bvKSkds5w+eiOqta39Wk3WxdcQ==}
-    engines: {node: '>=4.0.0'}
-    hasBin: true
-    requiresBuild: true
-    dev: false
 
   /yjs-types@0.0.1(yjs@13.6.6):
     resolution: {integrity: sha512-ruTBSiNYR7AyaI+fV+1SLitWIYzHfmAgBM+Py/vo4fGVckBbUMv3atqPcK1YOrL0FGJLRboqWXHS9GYA1V8kxg==}

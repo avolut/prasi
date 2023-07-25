@@ -47,6 +47,7 @@ export const CERender: FC<{
     else if (adv.jsBuilt && adv.js) {
       const res = execElement(
         {
+          ceid,
           item,
           scope,
           children: _children,
