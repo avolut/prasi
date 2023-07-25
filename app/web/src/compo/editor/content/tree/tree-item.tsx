@@ -95,7 +95,7 @@ export const CETreeItem: FC<{
       ?.get("component")
       ?.get("props")
       ?.toJSON() as Record<string, FNCompDef>;
-    for (const [k, v] of Object.entries(itemComponent.props || {})) {
+    for (const [k, v] of Object.entries(props || {})) {
       let prop = null as null | FNCompDef;
       let type = v.meta?.type;
       if (props && props[k]) {

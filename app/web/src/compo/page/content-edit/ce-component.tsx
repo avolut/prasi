@@ -19,6 +19,8 @@ export const CEComponent: FC<{
   const compid = item.get("component")?.get("id");
   if (compid && wsdoc.reloadComponentId.has(compid)) {
     const id = item.get("id") || "";
+    delete c.instances[id];
+    instantiateComp(c, item);
 
     const ids = [];
     const walk = (s: Set<string>) => {

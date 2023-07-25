@@ -70,6 +70,21 @@ export const flattenTree = (
 
             if (prop) {
               let content = prop.get("content");
+              if (!content) {
+                const json = {
+                  id: createId(),
+                  name: k,
+                  type: "item",
+                  dim: { w: "full", h: "full" },
+                  isPropContent: true,
+                  childs: [],
+                } as IItem;
+                const map = new Y.Map();
+                syncronize(map as any, json);
+                prop.set("content", map as any);
+                content = prop.get("content");
+              }
+
               if (content) {
                 flattenTree(content, _root, res, item);
               }
