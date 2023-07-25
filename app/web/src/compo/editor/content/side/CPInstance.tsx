@@ -100,10 +100,30 @@ export const CPInstance: FC<{
           const label = (
             <div
               className={cx(
-                "border-l-2 pl-2 border-transparent cursor-pointer pr-3 flex items-center",
-                local.mevent
-                  ? "bg-orange-500 text-white"
-                  : " hover:border-l-orange-300"
+                "border-l-2 border-transparent cursor-pointer pr-3 flex items-center w-[50px] overflow-hidden relative",
+                local.mevent ? "bg-orange-500 text-white" : " ",
+                css`
+                  .absolute {
+                    max-width: 45px;
+                    overflow: hidden;
+                  }
+                  &:hover {
+                    overflow: visible;
+
+                    .absolute {
+                      max-width: 150px;
+                      background: white;
+                      border: 1px solid #f1c2a7;
+                      margin: -1px;
+                    }
+
+                    &.text-white .absolute {
+                      background: #f97315;
+                      border: 0px;
+                      margin: 0px;
+                    }
+                  }
+                `
               )}
               onClick={(e) => {
                 if (local.mevent) {
@@ -114,7 +134,7 @@ export const CPInstance: FC<{
                 local.render();
               }}
             >
-              {name}
+              <div className="absolute px-1">{name}</div>
             </div>
           );
 

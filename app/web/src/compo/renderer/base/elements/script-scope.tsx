@@ -53,33 +53,34 @@ export const scriptScope = (
 
     for (const [k, v] of Object.entries(comp.component?.props || {})) {
       let val = null;
-      try {
-        val = exec(v.valueBuilt || v.value);
-      } catch (e) {}
-      scope.value[item.id][k] = val;
-    }
-    const props = i.component.props;
-    if (props) {
-      for (const [k, v] of Object.entries(props)) {
-        if (v) {
-          let val = null;
-          if (v.meta?.type === "content-element") {
-            const content = v.content;
+      const prop = (item as IItem).component?.props[k];
+      if (prop) {
+        const jrop = prop;
+        if (jrop) {
+          const cprop = comp.component?.props[k];
+          const type = cprop?.meta?.type || v.meta?.type || "text";
+          if (type === "content-element") {
+            const content = prop.content;
             if (content) {
               val = <RItem item={content} />;
             } else {
               try {
-                val = exec(v.valueBuilt || v.value);
+                val = exec(jrop.valueBuilt || jrop.value);
               } catch (e) {}
             }
           } else {
             try {
-              val = exec(v.valueBuilt || v.value);
+              val = exec(jrop.valueBuilt || jrop.value);
             } catch (e) {}
           }
-          scope.value[item.id][k] = val;
         }
+      } else {
+        try {
+          val = exec(v.valueBuilt || v.value);
+        } catch (e) {}
       }
+
+      scope.value[item.id][k] = val;
     }
   }
 
