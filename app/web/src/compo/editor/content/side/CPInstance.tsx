@@ -223,14 +223,14 @@ const CPOption: FC<{
   }
 
   return (
-    <div className="flex items-center space-x-1 py-1 justify-end px-2 flex-1">
+    <div className="flex items-center flex-wrap pt-1 space-x-1 justify-end px-2 flex-1">
       {Array.isArray(metaOptions) &&
         metaOptions.map((item, idx) => {
           return (
             <div
               key={idx}
               className={cx(
-                "flex px-2 text-xs border rounded-sm cursor-pointer  justify-center ",
+                "flex px-2 text-xs mb-1 border rounded-sm cursor-pointer  justify-center ",
                 item.value !== evalue
                   ? "bg-white  text-blue-700 hover:bg-blue-50 hover:border-blue-500"
                   : "bg-blue-700 text-white border-blue-700"
@@ -296,7 +296,7 @@ const Coded: FC<{
   reset: () => void;
 }> = ({ editCode, reset }) => {
   return (
-    <div className="flex flex-1 items-stretch justify-center">
+    <div className="flex flex-1 items-stretch justify-end pr-2">
       <div
         className="m-1 px-1 bg-white cursor-pointer hover:bg-blue-500 hover:text-white hover:border-blue-500 font-mono border border-slate-300 text-[11px]"
         onClick={editCode}
