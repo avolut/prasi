@@ -66,6 +66,10 @@ export const comp_create = {
   url: "/comp-create",
   args: ["arg"],
 }
+export const comp_scan = {
+  url: "/comp-scan/:page_id",
+  args: ["page_id"],
+}
 export const compile_js = {
   url: "/compile-js",
   args: ["alljs"],

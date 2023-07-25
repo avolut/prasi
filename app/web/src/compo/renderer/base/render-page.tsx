@@ -44,36 +44,20 @@ export const PrasiPage = (props: {
     if (typeof page.active.content_tree === "undefined") {
       if (!rg.loading) {
         rg.loading = true;
-        rg.page.load(page.active.id).then((loadedPage) => {
+        rg.page.load(page.active.id).then(async (loadedPage) => {
           if (page.active) {
             page.active.content_tree = loadedPage?.content_tree || null;
             page.active.js_compiled = loadedPage?.js_compiled;
+            const res: any = await api.comp_scan(page.active.id);
+            if (res) {
+              for (const c of res) {
+                rg.component.def[c.id] = {
+                  id: c.id,
+                  content_tree: c.content_tree,
+                };
+              }
+            }
           }
-          rg.loading = false;
-          rg.render();
-        });
-      }
-    }
-
-    if (page.active.content_tree) {
-      const compids = scanComponent(page.active.content_tree);
-      const loadCompIds: string[] = [];
-      compids.forEach((id) => {
-        if (!rg.component.def[id]) {
-          loadCompIds.push(id);
-        }
-      });
-
-      if (loadCompIds.length > 0) {
-        rg.loading = true;
-        rg.component.load(loadCompIds).then((comps) => {
-          comps.map((e) => {
-            rg.component.def[e.id] = {
-              id: e.id,
-              content_tree: produce(e.content_tree, () => {}),
-            };
-          });
-
           rg.loading = false;
           rg.render();
         });

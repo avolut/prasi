@@ -117,6 +117,13 @@ export const comp_create = {
   args: ["arg"],
   handler: import("../../../srv/api/comp-create")
 }
+export const comp_scan = {
+  name: "comp_scan",
+  url: "/comp-scan/:page_id",
+  path: "app/srv/api/comp-scan.ts",
+  args: ["page_id"],
+  handler: import("../../../srv/api/comp-scan")
+}
 export const compile_js = {
   name: "compile_js",
   url: "/compile-js",
