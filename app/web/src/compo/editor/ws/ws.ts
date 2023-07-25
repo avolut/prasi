@@ -40,7 +40,8 @@ export const connectWS = async (page: {
   wsdoc.ws = new WebSocket(wsurl);
   if (wsdoc.ws) {
     const ws = wsdoc.ws;
-    const retry = () => {
+    const retry = (e: any) => {
+      console.log(e);
       if (wsdoc.retry.disabled) return;
 
       wsdoc.retry.localIP = true;

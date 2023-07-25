@@ -1,27 +1,55 @@
 import throttle from "lodash.throttle";
 import { compress, decompress } from "lz-string";
+import { validate } from "uuid";
+import { syncronize } from "y-pojo";
 import * as Y from "yjs";
-import { CompDoc } from "../../../base/global/content-editor";
-import { IContent } from "../../types/general";
-import { IItem } from "../../types/item";
+import { CEGlobal, CompDoc } from "../../../base/global/content-editor";
+import { component } from "../../page/component";
+import { fillID } from "../../page/tools/fill-id";
+import { IContent, MContent } from "../../types/general";
+import { IItem, MItem } from "../../types/item";
+import { MRoot } from "../../types/root";
 import { WS_MSG_GET_COMP, WS_MSG_SV_LOCAL } from "../ws/msg";
 import { wsdoc } from "../ws/wsdoc";
-import { component } from "../../page/component";
-import { validate } from "uuid";
 
-export const componentShouldLoad = (item: IContent) => {
-  if (item.type === "item") {
-    if (item.component && item.component.id) {
-      if (typeof component.docs[item.component.id] === "undefined") {
-        return true;
+export const componentShouldLoad = (
+  item: MItem | MRoot,
+  excludeID?: string
+) => {
+  if (item && item.get) {
+    const type = (item as MItem).get("type") as IContent["type"] | "root";
+    if (type === "item") {
+      const itemComp = (item as MItem).get("component");
+      if (itemComp) {
+        const compid = itemComp.get("id");
+        if (compid && validate(compid)) {
+          if (compid !== excludeID) {
+            if (typeof component.docs[compid] === "undefined") {
+              return true;
+            } else {
+              const updatedAt = itemComp.get("updated_at") || 0;
+              const comp = component.docs[compid];
+              if (comp) {
+                const map = comp.getMap("map");
+                const compUpdatedAt = new Date(
+                  map.get("updated_at") as any
+                ).getTime();
+                if (compUpdatedAt > updatedAt) {
+                  return true;
+                }
+              }
+            }
+          }
+        }
       }
     }
-  }
 
-  if (item.type !== "text" && item.childs) {
-    for (const c of item.childs) {
-      if (componentShouldLoad(c)) {
-        return true;
+    const childs = (item as MItem).get("childs");
+    if (childs) {
+      for (const c of childs) {
+        if (componentShouldLoad(c)) {
+          return true;
+        }
       }
     }
   }
@@ -29,74 +57,54 @@ export const componentShouldLoad = (item: IContent) => {
 };
 
 export const loadComponents = async (
-  item: IContent,
-  comps?: Record<string, CompDoc | null>
+  item: MContent | undefined,
+  resultItems?: MItem[]
 ) => {
-  const _comps = comps || {};
+  const _comps = component.docs;
+  const _res = resultItems || [];
 
-  if (item.type === "item") {
-    if (item.component && item.component.id && !_comps[item.component.id]) {
-      const compid = item.component.id;
-      if (validate(compid)) {
-        const changes = await new Promise<string>(async (resolve) => {
-          wsdoc.compsResolveCallback[compid] = resolve;
-          await wsdoc.wsend(
-            JSON.stringify({
-              type: "get_comp",
-              comp_id: compid,
-            } as WS_MSG_GET_COMP)
-          );
-        });
-        if (!changes) {
-          _comps[compid] = null;
-        } else {
-          delete wsdoc.compsResolveCallback[compid];
-          const compmsg = Uint8Array.from(
-            decompress(changes)
-              .split(",")
-              .map((x) => parseInt(x, 10))
-          );
+  if (item) {
+    const type = item.get("type");
+    if (type === "item") {
+      const itemComp = item.get("component");
+      if (itemComp) {
+        const compid = itemComp.get("id");
+        if (compid && validate(compid)) {
+          if (!_comps[compid]) {
+            const changes = await new Promise<string>(async (resolve) => {
+              wsdoc.compsResolveCallback[compid] = resolve;
+              await wsdoc.wsend(
+                JSON.stringify({
+                  type: "get_comp",
+                  comp_id: compid,
+                } as WS_MSG_GET_COMP)
+              );
+            });
+            if (!changes) {
+              _comps[compid] = null;
+            } else {
+              const doc = loadComponentDoc(changes, compid);
+              _comps[compid] = doc;
 
-          const doc = new Y.Doc() as CompDoc;
-          Y.applyUpdate(doc as any, compmsg, "remote");
+              const cmap = doc.getMap("map");
+              const ctree = cmap?.get("content_tree");
 
-          _comps[compid] = doc;
-          doc.on(
-            "update",
-            throttle(async (e, origin) => {
-              if (!origin) {
-                const sendmsg: WS_MSG_SV_LOCAL = {
-                  type: "sv_local",
-                  mode: "comp",
-                  id: compid,
-                  sv_local: compress(
-                    Y.encodeStateVector(doc as any).toString()
-                  ),
-                };
-
-                await wsdoc.wsend(JSON.stringify(sendmsg));
-              }
-            }, 300)
-          );
-
-          const cmap = doc.getMap("map");
-          const ctree = cmap?.get("content_tree")?.toJSON() as IItem;
-
-          await loadComponents(ctree as IItem, _comps);
+              await loadComponents(ctree);
+            }
+          }
+          _res.push(item as MItem);
         }
       }
     }
-  }
 
-  if (item.type !== "text") {
-    for (const c of item.childs || []) {
-      await loadComponents(c, _comps);
+    if (type !== "text") {
+      for (const c of item.get("childs") || []) {
+        await loadComponents(c, _res);
+      }
     }
   }
-
-  return _comps;
+  return _res;
 };
-
 
 export const loadSingleComponent = async (compid: string) => {
   const changes = await new Promise<string>(async (resolve) => {
@@ -108,6 +116,59 @@ export const loadSingleComponent = async (compid: string) => {
       } as WS_MSG_GET_COMP)
     );
   });
+  const doc = loadComponentDoc(changes, compid);
+  return doc;
+};
+
+export const instantiateComp = (c: typeof CEGlobal, item: MItem) => {
+  const itemComp = item.get("component");
+  if (itemComp) {
+    const compid = itemComp.get("id");
+    if (compid && validate(compid)) {
+      const comp = component.docs[compid];
+      const updatedAt = itemComp.get("updated_at") || 0;
+      if (comp) {
+        const map = comp.getMap("map");
+        const id = item.get("id");
+        const compUpdatedAt = new Date(map.get("updated_at") as any).getTime();
+        if (id) {
+          const compjson = fillID(
+            map.get("content_tree")?.toJSON() as any
+          ) as IItem;
+
+          c.instances[id] = {
+            ...compjson,
+            id,
+            component: {
+              id: compjson.component?.id || "",
+              name: compjson.component?.name || "",
+              props: {
+                ...compjson.component?.props,
+                ...itemComp.get("props")?.toJSON(),
+              },
+              updated_at: compUpdatedAt,
+            },
+          };
+          if (compUpdatedAt > updatedAt) {
+            syncronize(item as any, {
+              id,
+              name: item.get("name"),
+              childs: [],
+              component: {
+                id: compid,
+                props: itemComp.get("props")?.toJSON() || {},
+                updated_at: compUpdatedAt,
+              },
+              type: item.get("type"),
+            });
+          }
+        }
+      }
+    }
+  }
+};
+
+const loadComponentDoc = (changes: string, compid: string) => {
   delete wsdoc.compsResolveCallback[compid];
   const compmsg = Uint8Array.from(
     decompress(changes)
@@ -133,6 +194,5 @@ export const loadSingleComponent = async (compid: string) => {
       }
     }, 300)
   );
-
   return doc;
 };

@@ -4,7 +4,7 @@ import * as Y from "yjs";
 import { TypedDoc, TypedMap } from "yjs-types";
 import { NodeContent } from "../../compo/page/tools/flatten-tree";
 import { MContent } from "../../compo/types/general";
-import { MItem } from "../../compo/types/item";
+import { IItem, MItem } from "../../compo/types/item";
 import { FMComponent } from "../../compo/types/meta-fn";
 import { MRoot } from "../../compo/types/root";
 import { SingleScope } from "../../compo/types/script";
@@ -23,6 +23,7 @@ export const CEGlobal = {
   }>,
   map: null as unknown as TypedMap<{ content_tree: MContent }>,
   root: null as unknown as MRoot | MItem,
+  instances: {} as Record<string, IItem>,
   editor: {
     manager: {
       showSite: false,

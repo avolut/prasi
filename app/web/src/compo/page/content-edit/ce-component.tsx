@@ -1,17 +1,13 @@
-import { createId } from "@paralleldrive/cuid2";
-import { FC, useEffect } from "react";
-import { useGlobal, useLocal } from "web-utils";
-import { syncronize } from "y-pojo";
+import { FC } from "react";
+import { useGlobal } from "web-utils";
 import { CEGlobal } from "../../../base/global/content-editor";
-import { getArray } from "../../editor/tools/yjs-tools";
 import { wsdoc } from "../../editor/ws/wsdoc";
 import { IItem, MItem } from "../../types/item";
-import { MText } from "../../types/text";
+import { IText } from "../../types/text";
+import { Loading } from "../../ui/loading";
 import { component } from "../component";
-import { CEItem } from "./ce-item";
 import { CERender } from "./ce-render";
-import { CEText } from "./ce-text";
-import * as Y from "yjs";
+import { instantiateComp } from "../../editor/comp/load-comp";
 import { fillID } from "../tools/fill-id";
 
 export const CEComponent: FC<{
@@ -20,12 +16,8 @@ export const CEComponent: FC<{
   compItem: MItem;
 }> = ({ ceid, item, compItem }) => {
   const c = useGlobal(CEGlobal, ceid);
-  const local = useLocal({ instanced: false });
   const compid = item.get("component")?.get("id");
-  const props = item.get("component")?.get("props");
-
-  if (local.instanced && compid && wsdoc.reloadComponentId.has(compid)) {
-    local.instanced = false;
+  if (compid && wsdoc.reloadComponentId.has(compid)) {
     const id = item.get("id") || "";
 
     const ids = [];
@@ -47,77 +39,26 @@ export const CEComponent: FC<{
     wsdoc.reloadComponentId.delete(compid);
   }
 
-  const cprops = compItem.get("component")?.get("props");
-  const propNames: string[] = [];
-  if (cprops) {
-    cprops?.forEach((mprop, name) => {
-      propNames.push(`${name}_${mprop?.get("meta")?.get("type")}`);
-    });
-  }
-  useEffect(() => {
-    if (cprops) {
-      c.doc.transact(() => {
-        cprops?.forEach((cprop, name) => {
-          let mprop = props?.get(name);
-          if (cprop?.get("meta")?.get("type") === "content-element") {
-            if (!mprop) {
-              props?.set(name, new Y.Map() as any);
-              mprop = props?.get(name);
-              syncronize(mprop as any, cprop.toJSON());
-            }
+  const loading = (
+    <div className="flex relative w-[80px] h-[20px]">
+      <Loading backdrop={false} />
+    </div>
+  );
+  if (!item && !compItem) return loading;
 
-            if (mprop && !mprop?.get("content")) {
-              const json = {
-                id: createId(),
-                name: name,
-                type: "item",
-                dim: { w: "fit", h: "fit" },
-                isPropContent: true,
-                childs: [],
-              } as IItem;
-              const map = new Y.Map();
-              syncronize(map as any, json);
-              mprop.set("content", map as any);
-            }
-          }
-        });
-      });
-    }
-  }, [propNames.join("|")]);
+  const id = item.get("id");
+  if (!id || (id && !c.instances[id])) return loading;
 
-  if (!local.instanced) {
-    const newComp = fillID(compItem.toJSON() as any) as IItem;
-
-    newComp.id = item.get("id") as any;
-    if (newComp.component) {
-      const comp = item.get("component");
-      if (comp) {
-        newComp.component.name = comp.get("name") || "";
-        newComp.component.props = comp.get("props")?.toJSON() as any;
-      }
-    }
-    syncronize(item as any, newComp);
-    local.instanced = true;
-  }
-  if (!item && !compItem) return null;
-
+  const instance = c.instances[id];
   return (
-    <CERender ceid={ceid} item={item}>
-      {getArray<MItem | MText>(item, "childs")?.map((e: MItem | MText) => {
-        const type = e.get("type");
-        if (type === "item") {
-          return (
-            <CEItem
-              ceid={ceid}
-              item={e as MItem}
-              preventRenderComponent={true}
-              key={e.get("id")}
-            />
-          );
-        } else if (type === "text") {
-          return <CEText ceid={ceid} item={e as MText} key={e.get("id")} />;
-        }
+    <CERender ceid={ceid} item={item} citem={instance}>
+      {instance.childs.map((e) => {
+        if (e.type === "item")
+          return <CCItem key={e.id} ceid={ceid} item={e} />;
+        if (e.type === "text")
+          return <CCText key={e.id} ceid={ceid} item={e} />;
       })}
+
       {c.editor.componentActiveID === compid && (
         <div
           className={cx(
@@ -168,6 +109,107 @@ export const CEComponent: FC<{
           </div>
         </div>
       )}
+    </CERender>
+  );
+};
+
+const CCComp: FC<{ ceid: string; item: IItem }> = ({ ceid, item }) => {
+  const c = useGlobal(CEGlobal, ceid);
+  const compid = item.component?.id;
+  const id = item.id;
+
+  if (compid && wsdoc.reloadComponentId.has(compid)) {
+    const ids = [];
+    const walk = (s: Set<string>) => {
+      ids.push(s);
+      s.forEach((e) => {
+        if (c.scope.tree[e]) {
+          walk(c.scope.tree[e].childs);
+        }
+      });
+    };
+    ids.push(id);
+    walk(c.scope.tree[id].childs);
+    for (const i of ids) {
+      delete c.scope.value[i];
+      delete c.scope.tree[i];
+    }
+
+    wsdoc.reloadComponentId.delete(compid);
+  }
+
+  if (!c.instances[id] && compid) {
+    const comp = component.docs[compid];
+    if (comp) {
+      const map = comp.getMap("map");
+      const compUpdatedAt = new Date(map.get("updated_at") as any).getTime();
+      if (id) {
+        const compjson = fillID(
+          map.get("content_tree")?.toJSON() as any
+        ) as IItem;
+
+        c.instances[id] = {
+          ...compjson,
+          id,
+          component: {
+            id: compjson.component?.id || "",
+            name: compjson.component?.name || "",
+            props: {
+              ...compjson.component?.props,
+              ...item.component?.props,
+            },
+            updated_at: compUpdatedAt,
+          },
+        };
+      }
+    }
+  }
+
+  const loading = (
+    <div className="flex relative w-[80px] h-[20px]">
+      <Loading backdrop={false} />
+    </div>
+  );
+
+  if (!id || (id && !c.instances[id])) return loading;
+  const instance = c.instances[id];
+
+  return (
+    <CERender ceid={ceid} citem={instance}>
+      {instance.childs.map((e) => {
+        if (e.type === "item")
+          return <CCItem key={e.id} ceid={ceid} item={e} />;
+        if (e.type === "text")
+          return <CCText key={e.id} ceid={ceid} item={e} />;
+      })}
+    </CERender>
+  );
+};
+
+export const CCItem: FC<{ ceid: string; item: IItem }> = ({ ceid, item }) => {
+  if (item.component?.id) {
+    return <CCComp ceid={ceid} item={item} />;
+  }
+  return (
+    <CERender ceid={ceid} citem={item}>
+      {item.childs.map((e) => {
+        if (e.type === "item")
+          return <CCItem key={e.id} ceid={ceid} item={e} />;
+        if (e.type === "text")
+          return <CCText key={e.id} ceid={ceid} item={e} />;
+      })}
+    </CERender>
+  );
+};
+
+const CCText: FC<{ ceid: string; item: IText }> = ({ ceid, item }) => {
+  return (
+    <CERender ceid={ceid} citem={item}>
+      <div
+        dangerouslySetInnerHTML={{
+          __html: item.html || "",
+        }}
+      ></div>
     </CERender>
   );
 };

@@ -3,7 +3,7 @@ import { Websocket } from "hyper-express";
 import { RadixRouter } from "service/pkgs/service-web/pkgs/web-init";
 import { UndoManager } from "yjs";
 import { TypedArray, TypedDoc, TypedMap } from "yjs-types";
-import { Site } from "../../web/src/compo/types/general";
+import { MPage, Site } from "../../web/src/compo/types/general";
 import { IItem } from "../../web/src/compo/types/item";
 import { IRoot } from "../../web/src/compo/types/root";
 
@@ -56,14 +56,7 @@ export const eg = global as unknown as {
       string,
       {
         id: string;
-        doc: TypedDoc<{
-          map: TypedMap<{
-            url: string;
-            js: string;
-            js_compiled: string;
-            content_tree: TypedMap<IRoot>;
-          }>;
-        }>;
+        doc: MPage;
         undoManager: UndoManager;
         saveTimeout?: ReturnType<typeof setTimeout>;
         ws: Set<Websocket>;

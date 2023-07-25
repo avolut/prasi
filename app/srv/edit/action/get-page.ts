@@ -45,6 +45,24 @@ export const getPage = async (ws: Websocket, msg: WS_MSG_GET_PAGE) => {
   }
 
   const page = eg.edit.page[page_id];
+  // let root = page.doc.getMap("map").get("content_tree") as unknown as MContent;
+  // if (root) {
+  //   let changed = false;
+  //   await page.doc.transact(async () => {
+  //     changed = await validateTreePage(ws, root);
+  //   });
+
+  //   if (changed) {
+  //     root = page.doc.getMap("map").get("content_tree") as unknown as MContent;
+  //     await db.page.update({
+  //       where: {
+  //         id: page.id,
+  //       },
+  //       data: { content_tree: root.toJSON(), updated_at: new Date() },
+  //     });
+  //   }
+  // }
+
   page.ws.add(ws);
   const sent: WS_MSG_SET_PAGE = {
     type: "set_page",

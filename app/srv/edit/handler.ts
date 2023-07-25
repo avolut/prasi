@@ -49,7 +49,7 @@ export const collabEditHandler = (ws: Websocket) => {
     }
   });
 
-  ws.on("close", () => {
+  ws.on("close", (e) => {
     eg.edit.ws.delete(ws);
 
     for (const page of Object.values(eg.edit.page)) {

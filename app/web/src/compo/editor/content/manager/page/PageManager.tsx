@@ -69,6 +69,10 @@ export const PageManager = () => {
     local.loading = false;
     local.render();
   };
+  if (!Array.isArray(data.all)) {
+    data.all = [];
+  }
+
   if (data.all.length === 0) {
     reloadPages();
     local.loading = true;
@@ -516,6 +520,20 @@ export const PageManager = () => {
             onSave={async (res) => {
               local.page.data = null;
               local.render();
+
+              data.all.forEach((e) => {
+                if (e.id === res.id) {
+                  e.name = res.name;
+                  e.url = res.url;
+                }
+              });
+
+              data.pages.forEach((e) => {
+                if (e.id === res.id && e.data) {
+                  e.data.name = res.name;
+                  e.data.url = res.url;
+                }
+              });
             }}
             page={local.page.data}
           />

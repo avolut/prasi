@@ -5,7 +5,7 @@ export const initElProp = (
   c: typeof CEGlobal & { render: () => void },
   className: string[],
   item: IContent,
-  mitem: MContent
+  mitem?: MContent
 ) => {
   if (c.editor.enabled) {
     if (c.editor.active?.get("id") === item.id) {
@@ -36,10 +36,10 @@ export const initElProp = (
     elementProp.onPointerEnter = (
       ev: React.MouseEvent<HTMLElement, MouseEvent>
     ) => {
-      ev.stopPropagation();
-      ev.preventDefault();
-
-      if (item) {
+      if (item && mitem) {
+        ev.stopPropagation();
+        ev.preventDefault();
+        
         if (c.editor && ["item", "text"].includes(item.type)) {
           if (
             c.editor.hover?.get("id") !== item.id &&
@@ -65,10 +65,10 @@ export const initElProp = (
     elementProp.onPointerDown = (
       ev: React.MouseEvent<HTMLElement, MouseEvent>
     ) => {
-      ev.stopPropagation();
-      ev.preventDefault();
+      if (item && mitem) {
+        ev.stopPropagation();
+        ev.preventDefault();
 
-      if (item) {
         c.editor.active = mitem;
         c.render();
       }

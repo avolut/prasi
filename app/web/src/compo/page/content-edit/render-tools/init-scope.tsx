@@ -3,12 +3,13 @@ import { IContent, MContent } from "../../../types/general";
 import { IItem } from "../../../types/item";
 import { FNCompDef, FNComponent } from "../../../types/meta-fn";
 import { component } from "../../component";
+import { CCItem } from "../ce-component";
 import { CEItem } from "../ce-item";
 
 export const initScope = (
   ceid: string,
   item: IContent,
-  mitem: MContent,
+  mitem: MContent | undefined,
   c: typeof CEGlobal
 ) => {
   const i = item as IItem;
@@ -54,37 +55,71 @@ export const initScope = (
       };
 
       if (!scope.value[item.id]) scope.value[item.id] = {};
-      const props = mitem.get("component")?.get("props");
-      for (const [k, v] of Object.entries(comp.component?.props || {})) {
-        let val = null;
-        const prop = props?.get(k);
-        if (prop) {
-          const jrop = prop.toJSON() as FNCompDef;
-          if (jrop) {
-            const cprop = comp.component?.props[k];
-            const type = cprop?.meta?.type || v.meta?.type || "text";
-            if (type === "content-element") {
-              const content = prop.get("content");
-              if (content) {
-                val = <CEItem ceid={ceid} item={content} />;
+      if (mitem) {
+        const props = mitem.get("component")?.get("props");
+        for (const [k, v] of Object.entries(comp.component?.props || {})) {
+          let val = null;
+          const prop = props?.get(k);
+          if (prop) {
+            const jrop = prop.toJSON() as FNCompDef;
+            if (jrop) {
+              const cprop = comp.component?.props[k];
+              const type = cprop?.meta?.type || v.meta?.type || "text";
+              if (type === "content-element") {
+                const content = prop.get("content");
+                if (content) {
+                  val = <CEItem ceid={ceid} item={content} />;
+                } else {
+                  try {
+                    val = exec(jrop.valueBuilt || jrop.value);
+                  } catch (e) {}
+                }
               } else {
                 try {
                   val = exec(jrop.valueBuilt || jrop.value);
                 } catch (e) {}
               }
-            } else {
-              try {
-                val = exec(jrop.valueBuilt || jrop.value);
-              } catch (e) {}
             }
+          } else {
+            try {
+              val = exec(v.valueBuilt || v.value);
+            } catch (e) {}
           }
-        } else {
-          try {
-            val = exec(v.valueBuilt || v.value);
-          } catch (e) {}
-        }
 
-        scope.value[item.id][k] = val;
+          scope.value[item.id][k] = val;
+        }
+      } else {
+        for (const [k, v] of Object.entries(comp.component?.props || {})) {
+          let val = null;
+          const prop = (item as IItem).component?.props[k];
+          if (prop) {
+            const jrop = prop;
+            if (jrop) {
+              const cprop = comp.component?.props[k];
+              const type = cprop?.meta?.type || v.meta?.type || "text";
+              if (type === "content-element") {
+                const content = prop.content;
+                if (content) {
+                  val = <CCItem ceid={ceid} item={content} />;
+                } else {
+                  try {
+                    val = exec(jrop.valueBuilt || jrop.value);
+                  } catch (e) {}
+                }
+              } else {
+                try {
+                  val = exec(jrop.valueBuilt || jrop.value);
+                } catch (e) {}
+              }
+            }
+          } else {
+            try {
+              val = exec(v.valueBuilt || v.value);
+            } catch (e) {}
+          }
+
+          scope.value[item.id][k] = val;
+        }
       }
     }
   }

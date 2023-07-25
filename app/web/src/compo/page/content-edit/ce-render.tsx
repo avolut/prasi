@@ -4,10 +4,10 @@ import { CEGlobal } from "../../../base/global/content-editor";
 import { renderHTML } from "../../editor/tools/render-html";
 import { wsdoc } from "../../editor/ws/wsdoc";
 import { IContent } from "../../types/general";
-import { MItem } from "../../types/item";
+import { IItem, MItem } from "../../types/item";
 import { FNLinkTag } from "../../types/meta-fn";
 import { MSection } from "../../types/section";
-import { MText } from "../../types/text";
+import { IText, MText } from "../../types/text";
 import { produceCSS } from "../css/gen";
 import { execElement } from "../scripting/exec-element";
 import { responsiveVal } from "../tools/responsive-val";
@@ -17,16 +17,23 @@ import { findScope, initScope } from "./render-tools/init-scope";
 export const CERender: FC<{
   ceid: string;
   children: ReactNode;
-  item: MItem | MText | MSection;
-}> = ({ ceid, children, item: mitem }) => {
+  item?: MItem | MText | MSection;
+  citem?: IItem | IText;
+}> = ({ ceid, children, item: mitem, citem }) => {
   const c = useGlobal(CEGlobal, ceid);
 
-  const item = mitem.toJSON() as IContent;
+  let item = null as unknown as IContent;
+  if (citem) item = citem;
+  if (mitem) item = mitem.toJSON() as IContent;
+
+  if (citem && mitem) {
+    item = { ...mitem, ...citem };
+  }
 
   if (item.hidden) {
     return null;
   }
-  
+
   let _children = children;
   const className = [produceCSS(item, { mode: wsdoc.mode })];
   const adv = item.adv;
@@ -52,7 +59,6 @@ export const CERender: FC<{
       return res;
     }
   }
-
 
   if (!c.editor.enabled) {
     const linktag = responsiveVal<FNLinkTag>(item, "linktag", wsdoc.mode, {});

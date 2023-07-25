@@ -4,10 +4,15 @@ import { CEGlobal } from "../../base/global/content-editor";
 import { component } from "../page/component";
 import { IContent, MPage } from "../types/general";
 import { Loading } from "../ui/loading";
-import { componentShouldLoad, loadComponents } from "./comp/load-comp";
+import {
+  componentShouldLoad,
+  instantiateComp,
+  loadComponents,
+} from "./comp/load-comp";
 import { ContentEditor } from "./content";
 import { Toolbar } from "./content/toolbar/Toolbar";
 import { wsdoc } from "./ws/wsdoc";
+import { MItem } from "../types/item";
 
 export const PageEditor: FC<{
   page?: MPage | null;
@@ -19,41 +24,33 @@ export const PageEditor: FC<{
   c.global.api_url = global.api_url || "";
   c.editor.enabled = true;
 
+  const componentOnLoad = async (items: MItem[]) => {
+    for (const item of items) {
+      instantiateComp(c, item);
+    }
+
+    component.edit.loading = false;
+    c.render();
+  };
+
   if (!c.doc || !c.map || !c.root) {
     c.doc = page as any;
     if (c.doc) {
       c.map = c.doc.getMap("map");
       if (c.map) {
         component.edit.loading = true;
-        loadComponents(c.map.get("content_tree")?.toJSON() as IContent).then(
-          (comps) => {
-            for (const [k, v] of Object.entries(comps)) {
-              component.docs[k] = v;
-            }
-            component.edit.loading = false;
-            c.render();
-          }
-        );
+        loadComponents(c.map.get("content_tree")).then(componentOnLoad);
         c.root = c.map.get("content_tree") as any;
       }
     }
   }
 
   if (!component.edit.loading && c.map && c.root) {
-    const root = c.root.toJSON() as IContent;
-    component.edit.loading = componentShouldLoad(root);
-    if (component.edit.loading) {
-      component.edit.loading = true;
-      loadComponents(c.map.get("content_tree")?.toJSON() as IContent).then(
-        (comps) => {
-          for (const [k, v] of Object.entries(comps)) {
-            component.docs[k] = v;
-          }
-          component.edit.loading = false;
-          c.render();
-        }
-      );
-    }
+    // component.edit.loading = componentShouldLoad(c.root);
+    // if (component.edit.loading) {
+    //   component.edit.loading = true;
+    //   loadComponents(c.map.get("content_tree")).then(componentOnLoad);
+    // }
   }
 
   useEffect(() => {

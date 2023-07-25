@@ -35,10 +35,6 @@ export const cssFont = (
     font.family = glbFont.defaultFont;
   }
 
-  if (font.color?.length || 0 > 10) {
-    font.color = "";
-  }
-
   return cx(
     font.color &&
       css`

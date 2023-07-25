@@ -1,7 +1,10 @@
 import { Websocket } from "hyper-express";
 import { compress, decompress } from "lz-string";
 import * as Y from "yjs";
-import { WS_MSG_DIFF_LOCAL, WS_MSG_SVDIFF_REMOTE } from "../../../web/src/compo/editor/ws/msg";
+import {
+  WS_MSG_DIFF_LOCAL,
+  WS_MSG_SVDIFF_REMOTE,
+} from "../../../web/src/compo/editor/ws/msg";
 import { eg } from "../edit-global";
 
 export const svdiffRemote = async (
@@ -31,6 +34,11 @@ export const svdiffRemote = async (
   if (doc) {
     const diff_local = Y.encodeStateAsUpdate(doc as any, sv_remote);
     Y.applyUpdate(doc as any, diff_remote);
+
+    if (msg.mode === "comp") {
+      doc.getMap("map").set("updated_at", new Date().toISOString());
+    }
+
     const sendmsg: WS_MSG_DIFF_LOCAL = {
       type: "diff_local",
       mode: msg.mode,

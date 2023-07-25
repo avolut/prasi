@@ -127,11 +127,31 @@ export const CompManager: FC<{ id: string }> = ({ id }) => {
   const boxClass =
     "flex flex-col items-start w-[200px] h-[100px] p-2 text-sm border cursor-pointer hover:bg-blue-100 ml-1 mb-1";
 
-  const groups = Object.values(local.group).sort((a, b) => {
+  let groups = Object.values(local.group).sort((a, b) => {
     const aname = a.info.name === "__TRASH__" ? "zzzTRASHzzz" : a.info.name;
     const bname = b.info.name === "__TRASH__" ? "zzzTRASHzzz" : b.info.name;
     return aname.localeCompare(bname);
   });
+
+  if (local.search) {
+    groups = [...groups].filter((g) => {
+      let count = 0;
+      g.comps.forEach((e) => {
+        const name = e.name.toLowerCase();
+        const id = e.id.toLowerCase();
+
+        if (
+          name.includes(local.search.toLowerCase()) ||
+          id.includes(local.search.toLowerCase())
+        ) {
+          count++;
+          return true;
+        }
+        return false;
+      });
+      return count > 0;
+    });
+  }
 
   return (
     <>
@@ -433,14 +453,14 @@ export const CompManager: FC<{ id: string }> = ({ id }) => {
                         {g.comps.map((e, idx) => {
                           const name = e.name.toLowerCase();
                           const id = e.id.toLowerCase();
+
                           if (
                             local.search &&
-                            (!name.includes(local.search.toLowerCase()) ||
-                              !id.includes(local.search.toLowerCase()))
+                            !name.includes(local.search.toLowerCase()) &&
+                            !id.includes(local.search.toLowerCase())
                           ) {
                             return null;
                           }
-
                           return (
                             <div
                               key={e.id}

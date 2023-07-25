@@ -26,25 +26,11 @@ export const CETreeMenu: FC<{
   onClose: () => void;
 }> = ({ contextMenu, onClose, item, id }) => {
   const c = useGlobal(CEGlobal, id);
-  const local = useLocal(
-    {
-      paste: false,
-      ready: false,
-      content: null,
-    },
-    async () => {
-      local.render();
-      navigator.clipboard.readText().then((e) => {
-        if (e) {
-          if (e.includes("_prasi")) {
-            local.paste = true;
-          }
-        }
-        local.ready = true;
-        local.render();
-      });
-    }
-  );
+  const local = useLocal({
+    paste: false,
+    ready: false,
+    content: null,
+  });
   const type = item.get("type");
   const item_id = item.get("id");
   const comp = item.get("component");
@@ -56,50 +42,54 @@ export const CETreeMenu: FC<{
       isActiveComponent = true;
     }
   }
+  if (document.hasFocus()) {
+    navigator.clipboard.readText().then((e) => {
+      if (e) {
+        if (e.includes("_prasi")) {
+          local.paste = true;
+        }
+      }
+      local.ready = true;
+      local.render();
+    });
+  }
 
   const rootComponentID = (c.root as MItem).get("component")?.get("id");
   let itemComponent: Partial<FNComponent> =
     getMap<FMComponent>(item, "component")?.toJSON() || {};
 
   if (rootComponentID === itemComponent.id && rootComponentID)
-    return <Menu mouseEvent={contextMenu} onClose={onClose}></Menu>;
+    return (
+      <Menu mouseEvent={contextMenu} onClose={onClose}>
+        <div className="text-sm text-slate-500 px-3">Unavailable</div>
+      </Menu>
+    );
 
   if (!local.ready)
     return (
       <>
         <Menu mouseEvent={contextMenu} onClose={onClose}>
-          Loading
+          <div className="text-sm text-slate-500 px-3">Loading...</div>
         </Menu>
       </>
     );
+
   if (item.get("isPropContent")) {
-    return <Menu mouseEvent={contextMenu} onClose={onClose}></Menu>;
+    return (
+      <Menu mouseEvent={contextMenu} onClose={onClose}>
+        <div className="text-sm text-slate-500 px-3">Unavailable</div>
+      </Menu>
+    );
   }
 
   return (
     <Menu mouseEvent={contextMenu} onClose={onClose}>
       {comp_id && !isActiveComponent && (
         <MenuItem
-          label="Detach Component"
+          label="Detach"
           onClick={() => {
-            c.doc.transact(() => {
-              if (comp) {
-                const compitem = component.docs[comp_id]
-                  ?.getMap("map")
-                  .get("content_tree")
-                  ?.toJSON() as IItem;
-                c.doc.transact(() => {
-                  if (compitem) {
-                    syncronize(item as any, {
-                      ...compitem,
-                      id: item.get("id"),
-                      component: undefined,
-                      childs: compitem.childs.map((e) => fillID(e)),
-                    });
-                  }
-                });
-              }
-            });
+            item.delete("component");
+            console.log(item.toJSON());
           }}
         />
       )}
@@ -135,6 +125,7 @@ export const CETreeMenu: FC<{
                     syncronize(item as any, {
                       id: item.get("id"),
                       name: comp.name,
+                      childs: [],
                       component: {
                         id: comp.id,
                         props: {},

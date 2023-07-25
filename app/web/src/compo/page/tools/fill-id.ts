@@ -15,13 +15,20 @@ export const fillID = (
   if (modify) {
     modify(object);
   }
+
   object.id = cuid();
   if (object.type !== "text") {
     if (object.childs && Array.isArray(object.childs)) {
       for (const child of object.childs) {
-        fillID(child, ignoreComponentChilds, modify, depthLimit, {
-          currentDepth: _depth,
-        });
+        if (
+          !ignoreComponentChilds ||
+          (ignoreComponentChilds &&
+            !(child.type === "item" && child.component?.id))
+        ) {
+          fillID(child, ignoreComponentChilds, modify, depthLimit, {
+            currentDepth: _depth,
+          });
+        }
       }
     }
   }

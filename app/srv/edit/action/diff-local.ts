@@ -28,7 +28,6 @@ export const diffLocal = (ws: Websocket, msg: any) => {
 
   if (doc && wss) {
     Y.applyUpdate(doc, diff_local);
-
     if (msg.mode === "page") {
       clearTimeout(eg.edit.page[msg.id].saveTimeout);
       eg.edit.page[msg.id].saveTimeout = setTimeout(() => {

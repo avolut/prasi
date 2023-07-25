@@ -1,5 +1,5 @@
-import { FC } from "react";
-import { useGlobal } from "web-utils";
+import { FC, useCallback } from "react";
+import { useGlobal, useLocal } from "web-utils";
 import { CEGlobal, CompDoc } from "../../../base/global/content-editor";
 import { Modal } from "../../ui/modal";
 import { ContentEditor } from "../content";
@@ -8,7 +8,12 @@ import { component } from "../../page/component";
 import { CompTab } from "./comp-tab";
 import { Loading } from "../../ui/loading";
 import { IContent } from "../../types/general";
-import { componentShouldLoad, loadComponents } from "./load-comp";
+import {
+  componentShouldLoad,
+  instantiateComp,
+  loadComponents,
+} from "./load-comp";
+import { MItem } from "../../types/item";
 
 export const CECompEdit: FC<{ id: string }> = ({ id }) => {
   let c = useGlobal(CEGlobal, id);
@@ -56,7 +61,26 @@ const ComponentEditor: FC<{
   id: string;
 }> = ({ doc, id }) => {
   const c = useGlobal(CEGlobal, `COMP_${id}`);
+  const local = useLocal({ loading: false });
   c.editor.enabled = true;
+
+  const componentOnLoad = useCallback(
+    async (items: MItem[]) => {
+      for (const item of items) {
+        const compid = item.get("component")?.get("id");
+        if (compid !== id) {
+          instantiateComp(c, item);
+        }
+      }
+
+      if (local.loading) {
+        local.loading = false;
+        setTimeout(() => local.render);
+      }
+    },
+    [id, doc]
+  );
+
   if (!c.doc || !c.map || !c.root) {
     c.doc = doc;
     const map = doc.getMap("map");
@@ -65,43 +89,28 @@ const ComponentEditor: FC<{
       c.map = map;
       c.root = root;
 
-      component.edit.loading = true;
-      loadComponents(c.map.get("content_tree")?.toJSON() as IContent).then(
-        (comps) => {
-          for (const [k, v] of Object.entries(comps)) {
-            if (!component.docs[k]) component.docs[k] = v;
-          }
-          component.edit.loading = false;
-          c.render();
-        }
-      );
+      local.loading = true;
+      loadComponents(c.map.get("content_tree")).then(componentOnLoad);
     }
   }
 
-  if (!component.edit.loading && c.map && c.root) {
-    const root = c.root.toJSON() as IContent;
-    component.edit.loading = componentShouldLoad(root);
-    if (component.edit.loading) {
-      component.edit.loading = true;
-      loadComponents(c.map.get("content_tree")?.toJSON() as IContent).then(
-        (comps) => {
-          for (const [k, v] of Object.entries(comps)) {
-            if (!component.docs[k]) component.docs[k] = v;
-          }
-          component.edit.loading = false;
-          c.render();
-        }
-      );
+  if (!local.loading && c.map && c.root) {
+    local.loading = componentShouldLoad(c.root, id);
+    if (local.loading) {
+      loadComponents(c.map.get("content_tree")).then(componentOnLoad);
     }
   }
 
   return (
     <div
-      className={cx("editor flex flex-1 flex-col items-stretch", editorStyle)}
+      className={cx(
+        "editor flex flex-1 flex-col items-stretch relative",
+        editorStyle
+      )}
     >
       <ContentEditor id={`COMP_${id}`} />
-      {component.edit.loading && (
-        <div className="fixed inset-0">
+      {local.loading && (
+        <div className="absolute inset-0 flex bg-white bg-opacity-80">
           <Loading backdrop={false} />
         </div>
       )}

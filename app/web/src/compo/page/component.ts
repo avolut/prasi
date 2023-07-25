@@ -1,9 +1,9 @@
 import { CompDoc } from "../../base/global/content-editor";
+import { IItem } from "../types/item";
 
 const defaultComponent = {
   docs: {} as Record<string, CompDoc | null>,
   edit: {
-    loading: false,
     id: "",
     tabs: null as null | Set<string>,
     show: false,

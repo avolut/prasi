@@ -21,6 +21,7 @@ export type FMAdv = TypedMap<FNAdv>;
 export type FNComponent = {
   id: string;
   name: string;
+  updated_at?: number;
   props: Record<string, FNCompDef>;
 };
 
