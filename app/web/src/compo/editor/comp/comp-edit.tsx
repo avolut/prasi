@@ -1,19 +1,18 @@
 import { FC, useCallback } from "react";
 import { useGlobal, useLocal } from "web-utils";
 import { CEGlobal, CompDoc } from "../../../base/global/content-editor";
+import { component } from "../../page/component";
+import { MItem } from "../../types/item";
+import { Loading } from "../../ui/loading";
 import { Modal } from "../../ui/modal";
 import { ContentEditor } from "../content";
 import { editorStyle } from "../style";
-import { component } from "../../page/component";
 import { CompTab } from "./comp-tab";
-import { Loading } from "../../ui/loading";
-import { IContent } from "../../types/general";
 import {
   componentShouldLoad,
   instantiateComp,
   loadComponents,
 } from "./load-comp";
-import { MItem } from "../../types/item";
 
 export const CECompEdit: FC<{ id: string }> = ({ id }) => {
   let c = useGlobal(CEGlobal, id);

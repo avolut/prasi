@@ -18,7 +18,7 @@ export const CompTab: FC<{ id: string }> = ({ id }) => {
             const closeBtn = (
               <div
                 className={cx(
-                  "h-[18px] w-[18px] rounded-xs border text-lg flex items-center justify-center  close border-transparent hover:border-slate-400 hover:bg-white cursor-pointer"
+                  "h-[18px] w-[18px] absolute right-[5px] rounded-xs border text-lg flex items-center justify-center  close border-transparent hover:border-slate-400 bg-white hover:bg-white cursor-pointer"
                 )}
                 onClick={(e) => {
                   e.stopPropagation();
@@ -64,7 +64,7 @@ export const CompTab: FC<{ id: string }> = ({ id }) => {
               <div
                 key={compid}
                 className={cx(
-                  "pl-3 pr-[4px] flex items-center border-r text-sm hover:bg-blue-100 cursor-pointer space-x-1",
+                  "pl-3 pr-[4px] relative whitespace-nowrap w-[100px] flex items-center border-r text-sm hover:bg-blue-100 cursor-pointer space-x-1",
                   comp.get("id") === component.edit.id &&
                     "border-b-2 border-b-blue-500 bg-blue-50",
                   css`
@@ -91,7 +91,7 @@ export const CompTab: FC<{ id: string }> = ({ id }) => {
                   }, 10);
                 }}
               >
-                <div>&lt;{comp.get("name")}/&gt;</div>
+                <div className="absolute">&lt;{comp.get("name")}/&gt;</div>
                 {closeBtn}
               </div>
             );
