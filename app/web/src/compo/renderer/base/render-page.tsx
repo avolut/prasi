@@ -4,6 +4,7 @@ import importModule from "../../page/tools/dynamic-import";
 import { scanComponent } from "./components";
 import { RSection } from "./elements/r-section";
 import { RendererGlobal } from "./renderer-global";
+import { useLocal } from "web-utils";
 
 // optimized for SSR: no component lazy loading,
 // wait components to load first then render.
@@ -14,6 +15,7 @@ export const PrasiPage = (props: {
   const { rg, pathname } = props;
   const { page, ui } = rg;
   const { router } = page;
+  const local = useLocal({ isNewPage: false });
 
   if (router) {
     let newPage = null;
@@ -26,10 +28,12 @@ export const PrasiPage = (props: {
     if (newPage) {
       if (!page.active) {
         page.active = newPage;
+        local.isNewPage = true;
       } else {
         if (newPage) {
           if (newPage.id !== page.active.id) {
             page.active = newPage;
+            local.isNewPage = true;
           }
         }
       }
@@ -77,7 +81,7 @@ export const PrasiPage = (props: {
     }
   }
 
-  if (rg.site.id) {
+  if (rg.site.id && local.isNewPage) {
     rg.scope = {
       tree: {},
       effect: {},
@@ -85,6 +89,7 @@ export const PrasiPage = (props: {
       evargs: {},
       types: {},
     };
+    rg.instances = {};
 
     const scope = rg.scope;
     if (scope && rg.site) {
@@ -118,8 +123,9 @@ export const PrasiPage = (props: {
         } catch (e) {}
       }
     }
+    local.isNewPage = false;
   }
-  if (rg.loading) return ui.loading || <></>;
+  if (rg.loading || local.isNewPage) return ui.loading || <></>;
   if (!page.active) return ui.notfound;
 
   return (

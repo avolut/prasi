@@ -1,6 +1,6 @@
 import { produce } from "immer";
 import { FC } from "react";
-import { useGlobal } from "web-utils";
+import { useGlobal, useLocal } from "web-utils";
 import { findScope } from "../../../page/content-edit/render-tools/init-scope";
 import { IItem } from "../../../types/item";
 import { Loading } from "../../prasi/ui/loading";
@@ -12,6 +12,7 @@ import { RText } from "./r-text";
 export const RComponent: FC<{
   item: IItem;
 }> = ({ item }) => {
+  const local = useLocal({ loading: false });
   const rg = useGlobal(RendererGlobal, "PRASI_SITE");
 
   if (item.hidden === "all" || !item.component) return null;
@@ -20,17 +21,23 @@ export const RComponent: FC<{
 
   let comp = rg.component.def[compid];
   if (!comp) {
-    rg.component.load([compid]).then((comps) => {
-      comps.map((e) => {
-        rg.component.def[e.id] = {
-          id: e.id,
-          content_tree: produce(e.content_tree, () => {}),
-        };
-      });
+    if (!rg.component.loading[compid]) {
+      console.log(compid);
+      rg.component.loading[compid] = true;
 
-      rg.loading = false;
-      rg.render();
-    });
+      rg.component.load([compid]).then((comps) => {
+        comps.map((e) => {
+          rg.component.def[e.id] = {
+            id: e.id,
+            content_tree: produce(e.content_tree, () => {}),
+          };
+        });
+
+        rg.loading = false;
+        delete rg.component.loading[compid];
+        rg.render();
+      });
+    }
     return (
       <div
         className={cx(

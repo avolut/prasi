@@ -1,9 +1,9 @@
 import { ReactElement } from "react";
 import { RadixRouter } from "web-init";
+import { IItem } from "../../types/item";
 import { SingleScope } from "../../types/script";
 import { PRASI_COMPONENT, PRASI_PAGE } from "./renderer-types";
-import { IItem } from "../../types/item";
-import { produce } from "immer";
+
 export const RendererGlobal = {
   loading: true,
   ui: {
@@ -19,8 +19,10 @@ export const RendererGlobal = {
     evargs: {},
     types: {},
   } as SingleScope,
+  instances: {} as Record<string, IItem>,
   component: {
     def: {} as Record<string, { id: string; content_tree: IItem }>,
+    loading: {} as Record<string, true>,
     load: async (ids: string[]) => {
       return [] as PRASI_COMPONENT[];
     },

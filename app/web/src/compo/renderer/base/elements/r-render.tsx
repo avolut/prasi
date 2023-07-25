@@ -3,14 +3,12 @@ import { useGlobal } from "web-utils";
 import { produceCSS } from "../../../page/css/gen";
 import { responsiveVal } from "../../../page/tools/responsive-val";
 import { IContent } from "../../../types/general";
-import { FNAdv, FNLinkTag } from "../../../types/meta-fn";
-import { RendererGlobal } from "../renderer-global";
-import { scriptExec } from "./script-exec";
 import { IItem } from "../../../types/item";
+import { FNAdv, FNLinkTag } from "../../../types/meta-fn";
 import { IText } from "../../../types/text";
 import { initScope, instantiateComp } from "../components";
-import { findScope } from "../../../page/content-edit/render-tools/init-scope";
-import { RItem } from "./r-item";
+import { RendererGlobal } from "../renderer-global";
+import { scriptExec } from "./script-exec";
 
 export const RRender: FC<{
   item: IContent;
@@ -24,12 +22,14 @@ export const RRender: FC<{
 
   const childs = (item.type !== "text" ? item.childs : []).map((e) => {
     if (e.type === "item" && e.component?.id) {
-      const comp = instantiateComp(rg, e) as IItem;
+      if (!rg.instances[e.id]) {
+        rg.instances[e.id] = instantiateComp(rg, e) as IItem;
 
-      if (comp) {
-        initScope(rg, comp, item.id);
-        return comp;
+        if (rg.instances[e.id]) {
+          initScope(rg, rg.instances[e.id], item.id);
+        }
       }
+      if (rg.instances[e.id]) return rg.instances[e.id];
     } else {
       initScope(rg, e, item.id);
     }
