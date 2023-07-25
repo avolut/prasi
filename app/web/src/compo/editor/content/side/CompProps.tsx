@@ -45,7 +45,7 @@ export const CompProps: FC<{
 
   let compRef = null as CompDoc | null;
   const active = c.editor.active?.toJSON() as IItem;
-  const propJSON = props.toJSON();
+  let propJSON = props.toJSON();
 
   if (mode === "instance") {
     compRef = component.docs[active?.component?.id || ""];
@@ -58,6 +58,7 @@ export const CompProps: FC<{
       ?.get("component")
       ?.get("props");
     if (props) {
+      const json: any = {};
       props.forEach((e, k) => {
         let ref: any = null;
         if (e && e.toJSON) {
@@ -67,12 +68,14 @@ export const CompProps: FC<{
         }
         if (ref) {
           if (!propJSON[k]) {
-            propJSON[k] = ref;
+            json[k] = ref;
           } else {
-            propJSON[k].meta = ref.meta;
+            json[k] = { ...propJSON[k] };
+            json[k].meta = ref.meta;
           }
         }
       });
+      propJSON = json;
     }
   }
 
