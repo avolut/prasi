@@ -78,6 +78,10 @@ export const site_load = {
   url: "/site-load",
   args: ["name","_page"],
 }
+export const srv_image_gallery = {
+  url: "/get-gallery/:site_id",
+  args: ["site_id"],
+}
 export const srvapi_check = {
   url: "/srvapi-check/:site_id",
   args: ["site_id"],

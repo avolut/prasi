@@ -138,6 +138,13 @@ export const site_load = {
   args: ["name","_page"],
   handler: import("../../../srv/api/site-load")
 }
+export const srv_image_gallery = {
+  name: "srv_image_gallery",
+  url: "/get-gallery/:site_id",
+  path: "app/srv/api/srv-image-gallery.ts",
+  args: ["site_id"],
+  handler: import("../../../srv/api/srv-image-gallery")
+}
 export const srvapi_check = {
   name: "srvapi_check",
   url: "/srvapi-check/:site_id",
