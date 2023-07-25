@@ -80,12 +80,16 @@ export const initScope = (
                 } else {
                   try {
                     val = exec(jrop.valueBuilt || jrop.value);
-                  } catch (e) {}
+                  } catch (e) {
+                    console.log(e);
+                  }
                 }
               } else {
                 try {
                   val = exec(jrop.valueBuilt || jrop.value);
-                } catch (e) {}
+                } catch (e) {
+                  console.log(e);
+                }
               }
             }
           } else {

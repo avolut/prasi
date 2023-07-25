@@ -1,9 +1,12 @@
+import { produce } from "immer";
 import { createAPI, createDB } from "../../page/scripting/api-db";
 import importModule from "../../page/tools/dynamic-import";
 import { scanComponent } from "./components";
 import { RSection } from "./elements/r-section";
 import { RendererGlobal } from "./renderer-global";
 
+// optimized for SSR: no component lazy loading,
+// wait components to load first then render.
 export const PrasiPage = (props: {
   rg: typeof RendererGlobal & { render: () => void };
   pathname: string;
@@ -13,10 +16,23 @@ export const PrasiPage = (props: {
   const { router } = page;
 
   if (router) {
+    let newPage = null;
     if (location.search.startsWith("?page_id=")) {
-      page.active = page.list[location.search.substring("?page_id=".length)];
+      newPage = page.list[location.search.substring("?page_id=".length)];
     } else {
-      page.active = router.lookup(pathname);
+      newPage = router.lookup(pathname);
+    }
+
+    if (newPage) {
+      if (!page.active) {
+        page.active = newPage;
+      } else {
+        if (newPage) {
+          if (newPage.id !== page.active.id) {
+            page.active = newPage;
+          }
+        }
+      }
     }
   }
 
@@ -48,8 +64,12 @@ export const PrasiPage = (props: {
         rg.loading = true;
         rg.component.load(loadCompIds).then((comps) => {
           comps.map((e) => {
-            rg.component.def[e.id] = e;
+            rg.component.def[e.id] = {
+              id: e.id,
+              content_tree: produce(e.content_tree, () => {}),
+            };
           });
+
           rg.loading = false;
           rg.render();
         });
@@ -57,11 +77,18 @@ export const PrasiPage = (props: {
     }
   }
 
-  if (!rg.init && rg.site.id) {
-    rg.init = true;
+  if (rg.site.id) {
+    rg.scope = {
+      tree: {},
+      effect: {},
+      value: {},
+      evargs: {},
+      types: {},
+    };
+
     const scope = rg.scope;
     if (scope && rg.site) {
-      if (rg.site.js_compiled) {
+      if ((rg.site.js_compiled || "").trim()) {
         const api_url = rg.site.api_url;
         const args: any = {};
         if (api_url) {

@@ -94,7 +94,7 @@ export const Loading: FC<{
         >
           <div
             className={cx(
-              "w-1/6",
+              "loadbar w-1/6",
               css`
                 .pr-outer {
                   background: rgba(0, 0, 0, 0.1) !important;

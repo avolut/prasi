@@ -6,18 +6,39 @@ import { IContent } from "../../../types/general";
 import { FNAdv, FNLinkTag } from "../../../types/meta-fn";
 import { RendererGlobal } from "../renderer-global";
 import { scriptExec } from "./script-exec";
-import { scriptScope } from "./script-scope";
+import { IItem } from "../../../types/item";
+import { IText } from "../../../types/text";
+import { initScope, instantiateComp } from "../components";
+import { findScope } from "../../../page/content-edit/render-tools/init-scope";
+import { RItem } from "./r-item";
 
 export const RRender: FC<{
   item: IContent;
-  children: ReactNode;
-  parentInstanceId?: string;
-}> = ({ item: mitem, children, parentInstanceId }) => {
+  children: (childs: (IItem | IText)[]) => ReactNode;
+}> = ({ item, children }) => {
   const rg = useGlobal(RendererGlobal, "PRASI_SITE");
 
-  let _children = children;
+  if (item.type === "section") {
+    initScope(rg, item);
+  }
 
-  let item = mitem;
+  const childs = (item.type !== "text" ? item.childs : []).map((e) => {
+    if (e.type === "item" && e.component?.id) {
+      const comp = instantiateComp(rg, e) as IItem;
+
+      if (comp) {
+        initScope(rg, comp, item.id);
+        return comp;
+      }
+    } else {
+      initScope(rg, e, item.id);
+    }
+
+    return e;
+  });
+
+  let _children = children(childs);
+
   if (item.hidden === "all") {
     return null;
   }
@@ -26,13 +47,12 @@ export const RRender: FC<{
   const adv = item.adv;
   if (adv) {
     const html = renderHTML(adv);
-    const scope = scriptScope(item, rg, parentInstanceId);
+
     if (html) _children = html;
     else if (adv.jsBuilt && adv.js) {
       return scriptExec(
         {
           item,
-          scope,
           children: _children,
           rg,
           className,

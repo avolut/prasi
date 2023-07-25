@@ -98,7 +98,13 @@ export const createPrasiLive = (arg: {
           },
         });
 
-        return (all || []) as PRASI_COMPONENT[];
+        return (all || []).map((e) => {
+          return {
+            name: e.name,
+            id: e.id,
+            content_tree: e.content_tree,
+          } as PRASI_COMPONENT;
+        });
       },
     },
   });

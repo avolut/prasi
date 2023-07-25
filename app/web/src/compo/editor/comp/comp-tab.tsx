@@ -91,7 +91,9 @@ export const CompTab: FC<{ id: string }> = ({ id }) => {
                   }, 10);
                 }}
               >
-                <div className="absolute">&lt;{comp.get("name")}/&gt;</div>
+                <div className="absolute overflow-hidden">
+                  &lt;{comp.get("name")}/&gt;
+                </div>
                 {closeBtn}
               </div>
             );

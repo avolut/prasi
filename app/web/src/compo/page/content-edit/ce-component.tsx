@@ -13,8 +13,7 @@ import { fillID } from "../tools/fill-id";
 export const CEComponent: FC<{
   ceid: string;
   item: MItem;
-  compItem: MItem;
-}> = ({ ceid, item, compItem }) => {
+}> = ({ ceid, item }) => {
   const c = useGlobal(CEGlobal, ceid);
   const compid = item.get("component")?.get("id");
 
@@ -48,7 +47,7 @@ export const CEComponent: FC<{
   );
 
   if (item.get("hidden")) return null;
-  if (!item && !compItem) return loading;
+  if (!item) return loading;
   const id = item.get("id");
   if (!id || (id && !c.instances[id])) return loading;
 

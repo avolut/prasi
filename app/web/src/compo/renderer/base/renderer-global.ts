@@ -3,7 +3,7 @@ import { RadixRouter } from "web-init";
 import { SingleScope } from "../../types/script";
 import { PRASI_COMPONENT, PRASI_PAGE } from "./renderer-types";
 import { IItem } from "../../types/item";
-
+import { produce } from "immer";
 export const RendererGlobal = {
   loading: true,
   ui: {
@@ -11,7 +11,6 @@ export const RendererGlobal = {
     notfound: null as null | ReactElement,
   },
   site: { id: "", api_url: "", js_compiled: "" },
-  init: false,
   mode: "" as "desktop" | "mobile",
   scope: {
     tree: {},

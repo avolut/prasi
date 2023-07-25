@@ -12,7 +12,6 @@ import { createPassChild } from "../../../page/scripting/pass-child-r";
 type JsArg = {
   rg: typeof RendererGlobal;
   item: IContent;
-  scope: SingleScope;
   children: ReactNode;
   className: string;
   render: () => void;
@@ -24,13 +23,14 @@ export const scriptExec = (arg: JsArg, api_url?: string) => {
     const output = { jsx: null };
 
     let error = false;
+    let evalArgs = {} as any;
     try {
-      const evalArgs = produceEvalArgs({ ...arg, output }, api_url);
+      evalArgs = produceEvalArgs({ ...arg, output }, api_url);
       const scriptEval = new Function(...Object.keys(evalArgs), adv.jsBuilt);
       scriptEval(...Object.values(evalArgs));
     } catch (e) {
       error = true;
-      console.log(e);
+      console.log(arg.item, e, adv.jsBuilt, evalArgs);
     }
     return output.jsx;
   }
@@ -42,8 +42,9 @@ const produceEvalArgs = (
   arg: JsArg & { output: { jsx: ReactNode } },
   api_url?: string
 ) => {
-  const { item, rg, children, output, scope, className, render } = arg;
+  const { item, rg, children, output, className, render } = arg;
   7;
+  const scope = rg.scope;
   if (!scope.evargs[item.id]) {
     scope.evargs[item.id] = {
       local: createLocal({ item, scope, render }),

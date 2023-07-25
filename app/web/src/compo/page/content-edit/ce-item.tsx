@@ -32,7 +32,7 @@ export const CEItem: FC<{
           const mitem = doc.getMap("map").get("content_tree");
 
           if (mitem) {
-            return <CEComponent ceid={ceid} item={item} compItem={mitem} />;
+            return <CEComponent ceid={ceid} item={item} />;
           }
         }
       }
