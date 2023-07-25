@@ -37,7 +37,6 @@ export const CEComponent: FC<{
       delete c.scope.value[i];
       delete c.scope.tree[i];
     }
-
     wsdoc.reloadComponentId.delete(compid);
   }
 

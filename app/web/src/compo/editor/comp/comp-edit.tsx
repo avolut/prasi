@@ -94,7 +94,7 @@ const ComponentEditor: FC<{
   }
 
   if (!local.loading && c.map && c.root) {
-    local.loading = componentShouldLoad(c.root, id);
+    local.loading = componentShouldLoad(c, c.root, id);
     if (local.loading) {
       loadComponents(c.map.get("content_tree")).then(componentOnLoad);
     }

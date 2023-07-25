@@ -6,12 +6,22 @@ import { component as gcomp } from "../component";
 import { CEComponent } from "./ce-component";
 import { CERender } from "./ce-render";
 import { CEText } from "./ce-text";
+import {
+  componentShouldLoad,
+  instantiateComp,
+  loadComponents,
+} from "../../editor/comp/load-comp";
+import { useGlobal, useLocal } from "web-utils";
+import { CEGlobal } from "../../../base/global/content-editor";
 
 export const CEItem: FC<{
   ceid: string;
   item: MItem;
   preventRenderComponent?: boolean;
-}> = ({ ceid, item, preventRenderComponent }) => {
+  parentInstanceId?: string;
+}> = ({ ceid, item, preventRenderComponent, parentInstanceId }) => {
+  const c = useGlobal(CEGlobal, ceid);
+
   if (!preventRenderComponent) {
     const comp = item.get("component");
     if (comp) {
@@ -29,8 +39,22 @@ export const CEItem: FC<{
     }
   }
 
+  if (parentInstanceId) {
+    const local = useLocal({ loading: false });
+    if (!local.loading && componentShouldLoad(c, item)) {
+      local.loading = true;
+      loadComponents(item).then((items) => {
+        for (const item of items) {
+          instantiateComp(c, item);
+        }
+        local.loading = false;
+        local.render();
+      });
+    }
+  }
+
   return (
-    <CERender ceid={ceid} item={item}>
+    <CERender ceid={ceid} item={item} parentInstanceId={parentInstanceId}>
       {getArray<MItem | MText>(item, "childs")?.map((e: MItem | MText, idx) => {
         const type = e.get("type");
         if (type === "item") {

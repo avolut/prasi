@@ -6,7 +6,8 @@ import { RendererGlobal } from "../renderer-global";
 import { RItem } from "./r-item";
 export const scriptScope = (
   item: IContent,
-  rg: typeof RendererGlobal
+  rg: typeof RendererGlobal,
+  parentInstanceId?: string
 ): SingleScope => {
   const i = item as IItem;
 
@@ -23,7 +24,7 @@ export const scriptScope = (
         // name: item.name,
         // type: item.type,
         // lv: 0,
-        parent_id: "root",
+        parent_id: parentInstanceId || "root",
       };
     }
     if (item.type !== "text") {
@@ -62,7 +63,7 @@ export const scriptScope = (
           if (type === "content-element") {
             const content = prop.content;
             if (content) {
-              val = <RItem item={content} />;
+              val = <RItem item={content} parentInstanceId={item.id} />;
             } else {
               try {
                 val = exec(jrop.valueBuilt || jrop.value);

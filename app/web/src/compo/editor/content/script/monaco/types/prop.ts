@@ -31,11 +31,13 @@ export const extractProp = (prop: {
     if (v.type) {
       propTypes.push(`const ${k} = null as unknown as ${v.type};`);
     } else if (v.val) {
-      propTypes.push(
-        `const ${k} = ${JSON.stringify(v.val, typeStringify)
-          .replaceAll('"___FFF||', "")
-          .replaceAll('||FFF___"', "")};`
-      );
+      try {
+        propTypes.push(
+          `const ${k} = ${JSON.stringify(v.val, typeStringify)
+            .replaceAll('"___FFF||', "")
+            .replaceAll('||FFF___"', "")};`
+        );
+      } catch (e) {}
     }
   }
 

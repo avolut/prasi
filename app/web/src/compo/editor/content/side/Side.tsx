@@ -144,7 +144,7 @@ export const CESide: FC<{ id: string }> = ({ id }) => {
                               local.render();
                             }}
                           >
-                            Edit Props
+                            Edit Master Props
                           </div>
                         )}
                       </div>

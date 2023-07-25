@@ -19,7 +19,8 @@ export const CERender: FC<{
   children: ReactNode;
   item?: MItem | MText | MSection;
   citem?: IItem | IText;
-}> = ({ ceid, children, item: mitem, citem }) => {
+  parentInstanceId?: string;
+}> = ({ ceid, children, item: mitem, citem, parentInstanceId }) => {
   const c = useGlobal(CEGlobal, ceid);
 
   let item = null as unknown as IContent;
@@ -38,7 +39,7 @@ export const CERender: FC<{
   const className = [produceCSS(item, { mode: wsdoc.mode })];
   const adv = item.adv;
   const elementProp = initElProp(c, className, item, mitem);
-  const scope = initScope(ceid, item, mitem, c);
+  const scope = initScope(ceid, item, mitem, c, parentInstanceId);
 
   if (adv) {
     const html = renderHTML(adv);

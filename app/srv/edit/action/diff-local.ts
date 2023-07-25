@@ -36,6 +36,7 @@ export const diffLocal = (ws: Websocket, msg: any) => {
           where: { id: msg.id },
           data: {
             ...page,
+            updated_at: new Date(),
           },
         });
       }, 1500);
@@ -49,6 +50,7 @@ export const diffLocal = (ws: Websocket, msg: any) => {
           data: {
             name: comp.name,
             content_tree: comp.content_tree,
+            updated_at: new Date(),
           },
         });
       }, 1500);

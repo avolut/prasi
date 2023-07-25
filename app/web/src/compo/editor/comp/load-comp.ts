@@ -13,17 +13,21 @@ import { WS_MSG_GET_COMP, WS_MSG_SV_LOCAL } from "../ws/msg";
 import { wsdoc } from "../ws/wsdoc";
 
 export const componentShouldLoad = (
+  c: typeof CEGlobal,
   item: MItem | MRoot,
   excludeID?: string
 ) => {
   if (item && item.get) {
     const type = (item as MItem).get("type") as IContent["type"] | "root";
-    if (type === "item") {
+    const id = (item as MItem).get("id");
+    if (id && type === "item") {
       const itemComp = (item as MItem).get("component");
       if (itemComp) {
         const compid = itemComp.get("id");
         if (compid && validate(compid)) {
           if (compid !== excludeID) {
+            if (!c.instances[id]) return true;
+
             if (typeof component.docs[compid] === "undefined") {
               return true;
             } else {
@@ -46,8 +50,8 @@ export const componentShouldLoad = (
 
     const childs = (item as MItem).get("childs");
     if (childs) {
-      for (const c of childs) {
-        if (componentShouldLoad(c)) {
+      for (const child of childs) {
+        if (componentShouldLoad(c, child, excludeID)) {
           return true;
         }
       }

@@ -110,10 +110,9 @@ export const CETreeItem: FC<{
     if (itemComponent.name) itemName = itemComponent.name;
   }
 
-  let isPropContent = false;
-  if (item.get("isPropContent")) {
+  const isPropContent = item.get("isPropContent");
+  if (isPropContent) {
     canDelete = false;
-    isPropContent = true;
   }
 
   return (

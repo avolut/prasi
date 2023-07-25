@@ -158,7 +158,7 @@ export const CompProps: FC<{
                 _c.render();
               }}
             >
-              Edit Master Prop
+              Edit Props
             </div>
           )}
         </div>
@@ -493,8 +493,7 @@ const PropItem: FC<{
             })}
         </div>
       )}
-      {((mode === "root" && metaType !== "content-element") ||
-        (mode === "instance" && metaType === "text")) && (
+      {(mode === "root" || (mode === "instance" && metaType === "text")) && (
         <AutoHeightTextarea
           defaultValue={local.prop.value}
           onChange={async (e) => {

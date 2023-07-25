@@ -17,7 +17,6 @@ export type IItem = {
   adv?: FNAdv;
   type: "item";
   component?: FNComponent;
-  isPropContent?: boolean;
   childs: (IItem | IText)[];
 } & MetaItem &
   BasicItem;

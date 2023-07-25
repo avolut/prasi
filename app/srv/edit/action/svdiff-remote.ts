@@ -35,10 +35,6 @@ export const svdiffRemote = async (
     const diff_local = Y.encodeStateAsUpdate(doc as any, sv_remote);
     Y.applyUpdate(doc as any, diff_remote);
 
-    if (msg.mode === "comp") {
-      doc.getMap("map").set("updated_at", new Date().toISOString());
-    }
-
     const sendmsg: WS_MSG_DIFF_LOCAL = {
       type: "diff_local",
       mode: msg.mode,

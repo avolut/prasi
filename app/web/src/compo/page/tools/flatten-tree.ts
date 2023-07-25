@@ -76,7 +76,7 @@ export const flattenTree = (
                   name: k,
                   type: "item",
                   dim: { w: "full", h: "full" },
-                  isPropContent: true,
+                  parentInstanceId: item.get("id"),
                   childs: [],
                 } as IItem;
                 const map = new Y.Map();

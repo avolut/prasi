@@ -1,8 +1,8 @@
 import { FC, useEffect } from "react";
-import { useGlobal } from "web-utils";
+import { useGlobal, useLocal } from "web-utils";
 import { CEGlobal } from "../../base/global/content-editor";
-import { component } from "../page/component";
-import { IContent, MPage } from "../types/general";
+import { MPage } from "../types/general";
+import { MItem } from "../types/item";
 import { Loading } from "../ui/loading";
 import {
   componentShouldLoad,
@@ -12,13 +12,13 @@ import {
 import { ContentEditor } from "./content";
 import { Toolbar } from "./content/toolbar/Toolbar";
 import { wsdoc } from "./ws/wsdoc";
-import { MItem } from "../types/item";
 
 export const PageEditor: FC<{
   page?: MPage | null;
   global: { css: string | null; api_url?: string };
 }> = ({ page, global }) => {
   const c = useGlobal(CEGlobal, `PAGE`);
+  const local = useLocal({ loading: false });
   wsdoc.page = c;
   c.global.scss = global.css || "";
   c.global.api_url = global.api_url || "";
@@ -29,7 +29,7 @@ export const PageEditor: FC<{
       instantiateComp(c, item);
     }
 
-    component.edit.loading = false;
+    local.loading = false;
     c.render();
   };
 
@@ -38,19 +38,16 @@ export const PageEditor: FC<{
     if (c.doc) {
       c.map = c.doc.getMap("map");
       if (c.map) {
-        component.edit.loading = true;
+        local.loading = true;
         loadComponents(c.map.get("content_tree")).then(componentOnLoad);
         c.root = c.map.get("content_tree") as any;
       }
     }
-  }
-
-  if (!component.edit.loading && c.map && c.root) {
-    // component.edit.loading = componentShouldLoad(c.root);
-    // if (component.edit.loading) {
-    //   component.edit.loading = true;
-    //   loadComponents(c.map.get("content_tree")).then(componentOnLoad);
-    // }
+  } else {
+    if (!local.loading && componentShouldLoad(c, c.root)) {
+      local.loading = true;
+      loadComponents(c.map.get("content_tree")).then(componentOnLoad);
+    }
   }
 
   useEffect(() => {
@@ -114,7 +111,7 @@ export const PageEditor: FC<{
     <>
       <Toolbar />
       {page && <ContentEditor id={`PAGE`} />}
-      {(component.edit.loading || !page) && <Loading />}
+      {(local.loading || !page) && <Loading />}
     </>
   );
 };

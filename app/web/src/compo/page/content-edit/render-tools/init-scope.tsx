@@ -1,7 +1,7 @@
 import { CEGlobal } from "../../../../base/global/content-editor";
 import { IContent, MContent } from "../../../types/general";
 import { IItem } from "../../../types/item";
-import { FNCompDef, FNComponent } from "../../../types/meta-fn";
+import { FNCompDef } from "../../../types/meta-fn";
 import { component } from "../../component";
 import { CCItem } from "../ce-component";
 import { CEItem } from "../ce-item";
@@ -10,7 +10,8 @@ export const initScope = (
   ceid: string,
   item: IContent,
   mitem: MContent | undefined,
-  c: typeof CEGlobal
+  c: typeof CEGlobal,
+  parentInstanceId?: string
 ) => {
   const i = item as IItem;
 
@@ -23,7 +24,7 @@ export const initScope = (
         // name: item.name,
         // type: item.type,
         // lv: 0,
-        parent_id: "root",
+        parent_id: parentInstanceId || "root",
       };
     }
     if (item.type !== "text") {
@@ -68,7 +69,14 @@ export const initScope = (
               if (type === "content-element") {
                 const content = prop.get("content");
                 if (content) {
-                  val = <CEItem ceid={ceid} item={content} />;
+                  val = (
+                    <CEItem
+                      ceid={ceid}
+                      item={content}
+                      parentInstanceId={item.id}
+                      preventRenderComponent
+                    />
+                  );
                 } else {
                   try {
                     val = exec(jrop.valueBuilt || jrop.value);

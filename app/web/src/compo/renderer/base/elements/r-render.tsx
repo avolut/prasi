@@ -11,7 +11,8 @@ import { scriptScope } from "./script-scope";
 export const RRender: FC<{
   item: IContent;
   children: ReactNode;
-}> = ({ item: mitem, children }) => {
+  parentInstanceId?: string;
+}> = ({ item: mitem, children, parentInstanceId }) => {
   const rg = useGlobal(RendererGlobal, "PRASI_SITE");
 
   let _children = children;
@@ -25,7 +26,7 @@ export const RRender: FC<{
   const adv = item.adv;
   if (adv) {
     const html = renderHTML(adv);
-    const scope = scriptScope(item, rg);
+    const scope = scriptScope(item, rg, parentInstanceId);
     if (html) _children = html;
     else if (adv.jsBuilt && adv.js) {
       return scriptExec(
