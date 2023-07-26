@@ -7,6 +7,7 @@ import type { OnMount } from "@monaco-editor/react";
 import { findScope } from "../../../../page/content-edit/render-tools/init-scope";
 import { jsMount } from "./mount";
 import { monacoTypings } from "./typings";
+import { FoldingContext, FoldingRangeProvider } from "vscode";
 export type MonacoEditor = Parameters<OnMount>[0];
 
 export type FBuild = (
@@ -67,6 +68,7 @@ export const ScriptMonacoCustom: FC<{
             setTimeout(() => {
               editor.focus();
             }, 300);
+
             if (c.editor.script.active?.default && !editor.getValue().trim()) {
               editor.executeEdits(null, [
                 {
@@ -94,6 +96,31 @@ export const ScriptMonacoCustom: FC<{
               monaco.Uri.parse("ts:_active.tsx")
             );
             editor.setModel(model);
+
+            if (!(window as any).preventFold) {
+              const act = editor.getAction("editor.toggleFold");
+              if (act) {
+                act.run();
+              }
+
+              const registerOnDidChangeFolding = () => {
+                const foldingContrib = editor.getContribution<any>(
+                  "editor.contrib.folding"
+                );
+                if (foldingContrib) {
+                  const fm = foldingContrib.getFoldingModel();
+                  if (fm) {
+                    fm.then((foldingModel: any) => {
+                      foldingModel.onDidChange(() => {
+                        (window as any).preventFold = true;
+                      });
+                    });
+                  }
+                }
+              };
+              registerOnDidChangeFolding();
+              editor.onDidChangeModel(registerOnDidChangeFolding);
+            }
             await jsMount(editor, monaco);
 
             const propVal: any = {};
@@ -113,11 +140,6 @@ export const ScriptMonacoCustom: FC<{
               values: propVal,
               types: propTypes,
             });
-
-            const act = editor.getAction("editor.toggleFold");
-            if (act) {
-              act.run();
-            }
           }}
           language={"typescript"}
           onChange={async (newsrc) => {
