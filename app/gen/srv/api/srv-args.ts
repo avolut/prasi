@@ -4,7 +4,7 @@ export const _dbs = {
 }
 export const _delete = {
   url: "/_delete",
-  args: ["arg"],
+  args: ["path"],
 }
 export const _file = {
   url: "/_file/**",

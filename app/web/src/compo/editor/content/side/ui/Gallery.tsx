@@ -27,13 +27,7 @@ export const Gallery: FC<{
       value: value || "",
       load: true,
       mode: "upload",
-      list: [
-        "https://picsum.photos/200",
-        "https://picsum.photos/200",
-        "https://picsum.photos/200",
-        "https://picsum.photos/200",
-        "https://picsum.photos/200",
-      ] as Array<any>,
+      list: [] as Array<any>,
       ready: false,
       isPreview: false,
       hover: null as any,
@@ -54,6 +48,7 @@ export const Gallery: FC<{
         `${siteApiUrl}/get-gallery/${params.site}`,
         {}
       )) as any;
+      console.log(res.data);
       local.list = res.data;
       local.ready = true;
       local.render();
@@ -106,20 +101,20 @@ export const Gallery: FC<{
                       {local.list.map((e, idx) => {
                         return (
                           <div
-                            key={e.path}
+                            key={e.url}
                             className={cx(
                               "relative flex flex-col items-start w-[200px] h-[100px] p-2 text-sm  cursor-pointer hover:bg-blue-100 ml-1 mb-1",
                               "justify-between transition-all",
                               "hover:border-blue-500",
                               "bg-no-repeat	bg-cover bg-center",
                               local.preview.url ===
-                                `${siteApiUrl}${get(e, "path")}`
+                                `${siteApiUrl}${get(e, "url")}`
                                 ? "border-4 border-blue-500 shadow-xl"
                                 : "border",
                               css`
                                 background-image: url("${siteApiUrl}${get(
                                   e,
-                                  "path"
+                                  "url"
                                 )}");
                                 .edit {
                                   display: none;
@@ -134,10 +129,10 @@ export const Gallery: FC<{
                             )}
                             onClick={async () => {
                               const { width, height } = await loadImage(
-                                `${siteApiUrl}${get(e, "path")}`
+                                `${siteApiUrl}${get(e, "url")}`
                               );
                               local.preview = {
-                                url: `${siteApiUrl}${get(e, "path")}`,
+                                url: `${siteApiUrl}${get(e, "url")}`,
                                 dimension: {
                                   width,
                                   height,
@@ -145,11 +140,11 @@ export const Gallery: FC<{
                                 details: e,
                               };
                               local.isPreview = true;
-                              meta.selectUrl = `${siteApiUrl}${get(e, "path")}`;
+                              meta.selectUrl = `${siteApiUrl}${get(e, "url")}`;
                               local.render();
                             }}
                             onMouseEnter={() => {
-                              local.hover = `${siteApiUrl}${get(e, "path")}`;
+                              local.hover = `${siteApiUrl}${get(e, "url")}`;
                               local.render();
                             }}
                             onMouseLeave={() => {
@@ -159,7 +154,7 @@ export const Gallery: FC<{
                           >
                             <div className="flex flex-row flex-grow items-end justify-end">
                               {local.hover ===
-                              `${siteApiUrl}${get(e, "path")}` ? (
+                              `${siteApiUrl}${get(e, "url")}` ? (
                                 <>
                                   {" "}
                                   <div
@@ -167,12 +162,17 @@ export const Gallery: FC<{
                                       ev.preventDefault();
                                       ev.stopPropagation();
                                       console.log({ e });
-                                      const res: string[] = await fetchSendApi(
+                                      await fetchSendApi(
                                         `${siteApiUrl}/_delete`,
                                         {
-                                          path: "/api/",
+                                          path: get(e, "path"),
                                         }
                                       );
+                                      let list = local.list.filter(
+                                        (x) => get(x, "path") !== get(e, "path")
+                                      );
+                                      local.list = list;
+                                      local.render();
                                       console.log({ res });
                                     }}
                                     className="relative flex flex-row p-2 cursor-pointer bg-red-500 rounded font-medium"

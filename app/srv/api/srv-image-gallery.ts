@@ -16,6 +16,10 @@ export const _ = {
         let pathFolder = fullPath.replace(/\\/g, "/");
         let pathFile = pathFolder.replace(
           path,
+          `${site_id ? `/${site_id}` : ""}`
+        );
+        let url = pathFolder.replace(
+          path,
           `/_file${site_id ? `/${site_id}` : ""}`
         );
         let notZone = file.includes(":Zone.Identifier");
@@ -23,6 +27,7 @@ export const _ = {
           fileList.push({
             file,
             fullPath: pathFolder,
+            url: `${url}`,
             path: `${pathFile}`,
             directory: isDirectory,
             size: fs.statSync(fullPath).size,

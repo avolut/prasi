@@ -1,14 +1,20 @@
 import { appendFile } from "fs/promises";
 import { dirname, join } from "path";
-import { apiContext, generateUploadPath, UploadedFile } from "service-srv";
-import { dirAsync } from "fs-jetpack";
-import mime from "mime-types";
+const fs = require("node:fs");
 export const _ = {
   url: "/_delete",
-  async api(arg: { path: string }) {
-    // const { path } = arg;
-    // const result: string[] = [];
-    // return { s: path };
-    return { status: "ok" };
+  async api(path: string) {
+    let root = join(process.cwd(), "..", "content", "upload", path);
+    if (fs.existsSync(root)) {
+      let isDirectory = fs.lstatSync(root).isDirectory();
+      if (isDirectory) {
+        fs.rmSync(root, { recursive: true, force: true });
+      } else {
+        fs.unlinkSync(root);
+      }
+      return { status: "ok" };
+    } else {
+      return { status: "ok" };
+    }
   },
 };
