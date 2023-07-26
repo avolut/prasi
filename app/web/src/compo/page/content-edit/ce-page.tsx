@@ -29,7 +29,10 @@ export const CEPage: FC<{ ceid: string }> = ({ ceid }) => {
           args["db"] = createDB(api_url);
         }
 
-        const exports = {};
+        if (!window.exports) {
+          window.exports = {};
+        }
+        const exports = window.exports;
         const types = {};
         const fn = new Function(
           ...Object.keys(args),

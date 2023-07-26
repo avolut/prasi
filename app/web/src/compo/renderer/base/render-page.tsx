@@ -85,7 +85,10 @@ export const PrasiPage = (props: {
           args["db"] = createDB(api_url);
         }
 
-        const exports = scope.value.root || {};
+        if (!window.exports) {
+          window.exports = {};
+        }
+        const exports = window.exports;
         const types = {};
         const fn = new Function(
           ...Object.keys(args),
