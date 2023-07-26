@@ -9,6 +9,7 @@ import { loadSingleComponent } from "../../../comp/load-comp";
 import { Modal } from "../../../../ui/modal";
 import { ScriptCustom } from "../../script/script-custom";
 import { wsdoc } from "../../../ws/wsdoc";
+import { reloadCE } from "../../../tools/reload-ce";
 
 export const ToolbarMid = () => {
   const c = useGlobal(CEGlobal, "PAGE");
@@ -172,19 +173,7 @@ export const ToolbarMid = () => {
         items={[
           {
             onClick() {
-              c.editor.page.reload = true;
-              c.scope = {
-                effect: {},
-                evargs: {},
-                tree: {},
-                types: {},
-                value: {},
-              };
-              c.editor.page.render();
-              setTimeout(() => {
-                c.editor.page.reload = false;
-                c.editor.page.render();
-              }, 200);
+              reloadCE(c);
             },
             tooltip: "Reload Page",
             content: (

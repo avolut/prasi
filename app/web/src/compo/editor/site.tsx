@@ -7,6 +7,7 @@ import { PageEditor } from "./page";
 import { editorStyle } from "./style";
 import { connectWS } from "./ws/ws";
 import { SiteConfig, wsdoc } from "./ws/wsdoc";
+import { reloadCE } from "./tools/reload-ce";
 
 export const SiteEditor: FC<{
   site: site;
@@ -32,14 +33,7 @@ export const SiteEditor: FC<{
       ) {
         evt.preventDefault();
         evt.stopPropagation();
-
-        ce.editor.page.reload = true;
-        ce.scope = { effect: {}, evargs: {}, tree: {}, types: {}, value: {} };
-        ce.editor.page.render();
-        setTimeout(() => {
-          ce.editor.page.reload = false;
-          ce.editor.page.render();
-        }, 100);
+        reloadCE(ce);
       }
     };
     window.addEventListener("keydown", keyDown, true);

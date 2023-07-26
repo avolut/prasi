@@ -13,6 +13,7 @@ import {
   instantiateComp,
   loadComponents,
 } from "./load-comp";
+import { reloadCE } from "../tools/reload-ce";
 
 export const CECompEdit: FC<{ id: string }> = ({ id }) => {
   let c = useGlobal(CEGlobal, id);
@@ -32,7 +33,7 @@ export const CECompEdit: FC<{ id: string }> = ({ id }) => {
             c.editor.lastActive.item = null;
           }
 
-          c.render();
+          reloadCE(c);
         }
       }}
     >

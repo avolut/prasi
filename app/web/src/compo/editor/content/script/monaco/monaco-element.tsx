@@ -14,6 +14,7 @@ import { monacoTypings } from "./typings";
 import { jsMount } from "./mount";
 import { Button } from "../../side/ui/Button";
 import type { OnMount } from "@monaco-editor/react";
+import { reloadCE } from "../../../tools/reload-ce";
 export type MonacoEditor = Parameters<OnMount>[0];
 
 const w = window as unknown as {
@@ -152,19 +153,7 @@ export const ScriptMonacoElement: FC<{
           <div>
             <Button
               onClick={() => {
-                c.editor.page.reload = true;
-                c.scope = {
-                  effect: {},
-                  evargs: {},
-                  tree: {},
-                  types: {},
-                  value: {},
-                };
-                c.editor.page.render();
-                setTimeout(() => {
-                  c.editor.page.reload = false;
-                  c.editor.page.render();
-                }, 100);
+                reloadCE(c);
               }}
             >
               Reload Page (
