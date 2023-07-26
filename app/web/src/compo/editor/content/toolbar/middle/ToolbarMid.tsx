@@ -1,22 +1,28 @@
-import { useGlobal, useLocal } from "web-utils";
-import { ToolbarBox } from "../../../../ui/box";
-import { Popover } from "../../../../ui/popover";
-import { APIConfig } from "./api/APIConfig";
-import { AddElement } from "./AddElement";
 import { CEGlobal } from "base/global/content-editor";
+import { useGlobal, useLocal } from "web-utils";
 import { component } from "../../../../page/component";
-import { loadSingleComponent } from "../../../comp/load-comp";
+import { ToolbarBox } from "../../../../ui/box";
 import { Modal } from "../../../../ui/modal";
-import { ScriptCustom } from "../../script/script-custom";
-import { wsdoc } from "../../../ws/wsdoc";
+import { Popover } from "../../../../ui/popover";
+import { loadSingleComponent } from "../../../comp/load-comp";
 import { reloadCE } from "../../../tools/reload-ce";
+import { wsdoc } from "../../../ws/wsdoc";
+import { MonacoEditor } from "../../script/monaco/typings";
+import { ScriptCustom } from "../../script/script-custom";
+import { AddElement } from "./AddElement";
 import { NPMImport } from "./NPMImport";
+import { APIConfig } from "./api/APIConfig";
+import { customMonacoState } from "../../script/monaco/monaco-custom";
 
 export const ToolbarMid = () => {
   const c = useGlobal(CEGlobal, "PAGE");
   const local = useLocal({
     apiConfigOpen: false,
-    siteJS: { open: false, timeout: null as any },
+    siteJS: {
+      open: false,
+      timeout: null as any,
+      editor: null as null | MonacoEditor,
+    },
   });
   return (
     <div className={cx("toolbar-mid", "flex")}>
@@ -24,6 +30,10 @@ export const ToolbarMid = () => {
         open={local.siteJS.open}
         onOpenChange={(open) => {
           if (!open) {
+            if (local.siteJS.editor) {
+              const state = local.siteJS.editor.saveViewState();
+              customMonacoState["site"] = state;
+            }
             local.siteJS.open = false;
             local.render();
           }
@@ -31,10 +41,14 @@ export const ToolbarMid = () => {
       >
         <div className="bg-white w-[80vw] h-[80vh] flex">
           <ScriptCustom
-            id={"PAGE"}
+            ceid={"PAGE"}
+            monacoid={"site"}
             src={wsdoc.site?.js || ""}
             wrap={(src) => {
               return `${src}`;
+            }}
+            onLoad={(e) => {
+              local.siteJS.editor = e;
             }}
             onChange={(src, built) => {
               if (wsdoc.site) {

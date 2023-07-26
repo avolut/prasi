@@ -1,20 +1,33 @@
 import { FC } from "react";
 import { useGlobal } from "web-utils";
 import { CEGlobal } from "../../../../base/global/content-editor";
-import { jscript } from "./script-element";
 import { Loading } from "../../../ui/loading";
 import { ScriptMonacoCustom } from "./monaco/monaco-custom";
+import { MonacoEditor } from "./monaco/typings";
+import { jscript } from "./script-element";
 
 export const ScriptCustom: FC<{
-  id: string;
+  ceid: string;
+  monacoid: string;
   item_id?: string;
   props?: Record<string, any>;
   propTypes?: Record<string, string>;
   wrap?: (src: string) => string;
+  onLoad?: (editor: MonacoEditor) => void;
   src: string;
   onChange: (src: string, built: string) => void;
-}> = ({ id, src, onChange, item_id, props, propTypes, wrap }) => {
-  const c = useGlobal(CEGlobal, id);
+}> = ({
+  ceid,
+  monacoid,
+  src,
+  onChange,
+  onLoad,
+  item_id,
+  props,
+  propTypes,
+  wrap,
+}) => {
+  const c = useGlobal(CEGlobal, ceid);
 
   if (!jscript.editor) {
     Promise.all([
@@ -84,10 +97,12 @@ export const ScriptCustom: FC<{
         <Loading backdrop={false} />
       ) : (
         <ScriptMonacoCustom
-          id={id}
+          ceid={ceid}
+          monacoid={monacoid}
           Editor={jscript.editor}
           build={jscript.build}
           src={src}
+          onLoad={onLoad}
           onChange={onChange}
           props={props}
           propTypes={propTypes}

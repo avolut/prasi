@@ -90,7 +90,7 @@ export default page({
 
       return <Loading />;
     }
-    if (!local.init) return <Loading />;
+    if (!local.init) return <><Loading /></>;
 
     if (!local.site) {
       return (

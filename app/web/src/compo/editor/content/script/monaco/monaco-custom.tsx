@@ -7,7 +7,6 @@ import type { OnMount } from "@monaco-editor/react";
 import { findScope } from "../../../../page/content-edit/render-tools/init-scope";
 import { jsMount } from "./mount";
 import { monacoTypings } from "./typings";
-import { FoldingContext, FoldingRangeProvider } from "vscode";
 export type MonacoEditor = Parameters<OnMount>[0];
 
 export type FBuild = (
@@ -16,28 +15,34 @@ export type FBuild = (
   files?: Record<string, string>
 ) => Promise<string>;
 
+export const customMonacoState: Record<string, any> = {};
+
 export const ScriptMonacoCustom: FC<{
-  id: string;
+  ceid: string;
+  monacoid: string;
   Editor: typeof MonacoEditor;
   build: FBuild;
   src: string;
+  onLoad?: (editor: MonacoEditor) => void;
   wrap?: (src: string) => string;
   onChange: (val: string, built: string) => void;
   item_id?: string;
   props?: any;
   propTypes?: any;
 }> = ({
-  id,
+  ceid,
+  monacoid,
   Editor,
   build,
   item_id,
   src,
+  onLoad,
   onChange,
   wrap,
   props,
   propTypes,
 }) => {
-  const c = useGlobal(CEGlobal, id);
+  const c = useGlobal(CEGlobal, ceid);
   const local = useLocal({
     editor: null as null | MonacoEditor,
   });
@@ -69,6 +74,8 @@ export const ScriptMonacoCustom: FC<{
               editor.focus();
             }, 300);
 
+            if (onLoad) onLoad(editor);
+
             if (c.editor.script.active?.default && !editor.getValue().trim()) {
               editor.executeEdits(null, [
                 {
@@ -97,30 +104,31 @@ export const ScriptMonacoCustom: FC<{
             );
             editor.setModel(model);
 
-            if (!(window as any).preventFold) {
-              const act = editor.getAction("editor.toggleFold");
-              if (act) {
-                act.run();
-              }
+            if (!customMonacoState[monacoid]) {
+              editor.trigger("fold", "editor.foldAllMarkerRegions", null);
 
-              const registerOnDidChangeFolding = () => {
-                const foldingContrib = editor.getContribution<any>(
-                  "editor.contrib.folding"
-                );
-                if (foldingContrib) {
-                  const fm = foldingContrib.getFoldingModel();
-                  if (fm) {
-                    fm.then((foldingModel: any) => {
-                      foldingModel.onDidChange(() => {
-                        (window as any).preventFold = true;
-                      });
-                    });
-                  }
-                }
-              };
-              registerOnDidChangeFolding();
-              editor.onDidChangeModel(registerOnDidChangeFolding);
+              // const registerOnDidChangeFolding = () => {
+              //   const foldingContrib = editor.getContribution<any>(
+              //     "editor.contrib.folding"
+              //   );
+              //   if (foldingContrib) {
+              //     const fm = foldingContrib.getFoldingModel();
+              //     if (fm) {
+              //       fm.then((foldingModel: any) => {
+              //         foldingModel.onDidChange((e: any) => {
+              //           console.log(e);
+              //           (window as any).preventFold = true;
+              //         });
+              //       });
+              //     }
+              //   }
+              // };
+              // registerOnDidChangeFolding();
+              // editor.onDidChangeModel(registerOnDidChangeFolding);
+            } else {
+              editor.restoreViewState(customMonacoState[monacoid]);
             }
+
             await jsMount(editor, monaco);
 
             const propVal: any = {};

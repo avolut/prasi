@@ -17,6 +17,7 @@ export default page({
       async () => {
         const s = await api.session();
 
+        console.log(s);
         if (s && s.id) {
           navigate("/editor");
         } else {

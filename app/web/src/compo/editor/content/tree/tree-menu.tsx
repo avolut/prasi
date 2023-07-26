@@ -29,8 +29,7 @@ export const CETreeMenu: FC<{
 }> = ({ contextMenu, onClose, item, id }) => {
   const c = useGlobal(CEGlobal, id);
   const local = useLocal({
-    paste: false,
-    ready: false,
+    paste: "",
     content: null,
   });
   const type = item.get("type");
@@ -44,17 +43,11 @@ export const CETreeMenu: FC<{
       isActiveComponent = true;
     }
   }
-  if (document.hasFocus()) {
-    navigator.clipboard.readText().then((e) => {
-      if (e) {
-        if (e.includes("_prasi")) {
-          local.paste = true;
-        }
-      }
-      local.ready = true;
-      local.render();
-    });
-  }
+
+  navigator.clipboard.readText().then((e) => {
+    local.paste = e;
+    local.render();
+  });
 
   const rootComponentID = (c.root as MItem).get("component")?.get("id");
   let itemComponent: Partial<FNComponent> =
@@ -65,15 +58,6 @@ export const CETreeMenu: FC<{
       <Menu mouseEvent={contextMenu} onClose={onClose}>
         <div className="text-sm text-slate-500 px-3">Unavailable</div>
       </Menu>
-    );
-
-  if (!local.ready)
-    return (
-      <>
-        <Menu mouseEvent={contextMenu} onClose={onClose}>
-          <div className="text-sm text-slate-500 px-3">Loading...</div>
-        </Menu>
-      </>
     );
 
   if (item.get("isPropContent")) {
@@ -269,49 +253,47 @@ export const CETreeMenu: FC<{
               <div className="text-gray-400">Paste</div>
             )
           }
-          onClick={async () => {
+          onClick={() => {
             if (type === "item" || type === "section") {
-              navigator.clipboard.readText().then((e) => {
-                if (child) {
-                  let desc = e.replaceAll("_prasi", "");
-                  let obj = {} as IContent;
-                  let jso = JSON.parse(desc) as IContent;
-                  if (get(jso, "data")) {
-                    let childs = get(jso, "data") as any;
-                    let maps: any = [];
-                    c.editor.multiple.active = [];
-                    let select = [] as Array<MContent>;
-                    childs.map((e: any) => {
-                      const map = newMap(fillID(e)) as MContent;
-                      let walk = walkContent(map) as Array<MContent>;
-                      child.push([map]);
-                      select = select.concat(walk);
-                    });
-                    c.render();
-                    c.editor.active = null;
-                    c.editor.multiple.active = select;
-                  } else {
-                    if (jso.type === "section") {
-                      const newItem = {
-                        id: createId(),
-                        name: jso.name,
-                        type: "item",
-                        dim: { w: "fit", h: "fit" },
-                        childs: jso.childs,
-                        component: get(jso, "component"),
-                        adv: jso.adv,
-                      } as IItem;
-                      obj = newItem;
-                    } else {
-                      obj = jso;
-                    }
-                    const map = newMap(fillID(obj)) as MContent;
-                    selectMultiple({ item: map, global: c });
+              if (child) {
+                let desc = local.paste.replaceAll("_prasi", "");
+                let obj = {} as IContent;
+                let jso = JSON.parse(desc) as IContent;
+                if (get(jso, "data")) {
+                  let childs = get(jso, "data") as any;
+                  let maps: any = [];
+                  c.editor.multiple.active = [];
+                  let select = [] as Array<MContent>;
+                  childs.map((e: any) => {
+                    const map = newMap(fillID(e)) as MContent;
+                    let walk = walkContent(map) as Array<MContent>;
                     child.push([map]);
-                    c.render();
+                    select = select.concat(walk);
+                  });
+                  c.render();
+                  c.editor.active = null;
+                  c.editor.multiple.active = select;
+                } else {
+                  if (jso.type === "section") {
+                    const newItem = {
+                      id: createId(),
+                      name: jso.name,
+                      type: "item",
+                      dim: { w: "fit", h: "fit" },
+                      childs: jso.childs,
+                      component: get(jso, "component"),
+                      adv: jso.adv,
+                    } as IItem;
+                    obj = newItem;
+                  } else {
+                    obj = jso;
                   }
+                  const map = newMap(fillID(obj)) as MContent;
+                  selectMultiple({ item: map, global: c });
+                  child.push([map]);
+                  c.render();
                 }
-              });
+              }
             }
           }}
         />
