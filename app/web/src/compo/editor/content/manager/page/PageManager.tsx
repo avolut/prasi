@@ -11,6 +11,7 @@ import { CEGlobal } from "../../../../../base/global/content-editor";
 import { Loading } from "../../../../ui/loading";
 import { wsdoc } from "../../../ws/wsdoc";
 import { PageForm } from "./PageForm";
+import { useEffect } from "react";
 
 export type PageItem = {
   id: string;
@@ -38,8 +39,21 @@ export const PageManager = () => {
     loading: false,
     newFolder: { parentID: "", name: "" },
     search: "",
+    searchRef: null as any,
     init: false,
   });
+
+  useEffect(() => {
+    const f = () => {
+      if (local.searchRef) {
+        local.searchRef.focus();
+      }
+    };
+    window.addEventListener("keydown", f);
+    return () => {
+      window.removeEventListener("keydown", f);
+    };
+  }, []);
 
   const reloadPages = async () => {
     const folders = await db.page_folder.findMany({
@@ -102,25 +116,30 @@ export const PageManager = () => {
         continue;
       }
 
+      let parent = folder?.id || "ROOT";
+      if (local.search) parent = "ROOT";
+
       data.pages.push({
         id: page.id,
-        parent: folder?.id || "ROOT",
+        parent,
         text: page.name,
         data: { content: {}, ...page } as any,
         droppable: false,
       });
     }
 
-    for (const folder of Object.values(data.folder)) {
-      if (!folders.has(folder.id)) {
-        folders.add(folder.id);
-        data.pages.push({
-          id: folder.id,
-          parent: folder.parent_id || "ROOT",
-          text: folder.name || "",
-          data: { content: {} } as any,
-          droppable: true,
-        });
+    if (!local.search) {
+      for (const folder of Object.values(data.folder)) {
+        if (!folders.has(folder.id)) {
+          folders.add(folder.id);
+          data.pages.push({
+            id: folder.id,
+            parent: folder.parent_id || "ROOT",
+            text: folder.name || "",
+            data: { content: {} } as any,
+            droppable: true,
+          });
+        }
       }
     }
 
@@ -185,6 +204,9 @@ export const PageManager = () => {
                 onChange={(e) => {
                   local.search = e.currentTarget.value;
                   local.render();
+                }}
+                ref={(el) => {
+                  local.searchRef = el;
                 }}
                 placeholder="Search"
                 className="border  px-2 text-sm h-[26px] outline-none w-[150px] focus:border-blue-500 focus:w-[350px] transition-all"
