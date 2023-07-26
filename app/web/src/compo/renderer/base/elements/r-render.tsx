@@ -19,29 +19,33 @@ export const RRender: FC<{
   if (item.type === "section") {
     initScope(rg, item);
   }
-
-  const childs = (item.type !== "text" ? item.childs : []).map((e) => {
-    if (e.type === "item" && e.component?.id) {
-      if (!rg.instances[e.id]) {
-        rg.instances[e.id] = instantiateComp(rg, e) as IItem;
-
-        if (rg.instances[e.id]) {
-          initScope(rg, rg.instances[e.id], item.id);
-        }
-      }
-      if (rg.instances[e.id]) return rg.instances[e.id];
-    } else {
-      initScope(rg, e, item.id);
-    }
-
-    return e;
-  });
-
-  let _children = children(childs);
-
   if (item.hidden === "all") {
     return null;
   }
+
+  const childs = (item.type !== "text" ? item.childs : [])
+    .filter((e) => {
+      if (e.hidden === "all") return false;
+      return true;
+    })
+    .map((e) => {
+      if (e.type === "item" && e.component?.id) {
+        if (!rg.instances[e.id]) {
+          rg.instances[e.id] = instantiateComp(rg, e) as IItem;
+
+          if (rg.instances[e.id]) {
+            initScope(rg, rg.instances[e.id], item.id);
+          }
+        }
+        if (rg.instances[e.id]) return rg.instances[e.id];
+      } else {
+        initScope(rg, e, item.id);
+      }
+
+      return e;
+    });
+
+  let _children = children(childs);
 
   const className = produceCSS(item, { mode: rg.mode });
   const adv = item.adv;

@@ -31,7 +31,8 @@ export const execElement = (arg: JsArg, api_url?: string) => {
       scriptEval(...Object.values(evalArgs));
     } catch (e) {
       error = true;
-      console.warn(e);
+      const s = arg.scope;
+      console.warn(e, findScope(arg.scope, arg.item.id), arg.scope.value);
     }
     return output.jsx;
   }

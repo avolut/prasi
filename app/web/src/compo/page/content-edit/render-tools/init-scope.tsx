@@ -1,7 +1,7 @@
 import { CEGlobal } from "../../../../base/global/content-editor";
 import { IContent, MContent } from "../../../types/general";
 import { IItem } from "../../../types/item";
-import { FNCompDef } from "../../../types/meta-fn";
+import { FMCompDef, FNCompDef } from "../../../types/meta-fn";
 import { component } from "../../component";
 import { CCItem } from "../ce-component";
 import { CEItem } from "../ce-item";
@@ -28,17 +28,21 @@ export const initScope = (
       };
     }
     if (item.type !== "text") {
-      for (const c of item.childs) {
-        if (!scope.tree[c.id]) {
-          scope.tree[c.id] = {
-            childs: new Set(),
-            // name: c.name,
-            // type: c.type,
-            // lv: scope.tree[item.id].lv + 1,
-            parent_id: item.id,
-          };
+      if (Array.isArray(item.childs)) {
+        for (const c of item.childs) {
+          if (!scope.tree[c.id]) {
+            scope.tree[c.id] = {
+              childs: new Set(),
+              // name: c.name,
+              // type: c.type,
+              // lv: scope.tree[item.id].lv + 1,
+              parent_id: item.id,
+            };
+          }
+          scope.tree[item.id].childs.add(c.id);
         }
-        scope.tree[item.id].childs.add(c.id);
+      } else {
+        console.log(item.childs, item, mitem);
       }
     }
   }
@@ -59,45 +63,15 @@ export const initScope = (
       if (mitem) {
         const props = mitem.get("component")?.get("props");
         for (const [k, v] of Object.entries(comp.component?.props || {})) {
-          let val = null;
-          const prop = props?.get(k);
-          if (prop) {
-            const jrop = prop.toJSON() as FNCompDef;
-            if (jrop) {
-              const cprop = comp.component?.props[k];
-              const type = cprop?.meta?.type || v.meta?.type || "text";
-              if (type === "content-element") {
-                const content = prop.get("content");
-                if (content) {
-                  val = (
-                    <CEItem
-                      ceid={ceid}
-                      item={content}
-                      parentInstanceId={item.id}
-                      preventRenderComponent
-                    />
-                  );
-                } else {
-                  try {
-                    val = exec(jrop.valueBuilt || jrop.value);
-                  } catch (e) {
-                    console.log(e);
-                  }
-                }
-              } else {
-                try {
-                  val = exec(jrop.valueBuilt || jrop.value);
-                } catch (e) {
-                  console.log(e);
-                }
-              }
-            }
-          } else {
-            try {
-              val = exec(v.valueBuilt || v.value);
-            } catch (e) {}
-          }
-
+          const prop = props?.get(k) as any;
+          const val = getPropVal({
+            ceid,
+            name: k,
+            prop,
+            comp,
+            item: item as IItem,
+            c,
+          });
           scope.value[item.id][k] = val;
         }
       } else {
@@ -179,4 +153,64 @@ export const findScope = (
   }
 
   return result;
+};
+
+export const getPropVal = (arg: {
+  ceid: string;
+  name: string;
+  prop: FMCompDef;
+  comp: IItem;
+  c: typeof CEGlobal;
+  item: IItem;
+}) => {
+  const { ceid, name, prop, comp, item, c } = arg;
+  const k = name;
+  const v = comp.component?.props[k];
+  let val = null;
+
+  const exec = (fn: string) => {
+    const existingScope = findScope(c.scope, item.id || "");
+    const f = new Function(...Object.keys(existingScope), `return ${fn}`);
+    return f(...Object.values(existingScope));
+  };
+
+  if (v) {
+    if (prop) {
+      const jrop = prop.toJSON() as FNCompDef;
+      if (jrop) {
+        const cprop = comp.component?.props[k];
+        const type = cprop?.meta?.type || v.meta?.type || "text";
+        if (type === "content-element") {
+          const content = prop.get("content");
+          if (content) {
+            val = (
+              <CEItem
+                ceid={ceid}
+                item={content}
+                parentInstanceId={item.id}
+                preventRenderComponent
+              />
+            );
+          } else {
+            try {
+              val = exec(jrop.valueBuilt || jrop.value);
+            } catch (e) {
+              console.log(e);
+            }
+          }
+        } else {
+          try {
+            val = exec(jrop.valueBuilt || jrop.value);
+          } catch (e) {
+            console.log(e);
+          }
+        }
+      }
+    } else {
+      try {
+        val = exec(v.valueBuilt || v.value);
+      } catch (e) {}
+    }
+  }
+  return val;
 };

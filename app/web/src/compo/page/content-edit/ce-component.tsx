@@ -24,8 +24,8 @@ export const CEComponent: FC<{
 
     const ids = [];
     const walk = (s: Set<string>) => {
-      ids.push(s);
       s.forEach((e) => {
+        ids.push(e);
         if (c.scope.tree[e]) {
           walk(c.scope.tree[e].childs);
         }

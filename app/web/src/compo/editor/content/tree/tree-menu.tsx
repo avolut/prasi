@@ -94,7 +94,7 @@ export const CETreeMenu: FC<{
               await jscript.init();
             }
             if (jscript.build) {
-              detachComp(c, item as MItem, jscript.build);
+              detachComp(id, c, item as MItem, jscript.build);
             }
           }}
         />

@@ -15,7 +15,7 @@ export const RComponent: FC<{
   const local = useLocal({ loading: false });
   const rg = useGlobal(RendererGlobal, "PRASI_SITE");
 
-  if (item.hidden === "all" || !item.component) return null;
+  if (!item.component) return null;
 
   const compid = item.component.id;
 
