@@ -31,7 +31,7 @@ export const CETree: FC<{ id: string }> = ({ id }) => {
   const TypedTree = DNDTree<NodeContent>;
 
   useEffect(() => {
-    if (c.editor.active) {
+    if (c.editor.active && c.editor.active.parent) {
       let item = c.editor.active.parent.parent as any;
       const open = new Set<string>();
       const walkParent = (item: any) => {
