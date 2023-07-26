@@ -46,8 +46,6 @@ export const FileImageGallery: FC<{
       local.render();
     }
   );
-
-  const [_, tx] = useTransition();
   const onUpload: React.ChangeEventHandler<HTMLInputElement> = async function (
     e
   ) {
@@ -55,10 +53,10 @@ export const FileImageGallery: FC<{
     local.render();
     const files = e.currentTarget.files;
     if (files) {
-      const res: string[] = (await fetchSendApi(
+      const res: string[] = await fetchSendApi(
         `${siteApiUrl}/_upload/${params.site}`,
         files[0]
-      )) as any;
+      );
       local.previewUrl = res[0];
       local.preview = true;
       local.selectUrl = local.previewUrl;

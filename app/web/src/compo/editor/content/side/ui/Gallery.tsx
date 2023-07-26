@@ -36,6 +36,7 @@ export const Gallery: FC<{
       ] as Array<any>,
       ready: false,
       isPreview: false,
+      hover: null as any,
       preview: {
         url: "" as string,
         dimension: {
@@ -99,71 +100,108 @@ export const Gallery: FC<{
                     "flex items-start flex-wrap pl-[10px] absolute w-full h-full top-0 left-0"
                   )}
                 >
-                  {local.list.map((e, idx) => {
-                    return (
-                      <div
-                        key={e.path}
-                        className={cx(
-                          "flex flex-col items-start w-[200px] h-[100px] p-2 text-sm  cursor-pointer hover:bg-blue-100 ml-1 mb-1",
-                          "justify-between transition-all",
-                          "hover:border-blue-500",
-                          "bg-no-repeat	bg-cover bg-center",
-                          local.preview.url === `${siteApiUrl}${get(e, "path")}`
-                            ? "border-4 border-blue-500 shadow-xl"
-                            : "border",
-                          css`
-                            background-image: url("${siteApiUrl}${get(
-                              e,
-                              "path"
-                            )}");
-                            .edit {
-                              display: none;
-                            }
+                  {" "}
+                  {local.list.length ? (
+                    <>
+                      {local.list.map((e, idx) => {
+                        return (
+                          <div
+                            key={e.path}
+                            className={cx(
+                              "relative flex flex-col items-start w-[200px] h-[100px] p-2 text-sm  cursor-pointer hover:bg-blue-100 ml-1 mb-1",
+                              "justify-between transition-all",
+                              "hover:border-blue-500",
+                              "bg-no-repeat	bg-cover bg-center",
+                              local.preview.url ===
+                                `${siteApiUrl}${get(e, "path")}`
+                                ? "border-4 border-blue-500 shadow-xl"
+                                : "border",
+                              css`
+                                background-image: url("${siteApiUrl}${get(
+                                  e,
+                                  "path"
+                                )}");
+                                .edit {
+                                  display: none;
+                                }
 
-                            &:hover {
-                              .edit {
-                                display: flex;
-                              }
-                            }
-                          `
-                        )}
-                        onClick={async () => {
-                          const { width, height } = await loadImage(
-                            `${siteApiUrl}${get(e, "path")}`
-                          );
-                          local.preview = {
-                            url: `${siteApiUrl}${get(e, "path")}`,
-                            dimension: {
-                              width,
-                              height,
-                            },
-                            details: e,
-                          };
-                          local.isPreview = true;
-                          meta.selectUrl = `${siteApiUrl}${get(e, "path")}`;
-                          local.render();
-                        }}
-                      >
-                        <div className="flex flex-col">
-                          {/* <div>{"sdasdasd"}</div> */}
-                        </div>
-                        <div
-                          className="flex justify-between self-stretch"
-                          onClick={(ev) => {
-                            ev.preventDefault();
-                            ev.stopPropagation();
-                          }}
-                        ></div>
-                      </div>
-                    );
-                  })}
+                                &:hover {
+                                  .edit {
+                                    display: flex;
+                                  }
+                                }
+                              `
+                            )}
+                            onClick={async () => {
+                              const { width, height } = await loadImage(
+                                `${siteApiUrl}${get(e, "path")}`
+                              );
+                              local.preview = {
+                                url: `${siteApiUrl}${get(e, "path")}`,
+                                dimension: {
+                                  width,
+                                  height,
+                                },
+                                details: e,
+                              };
+                              local.isPreview = true;
+                              meta.selectUrl = `${siteApiUrl}${get(e, "path")}`;
+                              local.render();
+                            }}
+                            onMouseEnter={() => {
+                              local.hover = `${siteApiUrl}${get(e, "path")}`;
+                              local.render();
+                            }}
+                            onMouseLeave={() => {
+                              local.hover = null;
+                              local.render();
+                            }}
+                          >
+                            <div className="flex flex-row flex-grow items-end justify-end">
+                              {local.hover ===
+                              `${siteApiUrl}${get(e, "path")}` ? (
+                                <>
+                                  {" "}
+                                  <div
+                                    onClick={async (ev) => {
+                                      ev.preventDefault();
+                                      ev.stopPropagation();
+                                      console.log({ e });
+                                      const res: string[] = await fetchSendApi(
+                                        `${siteApiUrl}/_delete`,
+                                        {
+                                          path: "/api/",
+                                        }
+                                      );
+                                      console.log({ res });
+                                    }}
+                                    className="relative flex flex-row p-2 cursor-pointer bg-red-500 rounded font-medium"
+                                  >
+                                    <Icon
+                                      icon="fluent:delete-28-regular"
+                                      className="text-lg text-gray-700"
+                                    />
+                                  </div>
+                                </>
+                              ) : (
+                                <></>
+                              )}
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </>
+                  ) : (
+                    <>No Image</>
+                  )}
                 </div>
               </div>
             </div>
             {local.isPreview ? (
               <>
                 <div className="border-l-2 w-1/4 flex flex-col">
-                  <div
+                  <a
+                    href={`${local.preview.url}`}
                     className={cx(
                       "border-2 rounded m-2 flex flex-row items-center justify-center space-x-4 h-[200px]",
                       css`
@@ -180,16 +218,15 @@ export const Gallery: FC<{
                       `
                     )}
                   >
-                    <a
-                      href={`#`}
+                    <div
                       className={cx(
                         "bg-no-repeat	bg-contain bg-center  rounded flex flex-row flex-grow h-full items-center justify-center space-x-4",
                         css`
                           background-image: url("${local.preview.url}");
                         `
                       )}
-                    ></a>
-                  </div>
+                    ></div>
+                  </a>
                   <p className="text-lg px-1">
                     Dimension:{" "}
                     <span>{`${local.preview.dimension.width} x ${local.preview.dimension.height}`}</span>{" "}

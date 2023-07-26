@@ -2,6 +2,10 @@ export const _dbs = {
   url: "/_dbs/:dbName/:action",
   args: ["dbName","action"],
 }
+export const _delete = {
+  url: "/_delete",
+  args: ["arg"],
+}
 export const _file = {
   url: "/_file/**",
   args: [],

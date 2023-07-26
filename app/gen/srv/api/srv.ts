@@ -5,6 +5,13 @@ export const _dbs = {
   args: ["dbName","action"],
   handler: import("../../../srv/api/built-in/_dbs")
 }
+export const _delete = {
+  name: "_delete",
+  url: "/_delete",
+  path: "app/srv/api/built-in/_delete.ts",
+  args: ["arg"],
+  handler: import("../../../srv/api/built-in/_delete")
+}
 export const _file = {
   name: "_file",
   url: "/_file/**",
