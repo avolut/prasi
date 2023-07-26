@@ -48,7 +48,6 @@ export const Gallery: FC<{
         `${siteApiUrl}/get-gallery/${params.site}`,
         {}
       )) as any;
-      console.log(res.data);
       local.list = res.data;
       local.ready = true;
       local.render();
@@ -161,7 +160,6 @@ export const Gallery: FC<{
                                     onClick={async (ev) => {
                                       ev.preventDefault();
                                       ev.stopPropagation();
-                                      console.log({ e });
                                       await fetchSendApi(
                                         `${siteApiUrl}/_delete`,
                                         {
@@ -173,7 +171,6 @@ export const Gallery: FC<{
                                       );
                                       local.list = list;
                                       local.render();
-                                      console.log({ res });
                                     }}
                                     className="relative flex flex-row p-2 cursor-pointer bg-red-500 rounded font-medium"
                                   >
