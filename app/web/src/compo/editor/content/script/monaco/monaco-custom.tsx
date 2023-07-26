@@ -113,6 +113,11 @@ export const ScriptMonacoCustom: FC<{
               values: propVal,
               types: propTypes,
             });
+
+            const act = editor.getAction("editor.toggleFold");
+            if (act) {
+              act.run();
+            }
           }}
           language={"typescript"}
           onChange={async (newsrc) => {
