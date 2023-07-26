@@ -10,6 +10,7 @@ import { Modal } from "../../../../ui/modal";
 import { ScriptCustom } from "../../script/script-custom";
 import { wsdoc } from "../../../ws/wsdoc";
 import { reloadCE } from "../../../tools/reload-ce";
+import { NPMImport } from "./NPMImport";
 
 export const ToolbarMid = () => {
   const c = useGlobal(CEGlobal, "PAGE");
@@ -190,6 +191,35 @@ export const ToolbarMid = () => {
                     fill="currentColor"
                   ></path>
                 </svg>
+              </>
+            ),
+          },
+        ]}
+      />
+      <div className="w-[5px] h-1"></div>
+      <ToolbarBox
+        items={[
+          {
+            content: (
+              <>
+                <Popover
+                  open
+                  arrow={false}
+                  content={<NPMImport />}
+                  popoverClassName="bg-white shadow-2xl outline-none border border-slate-300"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 32 32"
+                  >
+                    <path
+                      fill="currentColor"
+                      d="M2 10.555h28v9.335H16v1.556H9.778v-1.557H2zm1.556 7.779h3.111v-4.668h1.555v4.667h1.556v-6.222H3.556zm7.778-6.223v7.779h3.111v-1.556h3.111v-6.223zm3.111 1.556H16v3.112h-1.556zm4.667-1.556v6.223h3.111v-4.668h1.556v4.667h1.556v-4.667h1.556v4.667h1.556v-6.222z"
+                    ></path>
+                  </svg>
+                </Popover>
               </>
             ),
           },

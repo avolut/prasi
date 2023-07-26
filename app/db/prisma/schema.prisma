@@ -45,6 +45,7 @@ model site {
   config         Json             @default("{}")
   is_deleted     Boolean          @default(false)
   component_site component_site[]
+  npm_site       npm_site[]
   page           page[]
   page_folder    page_folder[]
   org            org?             @relation(fields: [id_org], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "site_id_organization_fkey")
@@ -246,4 +247,23 @@ model component_site {
   site               site            @relation(fields: [id_site], references: [id], onDelete: Cascade)
 
   @@id([id_component_group, id_site], map: "component_site_id_component_group_id_site")
+}
+
+model npm_page {
+  id      BigInt  @id @default(autoincrement())
+  id_page String  @db.Uuid
+  module  String
+  version String
+  types   Boolean @default(false)
+  bundled Boolean @default(false)
+}
+
+model npm_site {
+  id      BigInt  @id @default(autoincrement())
+  id_site String  @db.Uuid
+  module  String
+  version String
+  types   Boolean @default(false)
+  bundled Boolean @default(false)
+  site    site    @relation(fields: [id_site], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }

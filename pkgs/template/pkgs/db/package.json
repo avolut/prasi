@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "dependencies": {
     "service-db": "../../pkgs/service/pkgs/service-db",
-    "prisma": "4.16.1"
+    "prisma": "5.0.0"
   },
   "external": [
     "hyper-express",

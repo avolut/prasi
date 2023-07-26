@@ -1,10 +1,9 @@
-import { FC, useTransition } from "react";
+import { Icon } from "@iconify/react";
+import { FC } from "react";
 import { fetchSendApi } from "web-init/src/web/iframe-cors";
 import { useLocal } from "web-utils";
-import { Button } from "./Button";
-import { Loading } from "../../../../ui/loading";
 import { ToolbarBox } from "../../../../ui/box";
-import { Icon } from "@iconify/react";
+import { Loading } from "../../../../ui/loading";
 import { Gallery } from "./Gallery";
 export const FileImageGallery: FC<{
   value?: string;
@@ -26,13 +25,6 @@ export const FileImageGallery: FC<{
       value: value || "",
       load: true,
       mode: "upload",
-      list: [
-        "https://picsum.photos/200",
-        "https://picsum.photos/200",
-        "https://picsum.photos/200",
-        "https://picsum.photos/200",
-        "https://picsum.photos/200",
-      ] as Array<any>,
       preview: false as boolean,
       previewUrl: "" as string,
       isUpload: false as boolean,
@@ -184,9 +176,9 @@ export const FileImageGallery: FC<{
                 </>
               ) : (
                 <>
-                  <div className="flex flex-row items-center relative px-2 py-4 space-x-4">
-                    <div className="relative flex flex-row p-2 cursor-pointer bg-sky-500 rounded">
-                      <span>Upload</span>
+                  <div className="flex flex-row items-center relative px-2 py-4 space-x-4 justify-center flex-1">
+                    <div className="relative flex flex-row p-2 cursor-pointer bg-blue-500 text-white">
+                      <span>Upload Image</span>
                       <input
                         type="file"
                         name="file"
@@ -197,7 +189,6 @@ export const FileImageGallery: FC<{
                         onChange={onUpload}
                       />
                     </div>
-                    <span>Please Upload Image</span>
                   </div>
                   <div className="flex flex-row flex-grow items-center justify-center px-2 py-4 space-x-4">
                     {local.preview ? (
@@ -277,19 +268,21 @@ export const FileImageGallery: FC<{
                 </>
               )}
             </div>
-            <div className="border-t-2  flex flex-row items-center justify-end p-4">
-              <div
-                onClick={() => {
-                  // FieldImg;
-                  update(local.selectUrl);
-                  meta.open = false;
-                  meta.render();
-                }}
-                className="relative flex flex-row p-2 cursor-pointer bg-sky-500 rounded font-medium px-6"
-              >
-                <span>Submit</span>
+            {local.selectUrl && (
+              <div className="border-t-2  flex flex-row items-center justify-end p-4">
+                <div
+                  onClick={() => {
+                    // FieldImg;
+                    update(local.selectUrl);
+                    meta.open = false;
+                    meta.render();
+                  }}
+                  className="relative flex flex-row p-2 cursor-pointer bg-blue-500 text-white font-medium px-6"
+                >
+                  <span>Choose Image</span>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         )}
       </div>

@@ -98,6 +98,7 @@ export const Gallery: FC<{
                   {local.list.length ? (
                     <>
                       {local.list.map((e, idx) => {
+                        const bgurl = `${siteApiUrl}${get(e, "url")}`;
                         return (
                           <div
                             key={e.url}
@@ -111,10 +112,7 @@ export const Gallery: FC<{
                                 ? "border-4 border-blue-500 shadow-xl"
                                 : "border",
                               css`
-                                background-image: url("${siteApiUrl}${get(
-                                  e,
-                                  "url"
-                                )}");
+                                background-image: url("${bgurl}");
                                 .edit {
                                   display: none;
                                 }
@@ -140,7 +138,7 @@ export const Gallery: FC<{
                               };
                               local.isPreview = true;
                               meta.selectUrl = `${siteApiUrl}${get(e, "url")}`;
-                              local.render();
+                              meta.render();
                             }}
                             onMouseEnter={() => {
                               local.hover = `${siteApiUrl}${get(e, "url")}`;
@@ -224,15 +222,15 @@ export const Gallery: FC<{
                       )}
                     ></div>
                   </a>
-                  <p className="text-lg px-1">
+                  <p className="text-sm px-2">
                     Dimension:{" "}
                     <span>{`${local.preview.dimension.width} x ${local.preview.dimension.height}`}</span>{" "}
                   </p>
-                  <p className="text-lg px-1">
+                  <p className="text-sm px-2">
                     File Size:{" "}
                     <span>{getSize(local.preview.details.size)}</span>
                   </p>
-                  <p className="text-lg px-1">
+                  <p className="text-sm px-2">
                     Last Modified:{" "}
                     <span>
                       {format(

@@ -22,7 +22,7 @@ export const CEGlobal = {
   doc: null as unknown as TypedDoc<{
     map: TypedMap<{ id: string; content_tree: MContent }>;
   }>,
-  map: null as unknown as TypedMap<{ content_tree: MContent }>,
+  map: null as unknown as TypedMap<{ name: string; content_tree: MContent }>,
   root: null as unknown as MRoot | MItem,
   instances: {} as Record<string, IItem>,
   editor: {
