@@ -22,39 +22,42 @@ import { PanelBorder } from "./panel/border";
 export const CESide: FC<{ id: string }> = ({ id }) => {
   const c = useGlobal(CEGlobal, id);
   const local = useLocal({ rootEditingProps: false, lastActive: null as any });
-  const update = useCallback((key: string, value: any) => {
-    let act = c.editor.active as TypedMap<any>;
-    if (act) {
-      if (wsdoc.mode === "mobile") {
-        let mobile = act.get("mobile");
-        if (!mobile) {
-          act.set("mobile", new Y.Map() as any);
-          mobile = act.get("mobile");
-        }
-        act = mobile as any;
-      }
-
-      let prop = act?.get(key);
-
-      if (!prop) {
-        let nprop = null;
-        if (typeof value === "object") {
-          if (Array.isArray(value)) {
-            nprop = new Y.Array();
-          } else {
-            nprop = new Y.Map();
+  const update = useCallback(
+    (key: string, value: any) => {
+      let act = c.editor.active as TypedMap<any>;
+      if (act) {
+        if (wsdoc.mode === "mobile") {
+          let mobile = act.get("mobile");
+          if (!mobile) {
+            act.set("mobile", new Y.Map() as any);
+            mobile = act.get("mobile");
           }
+          act = mobile as any;
         }
-        act.set(key, nprop);
-        prop = act.get(key);
-      }
 
-      if (prop) {
-        syncronize(prop, value);
-        c.render();
+        let prop = act?.get(key);
+
+        if (!prop) {
+          let nprop = null;
+          if (typeof value === "object") {
+            if (Array.isArray(value)) {
+              nprop = new Y.Array();
+            } else {
+              nprop = new Y.Map();
+            }
+          }
+          act.set(key, nprop);
+          prop = act.get(key);
+        }
+
+        if (prop) {
+          syncronize(prop, value);
+          c.render();
+        }
       }
-    }
-  }, []);
+    },
+    [id]
+  );
 
   const active = c.editor.active?.toJSON() as IItem;
   const rootComponentID = (c.root as MItem)?.get("component")?.get("id");

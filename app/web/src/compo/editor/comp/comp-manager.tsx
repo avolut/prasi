@@ -1,4 +1,4 @@
-import { FC, Fragment } from "react";
+import { FC, Fragment, useEffect } from "react";
 import { useGlobal, useLocal } from "web-utils";
 import { CEGlobal } from "../../../base/global/content-editor";
 import { Dropdown } from "../../ui/dropdown";
@@ -19,10 +19,26 @@ export const CompManager: FC<{ id: string }> = ({ id }) => {
       text: "",
     },
     search: "",
+    searchRef: null as any,
     trash_id: "",
     collapsed: new Set(),
     sharedPopup: false,
   });
+
+  useEffect(() => {
+    const f = () => {
+      if (
+        local.searchRef &&
+        document.activeElement?.tagName.toLowerCase() !== "input"
+      ) {
+        local.searchRef.focus();
+      }
+    };
+    window.addEventListener("keydown", f);
+    return () => {
+      window.removeEventListener("keydown", f);
+    };
+  }, []);
 
   const toggleCollapse = (id: string) => {
     if (!local.collapsed.has(id)) {
@@ -222,6 +238,9 @@ export const CompManager: FC<{ id: string }> = ({ id }) => {
               <input
                 type="search"
                 value={local.search}
+                ref={(e) => {
+                  local.searchRef = e;
+                }}
                 onChange={(e) => {
                   local.search = e.currentTarget.value;
                   local.render();

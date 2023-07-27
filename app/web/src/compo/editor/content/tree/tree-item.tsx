@@ -370,11 +370,11 @@ export const CETreeItem: FC<{
                         type: "css",
                         default: `\
 & {
-display: flex;
+  display: flex;
 
-&:hover {
-display: flex;
-}
+  &:hover {
+    display: flex;
+  }
 }`,
                       };
                       c.render();

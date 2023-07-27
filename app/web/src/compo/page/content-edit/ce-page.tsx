@@ -10,10 +10,18 @@ import { wsdoc } from "../../editor/ws/wsdoc";
 import { createAPI, createDB } from "../scripting/api-db";
 import importModule from "../tools/dynamic-import";
 
+const w = window as unknown as {
+  editorPageEl: null | HTMLDivElement;
+  editorPageScroll: null | { t: number; l: number };
+};
+
 export const CEPage: FC<{ ceid: string }> = ({ ceid }) => {
   const c = useGlobal(CEGlobal, ceid);
   const mode = responsiveMode();
-  const local = useLocal({ init: false, effects: new WeakSet<any>() });
+  const local = useLocal({
+    init: false,
+    effects: new WeakSet<any>(),
+  });
 
   useEffect(() => {}, [local.effects]);
 
@@ -97,6 +105,14 @@ export const CEPage: FC<{ ceid: string }> = ({ ceid }) => {
             ${c.global.scss}
           `
         )}
+        ref={(e) => {
+          w.editorPageEl = e;
+          if (w.editorPageScroll && e) {
+            e.scrollTop = w.editorPageScroll.t;
+            e.scrollLeft = w.editorPageScroll.l;
+            w.editorPageScroll = null;
+          }
+        }}
       >
         {ceid.startsWith("COMP") ? (
           <CEItem ceid={ceid} item={c.root as MItem} preventRenderComponent />
