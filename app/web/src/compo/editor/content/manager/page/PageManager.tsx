@@ -41,6 +41,8 @@ export const PageManager = () => {
     search: "",
     searchRef: null as any,
     init: false,
+    scrollRef: null as null | HTMLDivElement,
+    initScrolled: false,
   });
 
   useEffect(() => {
@@ -179,6 +181,9 @@ export const PageManager = () => {
           </div>
         ) : (
           <div
+            ref={(el) => {
+              local.scrollRef = el;
+            }}
             className={cx(
               "relative w-full h-full flex items-stretch",
               css`
@@ -270,11 +275,24 @@ export const PageManager = () => {
                 }}
                 render={(node, { depth, isOpen, onToggle, hasChild }) => (
                   <div
+                    ref={(el) => {
+                      if (
+                        el &&
+                        !local.initScrolled &&
+                        params.page === node.data?.id
+                      ) {
+                        local.initScrolled = true;
+                        el.scrollIntoView({
+                          behavior: "instant",
+                          block: "center",
+                        });
+                      }
+                    }}
                     className={cx(
                       "flex items-center text-[14px] h-[30px] border-b border-l",
                       "hover:bg-blue-50 cursor-pointer transition-all",
                       params.page === node.data?.id &&
-                        " border-l-4 border-l-blue-600 bg-blue-100",
+                        " active border-l-4 border-l-blue-600 bg-blue-100",
                       css`
                         .btn {
                           display: none;
