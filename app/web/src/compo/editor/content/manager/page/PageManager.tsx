@@ -45,7 +45,7 @@ export const PageManager = () => {
 
   useEffect(() => {
     const f = () => {
-      if (local.searchRef) {
+      if (local.searchRef && !local.page.data) {
         local.searchRef.focus();
       }
     };
