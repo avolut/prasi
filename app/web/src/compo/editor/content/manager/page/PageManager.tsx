@@ -45,7 +45,11 @@ export const PageManager = () => {
 
   useEffect(() => {
     const f = () => {
-      if (local.searchRef && !local.page.data) {
+      if (
+        local.searchRef &&
+        !local.page.data &&
+        document.activeElement?.tagName.toLowerCase() !== "input"
+      ) {
         local.searchRef.focus();
       }
     };
