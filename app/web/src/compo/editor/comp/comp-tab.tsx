@@ -64,7 +64,7 @@ export const CompTab: FC<{ id: string }> = ({ id }) => {
               <div
                 key={compid}
                 className={cx(
-                  "pl-3 pr-[4px] relative whitespace-nowrap w-[100px] flex items-center border-r text-sm hover:bg-blue-100 cursor-pointer space-x-1",
+                  "pl-3 pr-[4px] relative whitespace-nowrap w-[100px] flex items-center border-r text-sm hover:bg-blue-100 cursor-pointer space-x-1 overflow-hidden",
                   comp.get("id") === component.edit.id &&
                     "border-b-2 border-b-blue-500 bg-blue-50",
                   css`
