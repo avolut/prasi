@@ -19,8 +19,9 @@ export type CompDoc = TypedDoc<{
   map: CompMap;
 }>;
 export const CEGlobal = {
+  id: "",
   doc: null as unknown as TypedDoc<{
-    map: TypedMap<{ id: string; content_tree: MContent }>;
+    map: TypedMap<{ id: string; name: string; content_tree: MContent }>;
   }>,
   map: null as unknown as TypedMap<{ name: string; content_tree: MContent }>,
   root: null as unknown as MRoot | MItem,

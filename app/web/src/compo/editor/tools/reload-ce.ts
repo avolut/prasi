@@ -2,9 +2,17 @@ import { CEGlobal } from "../../../base/global/content-editor";
 import { instantiateComp, loadComponents } from "../comp/load-comp";
 
 const w = window as unknown as {
-  editorPageEl: null | HTMLDivElement;
-  editorPageScroll: null | { t: number; l: number };
+  prasiEditorPage: Record<
+    string,
+    {
+      el: null | HTMLDivElement;
+      scroll: null | { t: number; l: number };
+    }
+  >;
 };
+if (!w.prasiEditorPage) {
+  w.prasiEditorPage = {};
+}
 
 export const reloadCE = (ce: typeof CEGlobal & { render: () => void }) => {
   ce.scope = {
@@ -17,11 +25,12 @@ export const reloadCE = (ce: typeof CEGlobal & { render: () => void }) => {
   ce.instances = {};
 
   const scroll = { t: 0, l: 0 };
-  if (w.editorPageEl) {
-    scroll.t = w.editorPageEl.scrollTop;
-    scroll.l = w.editorPageEl.scrollLeft;
-    w.editorPageEl = null;
-    w.editorPageScroll = scroll;
+  const p = w.prasiEditorPage[ce.id];
+  if (p && p.el) {
+    scroll.t = p.el.scrollTop;
+    scroll.l = p.el.scrollLeft;
+    p.el = null;
+    p.scroll = scroll;
   }
 
   ce.editor.page.reload = true;

@@ -11,9 +11,17 @@ import { createAPI, createDB } from "../scripting/api-db";
 import importModule from "../tools/dynamic-import";
 
 const w = window as unknown as {
-  editorPageEl: null | HTMLDivElement;
-  editorPageScroll: null | { t: number; l: number };
+  prasiEditorPage: Record<
+    string,
+    {
+      el: null | HTMLDivElement;
+      scroll: null | { t: number; l: number };
+    }
+  >;
 };
+if (!w.prasiEditorPage) {
+  w.prasiEditorPage = {};
+}
 
 export const CEPage: FC<{ ceid: string }> = ({ ceid }) => {
   const c = useGlobal(CEGlobal, ceid);
@@ -106,11 +114,17 @@ export const CEPage: FC<{ ceid: string }> = ({ ceid }) => {
           `
         )}
         ref={(e) => {
-          w.editorPageEl = e;
-          if (w.editorPageScroll && e) {
-            e.scrollTop = w.editorPageScroll.t;
-            e.scrollLeft = w.editorPageScroll.l;
-            w.editorPageScroll = null;
+          if (!w.prasiEditorPage[c.id]) {
+            w.prasiEditorPage[c.id] = { el: null, scroll: null };
+          }
+          const p = w.prasiEditorPage[c.id];
+          if (p) {
+            p.el = e;
+            if (p.scroll && e) {
+              e.scrollTop = p.scroll.t;
+              e.scrollLeft = p.scroll.l;
+              p.scroll = null;
+            }
           }
         }}
       >

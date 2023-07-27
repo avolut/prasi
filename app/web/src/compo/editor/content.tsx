@@ -17,6 +17,7 @@ import { MItem } from "../types/item";
 
 export const ContentEditor: FC<{ id: string }> = ({ id }) => {
   const c = useGlobal(CEGlobal, id);
+  c.id = id;
   const local = useLocal({ init: false });
 
   useEffect(() => {
