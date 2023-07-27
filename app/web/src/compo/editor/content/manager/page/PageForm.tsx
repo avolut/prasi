@@ -91,9 +91,9 @@ export const PageForm: FC<{
               form={form}
               autoFocus
               name={"name"}
-              onChange={(val) => {
+              onBlur={(e) => {
                 if (!form.url) {
-                  form.url = `/${slugify(val)}`;
+                  form.url = `/${slugify(e.currentTarget.value)}`;
                 }
                 form.render();
               }}
