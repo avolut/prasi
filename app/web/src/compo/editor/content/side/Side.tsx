@@ -103,7 +103,11 @@ export const CESide: FC<{ id: string }> = ({ id }) => {
   }
 
   return (
-    <div className={cx("side", "flex select-none relative overflow-auto")}>
+    <div
+      className={cx(
+        "side flex select-none relative overflow-x-hidden overflow-y-auto"
+      )}
+    >
       <div className="absolute inset-0 flex flex-col items-stretch justify-start text-[13px]">
         {active && (
           <>
