@@ -1,19 +1,8 @@
 import { Request, Response } from "hyper-express";
+import { transformSync } from "esbuild";
 
-export const apiFrm = (req: Request, res: Response) => {
-  // TODO: whitelist origin
-  const allowUrl = req.headers.origin || req.headers.referer;
-
-  res.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT");
-  res.setHeader("Access-Control-Allow-Headers", "content-type rid");
-  res.setHeader("Access-Control-Allow-Credentials", "true");
-  if (allowUrl) {
-    res.setHeader("Access-Control-Allow-Origin", allowUrl);
-  }
-
-  res.send(`\
-<script>
-
+const frm = transformSync(
+  `\
   window.addEventListener('message', (e) => {
     const msg = e.data;
     const init = Object.assign({}, msg.init)
@@ -26,12 +15,8 @@ export const apiFrm = (req: Request, res: Response) => {
       init.body = body;
     } 
     
-    const ff = url.pathname === "/_dbs/db/npm_site";
-    if (ff) console.log('start')
     fetch(url.pathname, init) 
       .then(async (res) => {
-        if (ff) console.log(res);
-
         if (res) {
           const body = await res.text();
           if (res.ok) {
@@ -50,6 +35,20 @@ export const apiFrm = (req: Request, res: Response) => {
         }
       })
   })
-  parent.postMessage('initialized', '*')
-</script>`);
+  parent.postMessage('initialized', '*')`,
+  { minify: true }
+);
+
+export const apiFrm = (req: Request, res: Response) => {
+  // TODO: whitelist origin
+  const allowUrl = req.headers.origin || req.headers.referer;
+
+  res.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT");
+  res.setHeader("Access-Control-Allow-Headers", "content-type rid");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  if (allowUrl) {
+    res.setHeader("Access-Control-Allow-Origin", allowUrl);
+  }
+
+  res.send(`<script>${frm.code}</script>`);
 };
