@@ -8,8 +8,10 @@ export const _ = {
     const { req, res } = apiContext(this);
 
     const body = (await req.json()) as DBArg;
+
     try {
       const result = await service.db.query(body);
+
       res.json(result);
     } catch (e: any) {
       res.sendStatus(500);

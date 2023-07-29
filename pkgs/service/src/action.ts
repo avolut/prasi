@@ -57,9 +57,6 @@ export const rootAction = {
     path: string[];
     args: any;
   }) {
-    return await get(
-      rpc[`${arg.name}.${arg.pid}`],
-      arg.path.join(".")
-    )(...arg.args);
+    return get(rpc[`${arg.name}.${arg.pid}`], arg.path.join("."))(...arg.args);
   },
 };

@@ -26,8 +26,12 @@ export const apiFrm = (req: Request, res: Response) => {
       init.body = body;
     } 
     
+    const ff = url.pathname === "/_dbs/db/npm_site";
+    if (ff) console.log('start')
     fetch(url.pathname, init) 
       .then(async (res) => {
+        if (ff) console.log(res);
+
         if (res) {
           const body = await res.text();
           if (res.ok) {

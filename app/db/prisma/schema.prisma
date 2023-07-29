@@ -250,20 +250,22 @@ model component_site {
 }
 
 model npm_page {
-  id      BigInt  @id @default(autoincrement())
-  id_page String  @db.Uuid
-  module  String
-  version String
-  types   Boolean @default(false)
-  bundled Boolean @default(false)
+  id        BigInt  @id @default(autoincrement())
+  id_page   String  @db.Uuid
+  module    String
+  version   String
+  types     Boolean @default(false)
+  bundled   Boolean @default(false)
+  import_as Json    @default("{\"main\": {\"mode\": \"default\", \"name\": \"\"}, \"names\": []}")
 }
 
 model npm_site {
-  id      BigInt  @id @default(autoincrement())
-  id_site String  @db.Uuid
-  module  String
-  version String
-  types   Boolean @default(false)
-  bundled Boolean @default(false)
-  site    site    @relation(fields: [id_site], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id        BigInt  @id @default(autoincrement())
+  id_site   String  @db.Uuid
+  module    String
+  version   String
+  types     Boolean @default(false)
+  bundled   Boolean @default(false)
+  import_as Json    @default("{\"main\": {\"mode\": \"default\", \"name\": \"\"}, \"names\": []}")
+  site      site    @relation(fields: [id_site], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }

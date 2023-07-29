@@ -7,9 +7,10 @@ import { DeepProxy } from "@qiwi/deep-proxy";
 import { createId } from "@paralleldrive/cuid2";
 import get from "lodash.get";
 import chalk from "chalk";
-import PrettyError from "pretty-error";
 
-const pe = new PrettyError();
+(BigInt.prototype as any).toJSON = function (): string {
+  return this.toString();
+};
 
 type ActionMsg = {
   type: "action";

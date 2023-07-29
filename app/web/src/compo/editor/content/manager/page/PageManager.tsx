@@ -27,6 +27,10 @@ const data = {
   pages: [] as NodeModel<PageItem>[],
 };
 
+const w = window as unknown as {
+  pageManagerSearch: string;
+};
+
 export const PageManager = () => {
   const c = useGlobal(CEGlobal, "PAGE");
   const local = useLocal({
@@ -38,7 +42,6 @@ export const PageManager = () => {
     editFolderID: "",
     loading: false,
     newFolder: { parentID: "", name: "" },
-    search: "",
     searchRef: null as any,
     init: false,
     scrollRef: null as null | HTMLDivElement,
@@ -46,7 +49,14 @@ export const PageManager = () => {
   });
 
   useEffect(() => {
-    const f = () => {
+    const f = (e: any) => {
+      if (
+        e.key === "Escape" &&
+        document.activeElement?.tagName.toLowerCase() === "input"
+      ) {
+        w.pageManagerSearch = "";
+        local.render();
+      }
       if (
         local.searchRef &&
         !local.page.data &&
@@ -114,16 +124,16 @@ export const PageManager = () => {
       const folder = data.folder[fid];
 
       if (
-        local.search &&
+        w.pageManagerSearch &&
         !(page.name + page.url)
           .toLowerCase()
-          .includes(local.search.toLowerCase())
+          .includes(w.pageManagerSearch.toLowerCase())
       ) {
         continue;
       }
 
       let parent = folder?.id || "ROOT";
-      if (local.search) parent = "ROOT";
+      if (w.pageManagerSearch) parent = "ROOT";
 
       data.pages.push({
         id: page.id,
@@ -134,7 +144,7 @@ export const PageManager = () => {
       });
     }
 
-    if (!local.search) {
+    if (!w.pageManagerSearch) {
       for (const folder of Object.values(data.folder)) {
         if (!folders.has(folder.id)) {
           folders.add(folder.id);
@@ -209,9 +219,9 @@ export const PageManager = () => {
             <div className="fixed top-0 right-0 bg-white z-10 m-[8px]">
               <input
                 type="search"
-                value={local.search}
+                value={w.pageManagerSearch}
                 onChange={(e) => {
-                  local.search = e.currentTarget.value;
+                  w.pageManagerSearch = e.currentTarget.value;
                   local.render();
                 }}
                 ref={(el) => {

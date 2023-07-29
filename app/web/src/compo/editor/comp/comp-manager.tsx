@@ -7,6 +7,9 @@ import { wsdoc } from "../ws/wsdoc";
 import { Modal } from "../../ui/modal";
 import { CompUseShared } from "./comp-use-shared";
 
+const w = window as unknown as {
+  compManagerSearch: string;
+};
 export const CompManager: FC<{ id: string }> = ({ id }) => {
   const c = useGlobal(CEGlobal, id);
   const local = useLocal({
@@ -18,7 +21,6 @@ export const CompManager: FC<{ id: string }> = ({ id }) => {
       id: "",
       text: "",
     },
-    search: "",
     searchRef: null as any,
     trash_id: "",
     collapsed: new Set(),
@@ -26,7 +28,14 @@ export const CompManager: FC<{ id: string }> = ({ id }) => {
   });
 
   useEffect(() => {
-    const f = () => {
+    const f = (e: any) => {
+      if (
+        e.key === "Escape" &&
+        document.activeElement?.tagName.toLowerCase() === "input"
+      ) {
+        w.compManagerSearch = "";
+        local.render();
+      }
       if (
         local.searchRef &&
         document.activeElement?.tagName.toLowerCase() !== "input"
@@ -149,7 +158,7 @@ export const CompManager: FC<{ id: string }> = ({ id }) => {
     return aname.localeCompare(bname);
   });
 
-  if (local.search) {
+  if (w.compManagerSearch) {
     groups = [...groups].filter((g) => {
       let count = 0;
       g.comps.forEach((e) => {
@@ -157,8 +166,8 @@ export const CompManager: FC<{ id: string }> = ({ id }) => {
         const id = e.id.toLowerCase();
 
         if (
-          name.includes(local.search.toLowerCase()) ||
-          id.includes(local.search.toLowerCase())
+          name.includes(w.compManagerSearch.toLowerCase()) ||
+          id.includes(w.compManagerSearch.toLowerCase())
         ) {
           count++;
           return true;
@@ -237,12 +246,12 @@ export const CompManager: FC<{ id: string }> = ({ id }) => {
               </div>
               <input
                 type="search"
-                value={local.search}
+                value={w.compManagerSearch}
                 ref={(e) => {
                   local.searchRef = e;
                 }}
                 onChange={(e) => {
-                  local.search = e.currentTarget.value;
+                  w.compManagerSearch = e.currentTarget.value;
                   local.render();
                 }}
                 placeholder="Search"
@@ -474,9 +483,9 @@ export const CompManager: FC<{ id: string }> = ({ id }) => {
                           const id = e.id.toLowerCase();
 
                           if (
-                            local.search &&
-                            !name.includes(local.search.toLowerCase()) &&
-                            !id.includes(local.search.toLowerCase())
+                            w.compManagerSearch &&
+                            !name.includes(w.compManagerSearch.toLowerCase()) &&
+                            !id.includes(w.compManagerSearch.toLowerCase())
                           ) {
                             return null;
                           }

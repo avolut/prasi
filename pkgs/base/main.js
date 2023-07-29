@@ -23233,7 +23233,7 @@
   var require_PrettyError = __commonJS({
     "node_modules/.pnpm/pretty-error@4.0.0/node_modules/pretty-error/lib/PrettyError.js"(exports2, module2) {
       var ParsedError;
-      var PrettyError3;
+      var PrettyError2;
       var RenderKid;
       var arrayUtils;
       var defaultStyle;
@@ -23306,10 +23306,10 @@
         }
       };
       instance = null;
-      module2.exports = PrettyError3 = function() {
+      module2.exports = PrettyError2 = function() {
         var self2;
-        self2 = PrettyError4;
-        PrettyError4._filters = {
+        self2 = PrettyError3;
+        PrettyError3._filters = {
           "module.exports": function(item) {
             if (item.what == null) {
               return;
@@ -23317,20 +23317,20 @@
             item.what = item.what.replace(/\.module\.exports\./g, " - ");
           }
         };
-        PrettyError4._getDefaultStyle = function() {
+        PrettyError3._getDefaultStyle = function() {
           return defaultStyle();
         };
-        PrettyError4.start = function() {
+        PrettyError3.start = function() {
           if (instance == null) {
             instance = new self2();
             instance.start();
           }
           return instance;
         };
-        PrettyError4.stop = function() {
+        PrettyError3.stop = function() {
           return instance != null ? instance.stop() : void 0;
         };
-        function PrettyError4() {
+        function PrettyError3() {
           this._useColors = true;
           this._maxItems = 50;
           this._packagesToSkip = [];
@@ -23343,7 +23343,7 @@
           this._style = self2._getDefaultStyle();
           this._renderer.style(this._style);
         }
-        PrettyError4.prototype.start = function() {
+        PrettyError3.prototype.start = function() {
           var prepeare;
           this._oldPrepareStackTrace = Error.prepareStackTrace;
           prepeare = this._oldPrepareStackTrace || function(exc, frames) {
@@ -23366,11 +23366,11 @@
           }(this);
           return this;
         };
-        PrettyError4.prototype.stop = function() {
+        PrettyError3.prototype.stop = function() {
           Error.prepareStackTrace = this._oldPrepareStackTrace;
           return this._oldPrepareStackTrace = null;
         };
-        PrettyError4.prototype.config = function(c) {
+        PrettyError3.prototype.config = function(c) {
           var alias, path4, _ref2;
           if (c.skipPackages != null) {
             if (c.skipPackages === false) {
@@ -23428,15 +23428,15 @@
           }
           return this;
         };
-        PrettyError4.prototype.withoutColors = function() {
+        PrettyError3.prototype.withoutColors = function() {
           this._useColors = false;
           return this;
         };
-        PrettyError4.prototype.withColors = function() {
+        PrettyError3.prototype.withColors = function() {
           this._useColors = true;
           return this;
         };
-        PrettyError4.prototype.skipPackage = function() {
+        PrettyError3.prototype.skipPackage = function() {
           var packages, pkg2, _i2, _len2;
           packages = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
           for (_i2 = 0, _len2 = packages.length; _i2 < _len2; _i2++) {
@@ -23445,7 +23445,7 @@
           }
           return this;
         };
-        PrettyError4.prototype.unskipPackage = function() {
+        PrettyError3.prototype.unskipPackage = function() {
           var packages, pkg2, _i2, _len2;
           packages = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
           for (_i2 = 0, _len2 = packages.length; _i2 < _len2; _i2++) {
@@ -23454,11 +23454,11 @@
           }
           return this;
         };
-        PrettyError4.prototype.unskipAllPackages = function() {
+        PrettyError3.prototype.unskipAllPackages = function() {
           this._packagesToSkip.length = 0;
           return this;
         };
-        PrettyError4.prototype.skipPath = function() {
+        PrettyError3.prototype.skipPath = function() {
           var path4, paths, _i2, _len2;
           paths = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
           for (_i2 = 0, _len2 = paths.length; _i2 < _len2; _i2++) {
@@ -23467,7 +23467,7 @@
           }
           return this;
         };
-        PrettyError4.prototype.unskipPath = function() {
+        PrettyError3.prototype.unskipPath = function() {
           var path4, paths, _i2, _len2;
           paths = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
           for (_i2 = 0, _len2 = paths.length; _i2 < _len2; _i2++) {
@@ -23476,83 +23476,83 @@
           }
           return this;
         };
-        PrettyError4.prototype.unskipAllPaths = function() {
+        PrettyError3.prototype.unskipAllPaths = function() {
           this._pathsToSkip.length = 0;
           return this;
         };
-        PrettyError4.prototype.skip = function() {
-          var callbacks, cb, _i2, _len2;
-          callbacks = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-          for (_i2 = 0, _len2 = callbacks.length; _i2 < _len2; _i2++) {
-            cb = callbacks[_i2];
+        PrettyError3.prototype.skip = function() {
+          var callbacks2, cb, _i2, _len2;
+          callbacks2 = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+          for (_i2 = 0, _len2 = callbacks2.length; _i2 < _len2; _i2++) {
+            cb = callbacks2[_i2];
             this._skipCallbacks.push(cb);
           }
           return this;
         };
-        PrettyError4.prototype.unskip = function() {
-          var callbacks, cb, _i2, _len2;
-          callbacks = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-          for (_i2 = 0, _len2 = callbacks.length; _i2 < _len2; _i2++) {
-            cb = callbacks[_i2];
+        PrettyError3.prototype.unskip = function() {
+          var callbacks2, cb, _i2, _len2;
+          callbacks2 = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+          for (_i2 = 0, _len2 = callbacks2.length; _i2 < _len2; _i2++) {
+            cb = callbacks2[_i2];
             arrayUtils.pluckOneItem(this._skipCallbacks, cb);
           }
           return this;
         };
-        PrettyError4.prototype.unskipAll = function() {
+        PrettyError3.prototype.unskipAll = function() {
           this._skipCallbacks.length = 0;
           return this;
         };
-        PrettyError4.prototype.skipNodeFiles = function() {
+        PrettyError3.prototype.skipNodeFiles = function() {
           return this.skipPath.apply(this, nodePaths);
         };
-        PrettyError4.prototype.unskipNodeFiles = function() {
+        PrettyError3.prototype.unskipNodeFiles = function() {
           return this.unskipPath.apply(this, nodePaths);
         };
-        PrettyError4.prototype.filter = function() {
-          var callbacks, cb, _i2, _len2;
-          callbacks = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-          for (_i2 = 0, _len2 = callbacks.length; _i2 < _len2; _i2++) {
-            cb = callbacks[_i2];
+        PrettyError3.prototype.filter = function() {
+          var callbacks2, cb, _i2, _len2;
+          callbacks2 = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+          for (_i2 = 0, _len2 = callbacks2.length; _i2 < _len2; _i2++) {
+            cb = callbacks2[_i2];
             this._filterCallbacks.push(cb);
           }
           return this;
         };
-        PrettyError4.prototype.removeFilter = function() {
-          var callbacks, cb, _i2, _len2;
-          callbacks = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-          for (_i2 = 0, _len2 = callbacks.length; _i2 < _len2; _i2++) {
-            cb = callbacks[_i2];
+        PrettyError3.prototype.removeFilter = function() {
+          var callbacks2, cb, _i2, _len2;
+          callbacks2 = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+          for (_i2 = 0, _len2 = callbacks2.length; _i2 < _len2; _i2++) {
+            cb = callbacks2[_i2];
             arrayUtils.pluckOneItem(this._filterCallbacks, cb);
           }
           return this;
         };
-        PrettyError4.prototype.removeAllFilters = function() {
+        PrettyError3.prototype.removeAllFilters = function() {
           this._filterCallbacks.length = 0;
           return this;
         };
-        PrettyError4.prototype.filterParsedError = function() {
-          var callbacks, cb, _i2, _len2;
-          callbacks = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-          for (_i2 = 0, _len2 = callbacks.length; _i2 < _len2; _i2++) {
-            cb = callbacks[_i2];
+        PrettyError3.prototype.filterParsedError = function() {
+          var callbacks2, cb, _i2, _len2;
+          callbacks2 = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+          for (_i2 = 0, _len2 = callbacks2.length; _i2 < _len2; _i2++) {
+            cb = callbacks2[_i2];
             this._parsedErrorFilters.push(cb);
           }
           return this;
         };
-        PrettyError4.prototype.removeParsedErrorFilter = function() {
-          var callbacks, cb, _i2, _len2;
-          callbacks = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
-          for (_i2 = 0, _len2 = callbacks.length; _i2 < _len2; _i2++) {
-            cb = callbacks[_i2];
+        PrettyError3.prototype.removeParsedErrorFilter = function() {
+          var callbacks2, cb, _i2, _len2;
+          callbacks2 = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+          for (_i2 = 0, _len2 = callbacks2.length; _i2 < _len2; _i2++) {
+            cb = callbacks2[_i2];
             arrayUtils.pluckOneItem(this._parsedErrorFilters, cb);
           }
           return this;
         };
-        PrettyError4.prototype.removeAllParsedErrorFilters = function() {
+        PrettyError3.prototype.removeAllParsedErrorFilters = function() {
           this._parsedErrorFilters.length = 0;
           return this;
         };
-        PrettyError4.prototype.setMaxItems = function(maxItems) {
+        PrettyError3.prototype.setMaxItems = function(maxItems) {
           if (maxItems == null) {
             maxItems = 50;
           }
@@ -23562,35 +23562,35 @@
           this._maxItems = maxItems | 0;
           return this;
         };
-        PrettyError4.prototype.alias = function(stringOrRx, alias) {
+        PrettyError3.prototype.alias = function(stringOrRx, alias) {
           this._aliases.push({
             stringOrRx,
             alias
           });
           return this;
         };
-        PrettyError4.prototype.removeAlias = function(stringOrRx) {
+        PrettyError3.prototype.removeAlias = function(stringOrRx) {
           arrayUtils.pluckByCallback(this._aliases, function(pair) {
             return pair.stringOrRx === stringOrRx;
           });
           return this;
         };
-        PrettyError4.prototype.removeAllAliases = function() {
+        PrettyError3.prototype.removeAllAliases = function() {
           this._aliases.length = 0;
           return this;
         };
-        PrettyError4.prototype._getStyle = function() {
+        PrettyError3.prototype._getStyle = function() {
           return this._style;
         };
-        PrettyError4.prototype.appendStyle = function(toAppend) {
+        PrettyError3.prototype.appendStyle = function(toAppend) {
           merge(this._style, toAppend);
           this._renderer.style(toAppend);
           return this;
         };
-        PrettyError4.prototype._getRenderer = function() {
+        PrettyError3.prototype._getRenderer = function() {
           return this._renderer;
         };
-        PrettyError4.prototype.render = function(e, logIt, useColors) {
+        PrettyError3.prototype.render = function(e, logIt, useColors) {
           var obj, rendered;
           if (logIt == null) {
             logIt = false;
@@ -23605,7 +23605,7 @@
           }
           return rendered;
         };
-        PrettyError4.prototype.getObject = function(e) {
+        PrettyError3.prototype.getObject = function(e) {
           var count, header, i, item, obj, traceItems, _i2, _len2, _ref2;
           if (!(e instanceof ParsedError)) {
             e = new ParsedError(e);
@@ -23691,7 +23691,7 @@
           }
           return obj;
         };
-        PrettyError4.prototype._skipOrFilter = function(item, itemNumber) {
+        PrettyError3.prototype._skipOrFilter = function(item, itemNumber) {
           var cb, modName, pair, _i2, _j, _k, _l, _len2, _len1, _len22, _len3, _ref2, _ref1, _ref22, _ref3, _ref4, _ref5;
           if (typeof item === "object") {
             if (_ref2 = item.modName, __indexOf.call(this._packagesToSkip, _ref2) >= 0) {
@@ -23729,7 +23729,7 @@
           }
           return false;
         };
-        PrettyError4.prototype._applyParsedErrorFiltersOn = function(error) {
+        PrettyError3.prototype._applyParsedErrorFiltersOn = function(error) {
           var cb, _i2, _len2, _ref2;
           _ref2 = this._parsedErrorFilters;
           for (_i2 = 0, _len2 = _ref2.length; _i2 < _len2; _i2++) {
@@ -23737,13 +23737,13 @@
             cb(error);
           }
         };
-        return PrettyError4;
+        return PrettyError3;
       }();
       _ref = ["renderer", "style"];
       _fn = function() {
         var methodName;
         methodName = "_get" + prop[0].toUpperCase() + prop.substr(1, prop.length);
-        return PrettyError3.prototype.__defineGetter__(prop, function() {
+        return PrettyError2.prototype.__defineGetter__(prop, function() {
           return this[methodName]();
         });
       };
@@ -24162,14 +24162,14 @@
       var human_signals_1 = require_main2();
       function addExitCallback2(callback) {
         setupProcessExitHandling();
-        callbacks.push(callback);
+        callbacks2.push(callback);
         return callback;
       }
       exports2.addExitCallback = addExitCallback2;
       function removeExitCallback(callback) {
         setupProcessExitHandling();
-        const index = callbacks.indexOf(callback);
-        return index > -1 ? callbacks.splice(index, 1)[0] : void 0;
+        const index = callbacks2.indexOf(callback);
+        return index > -1 ? callbacks2.splice(index, 1)[0] : void 0;
       }
       exports2.removeExitCallback = removeExitCallback;
       var signals = [
@@ -24225,7 +24225,7 @@
       function logError(value) {
         (0, fs_1.writeSync)(2, value);
       }
-      var callbacks = [];
+      var callbacks2 = [];
       var ignoredAsyncTypes = ["TTYWRAP", "SIGNALWRAP", "PIPEWRAP"];
       var asyncHook = (0, async_hooks_1.createHook)({
         init(id, type) {
@@ -24248,11 +24248,11 @@ ERROR: Async operation of type "${type}" was created in "process.exit" callback.
             log("setting alreadyExiting");
             alreadyExiting = true;
             try {
-              log(`Firing ${callbacks.length} callbacks`);
+              log(`Firing ${callbacks2.length} callbacks`);
               if (signal === "exit") {
                 asyncHook.enable();
               }
-              callbacks.forEach((callback) => callback(signal, exitCode, inputError));
+              callbacks2.forEach((callback) => callback(signal, exitCode, inputError));
               asyncHook.disable();
             } catch (callbackError) {
               log("Error in callback");
@@ -38937,6 +38937,7 @@ ${import_chalk2.default.magenta("Installing")} deps:
   };
 
   // pkgs/base/pkgs/rpc/src/connect.ts
+  var callbacks = {};
   var connectRPC = async (name, arg) => {
     const waitConnection = (0, import_lodash.default)(arg, "waitConnection", false);
     const exitWhenDisconnect = (0, import_lodash.default)(arg, "exitWhenDisconnect", true);
@@ -38954,6 +38955,33 @@ ${import_chalk2.default.magenta("Installing")} deps:
     if (res) {
       ws = res.ws;
       serverConnected = res.serverConnected;
+      const onmsg = (raw) => {
+        if (ws) {
+          const msg = JSON.parse(raw);
+          const msgid = msg.msgid;
+          if (callbacks[name] && callbacks[name][msgid]) {
+            const { resolve, reject } = callbacks[name][msgid];
+            if (msg.type === "action-result") {
+              if (msg.result === "null") {
+                msg.result = null;
+              } else if (msg.result === "undefined") {
+                msg.result = void 0;
+              } else if (msg.result === "0") {
+                msg.result = 0;
+              }
+              if (!!msg.error && !!msg.result) {
+                resolve(msg.result);
+              } else if (!msg.error) {
+                resolve(msg.result);
+              } else {
+                reject(msg.error.msg);
+              }
+              delete callbacks[name][msgid];
+            }
+          }
+        }
+      };
+      ws.on("message", onmsg);
     }
     return new DeepProxy({}, ({ PROXY, key, path: path4, handler }) => {
       if (key) {
@@ -38966,7 +38994,8 @@ ${import_chalk2.default.magenta("Installing")} deps:
           if (ws === false) {
             const res2 = await connect(name, {
               waitServer: true,
-              onClose
+              onClose,
+              isReconnect: true
             });
             if (res2) {
               ws = res2.ws;
@@ -38975,66 +39004,25 @@ ${import_chalk2.default.magenta("Installing")} deps:
           }
           const result = new Promise((resolve, reject) => {
             const msgid = (0, import_cuid2.createId)();
-            let retryCounter = 0;
-            let timeout = null;
-            let retryTimeout = 5e3;
-            const lastArg = args2[args2.length - 1];
-            if (lastArg && typeof lastArg === "object" && lastArg["__retryTimeout"]) {
-              retryTimeout = lastArg["__retryTimeout"];
+            if (!callbacks[name]) {
+              callbacks[name] = {};
             }
-            timeout = setTimeout(() => {
-              if (ws && ws.readyState === 1) {
-                resend();
-              }
-            }, retryTimeout);
-            const resend = () => {
-              if (retryCounter > 3)
-                reject("RPC Server disconnected, failed to reconne 3x");
-              retryCounter++;
-              if (ws) {
-                const onmsg = (raw) => {
-                  if (ws) {
-                    const msg = JSON.parse(raw);
-                    if (msg.msgid === msgid) {
-                      if (timeout) {
-                        clearTimeout(timeout);
-                      }
-                      ws.off("close", resend);
-                      ws.off("message", onmsg);
-                      if (msg.type === "action-result") {
-                        if (msg.result === "null") {
-                          msg.result = null;
-                        } else if (msg.result === "undefined") {
-                          msg.result = void 0;
-                        } else if (msg.result === "0") {
-                          msg.result = 0;
-                        }
-                        if (!!msg.error && !!msg.result) {
-                          resolve(msg.result);
-                        } else if (!msg.error) {
-                          resolve(msg.result);
-                        } else {
-                          reject(msg.error.msg);
-                        }
-                      }
-                    }
-                  }
-                };
-                ws.removeAllListeners("close");
-                ws.removeAllListeners("message");
-                ws.once("close", resend);
-                ws.on("message", onmsg);
-                ws.send(
-                  JSON.stringify({
-                    type: "action",
-                    msgid,
-                    path: [...path4, key],
-                    args: args2
-                  })
-                );
-              }
-            };
-            resend();
+            if (!callbacks[name][msgid]) {
+              callbacks[name][msgid] = {
+                resolve,
+                reject
+              };
+            }
+            if (ws) {
+              ws.send(
+                JSON.stringify({
+                  type: "action",
+                  msgid,
+                  path: [...path4, key],
+                  args: args2
+                })
+              );
+            }
           });
           return await result;
         };
@@ -39704,8 +39692,9 @@ ${import_chalk2.default.magenta("Installing")} deps:
   var source_default2 = chalk4;
 
   // pkgs/base/pkgs/rpc/src/server.ts
-  var import_pretty_error = __toESM(require_PrettyError());
-  var pe = new import_pretty_error.default();
+  BigInt.prototype.toJSON = function() {
+    return this.toString();
+  };
   function getRandomArbitrary(min, max2) {
     return Math.round(Math.random() * (max2 - min) + min);
   }
@@ -39904,8 +39893,8 @@ Make sure to kill running instance before starting.
   var import_fs_jetpack3 = __toESM(require_main());
   var import_lodash3 = __toESM(require_lodash());
   var import_path5 = __require("path");
-  var import_pretty_error2 = __toESM(require_PrettyError());
-  var pe2 = new import_pretty_error2.default();
+  var import_pretty_error = __toESM(require_PrettyError());
+  var pe = new import_pretty_error.default();
   var bundle = async (arg) => {
     const {
       input,
@@ -40017,7 +40006,7 @@ Make sure to kill running instance before starting.
           c.rebuild();
         }
       } catch (e) {
-        console.log(pe2.render(e));
+        console.log(pe.render(e));
         return false;
       }
     });
@@ -40168,12 +40157,13 @@ Make sure to kill running instance before starting.
     if (def) {
       if (def[entry] === "function") {
         return async (...args2) => {
-          return await svc.root.executeAction({
+          const res = await svc.root.executeAction({
             name,
             pid,
             path: [entry],
             args: args2
           });
+          return res;
         };
       } else if (def[entry] === "object") {
         return new DeepProxy({}, ({ path: path4, key, PROXY }) => {

@@ -14,6 +14,16 @@ import { NPMImport } from "./NPMImport";
 import { APIConfig } from "./api/APIConfig";
 import { customMonacoState } from "../../script/monaco/monaco-custom";
 
+const ua = navigator.userAgent.toLowerCase();
+const isMac =
+  ua.indexOf("mac") > -1 &&
+  ua.indexOf("os") > -1 &&
+  !(
+    ua.indexOf("iphone") > -1 ||
+    ua.indexOf("ipad") > -1 ||
+    ua.indexOf("windows") > -1
+  );
+
 export const ToolbarMid = () => {
   const c = useGlobal(CEGlobal, "PAGE");
   const local = useLocal({
@@ -87,10 +97,11 @@ export const ToolbarMid = () => {
           {
             content: (
               <>
-                <div className="flex font-mono text-[10px]">
+                <JSIcon />
+                {/* <div className="flex font-mono text-[10px]">
                   <div>Site</div>
                   <div className="text-slate-400">JS</div>
-                </div>
+                </div> */}
               </>
             ),
             onClick() {
@@ -127,7 +138,7 @@ export const ToolbarMid = () => {
                   local.render();
                 }}
               >
-                <div className={"api font-mono text-[10px]"}>API</div>
+                <APIcon />
               </Popover>
             ),
           },
@@ -190,7 +201,7 @@ export const ToolbarMid = () => {
             onClick() {
               reloadCE(c);
             },
-            tooltip: "Reload Page",
+            tooltip: <>Reload Page ({isMac ? "⌘" : "Ctrl"} + S)</>,
             content: (
               <>
                 <svg
@@ -218,20 +229,11 @@ export const ToolbarMid = () => {
               <>
                 <Popover
                   arrow={false}
+                  open
                   content={<NPMImport />}
                   popoverClassName="bg-white shadow-2xl outline-none border border-slate-300"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="20"
-                    height="20"
-                    viewBox="0 0 32 32"
-                  >
-                    <path
-                      fill="currentColor"
-                      d="M2 10.555h28v9.335H16v1.556H9.778v-1.557H2zm1.556 7.779h3.111v-4.668h1.555v4.667h1.556v-6.222H3.556zm7.778-6.223v7.779h3.111v-1.556h3.111v-6.223zm3.111 1.556H16v3.112h-1.556zm4.667-1.556v6.223h3.111v-4.668h1.556v4.667h1.556v-4.667h1.556v4.667h1.556v-6.222z"
-                    ></path>
-                  </svg>
+                  <NPMIcon />
                 </Popover>
               </>
             ),
@@ -241,3 +243,40 @@ export const ToolbarMid = () => {
     </div>
   );
 };
+
+const JSIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="16"
+    height="16"
+    viewBox="0 0 256 256"
+  >
+    <path d="M212.24 83.76l-56-56A6 6 0 00152 26H56a14 14 0 00-14 14v72a6 6 0 0012 0V40a2 2 0 012-2h90v50a6 6 0 006 6h50v122a2 2 0 01-2 2h-24a6 6 0 000 12h24a14 14 0 0014-14V88a6 6 0 00-1.76-4.24zM158 46.48L193.52 82H158zm-12.17 149.58a18.89 18.89 0 01-8.31 13.81c-4.82 3.19-10.87 4.14-16.36 4.14a58.89 58.89 0 01-14.68-2 6 6 0 013.23-11.56c3.71 1 15.58 3.11 21.19-.62a6.85 6.85 0 003-5.34c.58-4.43-2.08-6.26-14.2-9.76-9.31-2.69-23.37-6.75-21.57-20.94a18.61 18.61 0 018.08-13.54c11.11-7.49 29.18-3 31.21-2.48a6 6 0 01-3.06 11.6c-3.78-1-15.85-3-21.45.84a6.59 6.59 0 00-2.88 5.08c-.41 3.22 2.14 4.78 13 7.91 9.89 2.89 24.81 7.2 22.8 22.86zM78 152v38a24 24 0 01-48 0 6 6 0 0112 0 12 12 0 0024 0v-38a6 6 0 0112 0z"></path>
+  </svg>
+);
+
+const APIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="18"
+    height="18"
+    viewBox="0 0 32 32"
+  >
+    <path d="M8 9H4a2 2 0 00-2 2v12h2v-5h4v5h2V11a2 2 0 00-2-2zm-4 7v-5h4v5zm18-5h3v10h-3v2h8v-2h-3V11h3V9h-8v2zm-8 12h-2V9h6a2 2 0 012 2v5a2 2 0 01-2 2h-4zm0-7h4v-5h-4z"></path>
+  </svg>
+);
+
+const NPMIcon = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="25"
+    height="25"
+    viewBox="0 0 32 32"
+    className="mt-[2px]"
+  >
+    <path
+      fill="currentColor"
+      d="M2 10.555h28v9.335H16v1.556H9.778v-1.557H2zm1.556 7.779h3.111v-4.668h1.555v4.667h1.556v-6.222H3.556zm7.778-6.223v7.779h3.111v-1.556h3.111v-6.223zm3.111 1.556H16v3.112h-1.556zm4.667-1.556v6.223h3.111v-4.668h1.556v4.667h1.556v-4.667h1.556v4.667h1.556v-6.222z"
+    ></path>
+  </svg>
+);

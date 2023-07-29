@@ -6,8 +6,15 @@ import { config } from "./config";
 import { ActionResult } from "./server";
 import { RPCAction, RPCActionResult } from "./types";
 
+type RPC_NAME = string;
+type MSG_ID = string;
+const callbacks = {} as Record<
+  RPC_NAME,
+  Record<MSG_ID, { resolve: any; reject: any }>
+>;
+
 export const connectRPC = async <T extends RPCAction>(
-  name: string,
+  name: RPC_NAME,
   arg?: { waitConnection: boolean; exitWhenDisconnect?: boolean }
 ) => {
   const waitConnection = get(arg, "waitConnection", false);
@@ -29,6 +36,35 @@ export const connectRPC = async <T extends RPCAction>(
   if (res) {
     ws = res.ws;
     serverConnected = res.serverConnected;
+    const onmsg = (raw: string) => {
+      if (ws) {
+        const msg = JSON.parse(raw) as ActionResult;
+        const msgid = msg.msgid as string;
+        if (callbacks[name] && callbacks[name][msgid]) {
+          const { resolve, reject } = callbacks[name][msgid];
+          if (msg.type === "action-result") {
+            if (msg.result === "null") {
+              msg.result = null;
+            } else if (msg.result === "undefined") {
+              msg.result = undefined;
+            } else if (msg.result === "0") {
+              msg.result = 0;
+            }
+
+            if (!!msg.error && !!msg.result) {
+              resolve(msg.result);
+            } else if (!msg.error) {
+              resolve(msg.result);
+            } else {
+              reject(msg.error.msg);
+            }
+            delete callbacks[name][msgid];
+          }
+        }
+      }
+    };
+
+    ws.on("message", onmsg);
   }
 
   return new DeepProxy({}, ({ PROXY, key, path, handler }) => {
@@ -45,6 +81,7 @@ export const connectRPC = async <T extends RPCAction>(
           const res = await connect(name, {
             waitServer: true,
             onClose,
+            isReconnect: true,
           });
           if (res) {
             ws = res.ws;
@@ -54,76 +91,27 @@ export const connectRPC = async <T extends RPCAction>(
 
         const result = new Promise<any>((resolve, reject) => {
           const msgid = createId();
-          let retryCounter = 0;
-          let timeout = null as null | ReturnType<typeof setTimeout>;
-          let retryTimeout = 5000;
 
-          const lastArg = args[args.length - 1];
-          if (
-            lastArg &&
-            typeof lastArg === "object" &&
-            lastArg["__retryTimeout"]
-          ) {
-            retryTimeout = lastArg["__retryTimeout"];
+          if (!callbacks[name]) {
+            callbacks[name] = {};
+          }
+          if (!callbacks[name][msgid]) {
+            callbacks[name][msgid] = {
+              resolve,
+              reject,
+            };
           }
 
-          timeout = setTimeout(() => {
-            if (ws && ws.readyState === 1) {
-              resend();
-            }
-          }, retryTimeout);
-
-          const resend = () => {
-            if (retryCounter > 3)
-              reject("RPC Server disconnected, failed to reconne 3x");
-            retryCounter++;
-            if (ws) {
-              const onmsg = (raw: string) => {
-                if (ws) {
-                  const msg = JSON.parse(raw) as ActionResult;
-
-                  if (msg.msgid === msgid) {
-                    if (timeout) {
-                      clearTimeout(timeout);
-                    }
-                    ws.off("close", resend);
-                    ws.off("message", onmsg);
-                    if (msg.type === "action-result") {
-                      if (msg.result === "null") {
-                        msg.result = null;
-                      } else if (msg.result === "undefined") {
-                        msg.result = undefined;
-                      } else if (msg.result === "0") {
-                        msg.result = 0;
-                      }
-
-                      if (!!msg.error && !!msg.result) {
-                        resolve(msg.result);
-                      } else if (!msg.error) {
-                        resolve(msg.result);
-                      } else {
-                        reject(msg.error.msg);
-                      }
-                    }
-                  }
-                }
-              };
-
-              ws.removeAllListeners("close");
-              ws.removeAllListeners("message");
-              ws.once("close", resend);
-              ws.on("message", onmsg);
-              ws.send(
-                JSON.stringify({
-                  type: "action",
-                  msgid,
-                  path: [...path, key],
-                  args,
-                })
-              );
-            }
-          };
-          resend();
+          if (ws) {
+            ws.send(
+              JSON.stringify({
+                type: "action",
+                msgid,
+                path: [...path, key],
+                args,
+              })
+            );
+          }
         });
 
         return await result;
@@ -135,7 +123,7 @@ export const connectRPC = async <T extends RPCAction>(
 
 const connect = (
   name: string,
-  arg?: { onClose?: () => any; waitServer?: boolean }
+  arg?: { onClose?: () => any; waitServer?: boolean; isReconnect?: boolean }
 ) => {
   return new Promise<false | { ws: WSClient; serverConnected: boolean }>(
     (resolve) => {
@@ -156,7 +144,7 @@ const connect = (
             } else {
               resolve({ ws, serverConnected: msg.serverConnected });
             }
-          }
+          } 
         });
       });
       ws.on("close", () => {

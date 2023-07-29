@@ -73,12 +73,13 @@ const executeAction = (arg: { name: string; pid?: string; entry: string }) => {
   if (def) {
     if (def[entry] === "function") {
       return async (...args: any[]) => {
-        return await svc.root.executeAction({
+        const res = await svc.root.executeAction({
           name: name as SERVICE_NAME,
           pid,
           path: [entry],
           args,
         });
+        return res;
       };
     } else if (def[entry] === "object") {
       return new DeepProxy({}, ({ path, key, PROXY }) => {

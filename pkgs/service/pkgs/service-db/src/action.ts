@@ -8,7 +8,9 @@ const transactions: Record<string, { tx: Tx; done: () => void }> = {};
 
 export const dbAction = {
   query: async (arg: DBArg) => {
+    // if (arg.table === "npm_site") console.log("> ", arg);
     const result = await execQuery(arg, glbdb, "prisma");
+    // if (arg.table === "npm_site") console.log("=> ", result);
     return result;
   },
   startTx: async () => {

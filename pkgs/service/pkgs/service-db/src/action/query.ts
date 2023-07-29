@@ -83,6 +83,7 @@ export const execQuery = async (args: DBArg, prismaLocal: any, key: string) => {
     if (method) {
       try {
         const result = await method(...params);
+
         if (!result) {
           return JSON.stringify(result);
         }
