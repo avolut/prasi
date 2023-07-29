@@ -206,6 +206,11 @@ export const CompManager: FC<{ id: string }> = ({ id }) => {
               css`
                 contain: content;
                 overflow: auto;
+
+                .complist {
+                  contain: content;
+                  overflow: auto;
+                }
               `
             )}
           >
@@ -234,7 +239,7 @@ export const CompManager: FC<{ id: string }> = ({ id }) => {
                 }}
               />
             </Modal>
-            <div className="fixed top-0 right-0 bg-white z-10 m-[8px] flex">
+            <div className="fixed top-0 right-[20px] bg-white z-10 m-[8px] flex">
               <div
                 className="hover:bg-blue-500 hover:text-white text-xs flex items-center px-2 cursor-pointer border text-blue-500 border-blue-200 mr-1"
                 onClick={() => {
@@ -258,7 +263,7 @@ export const CompManager: FC<{ id: string }> = ({ id }) => {
                 className="border  px-2 text-sm h-[26px] outline-none w-[150px] focus:border-blue-500 focus:w-[350px] transition-all"
               />
             </div>
-            <div className="flex h-full flex-col space-y-2 select-none">
+            <div className="comp-list overflow-auto flex h-full flex-col space-y-2 select-none">
               {groups.map((g) => {
                 return (
                   <Fragment key={g.info.id}>

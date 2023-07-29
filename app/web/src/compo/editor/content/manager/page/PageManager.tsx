@@ -202,6 +202,8 @@ export const PageManager = () => {
 
                 > ul {
                   width: 100%;
+                  contain: content;
+                  overflow: auto;
                 }
 
                 .row {
@@ -216,7 +218,7 @@ export const PageManager = () => {
               `
             )}
           >
-            <div className="fixed top-0 right-0 bg-white z-10 m-[8px]">
+            <div className="fixed top-0 right-[20px] bg-white z-10 m-[8px]">
               <input
                 type="search"
                 value={w.pageManagerSearch}
