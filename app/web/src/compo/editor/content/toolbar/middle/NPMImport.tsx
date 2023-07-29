@@ -5,6 +5,7 @@ import { useLocal } from "web-utils";
 import { Loading } from "../../../../ui/loading";
 import { Popover } from "../../../../ui/popover";
 import { wsdoc } from "../../../ws/wsdoc";
+import { Tooltip } from "../../../../ui/tooltip";
 
 const algolia = algoliasearch("OFCNCOG2CU", "f54e21fa3a2a0160595bb058179bfb1e");
 const npm = algolia.initIndex("npm-search");
@@ -74,7 +75,7 @@ export const NPMImport = () => {
 
   return (
     <div
-      className={cx("w-[700px] h-[400px] text-xs relative flex items-stretch")}
+      className={cx("text-sm w-[700px] h-[400px] relative flex items-stretch")}
     >
       {w.npmImport.loading ? (
         <Loading backdrop={false} />
@@ -125,6 +126,7 @@ const NPMModule: FC<{
     loading: false,
     search: { value: "", timeout: null as any, result: [] as NPMResult },
     searchRef: null as any,
+    bundling: false,
   });
 
   const focus = useCallback(() => {
@@ -163,7 +165,7 @@ const NPMModule: FC<{
     >
       <div
         className={cx(
-          "border-b border-slate-300 p-2 flex justify-between",
+          "border-b border-slate-300 p-2 flex justify-between select-none",
           css`
             &:hover {
               .bundle {
@@ -176,10 +178,40 @@ const NPMModule: FC<{
         <div className="text-slate-600">
           <span className="capitalize">{mode}</span> Module
         </div>
-        <div className="bg-slate-600 text-white hover:bg-blue-500 px-2 text-[11px] cursor-pointer bundle opacity-20 transition-all">
-          Bundle
-        </div>
-        <div className="font-mono text-[11px]">0 kb</div>
+        {local.bundling ? (
+          <div className="flex relative flex-1">
+            <Loading backdrop={false} />
+            Bundling...
+          </div>
+        ) : (
+          <>
+            <div
+              className="bg-slate-600 text-white hover:bg-blue-500 px-2  cursor-pointer bundle opacity-20 transition-all"
+              onClick={async () => {
+                local.bundling = true;
+                local.render();
+                if (mode === "site") {
+                  await db.npm_site.updateMany({
+                    where: {
+                      id_site: wsdoc.site?.id || "",
+                    },
+                    data: {
+                      bundled: true,
+                    },
+                  });
+                  list.forEach((e) => {
+                    e.bundled = true;
+                  });
+                  local.bundling = false;
+                  local.render();
+                }
+              }}
+            >
+              Bundle
+            </div>
+            <div className="font-mono text-[12px]">0 kb</div>
+          </>
+        )}
       </div>
       <Popover
         open={local.search.result.length > 0}
@@ -193,7 +225,7 @@ const NPMModule: FC<{
         arrow={false}
         popoverClassName="bg-white border max-h-[200px] overflow-auto text-xs -mt-[5px] w-[300px]"
         content={
-          <div className="flex flex-col items-stretch">
+          <div className="text-sm flex flex-col items-stretch">
             {local.search.result.map((e) => {
               return (
                 <div
@@ -308,7 +340,26 @@ const ImportItem: FC<{
   const local = useLocal({});
   const import_as = item.import_as as NPMImportAs;
   return (
-    <div className="flex border-b select-none ">
+    <Tooltip
+      content={
+        <div
+          className={cx(
+            "-mx-1 px-1",
+            item.bundled
+              ? "text-green-700 border-b border-green-700 font-bold"
+              : "text-black"
+          )}
+        >
+          {item.bundled ? "Already bundled" : "Not bundled yet"}
+        </div>
+      }
+      delay={0}
+      placement={mode === "site" ? "left" : "right"}
+      className={cx(
+        "flex border-b select-none ",
+        item.bundled ? "bg-green-50" : ""
+      )}
+    >
       <div className="flex items-center flex-1 ">
         <div className="flex flex-col items-start leading-4 py-1">
           <MainImport item={item} render={local.render} mode={mode}>
@@ -317,9 +368,7 @@ const ImportItem: FC<{
                 <div className="pl-1 flex flex-1 items-center hover:text-blue-500 hover:underline cursor-pointer font-bold">
                   {import_as.main.mode === "*" ? (
                     <>
-                      <span className="text-slate-400 text-[11px]">
-                        import * as
-                      </span>
+                      <span className="text-slate-400 ">import * as</span>
                       <span className="ml-1">{import_as.main.name}</span>
                     </>
                   ) : (
@@ -327,14 +376,14 @@ const ImportItem: FC<{
                   )}
                 </div>
               ) : (
-                <div className="pl-1 flex flex-1 items-center text-slate-500 text-[11px] hover:text-blue-500 hover:underline cursor-pointer">
+                <div className="pl-1 flex flex-1 items-center text-slate-500  hover:text-blue-500 hover:underline cursor-pointer">
                   No default import
                 </div>
               )}
             </>
           </MainImport>
           <NamedImport item={item} render={local.render} mode={mode}>
-            <div className="text-[11px] pl-1 text-slate-500 hover:text-blue-500 hover:underline cursor-pointer">
+            <div className=" pl-1 text-slate-500 hover:text-blue-500 hover:underline cursor-pointer">
               <span
                 className={cx(
                   import_as.names.length > 0 && "text-blue-500 font-bold"
@@ -364,7 +413,7 @@ const ImportItem: FC<{
               "flex items-center hover:text-blue-500 hover:underline cursor-pointer"
             )}
           >
-            <div className="break-words max-w-[100px] overflow-hidden text-right">
+            <div className="break-words max-w-[140px] overflow-hidden text-right">
               {item.module}
             </div>
             <svg
@@ -381,7 +430,7 @@ const ImportItem: FC<{
               ></path>
             </svg>
           </a>
-          <div className="text-[11px]  text-slate-500">{item.version}</div>
+          <div className="  text-slate-500">{item.version}</div>
         </div>
         <div
           className="w-[20px] flex items-center justify-center hover:text-white hover:bg-red-500 cursor-pointer text-slate-500"
@@ -394,7 +443,7 @@ const ImportItem: FC<{
           <Trash />
         </div>
       </div>
-    </div>
+    </Tooltip>
   );
 };
 
@@ -436,11 +485,11 @@ const MainImport: FC<{
         local.render();
       }}
       content={
-        <div className="flex flex-col font-mono text-[11px] space-y-1 py-1">
+        <div className="text-sm flex flex-col font-mono  space-y-1 py-1">
           <div className={"flex items-center whitespace-nowrap"}>
             <div>import</div>
             <div
-              className="border ml-1 w-[80px] text-[11px] py-[2px] cursor-pointer hover:bg-blue-500 hover:text-white hover:border-transparent pl-1 whitespace-nowrap"
+              className="border ml-1 w-[95px] py-[2px] cursor-pointer hover:bg-blue-500 hover:text-white hover:border-transparent pl-1 whitespace-nowrap"
               onClick={() => {
                 import_as.main.mode =
                   import_as.main.mode === "*" ? "default" : "*";
@@ -525,7 +574,7 @@ const NamedImport: FC<{
         local.render();
       }}
       content={
-        <div className="flex flex-col font-mono text-[11px] space-y-1 py-1">
+        <div className="text-sm flex flex-col font-mono  space-y-1 py-1">
           <div className={"flex items-center"}>
             <div>import {"{...}"}</div>
           </div>
