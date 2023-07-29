@@ -2,6 +2,10 @@ import { waitUntil } from "web-utils";
 import { createId } from "@paralleldrive/cuid2";
 const cuid = createId;
 
+(BigInt.prototype as any).toJSON = function (): string {
+  return `BigInt::` + this.toString();
+};
+
 export const createFrameCors = async (url: string, win?: any) => {
   let w = window;
   if (!!win) {

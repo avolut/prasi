@@ -3,6 +3,17 @@ import { transformSync } from "esbuild";
 
 const frm = transformSync(
   `\
+  (BigInt.prototype).toJSON = function () {
+    return "BigInt::" + this.toString();
+  };
+
+  const replacer = (key, value) => {
+    if (typeof value === "string" && value.startsWith('BigInt::')) {
+      return BigInt(value.substr(8));
+    }
+    return value;
+  }
+
   window.addEventListener('message', (e) => {
     const msg = e.data;
     const init = Object.assign({}, msg.init)
@@ -21,13 +32,13 @@ const frm = transformSync(
           const body = await res.text();
           if (res.ok) {
             try {
-              parent.postMessage({result: JSON.parse(body), id: msg.id }, '*')
+              parent.postMessage({result: JSON.parse(body, replacer), id: msg.id }, '*')
             } catch(e) {
               parent.postMessage({result: body, id: msg.id }, '*')
             }
           } else {
             try {
-              parent.postMessage({error: JSON.parse(body), id: msg.id }, '*')
+              parent.postMessage({error: JSON.parse(body, replacer), id: msg.id }, '*')
             } catch(e) {
               parent.postMessage({error: body, id: msg.id }, '*')
             }

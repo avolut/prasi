@@ -234,10 +234,36 @@ const NPMModule: FC<{
           }}
         />
       </Popover>
-      <div className="flex-1 flex flex-col items-stretch relative overflow-auto">
-        <div className="absolute">
+      <div className="flex-1 flex flex-col relative overflow-auto">
+        <div className="absolute  inset-0 flex flex-col items-stretch">
           {list.map((e) => {
-            return <ImportItem key={e.id.toString()} item={e} />;
+            return (
+              <ImportItem
+                key={e.id.toString()}
+                item={e}
+                mode={mode}
+                remove={async (e) => {
+                  if (mode === "site") {
+                    await db.npm_site.delete({
+                      where: { id: BigInt(e.id) },
+                    });
+                    w.npmImport.site = w.npmImport.site.filter(
+                      (item) => e.id !== item.id
+                    );
+                  } else {
+                    await db.npm_page.delete({
+                      where: { id: BigInt(e.id) },
+                    });
+
+                    w.npmImport.page[wsdoc.page_id] = w.npmImport.page[
+                      wsdoc.page_id
+                    ].filter((item) => e.id !== item.id);
+                  }
+
+                  local.render();
+                }}
+              />
+            );
           })}
         </div>
       </div>
@@ -245,11 +271,64 @@ const NPMModule: FC<{
   );
 };
 
-const ImportItem: FC<{ item: npm_site | npm_page }> = ({ item }) => {
+const ImportItem: FC<{
+  item: npm_site | npm_page;
+  mode: "site" | "page";
+  remove: (e: npm_site | npm_page) => Promise<void>;
+}> = ({ item, mode, remove }) => {
   return (
-    <div className="flex">
-      {item.module}
-      {item.version}
+    <div className="flex border-b select-none ">
+      <div className="flex-1 flex flex-col items-star py-1">
+        <div className="pl-1 flex flex-1 items-center hover:text-blue-500 hover:underline cursor-pointer">
+          {camel(item.module)}{" "}
+        </div>
+        <div className="text-[10px] pl-1 text-slate-500 hover:text-blue-500 hover:underline cursor-pointer">
+          5 named imports{" "}
+        </div>
+      </div>
+      <div className="flex items-stretch">
+        <div className="border-r pr-1 flex flex-col items-end py-1">
+          <div className="flex items-center mt-1">
+            <div className="">{item.module}</div>
+          </div>
+          <div className="text-[10px] -mt-1 text-slate-500">{item.version}</div>
+        </div>
+        <div
+          className="w-[20px] flex items-center justify-center hover:text-white hover:bg-red-500 cursor-pointer text-slate-500"
+          onClick={() => {
+            if (confirm("Really ?")) {
+              remove(item);
+            }
+          }}
+        >
+          <Trash />
+        </div>
+      </div>
     </div>
   );
+};
+
+const Trash = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={13}
+    height={13}
+    fill="none"
+    viewBox="0 0 15 15"
+  >
+    <path
+      fill="currentColor"
+      fillRule="evenodd"
+      d="M5.5 1a.5.5 0 000 1h4a.5.5 0 000-1h-4zM3 3.5a.5.5 0 01.5-.5h8a.5.5 0 010 1H11v8a1 1 0 01-1 1H5a1 1 0 01-1-1V4h-.5a.5.5 0 01-.5-.5zM5 4h5v8H5V4z"
+      clipRule="evenodd"
+    ></path>
+  </svg>
+);
+
+const camel = function (snakeCased: string) {
+  // Use a regular expression to find the underscores + the next letter
+  return snakeCased.replace(/(\W\w)/g, function (match) {
+    // Convert to upper case and ignore the first char (=the underscore)
+    return match.toUpperCase().substring(1);
+  });
 };

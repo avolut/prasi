@@ -4862,7 +4862,7 @@
   var require_util = __commonJS({
     "node_modules/.pnpm/chalk@4.1.2/node_modules/chalk/source/util.js"(exports2, module2) {
       "use strict";
-      var stringReplaceAll3 = (string, substring, replacer) => {
+      var stringReplaceAll3 = (string, substring, replacer2) => {
         let index = string.indexOf(substring);
         if (index === -1) {
           return string;
@@ -4871,7 +4871,7 @@
         let endIndex = 0;
         let returnValue = "";
         do {
-          returnValue += string.substr(endIndex, index - endIndex) + substring + replacer;
+          returnValue += string.substr(endIndex, index - endIndex) + substring + replacer2;
           endIndex = index + substringLength;
           index = string.indexOf(substring, endIndex);
         } while (index !== -1);
@@ -11903,13 +11903,13 @@
         }
         var re = new RegExp("&(?:" + keys.join("|") + "|#[xX][\\da-fA-F]+;?|#\\d+;?)", "g");
         var replace = getReplacer(entities_json_1.default);
-        function replacer(str) {
+        function replacer2(str) {
           if (str.substr(-1) !== ";")
             str += ";";
           return replace(str);
         }
         return function(str) {
-          return String(str).replace(re, replacer);
+          return String(str).replace(re, replacer2);
         };
       }();
       function getReplacer(map) {
@@ -38389,7 +38389,7 @@ ERROR: Async operation of type "${type}" was created in "process.exit" callback.
   var supports_color_default = supportsColor;
 
   // node_modules/.pnpm/chalk@5.3.0/node_modules/chalk/source/utilities.js
-  function stringReplaceAll(string, substring, replacer) {
+  function stringReplaceAll(string, substring, replacer2) {
     let index = string.indexOf(substring);
     if (index === -1) {
       return string;
@@ -38398,7 +38398,7 @@ ERROR: Async operation of type "${type}" was created in "process.exit" callback.
     let endIndex = 0;
     let returnValue = "";
     do {
-      returnValue += string.slice(endIndex, index) + substring + replacer;
+      returnValue += string.slice(endIndex, index) + substring + replacer2;
       endIndex = index + substringLength;
       index = string.indexOf(substring, endIndex);
     } while (index !== -1);
@@ -39515,7 +39515,7 @@ ${import_chalk2.default.magenta("Installing")} deps:
   var supports_color_default2 = supportsColor2;
 
   // node_modules/.pnpm/chalk@5.2.0/node_modules/chalk/source/utilities.js
-  function stringReplaceAll2(string, substring, replacer) {
+  function stringReplaceAll2(string, substring, replacer2) {
     let index = string.indexOf(substring);
     if (index === -1) {
       return string;
@@ -39524,7 +39524,7 @@ ${import_chalk2.default.magenta("Installing")} deps:
     let endIndex = 0;
     let returnValue = "";
     do {
-      returnValue += string.slice(endIndex, index) + substring + replacer;
+      returnValue += string.slice(endIndex, index) + substring + replacer2;
       endIndex = index + substringLength;
       index = string.indexOf(substring, endIndex);
     } while (index !== -1);
@@ -39693,7 +39693,13 @@ ${import_chalk2.default.magenta("Installing")} deps:
 
   // pkgs/base/pkgs/rpc/src/server.ts
   BigInt.prototype.toJSON = function() {
-    return this.toString();
+    return `BigInt::${this.toString()}`;
+  };
+  var replacer = (key, value) => {
+    if (typeof value === "string" && value.startsWith("BigInt::")) {
+      return BigInt(value.substring(8));
+    }
+    return value;
   };
   function getRandomArbitrary(min, max2) {
     return Math.round(Math.random() * (max2 - min) + min);
@@ -39753,7 +39759,7 @@ Make sure to kill running instance before starting.
       ws.on("open", () => {
         ws.send(JSON.stringify({ type: "identify", name }));
         ws.on("message", async (raw) => {
-          const msg = JSON.parse(raw);
+          const msg = JSON.parse(raw, replacer);
           if (msg.type === "action") {
             const fn = (0, import_lodash2.default)(action2, msg.path.join("."));
             if (typeof fn === "undefined") {

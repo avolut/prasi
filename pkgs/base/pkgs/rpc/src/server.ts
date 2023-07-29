@@ -9,7 +9,14 @@ import get from "lodash.get";
 import chalk from "chalk";
 
 (BigInt.prototype as any).toJSON = function (): string {
-  return this.toString();
+  return `BigInt::${this.toString()}`;
+};
+
+const replacer = (key: string, value: any) => {
+  if (typeof value === "string" && value.startsWith("BigInt::")) {
+    return BigInt(value.substring(8));
+  }
+  return value;
 };
 
 type ActionMsg = {
@@ -98,7 +105,7 @@ const connect = (name: string, action: RPCAction) => {
     ws.on("open", () => {
       ws.send(JSON.stringify({ type: "identify", name }));
       ws.on("message", async (raw: string) => {
-        const msg = JSON.parse(raw) as ActionMsg;
+        const msg = JSON.parse(raw, replacer) as ActionMsg;
 
         if (msg.type === "action") {
           const fn = get(action, msg.path.join("."));
