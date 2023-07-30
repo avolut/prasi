@@ -229,7 +229,6 @@ export const ToolbarMid = () => {
               <>
                 <Popover
                   content={<NPMImport />}
-                  open
                   popoverClassName={cx(
                     "bg-white shadow-2xl shadow-slate-400 outline-none border border-slate-300",
                   )}
