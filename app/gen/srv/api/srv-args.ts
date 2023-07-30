@@ -86,9 +86,13 @@ export const npm_bundle = {
   url: "/npm-bundle/:mode/:id",
   args: ["mode","id"],
 }
+export const npm_size = {
+  url: "/npm-size/:mode/:id",
+  args: ["mode","id"],
+}
 export const npm = {
   url: "/npm/:mode/:id/*",
-  args: ["mode","id","fname"],
+  args: ["mode","id"],
 }
 export const site_load = {
   url: "/site-load",

@@ -7,6 +7,7 @@ import { wsdoc } from "../../compo/editor/ws/wsdoc";
 import { w } from "../../compo/types/general";
 import { Loading } from "../../compo/ui/loading";
 import { SiteConfig } from "../../../../srv/edit/tools/load-site";
+import importModule from "../../compo/page/tools/dynamic-import";
 
 export default page({
   url: "/editor/:site/:page",
@@ -22,7 +23,6 @@ export default page({
           return;
         }
 
-        
         wsdoc.session = e;
         if (params.site.length < 4) {
           const res = await db.site.findFirst({
@@ -54,6 +54,18 @@ export default page({
 
           if (!w.prasiApi) {
             w.prasiApi = {};
+          }
+
+          if (local.site) {
+            try {
+              window.exports = {};
+              await importModule(
+                `${serverurl}/npm/site/${local.site.id}/index.js`
+              );
+              console.log(window.exports);
+            } catch (e) {
+              console.error(e);
+            }
           }
 
           if (config && config.api_url) {
@@ -90,7 +102,12 @@ export default page({
 
       return <Loading />;
     }
-    if (!local.init) return <><Loading /></>;
+    if (!local.init)
+      return (
+        <>
+          <Loading />
+        </>
+      );
 
     if (!local.site) {
       return (

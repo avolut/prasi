@@ -152,11 +152,18 @@ export const npm_bundle = {
   args: ["mode","id"],
   handler: import("../../../srv/api/npm-bundle")
 }
+export const npm_size = {
+  name: "npm_size",
+  url: "/npm-size/:mode/:id",
+  path: "app/srv/api/npm-size.ts",
+  args: ["mode","id"],
+  handler: import("../../../srv/api/npm-size")
+}
 export const npm = {
   name: "npm",
   url: "/npm/:mode/:id/*",
   path: "app/srv/api/npm.ts",
-  args: ["mode","id","fname"],
+  args: ["mode","id"],
   handler: import("../../../srv/api/npm")
 }
 export const site_load = {

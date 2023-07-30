@@ -2,10 +2,13 @@ import { npm_page, npm_site } from "dbgen";
 import { dir } from "dir";
 import * as esbuild from "esbuild";
 import { build } from "esbuild";
+import { stat } from "fs/promises";
 import { dirAsync, writeAsync } from "fs-jetpack";
 import http from "node:http";
 import https from "node:https";
 import { apiContext } from "service-srv";
+import { $ } from "execa";
+import globalExternals from "@fal-works/esbuild-plugin-global-externals";
 
 export type NPMImportAs = {
   main: { mode: "default" | "*"; name: string };
@@ -24,11 +27,13 @@ export const _ = {
     } else {
       items = await db.npm_page.findMany({ where: { id_page: id } });
     }
+    const packages: Record<string, string> = {};
 
     const imports = items
       .map((e) => {
         const import_as = e.import_as as NPMImportAs;
 
+        packages[e.module] = e.version;
         if (import_as.main.name || import_as.names.length > 0) {
           let main = "";
           let names = import_as.names.map((e) => `${e} as __${e}`);
@@ -40,14 +45,14 @@ export const _ = {
                 : `* as __${import_as.main.name}`;
           }
 
-          return `import ${[
+          const imports = [
             main.trim(),
             (names.length > 0 ? `{ ${names.join(",")} }` : "").trim(),
-          ]
-            .filter((e) => e)
-            .join(",")} from "https://cdn.jsdelivr.net/npm/${e.module}@${
-            e.version
-          }/+esm";`;
+          ].filter((e) => e);
+
+          if (imports.length > 0) {
+            return `import ${imports.join(",")} from "${e.module}";`;
+          }
         }
         return "";
       })
@@ -68,12 +73,12 @@ export const _ = {
 
           const res: string[] = [];
           if (main) {
-            res.push(`exports.${main} = __${main};`);
+            res.push(`window.exports.${main} = __${main};`);
           }
 
           if (names.length > 0) {
             names.forEach((e) => {
-              res.push(`exports.${e} = __${e};`);
+              res.push(`window.exports.${e} = __${e};`);
             });
           }
           return res.join("\n");
@@ -89,23 +94,66 @@ ${exports}
 `.trim();
     await dirAsync(dir.path(`../npm/${mode}/${id}`));
     await writeAsync(dir.path(`../npm/${mode}/${id}/input.js`), src);
-
-    let out: esbuild.BuildResult = null as any;
+    packages["react"] = "18.2.0";
+    packages["react-dom"] = "18.2.0";
+    await writeAsync(dir.path(`../npm/${mode}/${id}/package.json`), {
+      dependencies: packages,
+    });
+    await writeAsync(
+      dir.path(`../npm/${mode}/${id}/pnpm-workspace.yaml`),
+      `\
+packages:
+  - ./*`
+    );
     try {
-      out = await build({
-        entryPoints: [dir.path(`../npm/${mode}/${id}/input.js`)],
+      await $({
+        cwd: dir.path(`../npm/${mode}/${id}`),
+      })`pnpm i`;
+
+      await build({
+        absWorkingDir: dir.path(`../npm/${mode}/${id}`),
+        entryPoints: ["input.js"],
         bundle: true,
-        outfile: dir.path(`../npm/${mode}/${id}/index.js`),
-        plugins: [httpPlugin],
+        outfile: "index.js",
         minify: true,
         treeShaking: true,
         sourcemap: true,
+        plugins: [
+          httpPlugin,
+          // globalExternals({
+          //   react: `window.React`,
+          //   "react-dom": "window.ReactDOM",
+          // }),
+        ],
         logLevel: "silent",
       });
     } catch (e) {
       return e;
     }
-    return `ok`;
+
+    try {
+      const s = await stat(dir.path(`../npm/${mode}/${id}/index.js`));
+
+      if (mode === "page") {
+        await db.npm_page.updateMany({
+          where: {
+            id_page: id,
+          },
+          data: { bundled: true },
+        });
+      } else if (mode === "site") {
+        await db.npm_site.updateMany({
+          where: {
+            id_site: id,
+          },
+          data: { bundled: true },
+        });
+      }
+
+      return s.size.toString();
+    } catch (e) {
+      return "-";
+    }
   },
 };
 
@@ -116,52 +164,17 @@ let httpPlugin: esbuild.Plugin = {
     // esbuild doesn't attempt to map them to a file system location.
     // Tag them with the "http-url" namespace to associate them with
     // this plugin.
-    build.onResolve({ filter: /^https?:\/\// }, (args) => ({
-      path: args.path,
-      namespace: "http-url",
-    }));
-
-    // We also want to intercept all import paths inside downloaded
-    // files and resolve them against the original URL. All of these
-    // files will be in the "http-url" namespace. Make sure to keep
-    // the newly resolved URL in the "http-url" namespace so imports
-    // inside it will also be resolved as URLs recursively.
-    build.onResolve({ filter: /.*/, namespace: "http-url" }, (args) => ({
-      path: new URL(args.path, args.importer).toString(),
-      namespace: "http-url",
-    }));
-
-    build.onLoad({ filter: /.*/, namespace: "http-url" }, async (args) => {
-      if (args.path.startsWith("https://cdn.jsdelivr.net/npm/react@")) {
-        return { contents: "return window.React" };
-      }
-
-      if (args.path.startsWith("https://cdn.jsdelivr.net/npm/react-dom@")) {
-        return { contents: "return window.ReactDOM" };
-      }
-      let contents = await new Promise((resolve, reject) => {
-        function fetch(url: string) {
-          let lib = url.startsWith("https") ? https : http;
-          let req = lib.get(url, (res) => {
-            if (
-              res.statusCode &&
-              res.headers.location &&
-              [301, 302, 307].includes(res.statusCode)
-            ) {
-              fetch(new URL(res.headers.location, url).toString());
-              req.destroy();
-            } else if (res.statusCode === 200) {
-              let chunks: any[] = [];
-              res.on("data", (chunk) => chunks.push(chunk));
-              res.on("end", () => resolve(Buffer.concat(chunks)));
-            } else {
-              reject(new Error(`GET ${url} failed: status ${res.statusCode}`));
-            }
-          });
-        }
-        fetch(args.path);
-      });
-      return { contents } as esbuild.OnLoadResult;
-    });
+    // build.onResolve({ filter: /react|react\-dom/ }, (args) => ({
+    //   path: args.path,
+    //   namespace: "http-url",
+    // }));
+    // build.onLoad({ filter: /.*/, namespace: "http-url" }, async (args) => {
+    //   if (args.path.startsWith("react@")) {
+    //     return { contents: "return window.React" };
+    //   }
+    //   if (args.path.startsWith("https://cdn.jsdelivr.net/npm/react-dom@")) {
+    //     return { contents: "return window.ReactDOM" };
+    //   }
+    // });
   },
 };

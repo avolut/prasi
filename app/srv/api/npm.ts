@@ -5,9 +5,14 @@ import { readAsync } from "fs-jetpack";
 
 export const _ = {
   url: "/npm/:mode/:id/*",
-  async api(mode: "site" | "page", id: string, fname: string) {
+  async api(mode: "site" | "page", id: string) {
     const { req, res } = apiContext(this);
     const path = dir.path(`../npm/${mode}/${id}/${req.params._}`);
+
+    res.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT");
+    res.setHeader("Access-Control-Allow-Headers", "content-type rid");
+    res.setHeader("Access-Control-Allow-Credentials", "true");
+    res.setHeader("Access-Control-Allow-Origin", "*");
 
     const contentType = mime.lookup(path);
     if (contentType) res.setHeader("content-type", contentType);

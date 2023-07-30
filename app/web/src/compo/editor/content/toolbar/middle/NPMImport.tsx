@@ -135,7 +135,16 @@ const NPMModule: FC<{
     searchRef: null as any,
     bundling: false,
     bundleError: "",
+    size: 0,
   });
+  useEffect(() => {
+    api
+      .npm_size(mode, mode === "site" ? wsdoc.site?.id || "" : wsdoc.page_id)
+      .then((e: string) => {
+        local.size = parseInt(e) || 0;
+        local.render();
+      });
+  }, []);
 
   const focus = useCallback(() => {
     local.searchRef.focus();
@@ -197,13 +206,16 @@ const NPMModule: FC<{
               autoFocus={false}
               backdrop={false}
               content={
-                <pre
-                  onClick={() => {
-                    local.bundleError = "";
-                    local.render();
-                  }}
-                  className="font-mono relative w-[800px] h-[300px] overflow-auto whitespace-pre-wrap text-red-500"
-                >
+                <pre className="font-mono select-text relative w-[800px] h-[300px] overflow-auto whitespace-pre-wrap text-red-500 relative">
+                  <div
+                    className="absolute bg-red-500 top-0 right-0 z-10 text-white px-2 cursor-pointer"
+                    onClick={() => {
+                      local.bundleError = "";
+                      local.render();
+                    }}
+                  >
+                    Close
+                  </div>
                   <div className="absolute inset-0">
                     ERROR:
                     <hr className=" border-red-500 my-1" />
@@ -223,16 +235,20 @@ const NPMModule: FC<{
                     mode,
                     mode === "site" ? wsdoc.site?.id || "" : wsdoc.page_id
                   )) as any;
+
                   local.bundleError = "";
-                  if (res !== "ok") {
+                  if (typeof res === "object") {
                     if (res && res.errors && Array.isArray(res.errors)) {
                       const errors: string[] = [];
                       res.errors.forEach((e: any) => {
-                        errors.push(`${e.text}\n${e.location.lineText}`);
+                        errors.push(`${e.text}\n${e.location?.lineText || ""}`);
                       });
                       local.bundleError = errors.join("\n\n");
                     }
+                  } else {
+                    local.size = parseInt(res) || 0;
                   }
+
                   local.bundling = false;
                   list.forEach((e) => {
                     e.bundled = true;
@@ -243,7 +259,9 @@ const NPMModule: FC<{
                 Bundle
               </div>
             </Popover>
-            <div className="font-mono text-[12px]">0 kb</div>
+            <div className="font-mono text-[12px]">
+              {formatBytes(local.size)}
+            </div>
           </>
         )}
       </div>
@@ -764,3 +782,12 @@ const camel = function (snakeCased: string) {
     return match.toUpperCase().substring(1);
   });
 };
+
+function formatBytes(bytes: number, decimals?: number) {
+  if (bytes == 0) return "0 Bytes";
+  var k = 1024,
+    dm = decimals || 2,
+    sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"],
+    i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
+}
