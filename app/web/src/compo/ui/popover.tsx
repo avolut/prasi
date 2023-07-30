@@ -134,6 +134,7 @@ function PopoverArrow() {
         transform: "rotate(45deg)",
       }}
       className={cx(
+        "arrow",
         css`
           pointer-events: none;
           position: absolute;
@@ -203,8 +204,8 @@ export function Popover({
               `
         )}
       >
-        {(typeof arrow === "undefined" || arrow) && <PopoverArrow />}
         {_content}
+        {(typeof arrow === "undefined" || arrow) && <PopoverArrow />}
       </PopoverContent>
     </PopoverContext.Provider>
   );

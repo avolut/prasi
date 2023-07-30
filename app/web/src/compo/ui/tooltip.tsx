@@ -147,8 +147,8 @@ export function Tooltip({
           `
         )}
       >
-        <TooltipArrow />
         {content}
+        <TooltipArrow />
       </TooltipContent>
     </TooltipContext.Provider>
   );
