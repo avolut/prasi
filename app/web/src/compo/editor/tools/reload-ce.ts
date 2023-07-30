@@ -1,5 +1,7 @@
 import { CEGlobal } from "../../../base/global/content-editor";
+import importModule from "../../page/tools/dynamic-import";
 import { instantiateComp, loadComponents } from "../comp/load-comp";
+import { wsdoc } from "../ws/wsdoc";
 
 const w = window as unknown as {
   prasiEditorPage: Record<
@@ -14,7 +16,9 @@ if (!w.prasiEditorPage) {
   w.prasiEditorPage = {};
 }
 
-export const reloadCE = (ce: typeof CEGlobal & { render: () => void }) => {
+export const reloadCE = async (
+  ce: typeof CEGlobal & { render: () => void }
+) => {
   ce.scope = {
     effect: {},
     evargs: {},
@@ -36,13 +40,17 @@ export const reloadCE = (ce: typeof CEGlobal & { render: () => void }) => {
   ce.editor.page.reload = true;
   ce.scope = { effect: {}, evargs: {}, tree: {}, types: {}, value: {} };
   ce.editor.page.render();
+  await importModule(
+    `${serverurl}/npm/site/${wsdoc.site?.id}/index.js?` + Date.now()
+  );
+  await importModule(
+    `${serverurl}/npm/page/${wsdoc.page_id}/index.js?` + Date.now()
+  );
+  const items = await loadComponents(ce.map.get("content_tree"));
+  for (const item of items) {
+    instantiateComp(ce, item);
+  }
 
-  loadComponents(ce.map.get("content_tree")).then((items) => {
-    for (const item of items) {
-      instantiateComp(ce, item);
-    }
-
-    ce.editor.page.reload = false;
-    ce.editor.page.render();
-  });
+  ce.editor.page.reload = false;
+  ce.editor.page.render();
 };

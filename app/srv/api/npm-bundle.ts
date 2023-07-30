@@ -2,17 +2,15 @@ import { npm_page, npm_site } from "dbgen";
 import { dir } from "dir";
 import * as esbuild from "esbuild";
 import { build } from "esbuild";
-import { stat } from "fs/promises";
-import { dirAsync, writeAsync } from "fs-jetpack";
-import http from "node:http";
-import https from "node:https";
-import { apiContext } from "service-srv";
 import { $ } from "execa";
-import globalExternals from "@fal-works/esbuild-plugin-global-externals";
+import { dirAsync, writeAsync } from "fs-jetpack";
+import { stat } from "fs/promises";
+import { apiContext } from "service-srv";
 
 export type NPMImportAs = {
   main: { mode: "default" | "*"; name: string };
   names: string[];
+  custom?: string;
 };
 
 export const _ = {
@@ -50,9 +48,15 @@ export const _ = {
             (names.length > 0 ? `{ ${names.join(",")} }` : "").trim(),
           ].filter((e) => e);
 
+          let final = "";
           if (imports.length > 0) {
-            return `import ${imports.join(",")} from "${e.module}";`;
+            final = `import ${imports.join(",")} from "${e.module}";`;
           }
+
+          if (import_as.custom) {
+            final = final + "\n" + import_as.custom;
+          }
+          return final;
         }
         return "";
       })
@@ -62,6 +66,7 @@ export const _ = {
     const exports = items
       .map((e) => {
         const import_as = e.import_as as NPMImportAs;
+        const res: string[] = [];
 
         if (import_as.main.name || import_as.names.length > 0) {
           let main = "";
@@ -71,7 +76,6 @@ export const _ = {
             main = import_as.main.name;
           }
 
-          const res: string[] = [];
           if (main) {
             res.push(`window.exports.${main} = __${main};`);
           }
@@ -81,9 +85,9 @@ export const _ = {
               res.push(`window.exports.${e} = __${e};`);
             });
           }
-          return res.join("\n");
         }
-        return "";
+
+        return res.join("\n").trim();
       })
       .filter((e) => !!e)
       .join("\n");
@@ -92,6 +96,7 @@ export const _ = {
 ${imports}
 ${exports}
 `.trim();
+    console.log(src);
     await dirAsync(dir.path(`../npm/${mode}/${id}`));
     await writeAsync(dir.path(`../npm/${mode}/${id}/input.js`), src);
     packages["react"] = "18.2.0";
@@ -120,10 +125,20 @@ packages:
         sourcemap: true,
         plugins: [
           httpPlugin,
-          // globalExternals({
-          //   react: `window.React`,
-          //   "react-dom": "window.ReactDOM",
-          // }),
+          {
+            name: "inline-style",
+            setup({ onLoad }) {
+              var fs = require("fs");
+              var template = (css: any) =>
+                `typeof document<'u'&&` +
+                `document.head.appendChild(document.createElement('style'))` +
+                `.appendChild(document.createTextNode(${JSON.stringify(css)}))`;
+              onLoad({ filter: /\.css$/ }, async (args) => {
+                let css = await fs.promises.readFile(args.path, "utf8");
+                return { contents: template(css) };
+              });
+            },
+          },
         ],
         logLevel: "silent",
       });

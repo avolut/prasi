@@ -1,12 +1,14 @@
 import algoliasearch from "algoliasearch";
 import { npm_page, npm_site } from "dbgen";
 import { FC, useCallback, useEffect } from "react";
-import { useLocal } from "web-utils";
+import { useGlobal, useLocal } from "web-utils";
 import { Loading } from "../../../../ui/loading";
 import { Popover } from "../../../../ui/popover";
 import { wsdoc } from "../../../ws/wsdoc";
 import { Tooltip } from "../../../../ui/tooltip";
 import { NPMImportAs } from "./api/npm-type";
+import { reloadCE } from "../../../tools/reload-ce";
+import { CEGlobal } from "../../../../../base/global/content-editor";
 
 const algolia = algoliasearch("OFCNCOG2CU", "f54e21fa3a2a0160595bb058179bfb1e");
 const npm = algolia.initIndex("npm-search");
@@ -129,6 +131,7 @@ const NPMModule: FC<{
   mode: "site" | "page";
   onChange: (e: NPMResultSingle) => any;
 }> = ({ mode, onChange }) => {
+  const c = useGlobal(CEGlobal, "PAGE");
   const local = useLocal({
     loading: false,
     search: { value: "", timeout: null as any, result: [] as NPMResult },
@@ -254,6 +257,7 @@ const NPMModule: FC<{
                     e.bundled = true;
                   });
                   local.render();
+                  reloadCE(c);
                 }}
               >
                 Bundle
@@ -409,11 +413,27 @@ const ImportItem: FC<{
       placement={mode === "site" ? "left" : "right"}
       className={cx(
         "flex border-b select-none ",
-        item.bundled ? "bg-green-50" : ""
+        item.bundled ? "bg-green-50 border-l-4 border-l-green-700" : ""
       )}
     >
       <div
-        className="flex items-center flex-1 "
+        className={cx(
+          "flex items-stretch flex-1 ",
+          import_as.custom
+            ? css`
+                .custom {
+                  color: #3c82f6;
+                }
+              `
+            : css`
+                .custom {
+                  opacity: 0;
+                }
+                &:hover .custom {
+                  opacity: 1;
+                }
+              `
+        )}
         onMouseEnter={() => {
           local.show = true;
           local.render();
@@ -427,79 +447,86 @@ const ImportItem: FC<{
           local.render();
         }}
       >
-        <div className="flex flex-col items-start leading-4 py-1">
-          <MainImport item={item} render={local.render} mode={mode}>
-            <>
-              {import_as.main.name ? (
-                <div className="pl-1 flex flex-1 items-center hover:text-blue-500 hover:underline cursor-pointer font-bold">
-                  {import_as.main.mode === "*" ? (
-                    <>
-                      <span className="text-slate-400 ">import * as</span>
-                      <span className="ml-1">{import_as.main.name}</span>
-                    </>
-                  ) : (
-                    import_as.main.name
-                  )}
-                </div>
-              ) : (
-                <div className="pl-1 flex flex-1 items-center text-slate-500  hover:text-blue-500 hover:underline cursor-pointer">
-                  No default import
-                </div>
-              )}
-            </>
-          </MainImport>
-          <NamedImport item={item} render={local.render} mode={mode}>
-            <div className=" pl-1 text-slate-500 hover:text-blue-500 hover:underline cursor-pointer">
-              <span
-                className={cx(
-                  import_as.names.length > 0 && "text-blue-500 font-bold"
+        <div className="flex flex-1 flex-col items-stretch leading-4 py-[6px]">
+          <div className="flex justify-between px-1 items-end">
+            <MainImport item={item} render={local.render} mode={mode}>
+              <>
+                {import_as.main.name ? (
+                  <div className="pl-1 flex flex-1 items-center hover:text-blue-500 hover:underline cursor-pointer font-bold">
+                    {import_as.main.mode === "*" ? (
+                      <>
+                        <span className="text-slate-400 text-right">
+                          import * as
+                        </span>
+                        <span className="ml-1">{import_as.main.name}</span>
+                      </>
+                    ) : (
+                      import_as.main.name
+                    )}
+                  </div>
+                ) : (
+                  <div className="pl-1 flex flex-1 items-center text-slate-500  hover:text-blue-500 hover:underline cursor-pointer">
+                    No default import
+                  </div>
                 )}
-              >
-                {import_as.names.length === 0 ? "No" : import_as.names.length}{" "}
-                named
-              </span>{" "}
-              imports
-            </div>
-          </NamedImport>
-        </div>
-      </div>
-      <div className="flex items-stretch">
-        <div className="border-r pr-1 flex flex-col line leading-4 items-end py-1">
-          <a
-            href={`https://www.npmjs.com/package/${item.module}`}
-            target="_blank"
-            className={cx(
-              css`
-                &:hover {
-                  svg {
-                    width: 14px;
+              </>
+            </MainImport>
+            <a
+              href={`https://www.npmjs.com/package/${item.module}`}
+              target="_blank"
+              className={cx(
+                css`
+                  &:hover {
+                    svg {
+                      width: 14px;
+                    }
                   }
-                }
-              `,
-              "flex items-center hover:text-blue-500 hover:underline cursor-pointer"
-            )}
-          >
-            <div className="break-words max-w-[140px] overflow-hidden text-right">
-              {item.module}
-            </div>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="13"
-              height="13"
-              viewBox="0 0 32 32"
-              className="transition-all link w-0 overflow-hidden"
+                `,
+                "flex items-center hover:text-blue-500 hover:underline cursor-pointer"
+              )}
             >
-              <path
-                fill="currentColor"
-                fillRule="evenodd"
-                d="M5 5v22h22V5zm2 2h18v18H7zm6 3v2h5.563L9.28 21.281l1.438 1.438L20 13.437V19h2v-9z"
-              ></path>
-            </svg>
-          </a>
-          <div className=" text-slate-500">{item.version}</div>
+              <div className="break-words max-w-[140px] overflow-hidden text-right">
+                {item.module}
+              </div>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="13"
+                height="13"
+                viewBox="0 0 32 32"
+                className="transition-all link w-0 overflow-hidden"
+              >
+                <path
+                  fill="currentColor"
+                  fillRule="evenodd"
+                  d="M5 5v22h22V5zm2 2h18v18H7zm6 3v2h5.563L9.28 21.281l1.438 1.438L20 13.437V19h2v-9z"
+                ></path>
+              </svg>
+            </a>
+          </div>
+          <div className="flex justify-between px-1">
+            <div className={cx("flex items-center")}>
+              <NamedImport item={item} render={local.render} mode={mode}>
+                <div className=" pl-1 text-slate-500 hover:text-blue-500 hover:underline cursor-pointer">
+                  <span
+                    className={cx(
+                      import_as.names.length > 0 && "text-blue-500 font-bold"
+                    )}
+                  >
+                    {import_as.names.length === 0
+                      ? "No"
+                      : import_as.names.length}{" "}
+                    named
+                  </span>{" "}
+                  imports
+                </div>
+              </NamedImport>
+              <CustomImport item={item} render={local.render} mode={mode} />
+            </div>
+            <div className="text-slate-500">{item.version}</div>
+          </div>
         </div>
         <div
-          className="w-[20px] flex items-center justify-center hover:text-white hover:bg-red-500 cursor-pointer text-slate-500"
+          className="w-[20px] border-l border-slate-300 ml-1 flex items-center justify-center hover:text-white hover:bg-red-500 cursor-pointer text-slate-500"
           onClick={() => {
             if (confirm("Remove this import ?")) {
               remove(item);
@@ -594,6 +621,82 @@ const MainImport: FC<{
         }}
       >
         {children}
+      </div>
+    </Popover>
+  );
+};
+
+const CustomImport: FC<{
+  mode: "site" | "page";
+  item: npm_page | npm_site;
+  render: () => void;
+}> = ({ mode, item, render }) => {
+  const local = useLocal({ open: false });
+  const import_as = item.import_as as NPMImportAs;
+
+  useEffect(() => {
+    if (!local.open) {
+      if (mode === "site") {
+        db.npm_site.update({
+          where: { id: item.id },
+          data: {
+            import_as,
+          },
+        });
+      } else {
+        db.npm_page.update({
+          where: { id: item.id },
+          data: {
+            import_as,
+          },
+        });
+      }
+    }
+  }, [local.open]);
+
+  return (
+    <Popover
+      autoFocus={false}
+      open={local.open}
+      arrow={false}
+      content={
+        <textarea
+          spellCheck={false}
+          className="h-[300px] font-mono text-[11px] w-[300px] outline-none p-2"
+          autoFocus
+          value={import_as.custom || ""}
+          onChange={(e) => {
+            item.bundled = false;
+            import_as.custom = e.currentTarget.value || "";
+            render();
+          }}
+        ></textarea>
+      }
+      popoverClassName="bg-white shadow-2xl shadow-slate-600"
+      onOpenChange={(open) => {
+        local.open = open;
+        local.render();
+      }}
+    >
+      <div
+        className="custom transition-all text-slate-500 hover:text-blue-500 border-b border-transparent hover:border-blue-500 cursor-pointer ml-8 flex items-center"
+        onClick={() => {
+          local.open = true;
+          local.render();
+        }}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="13"
+          height="13"
+          viewBox="0 0 24 24"
+        >
+          <path
+            fill="currentColor"
+            d="M15 20a1 1 0 001-1V4H8a1 1 0 00-1 1v11H5V5a3 3 0 013-3h11a3 3 0 013 3v1h-2V5a1 1 0 00-1-1 1 1 0 00-1 1v14a3 3 0 01-3 3H5a3 3 0 01-3-3v-1h11a2 2 0 002 2z"
+          ></path>
+        </svg>{" "}
+        Custom
       </div>
     </Popover>
   );

@@ -16,7 +16,7 @@ export const _ = {
 
     const contentType = mime.lookup(path);
     if (contentType) res.setHeader("content-type", contentType);
-    if (req.params._ === "index.js" || "index.js.map") {
+    if (path.length > dir.path(`../npm/${mode}/${id}`).length) {
       const file = await readAsync(path, "buffer");
       if (file) {
         res.setHeader("content-length", file.byteLength.toString());
