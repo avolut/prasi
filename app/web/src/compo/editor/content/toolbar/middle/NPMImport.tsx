@@ -134,6 +134,7 @@ const NPMModule: FC<{
     search: { value: "", timeout: null as any, result: [] as NPMResult },
     searchRef: null as any,
     bundling: false,
+    bundleError: "",
   });
 
   const focus = useCallback(() => {
@@ -192,24 +193,56 @@ const NPMModule: FC<{
           </div>
         ) : (
           <>
-            <div
-              className="bg-slate-600 text-white hover:bg-blue-500 px-2  cursor-pointer bundle opacity-20 transition-all"
-              onClick={async () => {
-                local.bundling = true;
-                local.render();
-                await api.npm_bundle(
-                  mode,
-                  mode === "site" ? wsdoc.site?.id || "" : wsdoc.page_id
-                );
-                local.bundling = false;
-                list.forEach((e) => {
-                  e.bundled = true;
-                });
-                local.render();
-              }}
+            <Popover
+              autoFocus={false}
+              backdrop={false}
+              content={
+                <pre
+                  onClick={() => {
+                    local.bundleError = "";
+                    local.render();
+                  }}
+                  className="font-mono relative w-[800px] h-[300px] overflow-auto whitespace-pre-wrap text-red-500"
+                >
+                  <div className="absolute inset-0">
+                    ERROR:
+                    <hr className=" border-red-500 my-1" />
+                    {local.bundleError}
+                  </div>
+                </pre>
+              }
+              open={!!local.bundleError}
             >
-              Bundle
-            </div>
+              <div
+                className="bg-slate-600 text-white hover:bg-blue-500 px-2  cursor-pointer bundle opacity-20 transition-all"
+                onClick={async () => {
+                  local.bundling = true;
+                  local.bundleError = "";
+                  local.render();
+                  const res = (await api.npm_bundle(
+                    mode,
+                    mode === "site" ? wsdoc.site?.id || "" : wsdoc.page_id
+                  )) as any;
+                  local.bundleError = "";
+                  if (res !== "ok") {
+                    if (res && res.errors && Array.isArray(res.errors)) {
+                      const errors: string[] = [];
+                      res.errors.forEach((e: any) => {
+                        errors.push(`${e.text}\n${e.location.lineText}`);
+                      });
+                      local.bundleError = errors.join("\n\n");
+                    }
+                  }
+                  local.bundling = false;
+                  list.forEach((e) => {
+                    e.bundled = true;
+                  });
+                  local.render();
+                }}
+              >
+                Bundle
+              </div>
+            </Popover>
             <div className="font-mono text-[12px]">0 kb</div>
           </>
         )}

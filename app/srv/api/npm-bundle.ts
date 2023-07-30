@@ -31,7 +31,7 @@ export const _ = {
 
         if (import_as.main.name || import_as.names.length > 0) {
           let main = "";
-          let names = import_as.names.map((e) => `__${e}`);
+          let names = import_as.names.map((e) => `${e} as __${e}`);
 
           if (import_as.main.name) {
             main =
@@ -40,9 +40,14 @@ export const _ = {
                 : `* as __${import_as.main.name}`;
           }
 
-          return `import ${main}${
-            names.length > 0 ? `{ ${names.join(",")} }` : ""
-          } from "https://cdn.jsdelivr.net/npm/${e.module}@${e.version}/+esm";`;
+          return `import ${[
+            main.trim(),
+            (names.length > 0 ? `{ ${names.join(",")} }` : "").trim(),
+          ]
+            .filter((e) => e)
+            .join(",")} from "https://cdn.jsdelivr.net/npm/${e.module}@${
+            e.version
+          }/+esm";`;
         }
         return "";
       })
@@ -93,13 +98,14 @@ ${exports}
         outfile: dir.path(`../npm/${mode}/${id}/index.js`),
         plugins: [httpPlugin],
         minify: true,
+        treeShaking: true,
         sourcemap: true,
         logLevel: "silent",
       });
     } catch (e) {
-      console.log(e);
+      return e;
     }
-    return "ok";
+    return `ok`;
   },
 };
 
@@ -126,6 +132,13 @@ let httpPlugin: esbuild.Plugin = {
     }));
 
     build.onLoad({ filter: /.*/, namespace: "http-url" }, async (args) => {
+      if (args.path.startsWith("https://cdn.jsdelivr.net/npm/react@")) {
+        return { contents: "return window.React" };
+      }
+
+      if (args.path.startsWith("https://cdn.jsdelivr.net/npm/react-dom@")) {
+        return { contents: "return window.ReactDOM" };
+      }
       let contents = await new Promise((resolve, reject) => {
         function fetch(url: string) {
           let lib = url.startsWith("https") ? https : http;
