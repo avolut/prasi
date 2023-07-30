@@ -1,11 +1,12 @@
 import algoliasearch from "algoliasearch";
 import { npm_page, npm_site } from "dbgen";
-import { FC, useCallback } from "react";
+import { FC, useCallback, useEffect } from "react";
 import { useLocal } from "web-utils";
 import { Loading } from "../../../../ui/loading";
 import { Popover } from "../../../../ui/popover";
 import { wsdoc } from "../../../ws/wsdoc";
 import { Tooltip } from "../../../../ui/tooltip";
+import { NPMImportAs } from "./api/npm-type";
 
 const algolia = algoliasearch("OFCNCOG2CU", "f54e21fa3a2a0160595bb058179bfb1e");
 const npm = algolia.initIndex("npm-search");
@@ -14,10 +15,6 @@ type NPMResultSingle = {
   objectID: string;
   version: string;
   _highlightResult: { name: { value: string } };
-};
-type NPMImportAs = {
-  main: { mode: "default" | "*"; name: string };
-  names: string[];
 };
 type NPMResult = NPMResultSingle[];
 
@@ -84,16 +81,26 @@ export const NPMImport = () => {
           <NPMModule
             mode="site"
             onChange={async (e) => {
-              const res = await db.npm_site.create({
-                data: {
-                  id_site: wsdoc.site?.id || "",
-                  module: e.name,
-                  version: e.version,
-                },
-              });
+              try {
+                const f = await fetch(
+                  `https://data.jsdelivr.com/v1/packages/npm/${e.name}`
+                );
+                const j = await f.json();
+                const version = j.versions[0].version;
+                const res = await db.npm_site.create({
+                  data: {
+                    id_site: wsdoc.site?.id || "",
+                    module: e.name,
+                    version: version,
+                  },
+                });
 
-              w.npmImport.site.push(res);
-              local.render();
+                w.npmImport.site.push(res);
+                local.render();
+              } catch (e: any) {
+                alert("Failed!");
+                console.log(e);
+              }
             }}
           />
           <div className="border-r border-slate-300"></div>
@@ -190,21 +197,15 @@ const NPMModule: FC<{
               onClick={async () => {
                 local.bundling = true;
                 local.render();
-                if (mode === "site") {
-                  await db.npm_site.updateMany({
-                    where: {
-                      id_site: wsdoc.site?.id || "",
-                    },
-                    data: {
-                      bundled: true,
-                    },
-                  });
-                  list.forEach((e) => {
-                    e.bundled = true;
-                  });
-                  local.bundling = false;
-                  local.render();
-                }
+                await api.npm_bundle(
+                  mode,
+                  mode === "site" ? wsdoc.site?.id || "" : wsdoc.page_id
+                );
+                local.bundling = false;
+                list.forEach((e) => {
+                  e.bundled = true;
+                });
+                local.render();
               }}
             >
               Bundle
@@ -254,7 +255,6 @@ const NPMModule: FC<{
                         __html: e._highlightResult.name.value,
                       }}
                     ></div>
-                    <div>{e.version}</div>
                   </div>
                 </div>
               );
@@ -445,7 +445,7 @@ const ImportItem: FC<{
               ></path>
             </svg>
           </a>
-          <div className="  text-slate-500">{item.version}</div>
+          <div className=" text-slate-500">{item.version}</div>
         </div>
         <div
           className="w-[20px] flex items-center justify-center hover:text-white hover:bg-red-500 cursor-pointer text-slate-500"
@@ -471,6 +471,25 @@ const MainImport: FC<{
   const local = useLocal({
     open: false,
   });
+  useEffect(() => {
+    if (!local.open) {
+      if (mode === "site") {
+        db.npm_site.update({
+          where: { id: item.id },
+          data: {
+            import_as,
+          },
+        });
+      } else {
+        db.npm_page.update({
+          where: { id: item.id },
+          data: {
+            import_as,
+          },
+        });
+      }
+    }
+  }, [local.open]);
   const import_as = item.import_as as NPMImportAs;
   return (
     <Popover
@@ -480,23 +499,6 @@ const MainImport: FC<{
       popoverClassName="bg-white shadow-2xl shadow-slate-600 border-2 border-slate-400 px-[8px] py-[5px]"
       onOpenChange={(open) => {
         local.open = open;
-        if (!open) {
-          if (mode === "site") {
-            db.npm_site.update({
-              where: { id: item.id },
-              data: {
-                import_as,
-              },
-            });
-          } else {
-            db.npm_page.update({
-              where: { id: item.id },
-              data: {
-                import_as,
-              },
-            });
-          }
-        }
         local.render();
       }}
       content={
@@ -519,6 +521,7 @@ const MainImport: FC<{
             value={import_as.main.name}
             onChange={(e) => {
               import_as.main.name = e.currentTarget.value;
+              item.bundled = false;
               render();
             }}
             onKeyDown={(e) => {
@@ -558,6 +561,25 @@ const NamedImport: FC<{
     open: false,
   });
 
+  useEffect(() => {
+    if (!local.open) {
+      if (mode === "site") {
+        db.npm_site.update({
+          where: { id: item.id },
+          data: {
+            import_as,
+          },
+        });
+      } else {
+        db.npm_page.update({
+          where: { id: item.id },
+          data: {
+            import_as,
+          },
+        });
+      }
+    }
+  }, [local.open]);
   const newFocus = useCallback(() => {
     local.new.focus();
   }, [local.new]);
@@ -569,23 +591,6 @@ const NamedImport: FC<{
       popoverClassName="bg-white shadow-2xl shadow-slate-600 border-2 border-slate-400 px-[8px] py-[5px]"
       onOpenChange={(open) => {
         local.open = open;
-        if (!open) {
-          if (mode === "site") {
-            db.npm_site.update({
-              where: { id: item.id },
-              data: {
-                import_as,
-              },
-            });
-          } else {
-            db.npm_page.update({
-              where: { id: item.id },
-              data: {
-                import_as,
-              },
-            });
-          }
-        }
         local.render();
       }}
       content={
@@ -631,6 +636,7 @@ const NamedImport: FC<{
                     }
                   }}
                   onChange={(ev) => {
+                    item.bundled = false;
                     import_as.names[idx] = ev.currentTarget.value;
                     if (!import_as.names[idx]) {
                       import_as.names.splice(idx, 1);
@@ -672,6 +678,7 @@ const NamedImport: FC<{
                   import_as.names.push(e.trim());
                 });
 
+                item.bundled = false;
                 e.currentTarget.value = "";
                 render();
                 newFocus();

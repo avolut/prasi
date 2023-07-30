@@ -145,6 +145,20 @@ export const local_ip = {
   args: [],
   handler: import("../../../srv/api/local-ip")
 }
+export const npm_bundle = {
+  name: "npm_bundle",
+  url: "/npm-bundle/:mode/:id",
+  path: "app/srv/api/npm-bundle.ts",
+  args: ["mode","id"],
+  handler: import("../../../srv/api/npm-bundle")
+}
+export const npm = {
+  name: "npm",
+  url: "/npm/:mode/:id/*",
+  path: "app/srv/api/npm.ts",
+  args: ["mode","id","fname"],
+  handler: import("../../../srv/api/npm")
+}
 export const site_load = {
   name: "site_load",
   url: "/site-load",

@@ -82,6 +82,14 @@ export const local_ip = {
   url: "/local-ip",
   args: [],
 }
+export const npm_bundle = {
+  url: "/npm-bundle/:mode/:id",
+  args: ["mode","id"],
+}
+export const npm = {
+  url: "/npm/:mode/:id/*",
+  args: ["mode","id","fname"],
+}
 export const site_load = {
   url: "/site-load",
   args: ["name","_page"],
