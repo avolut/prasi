@@ -1,5 +1,11 @@
+import { forwardRef, isValidElement } from "react";
+import { isForwardRef } from "react-is";
 import { typeStringify } from "./type-stringify";
-import { ReactElement, isValidElement } from "react";
+
+const A = forwardRef((prop: { a: "string" }, ref) => {
+  return <div></div>;
+});
+
 export const extractProp = (prop: {
   values: Record<string, any>;
   types: Record<string, string>;
@@ -22,7 +28,22 @@ export const extractProp = (prop: {
         if (!props[k]) {
           props[k] = {};
         }
-        props[k].val = v;
+
+        if (typeof v === "function") {
+          if (isFunctionalComponent(v)) {
+            props[k].type = "React.FC";
+          } else if (isClassComponent(v)) {
+            props[k].type = "React.Component";
+          } else {
+            props[k].type = "any";
+          }
+        } else {
+          if (!!v.render && typeof v.$$typeof === "symbol") {
+            props[k].type = "React.FC<Record<string,any> & {ref?:any}>";
+          } else {
+            props[k].val = v;
+          }
+        }
       }
     }
   }
@@ -47,3 +68,23 @@ export const extractProp = (prop: {
 
   return propTypes;
 };
+
+function isFunctionalComponent(Component: any) {
+  return (
+    typeof Component === "function" && // can be various things
+    !(
+      (
+        Component.prototype && // native arrows don't have prototypes
+        Component.prototype.isReactComponent
+      ) // special property
+    )
+  );
+}
+
+function isClassComponent(Component: any) {
+  return !!(
+    typeof Component === "function" &&
+    Component.prototype &&
+    Component.prototype.isReactComponent
+  );
+}

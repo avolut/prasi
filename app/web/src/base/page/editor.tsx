@@ -62,7 +62,6 @@ export default page({
               await importModule(
                 `${serverurl}/npm/site/${local.site.id}/index.js`
               );
-              console.log(window.exports);
             } catch (e) {
               console.error(e);
             }

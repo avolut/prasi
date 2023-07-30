@@ -7,6 +7,7 @@ import { RendererGlobal } from "../base/renderer-global";
 import { PRASI_COMPONENT, PRASI_PAGE } from "../base/renderer-types";
 import { Loading } from "./ui/loading";
 import parse from "ua-parser-js";
+import importModule from "../../page/tools/dynamic-import";
 const w = window as unknown as {
   globalValueID: WeakMap<any, string>;
   prasiApi: Record<string, any>;
@@ -56,6 +57,15 @@ export class PrasiRenderer extends Renderer {
     );
 
     rg.page.load = async (page_id) => {
+
+      try {
+        if (typeof window.exports === "undefined") {
+          window.exports = {};
+        }
+        await importModule(`${serverurl}/npm/page/${page_id}/index.js`);
+      } catch (e) {
+        console.error(e);
+      }
       return await arg.load.page(rg, page_id);
     };
 
@@ -74,6 +84,11 @@ export class PrasiRenderer extends Renderer {
           rg.loading = true;
           rg.render();
           rg.site = await arg.load.site(rg);
+          window.exports= {};
+          await importModule(
+            `${serverurl}/npm/site/${rg.site.id}/index.js`
+          );
+          
           if (!w.prasiApi) w.prasiApi = {};
 
           if (rg.site.api_url) {

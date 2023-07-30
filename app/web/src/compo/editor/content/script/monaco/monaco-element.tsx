@@ -218,7 +218,8 @@ export const ScriptMonacoElement: FC<{
               editor.setModel(model);
             }
 
-            const propVal: any = {};
+            const propVal: any = { ...(window.exports || {}) };
+            console.log(propVal);
             const propTypes: any = {};
 
             if (component.edit.id) {

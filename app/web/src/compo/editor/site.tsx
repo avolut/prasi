@@ -8,6 +8,7 @@ import { editorStyle } from "./style";
 import { connectWS } from "./ws/ws";
 import { SiteConfig, wsdoc } from "./ws/wsdoc";
 import { reloadCE } from "./tools/reload-ce";
+import importModule from "../page/tools/dynamic-import";
 
 export const SiteEditor: FC<{
   site: site;
@@ -49,16 +50,32 @@ export const SiteEditor: FC<{
     }
   }
 
+  const loadNpmPage = async (page: MPage) => {
+    if (page) {
+      try {
+        if (typeof window.exports === "undefined") {
+          window.exports = {};
+        }
+        await importModule(
+          `${serverurl}/npm/page/${page.getMap("map").get("id")}/index.js`
+        );
+      } catch (e) {
+        console.error(e);
+      }
+    }
+  };
+
   if (!local.init) {
     if (page_id && page_id.length > 4) {
       wsdoc.page_id = page_id;
       connectWS({
         id: page_id,
         ce: ce,
-        connected(page) {
+        async connected(page) {
           local.init = true;
           local.page = page;
           local.loading = false;
+          await loadNpmPage(page);
           local.render();
         },
       });
@@ -111,10 +128,11 @@ export const SiteEditor: FC<{
         connectWS({
           id: page_id,
           ce: ce,
-          connected(page) {
+          async connected(page) {
             local.init = true;
             local.loading = false;
             local.page = page;
+            await loadNpmPage(page);
             local.render();
           },
         });

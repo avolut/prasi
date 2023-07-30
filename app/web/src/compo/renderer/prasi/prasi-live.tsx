@@ -1,4 +1,5 @@
 import type { SiteConfig } from "../../editor/ws/wsdoc";
+import importModule from "../../page/tools/dynamic-import";
 import type { PRASI_COMPONENT, PRASI_PAGE } from "../base/renderer-types";
 import { PrasiRenderer } from "./prasi-renderer";
 
