@@ -28,7 +28,6 @@ export const reloadCE = async (
     p.scroll = scroll;
   }
 
-  ce.editor.page.reload = true;
   ce.scope = { effect: {}, evargs: {}, tree: {}, types: {}, value: {} };
   ce.editor.page.render();
   await importModule(
@@ -41,7 +40,5 @@ export const reloadCE = async (
   for (const item of items) {
     instantiateComp(ce, item);
   }
-
-  ce.editor.page.reload = false;
   ce.editor.page.render();
 };

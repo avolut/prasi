@@ -198,8 +198,12 @@ export const ToolbarMid = () => {
       <ToolbarBox
         items={[
           {
-            onClick() {
-              reloadCE(c);
+            async onClick() {
+              c.editor.page.reload = true;
+              c.instances = {};
+              await reloadCE(c);
+              c.editor.page.reload = false;
+              c.render();
             },
             tooltip: <>Reload Page ({isMac ? "⌘" : "Ctrl"} + S)</>,
             content: (
@@ -230,7 +234,7 @@ export const ToolbarMid = () => {
                 <Popover
                   content={<NPMImport />}
                   popoverClassName={cx(
-                    "bg-white shadow-2xl shadow-slate-400 outline-none border border-slate-300",
+                    "bg-white shadow-2xl shadow-slate-400 outline-none border border-slate-300"
                   )}
                 >
                   <NPMIcon />
