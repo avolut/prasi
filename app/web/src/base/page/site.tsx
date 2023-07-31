@@ -1,7 +1,11 @@
 import { validate } from "uuid";
 import { page } from "web-init";
 import { useLocal } from "web-utils";
-import { PageLocal, connectPreview } from "../../compo/editor/ws/preview";
+import {
+  PageLocal,
+  compPreview,
+  pagePreview,
+} from "../../compo/editor/ws/preview";
 import { SiteConfig } from "../../compo/editor/ws/wsdoc";
 import {
   PRASI_COMPONENT,
@@ -47,7 +51,7 @@ export default page({
         async page(rg, page_id) {
           rg.component.scanMode = "client-side";
           const doc = await new Promise<MPage>(async (resolve) => {
-            await connectPreview(local, page_id, resolve);
+            await pagePreview(local, page_id, resolve);
           });
 
           return doc.getMap("map").toJSON() as Required<PRASI_PAGE>;
@@ -83,12 +87,18 @@ export default page({
             },
           });
 
-          return (all || []).map((e) => {
+          return (
+            await Promise.all(
+              ids.map((id) => {
+                return compPreview(local, id);
+              })
+            )
+          ).map((e) => {
             return {
               name: e.name,
               id: e.id,
               content_tree: e.content_tree,
-            } as PRASI_COMPONENT;
+            };
           });
         },
       },

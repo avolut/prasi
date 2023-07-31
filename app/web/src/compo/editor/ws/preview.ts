@@ -1,18 +1,41 @@
 import { compress, decompress } from "lz-string";
 import { MPage } from "../../types/general";
 import { setPage } from "./actions/set-page";
-import { WS_MSG, WS_MSG_GET_PAGE } from "./msg";
+import { WS_MSG, WS_MSG_GET_COMP, WS_MSG_GET_PAGE } from "./msg";
 import * as Y from "yjs";
 import { PrasiRenderer } from "../../renderer/prasi/prasi-renderer";
+import { CompDoc } from "../../../base/global/content-editor";
+import { PRASI_COMPONENT } from "../../renderer/base/renderer-types";
+import throttle from "lodash.throttle";
 
 export const PageLocal = {
   ws: null as null | WebSocket,
   retry: { localIP: false, disabled: false, fast: false },
   page: null as null | MPage,
   site: null as null | PrasiRenderer,
+  comp: {
+    pending: {} as Record<string, any>,
+    doc: {} as Record<string, CompDoc>,
+  },
 };
 
-export const connectPreview = async (
+export const compPreview = (
+  local: typeof PageLocal & { render: () => void },
+  comp_id: string
+) => {
+  return new Promise<PRASI_COMPONENT>(async (resolve) => {
+    local.comp.pending[comp_id] = resolve;
+    await wsend(
+      local,
+      JSON.stringify({
+        type: "get_comp",
+        comp_id: comp_id,
+      } as WS_MSG_GET_COMP)
+    );
+  });
+};
+
+export const pagePreview = async (
   local: typeof PageLocal & { render: () => void },
   page_id: string,
   resolve: (doc: MPage) => void
@@ -47,11 +70,11 @@ export const connectPreview = async (
 
       local.retry.localIP = true;
       if (local.retry.fast) {
-        connectPreview(local, page_id, resolve);
+        pagePreview(local, page_id, resolve);
       } else {
         setTimeout(() => {
           console.log("Reconnecting...");
-          connectPreview(local, page_id, resolve);
+          pagePreview(local, page_id, resolve);
         }, 2000);
       }
     };
@@ -65,21 +88,25 @@ export const connectPreview = async (
           break;
         case "set_page":
           local.page = await setPage(msg);
-          local.page.on("update", (e, origin) => {
-            const rg = local.site?.rg;
-            if (rg) {
-              const active = rg.page.active;
-              if (active) {
-                active.content_tree = local.page
-                  ?.getMap("map")
-                  .get("content_tree")
-                  ?.toJSON() as any;
-                console.clear();
-                console.log('⚡ Live Update')
-                local.render();
+          local.page.on(
+            "update",
+            throttle((e, origin) => {
+              const rg = local.site?.rg;
+              if (rg) {
+                rg.instances = {};
+                const active = rg.page.active;
+                if (active) {
+                  active.content_tree = local.page
+                    ?.getMap("map")
+                    .get("content_tree")
+                    ?.toJSON() as any;
+                  console.clear();
+                  console.log(`🔥 Page updated: ${active.url}`);
+                  local.render();
+                }
               }
-            }
-          });
+            })
+          );
           resolve(local.page);
           break;
         case "sv_local":
@@ -92,12 +119,56 @@ export const connectPreview = async (
           if (msg.mode === "page") {
             Y.applyUpdate(local.page as any, extract(msg.diff_local), "remote");
           }
+          if (msg.mode === "comp") {
+            Y.applyUpdate(
+              local.comp.doc[msg.id] as any,
+              extract(msg.diff_local),
+              "remote"
+            );
+          }
+          break;
+        case "set_comp":
+          {
+            const callback = local.comp.pending[msg.comp_id];
+            if (callback) {
+              local.comp.doc[msg.comp_id] = new Y.Doc() as CompDoc;
+              Y.applyUpdate(
+                local.comp.doc[msg.comp_id] as any,
+                extract(msg.changes),
+                "remote"
+              );
+              local.comp.doc[msg.comp_id].on(
+                "update",
+                throttle((e, origin) => {
+                  const rg = local.site?.rg;
+                  if (rg) {
+                    console.clear();
+                    console.log(
+                      `🔥 Component updated: ${local.comp.doc[msg.comp_id]
+                        .getMap("map")
+                        .get("name")}`
+                    );
+                    rg.instances = {};
+                    rg.component.def[msg.comp_id] = local.comp.doc[msg.comp_id]
+                      .getMap("map")
+                      .toJSON() as any;
+
+                    local.render();
+                  }
+                })
+              );
+              callback(
+                local.comp.doc[msg.comp_id]
+                  .getMap("map")
+                  .toJSON() as PRASI_COMPONENT
+              );
+            }
+          }
           break;
         case "undo":
         case "redo":
         case "new_comp":
         case "get_comp":
-        case "set_comp":
           console.log(msg);
       }
     });
@@ -135,6 +206,7 @@ const sendDoc = async (arg: {
 
   let doc = null as any;
   if (mode === "page") doc = local.page;
+  if (mode === "comp") doc = local.comp.doc[id];
   if (!doc) return;
 
   const diff_remote = Y.encodeStateAsUpdate(doc, bin);
