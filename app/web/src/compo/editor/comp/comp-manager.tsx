@@ -1,4 +1,4 @@
-import { FC, Fragment, useEffect } from "react";
+import { FC, Fragment, ReactElement, useEffect } from "react";
 import { useGlobal, useLocal } from "web-utils";
 import { CEGlobal } from "../../../base/global/content-editor";
 import { IItem } from "../../types/item";
@@ -350,7 +350,7 @@ export const CompManager: FC<{ id: string }> = ({ id }) => {
                               )}
                             </div>
 
-                            {g.shared && !g.isOwner && (
+                            {!g.isOwner && (
                               <div
                                 className="cursor-pointer border text-xs px-1 hover:bg-red-100 hover:border-red-500 hover:text-red-600 flex items-center h-[20px]"
                                 onClick={async () => {
@@ -552,54 +552,6 @@ export const CompManager: FC<{ id: string }> = ({ id }) => {
                                   >
                                     Pick
                                   </div>
-                                  {/* {g.info.name !== "__TRASH__" && (
-                                    <div
-                                      className={cx(
-                                        "edit bg-red-200 hover:bg-red-500 transition-all px-3 rounded-sm text-sm text-white"
-                                      )}
-                                      onClick={async (ev) => {
-                                        if (confirm("Are you sure ?")) {
-                                          if (!local.trash_id) {
-                                            const res =
-                                              await db.component_group.create({
-                                                data: {
-                                                  name: "__TRASH__",
-                                                  component_site: {
-                                                    create: {
-                                                      id_site:
-                                                        wsdoc.site?.id || "",
-                                                    },
-                                                  },
-                                                },
-                                              });
-                                            local.trash_id = res.id;
-                                            await reloadComps();
-                                          }
-
-                                          if (local.trash_id) {
-                                            local.group[
-                                              local.trash_id
-                                            ].comps.push(e);
-                                            g.comps.splice(idx, 1);
-                                            local.render();
-
-                                            db.component.update({
-                                              where: {
-                                                id: e.id,
-                                              },
-                                              data: {
-                                                id_component_group:
-                                                  local.trash_id,
-                                              },
-                                              select: { id: true },
-                                            });
-                                          }
-                                        }
-                                      }}
-                                    >
-                                      Trash
-                                    </div>
-                                  )} */}
                                 </div>
                                 <div
                                   onClick={(ev) => {
@@ -653,17 +605,67 @@ export const CompManager: FC<{ id: string }> = ({ id }) => {
           </div>
         )}
         {local.selected_id && (
-          <CompPreview comp_id={local.selected_id} onClose={() => {}} />
+          <CompPreview
+            comp_id={local.selected_id}
+            onClose={() => {
+              local.selected_id = "";
+              local.render();
+            }}
+            opt={
+              <>
+                <div
+                  className={cx(
+                    "edit bg-red-200 hover:bg-red-500 transition-all px-3 rounded-sm text-sm text-white cursor-pointer"
+                  )}
+                  onClick={async (ev) => {
+                    if (confirm("Are you sure ?")) {
+                      if (!local.trash_id) {
+                        const res = await db.component_group.create({
+                          data: {
+                            name: "__TRASH__",
+                            component_site: {
+                              create: {
+                                id_site: wsdoc.site?.id || "",
+                              },
+                            },
+                          },
+                        });
+                        local.trash_id = res.id;
+                      }
+
+                      if (local.trash_id) {
+                        await db.component.update({
+                          where: {
+                            id: local.selected_id,
+                          },
+                          data: {
+                            id_component_group: local.trash_id,
+                          },
+                          select: { id: true },
+                        });
+
+                        wsdoc.compGroup = {};
+                        await reloadComps();
+                      }
+                    }
+                  }}
+                >
+                  Delete
+                </div>
+              </>
+            }
+          />
         )}
       </div>
     </>
   );
 };
 
-const CompPreview: FC<{ comp_id: string; onClose: () => void }> = ({
-  comp_id,
-  onClose,
-}) => {
+const CompPreview: FC<{
+  comp_id: string;
+  onClose: () => void;
+  opt: ReactElement;
+}> = ({ comp_id, onClose, opt }) => {
   const local = useLocal({ name: "", comp: null as null | IItem });
 
   useEffect(() => {
@@ -689,12 +691,13 @@ const CompPreview: FC<{ comp_id: string; onClose: () => void }> = ({
   }, [comp_id]);
 
   return (
-    <div className="border-l w-[50%] flex flex-col">
-      <div className="border-b p-2 flex justify-between">
-        <div className="flex items-center cursor-pointer">
+    <div className="border-l w-[35%] transition-all flex flex-col">
+      <div className="border-b p-2 flex justify-between items-center">
+        <div className="flex items-center cursor-pointer" onClick={onClose}>
           <ChevronLeft />
           {local.name || "Component"}
         </div>
+        <div>{opt}</div>
       </div>
       <div className={cx("flex flex-1 flex-col relative overflow-auto")}>
         {!local.comp && <Loading backdrop={false} />}
