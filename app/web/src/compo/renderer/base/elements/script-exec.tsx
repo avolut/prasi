@@ -1,13 +1,18 @@
-import { ReactNode, Suspense } from "react";
+import {
+  ReactNode,
+  Suspense,
+  isValidElement,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { ErrorBoundary } from "web-init/src/web/error-boundary";
-import { findScope } from "../../../page/content-edit/render-tools/init-scope";
+import { useLocal } from "web-utils";
 import { createAPI, createDB } from "../../../page/scripting/api-db";
-import { createLocal } from "../../../page/scripting/local-comp";
-import { createPassProps } from "../../../page/scripting/pass-props";
-import { IContent } from "../../../types/general";
-import { SingleScope } from "../../../types/script";
-import { RendererGlobal } from "../renderer-global";
+import { LocalFC } from "../../../page/scripting/local-comp";
 import { createPassChild } from "../../../page/scripting/pass-child-r";
+import { IContent } from "../../../types/general";
+import { RendererGlobal } from "../renderer-global";
 
 type JsArg = {
   rg: typeof RendererGlobal;
@@ -30,7 +35,8 @@ export const scriptExec = (arg: JsArg, api_url?: string) => {
       scriptEval(...Object.values(evalArgs));
     } catch (e) {
       error = true;
-      console.log(arg.item, e, adv.jsBuilt, evalArgs);
+      console.log(e);
+      console.log(`ERROR: ` + adv.jsBuilt);
     }
     return output.jsx;
   }
@@ -43,19 +49,19 @@ const produceEvalArgs = (
   api_url?: string
 ) => {
   const { item, rg, children, output, className, render } = arg;
-  7;
-  const scope = rg.scope;
-  if (!scope.evargs[item.id]) {
-    scope.evargs[item.id] = {
-      local: createLocal({ item, scope, render }),
-      passprop: createPassProps({ item, scope }),
+
+  if (!item.cmemo) {
+    item.cmemo = {
+      local: createLocal({ item, render }),
       passchild: createPassChild({ item }),
+      passprop: createPassProp(),
     };
   }
 
-  const PassProp = scope.evargs[item.id].passprop;
-  const Local = scope.evargs[item.id].local;
-  const PassChild = scope.evargs[item.id].passchild;
+  const PassProp = item.cmemo.passprop;
+  const Local = item.cmemo.local;
+  const PassChild = item.cmemo.passchild;
+  const scopeProps = { ...window.exports, ...arg.item.nprops };
 
   const result: any = {
     PassProp,
@@ -80,7 +86,7 @@ const produceEvalArgs = (
         </ErrorBoundary>
       );
     },
-    ...findScope(scope, item.id),
+    ...scopeProps,
   };
 
   if (api_url) {
@@ -89,4 +95,52 @@ const produceEvalArgs = (
   }
 
   return result;
+};
+
+const createPassProp = () => {
+  return (prop: any) => {
+    const nprops = { ...prop };
+    delete nprops.children;
+
+    if (!prop.children[0].props.item.nprops) {
+      prop.children[0].props.item.nprops = {};
+    }
+    const cprops = prop.children[0].props.item.nprops;
+    for (const [k, v] of Object.entries(nprops)) {
+      cprops[k] = v;
+    }
+
+    return prop.children;
+  };
+};
+const createLocal = (arg: { item: IContent; render: () => void }): LocalFC => {
+  const { item, render } = arg;
+  return ({ name, value, children, effect }) => {
+    if (!item.scope) {
+      item.scope = { ...value, render };
+    }
+
+    const local = item.scope;
+    let child = children;
+    if (typeof children === "function") {
+      child = children(local);
+    }
+
+    if (Array.isArray(child)) {
+      for (const c of child) {
+        if (isValidElement(c)) {
+          const cprops: any = c.props;
+          if (!cprops.item.nprops) cprops.item.nprops = {};
+          cprops.item.nprops[name] = local;
+        }
+      }
+    } else {
+      if (isValidElement(child)) {
+        if (!child.props.item.nprops) child.props.item.nprops = {};
+        child.props.item.nprops[name] = local;
+      }
+    }
+
+    return child as ReactNode;
+  };
 };

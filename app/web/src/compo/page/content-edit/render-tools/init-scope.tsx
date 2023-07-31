@@ -41,8 +41,6 @@ export const initScope = (
           }
           scope.tree[item.id].childs.add(c.id);
         }
-      } else {
-        console.log(item.childs, item, mitem);
       }
     }
   }

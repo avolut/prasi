@@ -6,7 +6,7 @@ import { IContent } from "../../../types/general";
 import { IItem } from "../../../types/item";
 import { FNAdv, FNLinkTag } from "../../../types/meta-fn";
 import { IText } from "../../../types/text";
-import { initScope, instantiateComp } from "../components";
+import { instantiateComp } from "../components";
 import { RendererGlobal } from "../renderer-global";
 import { scriptExec } from "./script-exec";
 
@@ -16,9 +16,6 @@ export const RRender: FC<{
 }> = ({ item, children }) => {
   const rg = useGlobal(RendererGlobal, "PRASI_SITE");
 
-  if (item.type === "section") {
-    initScope(rg, item);
-  }
   if (item.hidden === "all") {
     return null;
   }
@@ -32,16 +29,20 @@ export const RRender: FC<{
       if (e.type === "item" && e.component?.id) {
         if (!rg.instances[e.id]) {
           rg.instances[e.id] = instantiateComp(rg, e) as IItem;
-
-          if (rg.instances[e.id]) {
-            initScope(rg, rg.instances[e.id], item.id);
-          }
         }
-        if (rg.instances[e.id]) return rg.instances[e.id];
-      } else {
-        initScope(rg, e, item.id);
+
+        if (rg.instances[e.id]) {
+          if (item.nprops) {
+            rg.instances[e.id].nprops = item.nprops;
+          }
+
+          return rg.instances[e.id];
+        }
       }
 
+      if (item.nprops) {
+        e.nprops = item.nprops;
+      }
       return e;
     });
 
@@ -54,15 +55,19 @@ export const RRender: FC<{
 
     if (html) _children = html;
     else if (adv.jsBuilt && adv.js) {
-      return scriptExec(
-        {
-          item,
-          children: _children,
-          rg,
-          className,
-          render: rg.render,
-        },
-        rg.site.api_url
+      return (
+        <>
+          {scriptExec(
+            {
+              item,
+              children: _children,
+              rg,
+              className,
+              render: rg.render,
+            },
+            rg.site.api_url
+          )}
+        </>
       );
     }
   }

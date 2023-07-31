@@ -4,7 +4,9 @@ import { RComponent } from "./r-component";
 import { RRender } from "./r-render";
 import { RText } from "./r-text";
 
-export const RItem: FC<{ item: IItem }> = ({ item }) => {
+export const RItem: FC<{
+  item: IItem;
+}> = ({ item }) => {
   const compid = item.component?.id;
   if (compid) {
     return <RComponent item={item} />;

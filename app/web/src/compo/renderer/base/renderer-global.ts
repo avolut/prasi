@@ -12,13 +12,6 @@ export const RendererGlobal = {
   },
   site: { id: "", api_url: "", js_compiled: "" },
   mode: "" as "desktop" | "mobile",
-  scope: {
-    tree: {},
-    effect: {},
-    value: {},
-    evargs: {},
-    types: {},
-  } as SingleScope,
   instances: {} as Record<string, IItem>,
   component: {
     def: {} as Record<string, { id: string; content_tree: IItem }>,

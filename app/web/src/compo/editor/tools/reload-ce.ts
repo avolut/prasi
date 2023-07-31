@@ -19,15 +19,6 @@ if (!w.prasiEditorPage) {
 export const reloadCE = async (
   ce: typeof CEGlobal & { render: () => void }
 ) => {
-  ce.scope = {
-    effect: {},
-    evargs: {},
-    tree: {},
-    types: {},
-    value: {},
-  };
-  ce.instances = {};
-
   const scroll = { t: 0, l: 0 };
   const p = w.prasiEditorPage[ce.id];
   if (p && p.el) {
@@ -38,18 +29,18 @@ export const reloadCE = async (
   }
 
   ce.editor.page.reload = true;
-  ce.scope = { effect: {}, evargs: {}, tree: {}, types: {}, value: {} };
-  ce.editor.page.render();
-  await importModule(
-    `${serverurl}/npm/site/${wsdoc.site?.id}/index.js?` + Date.now()
-  );
-  await importModule(
-    `${serverurl}/npm/page/${wsdoc.page_id}/index.js?` + Date.now()
-  );
-  const items = await loadComponents(ce.map.get("content_tree"));
-  for (const item of items) {
-    instantiateComp(ce, item);
-  }
+  // ce.scope = { effect: {}, evargs: {}, tree: {}, types: {}, value: {} };
+  // ce.editor.page.render();
+  // await importModule(
+  //   `${serverurl}/npm/site/${wsdoc.site?.id}/index.js?` + Date.now()
+  // );
+  // await importModule(
+  //   `${serverurl}/npm/page/${wsdoc.page_id}/index.js?` + Date.now()
+  // );
+  // const items = await loadComponents(ce.map.get("content_tree"));
+  // for (const item of items) {
+  //   instantiateComp(ce, item);
+  // }
 
   ce.editor.page.reload = false;
   ce.editor.page.render();

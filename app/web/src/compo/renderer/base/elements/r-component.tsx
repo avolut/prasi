@@ -1,7 +1,6 @@
 import { produce } from "immer";
 import { FC } from "react";
-import { useGlobal, useLocal } from "web-utils";
-import { findScope } from "../../../page/content-edit/render-tools/init-scope";
+import { useGlobal } from "web-utils";
 import { IItem } from "../../../types/item";
 import { Loading } from "../../prasi/ui/loading";
 import { RendererGlobal } from "../renderer-global";
@@ -12,7 +11,6 @@ import { RText } from "./r-text";
 export const RComponent: FC<{
   item: IItem;
 }> = ({ item }) => {
-  const local = useLocal({ loading: false });
   const rg = useGlobal(RendererGlobal, "PRASI_SITE");
 
   if (!item.component) return null;
@@ -51,6 +49,44 @@ export const RComponent: FC<{
         <Loading backdrop={false} />
       </div>
     );
+  }
+  const props = comp.content_tree.component?.props || {};
+  const nprops: any = {};
+  if (props) {
+    const exec = (fn: string, scopes: any) => {
+      const f = new Function(...Object.keys(scopes), `return ${fn}`);
+      const res = f(...Object.values(scopes));
+      return res;
+    };
+
+    for (const [key, _prop] of Object.entries(props)) {
+      const prop = item.component?.props[key] || _prop;
+      let val: any = null;
+      let shouldEval = true;
+      if (prop.meta?.type === "content-element") {
+        if (prop.content) {
+          prop.content.nprops = item.nprops;
+          val = <RItem item={prop.content} />;
+          shouldEval = false;
+        }
+      }
+
+      if (shouldEval) {
+        try {
+          val = exec(prop.valueBuilt || prop.value, {
+            ...window.exports,
+            ...item.nprops,
+          });
+        } catch (e) {}
+      }
+      nprops[key] = val;
+    }
+    if (!item.nprops) item.nprops = nprops;
+    else {
+      for (const [k, v] of Object.entries(nprops)) {
+        item.nprops[k] = v;
+      }
+    }
   }
 
   return (

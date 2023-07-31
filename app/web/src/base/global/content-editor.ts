@@ -30,7 +30,7 @@ export const CEGlobal = {
     manager: {
       showSite: false,
       showPage: false,
-      showComp: true,
+      showComp: false,
       compCallback: (comp?: { id: string; name: string }) => {},
     },
     focusedTextID: "",
