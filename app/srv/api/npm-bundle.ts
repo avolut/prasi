@@ -96,7 +96,6 @@ export const _ = {
 ${imports}
 ${exports}
 `.trim();
-    console.log(src);
     await dirAsync(dir.path(`../npm/${mode}/${id}`));
     await writeAsync(dir.path(`../npm/${mode}/${id}/input.js`), src);
     packages["react"] = "18.2.0";

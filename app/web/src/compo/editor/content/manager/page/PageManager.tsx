@@ -351,41 +351,43 @@ export const PageManager = () => {
                           if (local.newFolder.parentID) {
                             if (local.newFolder.name) {
                               const firstPage = data.all[0];
-                              db.page_folder
-                                .create({
-                                  data: {
-                                    id_site: firstPage.id_site,
-                                    name: local.newFolder.name,
-                                    parent_id:
-                                      local.newFolder.parentID === "ROOT" ||
-                                      !local.newFolder.parentID
-                                        ? null
-                                        : local.newFolder.parentID,
-                                  },
-                                })
-                                .then(async () => {
-                                  local.init = false;
-                                  await reloadPages();
-                                  local.render();
-                                });
+
+                              local.loading = true;
+                              local.render();
+                              await db.page_folder.create({
+                                data: {
+                                  id_site: firstPage.id_site,
+                                  name: local.newFolder.name,
+                                  parent_id:
+                                    local.newFolder.parentID === "ROOT" ||
+                                    !local.newFolder.parentID
+                                      ? null
+                                      : local.newFolder.parentID,
+                                },
+                              });
+                              await reloadPages();
+                              local.loading = false;
+                              local.init = false;
+                              local.render();
                             }
                           } else {
                             node.text = local.newFolder.name;
-                            db.page_folder
-                              .update({
-                                data: {
-                                  name: local.newFolder.name,
-                                },
-                                where: {
-                                  id: node.id as string,
-                                },
-                                select: { id: true },
-                              })
-                              .then(async () => {
-                                local.init = false;
-                                await reloadPages();
-                                local.render();
-                              });
+                            local.loading = true;
+                            local.render();
+                            await db.page_folder.update({
+                              data: {
+                                name: local.newFolder.name,
+                              },
+                              where: {
+                                id: node.id as string,
+                              },
+                              select: { id: true },
+                            });
+
+                            await reloadPages();
+                            local.loading = false;
+                            local.init = false;
+                            local.render();
                           }
 
                           local.newFolder.name = "";
@@ -575,21 +577,12 @@ export const PageManager = () => {
             }}
             onSave={async (res) => {
               local.page.data = null;
+              local.loading = true;
               local.render();
-
-              data.all.forEach((e) => {
-                if (e.id === res.id) {
-                  e.name = res.name;
-                  e.url = res.url;
-                }
-              });
-
-              data.pages.forEach((e) => {
-                if (e.id === res.id && e.data) {
-                  e.data.name = res.name;
-                  e.data.url = res.url;
-                }
-              });
+              await reloadPages();
+              local.loading = false;
+              local.init = false;
+              local.render();
             }}
             page={local.page.data}
           />

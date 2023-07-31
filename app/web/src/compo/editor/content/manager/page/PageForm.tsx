@@ -12,7 +12,7 @@ export const PageForm: FC<{
   onSave: (res: any) => void;
 }> = ({ page, onClose, onSave }) => {
   const c = useGlobal(CEGlobal, "PAGE");
-  const local = useLocal({ init: false, saving: false });
+  const local = useLocal({ init: false, saving: false, fillUrl: false });
   const form = useLocal({} as Partial<page>);
 
   if (!local.init) {
@@ -91,11 +91,21 @@ export const PageForm: FC<{
               form={form}
               autoFocus
               name={"name"}
-              onBlur={(e) => {
+              onFocus={() => {
                 if (!form.url) {
-                  form.url = `/${slugify(e.currentTarget.value)}`;
+                  local.fillUrl = true;
+                  local.render();
+                }
+              }}
+              onChange={(e) => {
+                if (local.fillUrl) {
+                  form.url = `/${slugify(e)}`;
                 }
                 form.render();
+              }}
+              onBlur={() => {
+                local.fillUrl = false;
+                local.render();
               }}
             />
           </label>

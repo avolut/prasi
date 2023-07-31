@@ -7,6 +7,7 @@ import {
 } from "../../../web/src/compo/editor/ws/msg";
 import { eg } from "../edit-global";
 import { getComp } from "./get-comp";
+import { getPage } from "./get-page";
 
 export const svLocal = async (ws: Websocket, msg: WS_MSG_SV_LOCAL) => {
   const changes = Uint8Array.from(
@@ -16,6 +17,10 @@ export const svLocal = async (ws: Websocket, msg: WS_MSG_SV_LOCAL) => {
   );
   let doc = null as any;
   if (msg.mode === "page") {
+    if (!eg.edit.page[msg.id]) {
+      await getPage(ws, { type: "get_page", page_id: msg.id });
+    }
+
     doc = eg.edit.page[msg.id].doc;
   } else if (msg.mode === "comp") {
     if (!eg.edit.comp[msg.id]) {
