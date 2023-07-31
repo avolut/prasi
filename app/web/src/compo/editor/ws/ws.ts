@@ -41,7 +41,6 @@ export const connectWS = async (page: {
   if (wsdoc.ws) {
     const ws = wsdoc.ws;
     const retry = (e: any) => {
-      console.log(e);
       if (wsdoc.retry.disabled) return;
 
       wsdoc.retry.localIP = true;
