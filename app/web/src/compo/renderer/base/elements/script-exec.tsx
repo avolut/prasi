@@ -1,8 +1,4 @@
-import {
-  ReactNode,
-  Suspense,
-  isValidElement
-} from "react";
+import { ReactNode, Suspense, isValidElement } from "react";
 import { ErrorBoundary } from "web-init/src/web/error-boundary";
 import { createAPI, createDB } from "../../../page/scripting/api-db";
 import { LocalFC } from "../../../page/scripting/local-comp";
@@ -98,14 +94,15 @@ const createPassProp = () => {
     const nprops = { ...prop };
     delete nprops.children;
 
-    if (!prop.children[0].props.item.nprops) {
-      prop.children[0].props.item.nprops = {};
-    }
-    const cprops = prop.children[0].props.item.nprops;
-    for (const [k, v] of Object.entries(nprops)) {
-      cprops[k] = v;
-    }
-
+    try {
+      if (!prop.children[0].props.item.nprops) {
+        prop.children[0].props.item.nprops = {};
+      }
+      const cprops = prop.children[0].props.item.nprops;
+      for (const [k, v] of Object.entries(nprops)) {
+        cprops[k] = v;
+      }
+    } catch (e) {}
     return prop.children;
   };
 };

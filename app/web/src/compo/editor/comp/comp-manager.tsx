@@ -9,6 +9,9 @@ import { wsdoc } from "../ws/wsdoc";
 import { CompUseShared } from "./comp-use-shared";
 import { CEItem } from "../../page/content-edit/ce-item";
 import { RItem } from "../../renderer/base/elements/r-item";
+import { getRenderPropVal } from "../../renderer/base/elements/r-component";
+import { RendererGlobal } from "../../renderer/base/renderer-global";
+import { PRASI_COMPONENT } from "../../renderer/base/renderer-types";
 
 const w = window as unknown as {
   compManagerSearch: string;
@@ -667,6 +670,7 @@ const CompPreview: FC<{
   opt: ReactElement;
 }> = ({ comp_id, onClose, opt }) => {
   const local = useLocal({ name: "", comp: null as null | IItem });
+  const rg = useGlobal(RendererGlobal, "PRASI_SITE");
 
   useEffect(() => {
     local.comp = null;
@@ -683,7 +687,36 @@ const CompPreview: FC<{
           local.comp = e.content_tree as any;
         }
 
-        if (local.comp) {
+        if (local.comp && local.comp.component?.props) {
+          local.comp.nprops = {};
+          if (!rg.component.load) {
+            rg.component.load = async (ids: string[]) => {
+              const all = await db.component.findMany({
+                where: { id: { in: ids } },
+                select: {
+                  id: true,
+                  content_tree: true,
+                  name: true,
+                },
+              });
+
+              return (all || []).map((e) => {
+                return {
+                  name: e.name,
+                  id: e.id,
+                  content_tree: e.content_tree,
+                } as PRASI_COMPONENT;
+              });
+            };
+          }
+
+          getRenderPropVal(
+            local.comp.component.props,
+            local.comp,
+            local.comp.nprops,
+            rg
+          );
+
           delete local.comp.component;
         }
         local.render();

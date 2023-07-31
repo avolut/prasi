@@ -8,6 +8,7 @@ import { RendererGlobal } from "../renderer-global";
 import { RItem } from "./r-item";
 import { RRender } from "./r-render";
 import { RText } from "./r-text";
+import { FNCompDef } from "../../../types/meta-fn";
 
 export const RComponent: FC<{
   item: IItem;
@@ -54,42 +55,7 @@ export const RComponent: FC<{
   const props = comp.content_tree.component?.props || {};
   const nprops: any = {};
   if (props) {
-    const exec = (fn: string, scopes: any) => {
-      scopes["api"] = createAPI(rg.site.api_url);
-      scopes["db"] = createDB(rg.site.api_url);
-      const f = new Function(...Object.keys(scopes), `return ${fn}`);
-      const res = f(...Object.values(scopes));
-      return res;
-    };
-
-    for (const [key, _prop] of Object.entries(props)) {
-      const prop = item.component?.props[key] || _prop;
-      let val: any = null;
-      let shouldEval = true;
-      if (prop.meta?.type === "content-element") {
-        if (prop.content) {
-          prop.content.nprops = item.nprops;
-          val = <RItem item={prop.content} />;
-          shouldEval = false;
-        }
-      }
-
-      if (shouldEval) {
-        try {
-          val = exec(prop.valueBuilt || prop.value, {
-            ...window.exports,
-            ...item.nprops,
-          });
-        } catch (e) {}
-      }
-      nprops[key] = val;
-    }
-    if (!item.nprops) item.nprops = nprops;
-    else {
-      for (const [k, v] of Object.entries(nprops)) {
-        item.nprops[k] = v;
-      }
-    }
+    getRenderPropVal(props, item, nprops, rg);
   }
 
   return (
@@ -102,4 +68,48 @@ export const RComponent: FC<{
       }
     </RRender>
   );
+};
+
+export const getRenderPropVal = (
+  props: Record<string, FNCompDef>,
+  item: IItem,
+  nprops: any,
+  rg?: any
+) => {
+  const exec = (fn: string, scopes: any) => {
+    scopes["api"] = createAPI(rg?.site.api_url);
+    scopes["db"] = createDB(rg?.site.api_url);
+    const f = new Function(...Object.keys(scopes), `return ${fn}`);
+    const res = f(...Object.values(scopes));
+    return res;
+  };
+
+  for (const [key, _prop] of Object.entries(props)) {
+    const prop = item.component?.props[key] || _prop;
+    let val: any = null;
+    let shouldEval = true;
+    if (prop.meta?.type === "content-element") {
+      if (prop.content) {
+        prop.content.nprops = item.nprops;
+        val = <RItem item={prop.content} />;
+        shouldEval = false;
+      }
+    }
+
+    if (shouldEval) {
+      try {
+        val = exec(prop.valueBuilt || prop.value, {
+          ...window.exports,
+          ...item.nprops,
+        });
+      } catch (e) {}
+    }
+    nprops[key] = val;
+  }
+  if (!item.nprops) item.nprops = nprops;
+  else {
+    for (const [k, v] of Object.entries(nprops)) {
+      item.nprops[k] = v;
+    }
+  }
 };
