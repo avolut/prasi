@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import { useLocal } from "web-utils";
 import { responsiveVal } from "../../../../page/tools/responsive-val";
 import { IItem } from "../../../../types/item";
@@ -29,6 +29,15 @@ export const PanelPadding: FC<{
     t: 0,
     r: 0,
   });
+
+  useEffect(() => {
+    if (!local.all) {
+      if (padding.l !== padding.r || padding.b !== padding.t) {
+        local.all = true;
+        local.render();
+      }
+    }
+  }, [value]);
 
   return (
     <div

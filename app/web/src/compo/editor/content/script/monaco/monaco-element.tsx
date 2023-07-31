@@ -219,7 +219,6 @@ export const ScriptMonacoElement: FC<{
             }
 
             const propVal: any = { ...(window.exports || {}) };
-            console.log(propVal);
             const propTypes: any = {};
 
             if (component.edit.id) {

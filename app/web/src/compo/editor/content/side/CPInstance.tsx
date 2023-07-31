@@ -15,11 +15,9 @@ export const CPInstance: FC<{
   prop: FNCompDef;
   props: TypedMap<Record<string, FMCompDef>>;
   name: string;
-  idx: number;
   doc: CompDoc | null;
-  render: () => void;
   reload: () => void;
-}> = ({ idx, name, prop, render, doc, props, reload }) => {
+}> = ({ name, prop, doc, props, reload }) => {
   const local = useLocal({ mevent: null as any, editCode: false });
   const type = prop.meta?.type || "text";
 
@@ -28,6 +26,7 @@ export const CPInstance: FC<{
       doc.transact(fn);
     } else fn();
   };
+
   const update = (key: keyof FNCompDef, value: any) => {
     let mprop = props.get(name);
     if (!mprop || (mprop && !(mprop instanceof Y.Map))) {
@@ -73,8 +72,7 @@ export const CPInstance: FC<{
         local.render();
       }}
       className={cx(
-        "border-b bg-white hover:bg-orange-50 flex flex-col items-stretch",
-        idx === 0 && " -mt-1 "
+        "border-b bg-white hover:bg-orange-50 flex flex-col items-stretch"
       )}
     >
       {local.mevent && (

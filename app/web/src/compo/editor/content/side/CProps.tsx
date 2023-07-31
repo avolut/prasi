@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect } from "react";
+import { FC, useEffect } from "react";
 import { useGlobal, useLocal } from "web-utils";
 import { syncronize } from "y-pojo";
 import * as Y from "yjs";
@@ -7,15 +7,12 @@ import { CEGlobal, CompDoc } from "../../../../base/global/content-editor";
 import { component } from "../../../page/component";
 import { IItem } from "../../../types/item";
 import { FMCompDef, FNCompDef } from "../../../types/meta-fn";
-import { Dropdown } from "../../../ui/dropdown";
 import { Loading } from "../../../ui/loading";
-import { Tooltip } from "../../../ui/tooltip";
 import { wsdoc } from "../../ws/wsdoc";
 import { jscript } from "../script/script-element";
-import { AutoHeightTextarea } from "./panel/link";
-import { SideLabel } from "./ui/SideLabel";
 import { CPInstance } from "./CPInstance";
 import { CPMaster } from "./CPMaster";
+import { SideLabel } from "./ui/SideLabel";
 
 export const CompProps: FC<{
   id: string;
@@ -46,7 +43,23 @@ export const CompProps: FC<{
 
   let compRef = null as CompDoc | null;
   const active = c.editor.active?.toJSON() as IItem;
-  let propJSON = props.toJSON();
+  let propJSON = props.toJSON() as Record<string, FNCompDef>;
+
+  useEffect(() => {
+    if (mode === "instance" && compRef) {
+      const props = compRef
+        .getMap("map")
+        .get("content_tree")
+        ?.get("component")
+        ?.get("props");
+      const pjson = props?.toJSON() as Record<string, FNCompDef>;
+      if (checkIdx(pjson)) {
+        compRef.transact(() => {
+          syncronize(props as any, pjson);
+        });
+      }
+    }
+  }, []);
 
   if (mode === "instance") {
     compRef = component.docs[active?.component?.id || ""];
@@ -73,6 +86,7 @@ export const CompProps: FC<{
           } else {
             json[k] = { ...propJSON[k] };
             json[k].meta = ref.meta;
+            json[k].idx = ref.idx;
           }
         }
       });
@@ -120,7 +134,11 @@ export const CompProps: FC<{
                     i++;
                   } else {
                     prop = new Y.Map();
-                    syncronize(prop, { type: "string", value: '"hello"' });
+                    syncronize(prop, {
+                      idx: Object.keys(propJSON).length + 1,
+                      type: "string",
+                      value: '"hello"',
+                    });
                     props.set(`new_prop${i === 0 ? "" : `_${i}`}`, prop);
                     break;
                   }
@@ -164,41 +182,66 @@ export const CompProps: FC<{
           )}
         </div>
       </SideLabel>
-      {Object.entries(propJSON)
-        .sort((a, b) => {
-          return a[0].localeCompare(b[0]);
-        })
-        .map(([key, value], idx) => {
-          const prop = value as FNCompDef;
+      <div className="flex flex-1 flex-col items-stretch -mt-1">
+        {Object.entries(propJSON)
+          .sort((a, b) => {
+            return a[1].idx - b[1].idx;
+          })
+          .map(([key, value], idx) => {
+            const prop = value as FNCompDef;
 
-          const reload = () => {
-            local.loading = true;
-            local.render();
-            setTimeout(() => {
-              local.loading = false;
+            const reload = () => {
+              local.loading = true;
               local.render();
-            }, 10);
-          };
-          if (mode === "instance")
-            return (
-              <CPInstance
-                key={key}
-                name={key}
-                idx={idx}
-                prop={prop}
-                props={props}
-                doc={component.docs[active.component?.id || ""]}
-                render={c.editor.page.render}
-                reload={reload}
-              />
-            );
+              setTimeout(() => {
+                local.loading = false;
+                local.render();
+              }, 10);
+            };
+            if (mode === "instance")
+              return (
+                <CPInstance
+                  key={key}
+                  name={key}
+                  prop={prop}
+                  props={props}
+                  doc={component.docs[active.component?.id || ""]}
+                  reload={reload}
+                />
+              );
 
-          return <CPMaster key={key} />;
-        })}
+            const mprop = props.get(key);
+            if (mprop)
+              return (
+                <CPMaster
+                  key={key}
+                  name={key}
+                  mprop={mprop}
+                  prop={prop}
+                  props={props}
+                  doc={component.docs[active.component?.id || ""]}
+                  reload={reload}
+                />
+              );
+          })}
+      </div>
     </div>
   );
 };
 
+const checkIdx = (props: Record<string, FNCompDef>) => {
+  let i = 1;
+  let resetIdx = false;
+  for (const [k, prop] of Object.entries(props)) {
+    if (typeof prop.idx === "undefined") {
+      prop.idx = i;
+      resetIdx = true;
+    }
+    i++;
+  }
+
+  return resetIdx;
+};
 // const PropItem: FC<{
 //   mode: "root" | "instance";
 //   prop: FNCompDef;
