@@ -83,6 +83,7 @@ const produceEvalArgs = (
       );
     },
     ...scopeProps,
+    ...window.exports
   };
 
   if (api_url) {

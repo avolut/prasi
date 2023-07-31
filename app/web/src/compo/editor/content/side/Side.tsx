@@ -7,7 +7,7 @@ import { CEGlobal } from "../../../../base/global/content-editor";
 import { component } from "../../../page/component";
 import { IItem, MItem } from "../../../types/item";
 import { wsdoc } from "../../ws/wsdoc";
-import { CompProps } from "./CompProps";
+import { CompProps } from "./CProps";
 import { PanelAdv } from "./panel/advanced";
 import { PanelAutoLayout } from "./panel/auto-layout";
 import { PanelBackground } from "./panel/background";
