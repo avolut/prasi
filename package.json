@@ -2,7 +2,6 @@
   "name": "royal-arc",
   "version": "1.0.0",
   "main": "index.js",
-
   "scripts": {
     "base": "node base devbase",
     "pre-commit": "node base pre-commit",
@@ -14,7 +13,9 @@
     }
   },
   "devDependencies": {
+    "crypto-browserify": "^3.12.0",
     "husky": "^8.0.3",
+    "os-browserify": "^0.3.0",
     "path-browserify": "^1.0.0",
     "process": "0.11.10",
     "util": "^0.12.3"

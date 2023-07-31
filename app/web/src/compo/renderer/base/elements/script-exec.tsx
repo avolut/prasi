@@ -1,13 +1,9 @@
 import {
   ReactNode,
   Suspense,
-  isValidElement,
-  useEffect,
-  useRef,
-  useState,
+  isValidElement
 } from "react";
 import { ErrorBoundary } from "web-init/src/web/error-boundary";
-import { useLocal } from "web-utils";
 import { createAPI, createDB } from "../../../page/scripting/api-db";
 import { LocalFC } from "../../../page/scripting/local-comp";
 import { createPassChild } from "../../../page/scripting/pass-child-r";

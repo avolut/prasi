@@ -4,7 +4,7 @@ import { RRender } from "./r-render";
 import { RItem } from "./r-item";
 import { IItem } from "../../../types/item";
 
-export const RSection: FC<{ item: ISection, props: any }> = ({ item }) => {
+export const RSection: FC<{ item: ISection }> = ({ item }) => {
   return (
     <RRender item={item}>
       {(childs) =>

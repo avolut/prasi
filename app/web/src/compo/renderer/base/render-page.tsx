@@ -66,17 +66,9 @@ export const PrasiPage = (props: {
   }
 
   if (rg.site.id && local.isNewPage) {
-    rg.scope = {
-      tree: {},
-      effect: {},
-      value: {},
-      evargs: {},
-      types: {},
-    };
     rg.instances = {};
 
-    const scope = rg.scope;
-    if (scope && rg.site) {
+    if (rg.site) {
       if ((rg.site.js_compiled || "").trim()) {
         const api_url = rg.site.api_url;
         const args: any = {};
@@ -98,16 +90,6 @@ export const PrasiPage = (props: {
           "render",
           rg.site.js_compiled
         );
-        try {
-          fn(...Object.values(args), exports, types, importModule, rg.render);
-          if (!scope.value.root) {
-            scope.value.root = exports;
-          }
-
-          for (const [k, v] of Object.entries(exports)) {
-            scope.value.root[k] = v;
-          }
-        } catch (e) {}
       }
     }
     local.isNewPage = false;

@@ -1,6 +1,7 @@
 import { produce } from "immer";
 import { FC } from "react";
 import { useGlobal } from "web-utils";
+import { createAPI, createDB } from "../../../page/scripting/api-db";
 import { IItem } from "../../../types/item";
 import { Loading } from "../../prasi/ui/loading";
 import { RendererGlobal } from "../renderer-global";
@@ -54,6 +55,8 @@ export const RComponent: FC<{
   const nprops: any = {};
   if (props) {
     const exec = (fn: string, scopes: any) => {
+      scopes["api"] = createAPI(rg.site.api_url);
+      scopes["db"] = createDB(rg.site.api_url);
       const f = new Function(...Object.keys(scopes), `return ${fn}`);
       const res = f(...Object.values(scopes));
       return res;
