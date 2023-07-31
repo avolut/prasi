@@ -101,7 +101,12 @@ const createPassProp = () => {
 };
 
 const thru = (prop: any, nprops: any) => {
-  let child = prop.children;
+  let child = null;
+  if (Array.isArray(prop)) {
+    child = prop;
+  } else {
+    child = prop.children;
+  }
   if (Array.isArray(child)) {
     for (const c of child) {
       if (isValidElement(c)) {
