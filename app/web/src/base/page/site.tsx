@@ -46,6 +46,7 @@ export default page({
               id: true,
               url: true,
               name: true,
+              updated_at: true,
               js_compiled: true,
               content_tree: true,
             },
@@ -65,6 +66,7 @@ export default page({
             select: {
               id: true,
               url: true,
+              updated_at: true,
               name: true,
             },
           });

@@ -39,9 +39,7 @@ export class PrasiRenderer extends Renderer {
   }) {
     super();
     const rg = this.rg;
-    if (arg.props) {
-      rg.scope.value.root = arg.props;
-    }
+
     rg.ui.loading = arg.component?.loading ? (
       arg.component?.loading(rg)
     ) : (
@@ -57,7 +55,6 @@ export class PrasiRenderer extends Renderer {
     );
 
     rg.page.load = async (page_id) => {
-
       try {
         if (typeof window.exports === "undefined") {
           window.exports = {};
@@ -84,11 +81,9 @@ export class PrasiRenderer extends Renderer {
           rg.loading = true;
           rg.render();
           rg.site = await arg.load.site(rg);
-          window.exports= {};
-          await importModule(
-            `${serverurl}/npm/site/${rg.site.id}/index.js`
-          );
-          
+          window.exports = {};
+          await importModule(`${serverurl}/npm/site/${rg.site.id}/index.js`);
+
           if (!w.prasiApi) w.prasiApi = {};
 
           if (rg.site.api_url) {

@@ -94,18 +94,49 @@ const createPassProp = () => {
     const nprops = { ...prop };
     delete nprops.children;
 
-    try {
-      if (!prop.children[0].props.item.nprops) {
-        prop.children[0].props.item.nprops = {};
-      }
-      const cprops = prop.children[0].props.item.nprops;
-      for (const [k, v] of Object.entries(nprops)) {
-        cprops[k] = v;
-      }
-    } catch (e) {}
+    thru(prop, nprops);
+
     return prop.children;
   };
 };
+
+const thru = (prop: any, nprops: any) => {
+  let child = prop.children;
+  if (Array.isArray(child)) {
+    for (const c of child) {
+      if (isValidElement(c)) {
+        const cprops: any = c.props;
+        if (cprops.item) {
+          if (!cprops.item.nprops) cprops.item.nprops = {};
+          for (const [k, v] of Object.entries(nprops)) {
+            cprops.item.nprops[k] = v;
+          }
+        }
+      }
+    }
+  } else {
+    if (isValidElement(child)) {
+      const cprops: any = child.props;
+      if (cprops.item) {
+        if (!cprops.item.nprops) cprops.item.nprops = {};
+        for (const [k, v] of Object.entries(nprops)) {
+          cprops.item.nprops[k] = v;
+        }
+      } else if (cprops.children) {
+        for (const [ck, cv] of Object.entries(cprops.children)) {
+          const cprops = (cv as any).props;
+          if (cprops.item) {
+            if (!cprops.item.nprops) cprops.item.nprops = {};
+            for (const [k, v] of Object.entries(nprops)) {
+              cprops.item.nprops[k] = v;
+            }
+          }
+        }
+      }
+    }
+  }
+};
+
 const createLocal = (arg: { item: IContent; render: () => void }): LocalFC => {
   const { item, render } = arg;
   return ({ name, value, children, effect }) => {
@@ -118,21 +149,7 @@ const createLocal = (arg: { item: IContent; render: () => void }): LocalFC => {
     if (typeof children === "function") {
       child = children(local);
     }
-
-    if (Array.isArray(child)) {
-      for (const c of child) {
-        if (isValidElement(c)) {
-          const cprops: any = c.props;
-          if (!cprops.item.nprops) cprops.item.nprops = {};
-          cprops.item.nprops[name] = local;
-        }
-      }
-    } else {
-      if (isValidElement(child)) {
-        if (!child.props.item.nprops) child.props.item.nprops = {};
-        child.props.item.nprops[name] = local;
-      }
-    }
+    thru(child, { [name]: local });
 
     return child as ReactNode;
   };

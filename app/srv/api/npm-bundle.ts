@@ -6,6 +6,7 @@ import { $ } from "execa";
 import { dirAsync, writeAsync } from "fs-jetpack";
 import { stat } from "fs/promises";
 import { apiContext } from "service-srv";
+import { style } from "@hyrious/esbuild-plugin-style";
 
 export type NPMImportAs = {
   main: { mode: "default" | "*"; name: string };
@@ -122,23 +123,7 @@ packages:
         minify: true,
         treeShaking: true,
         sourcemap: true,
-        plugins: [
-          httpPlugin,
-          {
-            name: "inline-style",
-            setup({ onLoad }) {
-              var fs = require("fs");
-              var template = (css: any) =>
-                `typeof document<'u'&&` +
-                `document.head.appendChild(document.createElement('style'))` +
-                `.appendChild(document.createTextNode(${JSON.stringify(css)}))`;
-              onLoad({ filter: /\.css$/ }, async (args) => {
-                let css = await fs.promises.readFile(args.path, "utf8");
-                return { contents: template(css) };
-              });
-            },
-          },
-        ],
+        plugins: [style()],
         logLevel: "silent",
       });
     } catch (e) {

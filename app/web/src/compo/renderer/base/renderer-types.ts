@@ -10,6 +10,7 @@ export type PRASI_PAGE = {
   name: string;
   js_compiled?: string;
   content_tree?: IRoot | null;
+  updated_at?: Date;
 };
 
 export type PRASI_COMPONENT = {

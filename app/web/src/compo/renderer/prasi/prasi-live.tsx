@@ -59,6 +59,7 @@ export const createPrasiLive = (arg: {
             id: true,
             url: true,
             name: true,
+            updated_at: true,
             js_compiled: true,
             content_tree: true,
           },
@@ -77,6 +78,7 @@ export const createPrasiLive = (arg: {
           },
           select: {
             id: true,
+            updated_at: true,
             url: true,
             name: true,
           },

@@ -23,7 +23,6 @@ export const RComponent: FC<{
   if (!comp) {
     if (!rg.component.loading[compid]) {
       rg.component.loading[compid] = true;
-
       rg.component.load([compid]).then((comps) => {
         comps.map((e) => {
           rg.component.def[e.id] = {
@@ -31,7 +30,6 @@ export const RComponent: FC<{
             content_tree: produce(e.content_tree, () => {}),
           };
         });
-
         rg.loading = false;
         delete rg.component.loading[compid];
         rg.render();
@@ -88,6 +86,7 @@ export const getRenderPropVal = (
     const prop = item.component?.props[key] || _prop;
     let val: any = null;
     let shouldEval = true;
+
     if (prop.meta?.type === "content-element") {
       if (prop.content) {
         prop.content.nprops = item.nprops;
