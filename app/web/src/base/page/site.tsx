@@ -1,16 +1,21 @@
 import { validate } from "uuid";
 import { page } from "web-init";
+import { useLocal } from "web-utils";
+import { PageLocal, connectPreview } from "../../compo/editor/ws/preview";
+import { SiteConfig } from "../../compo/editor/ws/wsdoc";
 import {
   PRASI_COMPONENT,
   PRASI_PAGE,
 } from "../../compo/renderer/base/renderer-types";
 import { PrasiRenderer } from "../../compo/renderer/prasi/prasi-renderer";
-import { SiteConfig } from "../../compo/editor/ws/wsdoc";
+import { MPage } from "../../compo/types/general";
 
 export default page({
   url: "/site/:name/**",
   component: () => {
-    const site = new PrasiRenderer({
+    const local = useLocal(PageLocal);
+
+    local.site = new PrasiRenderer({
       load: {
         async site() {
           const site = await db.site.findFirst({
@@ -40,22 +45,12 @@ export default page({
           return { id: "", api_url: "", js_compiled: "" };
         },
         async page(rg, page_id) {
-          const page = await db.page.findFirst({
-            where: { id: page_id },
-            select: {
-              id: true,
-              url: true,
-              name: true,
-              updated_at: true,
-              js_compiled: true,
-              content_tree: true,
-            },
+          rg.component.scanMode = "client-side";
+          const doc = await new Promise<MPage>(async (resolve) => {
+            await connectPreview(local, page_id, resolve);
           });
 
-          if (page) {
-            return page as Required<PRASI_PAGE>;
-          }
-          return null;
+          return doc.getMap("map").toJSON() as Required<PRASI_PAGE>;
         },
         async pages(rg) {
           const all = await db.page.findMany({
@@ -99,6 +94,6 @@ export default page({
       },
     });
 
-    return site.renderPage(params._ === "_" ? "/" : `/${params._}`);
+    return local.site.renderPage(params._ === "_" ? "/" : `/${params._}`);
   },
 });

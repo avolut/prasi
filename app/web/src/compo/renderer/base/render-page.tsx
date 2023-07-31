@@ -48,7 +48,14 @@ export const PrasiPage = (props: {
           if (page.active) {
             page.active.content_tree = loadedPage?.content_tree || null;
             page.active.js_compiled = loadedPage?.js_compiled;
-            const res: any = await api.comp_scan(page.active.id);
+            let res: any[] = [];
+            if (rg.component.scanMode === "server-side") {
+              res = await api.comp_scan(page.active.id);
+            } else if (page.active.content_tree) {
+              res = await rg.component.load([
+                ...scanComponent(page.active.content_tree),
+              ]);
+            }
             if (res) {
               for (const c of res) {
                 rg.component.def[c.id] = {

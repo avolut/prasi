@@ -1,9 +1,8 @@
 import { compress, decompress } from "lz-string";
 import * as Y from "yjs";
-import { w } from "../../../types/general";
+import { component } from "../../../page/component";
 import { WS_MSG_SVDIFF_REMOTE, WS_MSG_SV_LOCAL } from "../msg";
 import { wsdoc } from "../wsdoc";
-import { component } from "../../../page/component";
 
 export const svLocal = async (msg: WS_MSG_SV_LOCAL) => {
   const sv_local = Uint8Array.from(
