@@ -100,16 +100,22 @@ export const ScriptMonacoElement: FC<{
               onClick={() => {
                 doEdit(
                   `\
-                <Local 
-                  name="local" 
-                  value={{data: []}}
-                  effect={
-                    async (local) => {
-                      local.data = ["world!"]
-                      local.render();
-                    }
-                  }
-                >{children}</Local>`
+<Local 
+  name="local" 
+  value={{
+    list: ["hello"],
+    form: {
+      hello: "yo"
+    },
+  }}
+  effect={
+    async (local) => {
+      local.list.push("world!");
+      local.form.hello = "world!";
+      local.render();
+    }
+  }
+>{children}</Local>`
                 );
               }}
             >
@@ -126,7 +132,7 @@ export const ScriptMonacoElement: FC<{
               onClick={() => {
                 doEdit(
                   `\
-{(local.data || []).map((item, idx) => (
+{(local.list || []).map((item, idx) => (
   <PassProp item={item} key={idx}>{children}</PassProp>
 ))}      
 `
