@@ -101,6 +101,7 @@ export default page({
 
       return <Loading />;
     }
+
     if (!local.init)
       return (
         <>

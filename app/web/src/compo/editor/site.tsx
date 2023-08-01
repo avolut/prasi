@@ -93,27 +93,20 @@ export const SiteEditor: FC<{
           if (page) {
             navigate(`/editor/${site.id}/${page.id}`);
           } else {
-            let folder = await db.page_folder.findFirst({
-              where: {
+            const res = await db.page.create({
+              data: {
+                content_tree: {
+                  childs: [],
+                  id: "root",
+                  type: "root",
+                },
+                name: "Home",
+                url: "/",
                 id_site: site.id,
               },
             });
-            if (folder) {
-              const res = await db.page.create({
-                data: {
-                  content_tree: {
-                    childs: [],
-                    id: "root",
-                    type: "root",
-                  },
-                  name: "Home",
-                  url: "/",
-                  id_site: site.id,
-                },
-              });
 
-              navigate(`/editor/${site.id}/${res.id}`);
-            }
+            navigate(`/editor/${site.id}/${res.id}`);
           }
         });
     }
@@ -155,6 +148,7 @@ export const SiteEditor: FC<{
   if (config.prasi && config.prasi.port) {
     api_url = `https://${config?.prasi?.port}.prasi.world`;
   }
+
   return (
     <div
       className={cx("editor flex flex-1 flex-col items-stretch", editorStyle)}
