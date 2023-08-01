@@ -40,6 +40,10 @@ export const execElement = (arg: JsArg, api_url?: string) => {
   return null;
 };
 
+const Preload = ({ children, url }: { children: ReactNode; url: string[] }) => {
+  return children;
+};
+
 const produceEvalArgs = (
   arg: JsArg & { output: { jsx: ReactNode } },
   api_url?: string
@@ -63,6 +67,7 @@ const produceEvalArgs = (
     Local,
     children,
     PassChild,
+    Preload,
     props: {
       className: cx(className),
       ...elementProp,
@@ -83,7 +88,7 @@ const produceEvalArgs = (
       );
     },
     ...scopeProps,
-    ...window.exports
+    ...window.exports,
   };
 
   if (api_url) {

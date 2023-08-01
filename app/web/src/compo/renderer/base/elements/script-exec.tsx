@@ -1,10 +1,11 @@
-import { ReactNode, Suspense, isValidElement } from "react";
+import { ReactNode, Suspense, isValidElement, useEffect } from "react";
 import { ErrorBoundary } from "web-init/src/web/error-boundary";
 import { createAPI, createDB } from "../../../page/scripting/api-db";
 import { LocalFC } from "../../../page/scripting/local-comp";
 import { createPassChild } from "../../../page/scripting/pass-child-r";
 import { IContent } from "../../../types/general";
 import { RendererGlobal } from "../renderer-global";
+import { useGlobal } from "web-utils";
 
 type JsArg = {
   rg: typeof RendererGlobal;
@@ -36,6 +37,31 @@ export const scriptExec = (arg: JsArg, api_url?: string) => {
   return null;
 };
 
+const Preload = ({ children, url }: { children: ReactNode; url: string[] }) => {
+  const rg = useGlobal(RendererGlobal, "PRASI_SITE");
+  useEffect(() => {
+    for (const u of url) {
+      const router = rg.page.router;
+      if (router) {
+        const found = router.lookup(u);
+        if (found && !rg.page.preloads[found.id]) {
+          rg.page.preloads[found.id] = new Promise(async (resolve) => {
+            const page = await rg.page.load(found.id, true);
+            if (page) {
+              found.content_tree = page.content_tree;
+              found.js_compiled = page.js_compiled;
+              delete rg.page.preloads[found.id];
+              resolve(found as any);
+            }
+          });
+        }
+      }
+    }
+  }, []);
+
+  return children;
+};
+
 const produceEvalArgs = (
   arg: JsArg & { output: { jsx: ReactNode } },
   api_url?: string
@@ -59,6 +85,7 @@ const produceEvalArgs = (
     PassProp,
     Local,
     PassChild,
+    Preload,
     children,
     props: {
       className: cx(className),

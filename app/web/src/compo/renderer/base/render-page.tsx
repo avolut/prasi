@@ -1,10 +1,12 @@
-import { produce } from "immer";
+import { useLocal } from "web-utils";
 import { createAPI, createDB } from "../../page/scripting/api-db";
-import importModule from "../../page/tools/dynamic-import";
 import { scanComponent } from "./components";
 import { RSection } from "./elements/r-section";
 import { RendererGlobal } from "./renderer-global";
-import { useLocal } from "web-utils";
+import { PRASI_PAGE } from "./renderer-types";
+import importModule from "../../page/tools/dynamic-import";
+
+(window as any).isEditor = false;
 
 // optimized for SSR: no component lazy loading,
 // wait components to load first then render.
@@ -44,8 +46,20 @@ export const PrasiPage = (props: {
     if (typeof page.active.content_tree === "undefined") {
       if (!rg.loading) {
         rg.loading = true;
-        rg.page.load(page.active.id).then(async (loadedPage) => {
+        const preload = rg.page.preloads[page.active.id] as any;
+        const loaded = async (loadedPage: Required<PRASI_PAGE> | null) => {
           if (page.active) {
+            try {
+              if (typeof window.exports === "undefined") {
+                window.exports = {};
+              }
+              const ts = new Date(page.active.updated_at || "").getTime();
+              await importModule(
+                `${serverurl}/npm/page/${page.active.id}/index.js?${ts}`
+              );
+            } catch (e) {
+              console.error(e);
+            }
             page.active.content_tree = loadedPage?.content_tree || null;
             page.active.js_compiled = loadedPage?.js_compiled;
             let res: any[] = [];
@@ -67,7 +81,13 @@ export const PrasiPage = (props: {
           }
           rg.loading = false;
           rg.render();
-        });
+        };
+
+        if (preload) {
+          preload.then(loaded);
+        } else {
+          rg.page.load(page.active.id).then(loaded);
+        }
       }
     }
   }

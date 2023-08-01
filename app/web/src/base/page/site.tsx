@@ -52,7 +52,24 @@ export default page({
           }
           return { id: "", api_url: "", updated_at: "", js_compiled: "" };
         },
-        async page(rg, page_id) {
+        async page(rg, page_id, preload) {
+          if (preload) {
+            const page = await db.page.findFirst({
+              where: { id: page_id },
+              select: {
+                id: true,
+                url: true,
+                name: true,
+                js_compiled: true,
+                content_tree: true,
+              },
+            });
+
+            if (page) {
+              return page as Required<PRASI_PAGE>;
+            }
+            return null;
+          }
           rg.component.scanMode = "client-side";
           const doc = await new Promise<MPage>(async (resolve) => {
             await pagePreview(local, page_id, resolve);

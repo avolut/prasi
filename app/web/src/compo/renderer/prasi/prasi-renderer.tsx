@@ -23,9 +23,7 @@ export class PrasiRenderer extends Renderer {
       notfound?: (rg: typeof RendererGlobal) => ReactElement;
     };
     load: {
-      site: (
-        rg: typeof RendererGlobal
-      ) => Promise<{
+      site: (rg: typeof RendererGlobal) => Promise<{
         id: string;
         api_url: string;
         updated_at: string;
@@ -37,7 +35,8 @@ export class PrasiRenderer extends Renderer {
       ) => Promise<PRASI_COMPONENT[]>;
       page: (
         rg: typeof RendererGlobal,
-        id: string
+        id: string,
+        preload?: boolean
       ) => Promise<Required<PRASI_PAGE> | null>;
       pages: (rg: typeof RendererGlobal) => Promise<Record<string, PRASI_PAGE>>;
     };
@@ -59,17 +58,8 @@ export class PrasiRenderer extends Renderer {
       </div>
     );
 
-    rg.page.load = async (page_id) => {
-      try {
-        if (typeof window.exports === "undefined") {
-          window.exports = {};
-        }
-        const ts = new Date(rg.page.active?.updated_at || "").getTime();
-        await importModule(`${serverurl}/npm/page/${page_id}/index.js?${ts}`);
-      } catch (e) {
-        console.error(e);
-      }
-      return await arg.load.page(rg, page_id);
+    rg.page.load = async (page_id, preload) => {
+      return await arg.load.page(rg, page_id, preload);
     };
 
     rg.component.load = async (ids) => {

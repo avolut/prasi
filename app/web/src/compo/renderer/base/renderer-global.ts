@@ -25,7 +25,8 @@ export const RendererGlobal = {
     active: null as null | PRASI_PAGE,
     list: {} as Record<string, PRASI_PAGE>,
     router: null as null | RadixRouter<PRASI_PAGE>,
-    load: async (page_id: string) => {
+    preloads: {} as Record<string, Promise<Required<PRASI_PAGE>>>,
+    load: async (page_id: string, preload?: boolean) => {
       return null as null | Required<PRASI_PAGE>;
     },
   },
