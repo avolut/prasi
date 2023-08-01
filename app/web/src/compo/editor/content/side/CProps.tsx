@@ -233,12 +233,14 @@ export const CompProps: FC<{
 const checkIdx = (props: Record<string, FNCompDef>) => {
   let i = 1;
   let resetIdx = false;
-  for (const [k, prop] of Object.entries(props)) {
-    if (typeof prop.idx === "undefined") {
-      prop.idx = i;
-      resetIdx = true;
+  if (typeof props === "object") {
+    for (const [k, prop] of Object.entries(props)) {
+      if (typeof prop.idx === "undefined") {
+        prop.idx = i;
+        resetIdx = true;
+      }
+      i++;
     }
-    i++;
   }
 
   return resetIdx;
