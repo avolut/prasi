@@ -97,6 +97,9 @@ export const PrasiPage = (props: {
           "render",
           rg.site.js_compiled
         );
+        try {
+          fn();
+        } catch (e) {}
       }
     }
     local.isNewPage = false;
