@@ -92,7 +92,16 @@ export const CPMaster: FC<{
         }
       }}
       content={
-        <div className="flex text-sm flex-col items-stretch space-y-1 py-1 w-[300px]">
+        <div
+          className={cx(
+            "flex text-sm flex-col items-stretch space-y-1 py-1 w-[300px]",
+            css`
+              textarea {
+                max-height: 300px;
+              }
+            `
+          )}
+        >
           <div className="px-2 py-1 flex space-x-1">
             {[
               { label: "TXT", type: "text" },
