@@ -159,7 +159,7 @@ export const CPInstance: FC<{
                   autoFocus={false}
                   backdrop={false}
                   content={
-                    <div className="bg-white w-[40vw] h-[40vh] flex">
+                    <div className="bg-white w-[70vw] h-[50vh] flex">
                       <CodeEdit
                         ceid={ceid}
                         value={prop.value}
