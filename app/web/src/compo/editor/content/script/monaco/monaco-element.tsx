@@ -56,14 +56,17 @@ export const ScriptMonacoElement: FC<{
 
       const prettier = w.importCache.prettier;
       const prettier_babel = w.importCache.prettier_babel;
-      const text = prettier.format(
-        all
-          ? newval
-          : local.editor?.getValue().replace(/\{\s*children\s*\}/gi, newval),
-        {
-          parser: "babel",
-          plugins: [prettier_babel],
-        }
+      const text = trim(
+        prettier.format(
+          all
+            ? newval
+            : local.editor?.getValue().replace(/\{\s*children\s*\}/gi, newval),
+          {
+            parser: "babel",
+            plugins: [prettier_babel],
+          }
+        ),
+        "; \n"
       );
 
       local.editor.executeEdits(null, [
@@ -146,9 +149,45 @@ export const ScriptMonacoElement: FC<{
               onClick={() => {
                 doEdit(
                   `\
-<div {...props}>
-  {children}
-</div>`,
+<>{true && <div {...props}>{children}</div>}</>   
+`,
+                  true
+                );
+              }}
+            >
+              &lt;If /&gt;
+            </Button>
+
+            <Button
+              onClick={() => {
+                doEdit(
+                  `\
+<>{true ? <div {...props}>{children}</div> : <div {...props}>ELSE CONDITION</div>}</>      
+`,
+                  true
+                );
+              }}
+            >
+              &lt;If Else /&gt;
+            </Button>
+
+            <Button
+              onClick={() => {
+                doEdit(
+                  `\
+<div {...props}><input /></div>`,
+                  true
+                );
+              }}
+            >
+              &lt;Input /&gt;
+            </Button>
+
+            <Button
+              onClick={() => {
+                doEdit(
+                  `\
+<div {...props}>{children}</div>`,
                   true
                 );
               }}
