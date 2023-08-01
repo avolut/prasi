@@ -39810,12 +39810,9 @@ Make sure to kill running instance before starting.
     });
   };
   var createServer = async () => {
-    const MAX_BODY = Number.MAX_SAFE_INTEGER;
+    const MAX_BODY = 1e12;
     const server = new import_hyper_express.Server({
-      max_body_length: MAX_BODY,
-      auto_close: true,
-      trust_proxy: true,
-      fast_buffers: true
+      max_body_length: MAX_BODY
     });
     const conns = {};
     server.ws("/create/:name", { max_payload_length: MAX_BODY }, (ws) => {
@@ -41946,7 +41943,7 @@ ${parsed.map((e) => {
   path: "${e.file.substring(dir.root("").length + 1)}",
   ssr: ${e.ssr ? "true" : "false"},
   layout: ${e.layout ? `"${e.layout}"` : `undefined`},
-  ${!ssr || e.ssr && ssr ? `component: () => import(${importPath})` : ""}
+  ${!ssr || e.ssr && ssr ? `component: () => import(${importPath.replace("\\", "/")})` : ""}
 }`;
     };
     await (0, import_fs_jetpack12.writeAsync)(

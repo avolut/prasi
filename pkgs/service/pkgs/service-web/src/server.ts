@@ -16,7 +16,7 @@ export const server = async ({
   port: number;
 }) => {
   const server = new HyperExpress.Server({
-    max_body_length: Number.MAX_SAFE_INTEGER,
+    max_body_length: 1000000000000,
   });
 
   const publicPath = join(dir.path(`${name}/public`));

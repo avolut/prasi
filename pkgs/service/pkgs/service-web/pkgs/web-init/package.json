@@ -8,7 +8,7 @@
     "csstype": "3.1.1",
     "goober": "2.1.12",
     "hash-sum": "^2.0.0",
-    "hyper-express": "6.8.0",
+    "hyper-express": "^6.8.2",
     "radix3": "1.0.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",

@@ -60,7 +60,7 @@ export const ${page} = {
   path: "${e.file.substring(dir.root("").length + 1)}",
   ssr: ${e.ssr ? "true" : "false"},
   layout: ${e.layout ? `"${e.layout}"` : `undefined`},
-  ${!ssr || (e.ssr && ssr) ? `component: () => import(${importPath})` : ""}
+  ${!ssr || (e.ssr && ssr) ? `component: () => import(${importPath.replace('\\', '/')})` : ""}
 }`;
     };
 

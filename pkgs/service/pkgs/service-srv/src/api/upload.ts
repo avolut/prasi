@@ -9,7 +9,7 @@ export type UploadedFile = {
 };
 
 export const generateUploadPath = (
-  file: { name: string; filename: string; type: string },
+  file: { name: string; filename: string; type: string; fieldname: string },
   path: string,
   prefix?: string
 ) => {
@@ -27,9 +27,10 @@ export const generateUploadPath = (
   if (file.type.includes("image")) {
     mode = "_img";
   }
+  const fieldname = file.fieldname || ''
 
   return {
-    url: [`/${mode}`, subdir, filename].join("/"),
-    path: join(path, subdir, filename),
+    url: [`/${mode}`, subdir, fieldname, filename].join("/"),
+    path: join(path, subdir, fieldname, filename),
   };
 };

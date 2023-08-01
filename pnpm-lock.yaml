@@ -70,8 +70,8 @@ importers:
   app/prasi-api:
     dependencies:
       hyper-express:
-        specifier: 6.8.0
-        version: 6.8.0
+        specifier: ^6.8.2
+        version: 6.8.2
 
   app/srv:
     dependencies:
@@ -121,8 +121,8 @@ importers:
         specifier: ^6.1.2
         version: 6.1.2
       hyper-express:
-        specifier: 6.8.0
-        version: 6.8.0
+        specifier: ^6.8.2
+        version: 6.8.2
       immer:
         specifier: ^9.0.19
         version: 9.0.21
@@ -495,8 +495,8 @@ importers:
         specifier: ^5.1.0
         version: 5.1.0
       hyper-express:
-        specifier: 6.8.0
-        version: 6.8.0
+        specifier: ^6.8.2
+        version: 6.8.2
       lodash.padend:
         specifier: ^4.6.1
         version: 4.6.1
@@ -592,8 +592,8 @@ importers:
         specifier: ^6.1.2
         version: 6.1.2
       hyper-express:
-        specifier: 6.8.0
-        version: 6.8.0
+        specifier: ^6.8.2
+        version: 6.8.2
       lodash.get:
         specifier: 4.4.2
         version: 4.4.2
@@ -729,8 +729,8 @@ importers:
         specifier: 5.1.0
         version: 5.1.0
       hyper-express:
-        specifier: 6.8.0
-        version: 6.8.0
+        specifier: ^6.8.2
+        version: 6.8.2
       lmdb:
         specifier: 2.7.9
         version: 2.7.9
@@ -775,8 +775,8 @@ importers:
         specifier: 5.1.0
         version: 5.1.0
       hyper-express:
-        specifier: 6.8.0
-        version: 6.8.0
+        specifier: ^6.8.2
+        version: 6.8.2
       lodash.get:
         specifier: 4.4.2
         version: 4.4.2
@@ -863,8 +863,8 @@ importers:
         specifier: ^2.0.0
         version: 2.0.0
       hyper-express:
-        specifier: 6.8.0
-        version: 6.8.0
+        specifier: ^6.8.2
+        version: 6.8.2
       radix3:
         specifier: 1.0.0
         version: 1.0.0
@@ -891,8 +891,8 @@ importers:
         specifier: 18.0.28
         version: 18.0.28
       hyper-express:
-        specifier: 6.8.0
-        version: 6.8.0
+        specifier: ^6.8.2
+        version: 6.8.2
 
   pkgs/service/pkgs/service-web/pkgs/web-utils:
     dependencies:
@@ -2904,13 +2904,13 @@ packages:
     resolution: {integrity: sha512-ALYone6pm6QmwZoAgeyNksccT9Q4AWZQ6PvfwR37GT6r6FWUPguq6sUmNGSMV2Wr761oQoBxwGGa6DR5o1DC9g==}
     dependencies:
       '@types/connect': 3.4.35
-      '@types/node': 20.4.1
+      '@types/node': 18.14.0
     dev: false
 
   /@types/busboy@0.3.2:
     resolution: {integrity: sha512-iEvdm9Z9KdSs/ozuh1Z7ZsXrOl8F4M/CLMXPZHr3QuJ4d6Bjn+HBMC5EMKpwpAo8oi8iK9GZfFoHaIMrrZgwVw==}
     dependencies:
-      '@types/node': 20.4.1
+      '@types/node': 18.14.0
     dev: false
 
   /@types/command-exists@1.2.0:
@@ -2920,13 +2920,13 @@ packages:
   /@types/connect@3.4.35:
     resolution: {integrity: sha512-cdeYyv4KWoEgpBISTxWvqYsVy444DOqehiF3fM3ne10AmJ62RSyNkUnxMJXHQWRQQX2eR94m5y1IZyDwBjV9FQ==}
     dependencies:
-      '@types/node': 20.4.1
+      '@types/node': 18.14.0
     dev: false
 
   /@types/express-serve-static-core@4.17.35:
     resolution: {integrity: sha512-wALWQwrgiB2AWTT91CB62b6Yt0sNHpznUXeZEcnPU3DRdlDIz74x8Qg1UUYKSVFi+va5vKOLYRBI1bRKiLLKIg==}
     dependencies:
-      '@types/node': 20.4.1
+      '@types/node': 18.14.0
       '@types/qs': 6.9.7
       '@types/range-parser': 1.2.4
       '@types/send': 0.17.1
@@ -3066,7 +3066,6 @@ packages:
 
   /@types/node@18.14.0:
     resolution: {integrity: sha512-5EWrvLmglK+imbCJY0+INViFWUHg1AHel1sq4ZVSfdcNqGy9Edv3UB9IIzzg+xPaUcAgZYcfVs2fBcwDeZzU0A==}
-    dev: true
 
   /@types/node@18.16.19:
     resolution: {integrity: sha512-IXl7o+R9iti9eBW4Wg2hx1xQDig183jj7YLn8F7udNceyfkbn1ZxmzZXuak20gR40D7pIkIY1kYGx5VIGbaHKA==}
@@ -3074,6 +3073,7 @@ packages:
 
   /@types/node@20.4.1:
     resolution: {integrity: sha512-JIzsAvJeA/5iY6Y/OxZbv1lUcc8dNSE77lb2gnBH+/PJ3lFR1Ccvgwl5JWnHAkNHcRsT0TbpVOsiMKZ1F/yyJg==}
+    dev: true
 
   /@types/prettier@2.7.3:
     resolution: {integrity: sha512-+68kP9yzs4LMp7VNh8gdzMSPZFL44MLGqiHWvttYJe+6qnuVr4Ek9wSBQoveqY/r+LwjCcU29kNVkidwim+kYA==}
@@ -3136,7 +3136,7 @@ packages:
     resolution: {integrity: sha512-Cwo8LE/0rnvX7kIIa3QHCkcuF21c05Ayb0ZfxPiv0W8VRiZiNW/WuRupHKpqqGVGf7SUA44QSOUKaEd9lIrd/Q==}
     dependencies:
       '@types/mime': 1.3.2
-      '@types/node': 20.4.1
+      '@types/node': 18.14.0
     dev: false
 
   /@types/serve-static@1.15.2:
@@ -3144,7 +3144,7 @@ packages:
     dependencies:
       '@types/http-errors': 2.0.1
       '@types/mime': 3.0.1
-      '@types/node': 20.4.1
+      '@types/node': 18.14.0
     dev: false
 
   /@types/sharp@0.31.1:
@@ -4432,8 +4432,8 @@ packages:
     hasBin: true
     dev: true
 
-  /hyper-express@6.8.0:
-    resolution: {integrity: sha512-PKOfkyVLmxTfFmlvQgoWN6AqxnEGQpLr94BFh0rkkXlEYGxJX+TF9R2b1qE0MRhKgWttWoTWl73xmxo5vlGjvw==}
+  /hyper-express@6.8.2:
+    resolution: {integrity: sha512-E/C00G0RTJlspEWEje2yqIiNTPyE72Mlt735mnPYe+OWQRjCl9GJo4zq3hF+Z5ph34zYqZ3EZaX8n8XIP5jJVQ==}
     dependencies:
       '@types/busboy': 0.3.2
       '@types/express': 4.17.17

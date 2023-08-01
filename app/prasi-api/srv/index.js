@@ -19908,7 +19908,7 @@ Make sure to kill running instance before starting.
       });
     };
     createServer = async () => {
-      const MAX_BODY = Number.MAX_SAFE_INTEGER;
+      const MAX_BODY = 1000000000000;
       const server2 = new import_hyper_express.Server({
         max_body_length: MAX_BODY,
         auto_close: true,
@@ -48478,7 +48478,7 @@ var init_server2 = __esm({
       mode
     }) => {
       const server2 = new import_hyper_express2.Server({
-        max_body_length: Number.MAX_SAFE_INTEGER,
+        max_body_length: 1000000000000,
         auto_close: true,
         trust_proxy: true,
         fast_buffers: true

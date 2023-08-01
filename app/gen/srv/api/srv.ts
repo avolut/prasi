@@ -1,45 +1,3 @@
-export const _dbs = {
-  name: "_dbs",
-  url: "/_dbs/:dbName/:action",
-  path: "app/srv/api/built-in/_dbs.ts",
-  args: ["dbName","action"],
-  handler: import("../../../srv/api/built-in/_dbs")
-}
-export const _delete = {
-  name: "_delete",
-  url: "/_delete",
-  path: "app/srv/api/built-in/_delete.ts",
-  args: ["path"],
-  handler: import("../../../srv/api/built-in/_delete")
-}
-export const _file = {
-  name: "_file",
-  url: "/_file/**",
-  path: "app/srv/api/built-in/_file.ts",
-  args: [],
-  handler: import("../../../srv/api/built-in/_file")
-}
-export const _img = {
-  name: "_img",
-  url: "/_img/**",
-  path: "app/srv/api/built-in/_img.ts",
-  args: [],
-  handler: import("../../../srv/api/built-in/_img")
-}
-export const _parsejs = {
-  name: "_parsejs",
-  url: "/_parsejs",
-  path: "app/srv/api/built-in/_parsejs.ts",
-  args: ["js"],
-  handler: import("../../../srv/api/built-in/_parsejs")
-}
-export const _upload = {
-  name: "_upload",
-  url: "/_upload/:site",
-  path: "app/srv/api/built-in/_upload.ts",
-  args: ["site"],
-  handler: import("../../../srv/api/built-in/_upload")
-}
 export const change_password = {
   name: "change_password",
   url: "/change-password",
@@ -109,6 +67,48 @@ export const user_create = {
   path: "app/srv/api/built-in/user/user-create.ts",
   args: ["user"],
   handler: import("../../../srv/api/built-in/user/user-create")
+}
+export const _dbs = {
+  name: "_dbs",
+  url: "/_dbs/:dbName/:action",
+  path: "app/srv/api/built-in/_dbs.ts",
+  args: ["dbName","action"],
+  handler: import("../../../srv/api/built-in/_dbs")
+}
+export const _delete = {
+  name: "_delete",
+  url: "/_delete",
+  path: "app/srv/api/built-in/_delete.ts",
+  args: ["path"],
+  handler: import("../../../srv/api/built-in/_delete")
+}
+export const _file = {
+  name: "_file",
+  url: "/_file/**",
+  path: "app/srv/api/built-in/_file.ts",
+  args: [],
+  handler: import("../../../srv/api/built-in/_file")
+}
+export const _img = {
+  name: "_img",
+  url: "/_img/**",
+  path: "app/srv/api/built-in/_img.ts",
+  args: [],
+  handler: import("../../../srv/api/built-in/_img")
+}
+export const _parsejs = {
+  name: "_parsejs",
+  url: "/_parsejs",
+  path: "app/srv/api/built-in/_parsejs.ts",
+  args: ["js"],
+  handler: import("../../../srv/api/built-in/_parsejs")
+}
+export const _upload = {
+  name: "_upload",
+  url: "/_upload/:site",
+  path: "app/srv/api/built-in/_upload.ts",
+  args: ["site"],
+  handler: import("../../../srv/api/built-in/_upload")
 }
 export const comp_attach = {
   name: "comp_attach",

@@ -164,12 +164,9 @@ const connect = (name: string, action: RPCAction) => {
 };
 
 const createServer = async () => {
-  const MAX_BODY = Number.MAX_SAFE_INTEGER;
+  const MAX_BODY = 1000000000000;
   const server = new Server({
     max_body_length: MAX_BODY,
-    auto_close: true,
-    trust_proxy: true,
-    fast_buffers: true,
   });
   const conns = {} as Record<
     string,

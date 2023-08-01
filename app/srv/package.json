@@ -16,7 +16,7 @@
     "fs-extra": "^11.1.1",
     "fs-jetpack": "5.1.0",
     "get-port": "^6.1.2",
-    "hyper-express": "6.8.0",
+    "hyper-express": "^6.8.2",
     "immer": "^9.0.19",
     "lodash.get": "4.4.2",
     "lodash.set": "4.3.2",

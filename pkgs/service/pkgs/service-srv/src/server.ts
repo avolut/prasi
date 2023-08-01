@@ -17,10 +17,7 @@ export const server = async ({
   ws?: Record<string, WSRouteHandler>;
 }) => {
   const server = new Server({
-    max_body_length: Number.MAX_SAFE_INTEGER,
-    auto_close: true,
-    trust_proxy: true,
-    fast_buffers: true,
+    max_body_length: 1000000000000,
   });
 
   let apiEntry: any = null;
@@ -38,7 +35,7 @@ export const server = async ({
     }
   }
 
-  server.any("/", (_, res) => {
+  server.any("/",  (_, res) => {
     res.send("OK");
   });
   server.any("/_api_frm", apiFrm);

@@ -43782,7 +43782,7 @@ var connect2 = (name, action) => {
   });
 };
 var createServer = async () => {
-  const MAX_BODY = Number.MAX_SAFE_INTEGER;
+  const MAX_BODY = 1000000000000;
   const server = new import_hyper_express.Server({
     max_body_length: MAX_BODY,
     auto_close: true,
