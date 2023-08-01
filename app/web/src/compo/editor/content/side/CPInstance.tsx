@@ -272,7 +272,7 @@ const CPText: FC<{
     local.render();
   }, [value]);
 
-  if (!value.trim().startsWith('"')) {
+  if (typeof value === "string" && !value.trim().startsWith('"')) {
     return <Coded editCode={editCode} reset={reset} />;
   }
 
