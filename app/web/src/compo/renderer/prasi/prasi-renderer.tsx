@@ -25,7 +25,12 @@ export class PrasiRenderer extends Renderer {
     load: {
       site: (
         rg: typeof RendererGlobal
-      ) => Promise<{ id: string; api_url: string; js_compiled: string }>;
+      ) => Promise<{
+        id: string;
+        api_url: string;
+        updated_at: string;
+        js_compiled: string;
+      }>;
       components: (
         rg: typeof RendererGlobal,
         ids: string[]
@@ -59,7 +64,8 @@ export class PrasiRenderer extends Renderer {
         if (typeof window.exports === "undefined") {
           window.exports = {};
         }
-        await importModule(`${serverurl}/npm/page/${page_id}/index.js`);
+        const ts = new Date(rg.page.active?.updated_at || "").getTime();
+        await importModule(`${serverurl}/npm/page/${page_id}/index.js?${ts}`);
       } catch (e) {
         console.error(e);
       }
@@ -82,7 +88,11 @@ export class PrasiRenderer extends Renderer {
           rg.render();
           rg.site = await arg.load.site(rg);
           window.exports = {};
-          await importModule(`${serverurl}/npm/site/${rg.site.id}/index.js`);
+
+          const ts = new Date(rg.site?.updated_at || "").getTime();
+          await importModule(
+            `${serverurl}/npm/site/${rg.site.id}/index.js?${ts}`
+          );
 
           if (!w.prasiApi) w.prasiApi = {};
 

@@ -10,7 +10,7 @@ export const RendererGlobal = {
     loading: null as null | ReactElement,
     notfound: null as null | ReactElement,
   },
-  site: { id: "", api_url: "", js_compiled: "" },
+  site: { id: "", api_url: "", updated_at: "", js_compiled: "" },
   mode: "" as "desktop" | "mobile",
   instances: {} as Record<string, IItem>,
   component: {

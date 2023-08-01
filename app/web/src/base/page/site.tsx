@@ -29,6 +29,7 @@ export default page({
             select: {
               id: true,
               config: true,
+              updated_at: true,
               js_compiled: true,
             },
           });
@@ -43,10 +44,13 @@ export default page({
             return {
               id: site.id,
               api_url,
+              updated_at: (site.updated_at instanceof Date
+                ? site.updated_at.toISOString()
+                : site.updated_at) as string,
               js_compiled: site.js_compiled || "",
             };
           }
-          return { id: "", api_url: "", js_compiled: "" };
+          return { id: "", api_url: "", updated_at: "", js_compiled: "" };
         },
         async page(rg, page_id) {
           rg.component.scanMode = "client-side";
