@@ -101,7 +101,7 @@ export const CPInstance: FC<{
           />
         </Menu>
       )}
-      <div className="flex justify-between items-stretch flex-wrap">
+      <div className="flex justify-between items-stretch flex-wrap relative">
         {(() => {
           const label = (
             <div
