@@ -81,8 +81,15 @@ export const CPMaster: FC<{
       open={local.open}
       popoverClassName="bg-white shadow-lg border border-slate-300"
       onOpenChange={(open) => {
-        local.open = open;
-        local.render();
+        if (!open) {
+          setTimeout(() => {
+            local.open = false;
+            local.render();
+          }, 500);
+        } else {
+          local.open = true;
+          local.render();
+        }
       }}
       content={
         <div className="flex text-sm flex-col items-stretch space-y-1 py-1 w-[300px]">
@@ -113,6 +120,7 @@ export const CPMaster: FC<{
           <div className="border-t border-slate-300 px-2 pt-2 pb-1 flex flex-col items-stretch">
             <div className="uppercase text-xs text-slate-500">Label</div>
             <input
+              spellCheck={false}
               type="text"
               className="p-1 outline-none border focus:border-blue-500"
               value={local.name}
@@ -136,13 +144,12 @@ export const CPMaster: FC<{
               defaultValue={prop.type}
               onChange={(e) => {
                 prop.type = e.currentTarget.value as any;
+
+                mprop.set("type", prop.type);
                 local.render();
               }}
-              onBlur={() => {
-                mprop.set("type", meta.type);
-              }}
               placeholder="TYPE"
-              className="p-1 outline-none border focus:border-blue-500"
+              className="p-1 outline-none font-mono text-[11px] border focus:border-blue-500"
               spellCheck={false}
             />
           </div>
