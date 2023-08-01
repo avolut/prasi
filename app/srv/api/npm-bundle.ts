@@ -7,6 +7,7 @@ import { dirAsync, writeAsync } from "fs-jetpack";
 import { stat } from "fs/promises";
 import { apiContext } from "service-srv";
 import { style } from "@hyrious/esbuild-plugin-style";
+import { eg } from "../edit/edit-global";
 
 export type NPMImportAs = {
   main: { mode: "default" | "*"; name: string };
@@ -140,6 +141,11 @@ packages:
           },
           data: { bundled: true },
         });
+        if (eg.edit.page[id]) {
+          eg.edit.page[id].doc
+            .getMap("map")
+            .set("updated_at", new Date().toISOString());
+        }
       } else if (mode === "site") {
         await db.npm_site.updateMany({
           where: {
