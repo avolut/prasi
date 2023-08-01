@@ -167,7 +167,7 @@ export const CPInstance: FC<{
                       />
                     </div>
                   }
-                  className="bg-orange-500 text-white px-2 flex items-center"
+                  className="bg-orange-500 text-white px-2 flex items-center absolute inset-0"
                 >
                   {name}
                 </Popover>
