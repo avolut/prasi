@@ -353,6 +353,7 @@ const NPMModule: FC<{
       <div className="flex-1 flex flex-col relative overflow-auto">
         <div className="absolute  inset-0 flex flex-col items-stretch">
           {list.map((e) => {
+            if (!e.id) return null;
             return (
               <ImportItem
                 key={e.id.toString()}

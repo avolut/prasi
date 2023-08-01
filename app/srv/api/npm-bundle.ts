@@ -1,13 +1,18 @@
+import globalExternals from "@fal-works/esbuild-plugin-global-externals";
+import { style } from "@hyrious/esbuild-plugin-style";
 import { npm_page, npm_site } from "dbgen";
 import { dir } from "dir";
-import * as esbuild from "esbuild";
 import { build } from "esbuild";
 import { $ } from "execa";
 import { dirAsync, writeAsync } from "fs-jetpack";
 import { stat } from "fs/promises";
 import { apiContext } from "service-srv";
-import { style } from "@hyrious/esbuild-plugin-style";
 import { eg } from "../edit/edit-global";
+
+globalThis.window = {
+  react: {},
+  "react-dom": {},
+} as any;
 
 export type NPMImportAs = {
   main: { mode: "default" | "*"; name: string };
@@ -124,7 +129,19 @@ packages:
         minify: true,
         treeShaking: true,
         sourcemap: true,
-        plugins: [style(), httpPlugin],
+        plugins: [
+          style(),
+          globalExternals({
+            react: {
+              varName: "window.React",
+              type: "cjs",
+            },
+            "react-dom": {
+              varName: "window.ReactDOM",
+              type: "cjs",
+            },
+          }),
+        ],
         logLevel: "silent",
       });
     } catch (e) {
@@ -169,20 +186,20 @@ packages:
   },
 };
 
-let httpPlugin: esbuild.Plugin = {
-  name: "http",
-  setup(build) {
-    build.onResolve({ filter: /react|react\-dom/ }, (args) => ({
-      path: args.path,
-      namespace: "http-url",
-    }));
-    build.onLoad({ filter: /.*/, namespace: "http-url" }, async (args) => {
-      if (args.path.startsWith("react@")) {
-        return { contents: "return window.React" };
-      }
-      if (args.path.startsWith("https://cdn.jsdelivr.net/npm/react-dom@")) {
-        return { contents: "return window.ReactDOM" };
-      }
-    });
-  },
-};
+// let httpPlugin: esbuild.Plugin = {
+//   name: "http",
+//   setup(build) {
+//     build.onResolve({ filter: /.*/ }, (args) => ({
+//       path: args.path,
+//       namespace: "http-url",
+//     }));
+//     build.onLoad({ filter: /.*/, namespace: "http-url" }, async (args) => {
+//       if (args.path.startsWith("react@")) {
+//         return { contents: "return window.React" };
+//       }
+//       if (args.path.startsWith("https://cdn.jsdelivr.net/npm/react-dom@")) {
+//         return { contents: "return window.ReactDOM" };
+//       }
+//     });
+//   },
+// };
