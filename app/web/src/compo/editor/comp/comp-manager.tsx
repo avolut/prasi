@@ -672,6 +672,27 @@ const CompPreview: FC<{
   const local = useLocal({ name: "", comp: null as null | IItem });
   const rg = useGlobal(RendererGlobal, "PRASI_SITE");
 
+  if (!rg.component.load) {
+    rg.component.load = async (ids: string[]) => {
+      const all = await db.component.findMany({
+        where: { id: { in: ids } },
+        select: {
+          id: true,
+          content_tree: true,
+          name: true,
+        },
+      });
+
+      return (all || []).map((e) => {
+        return {
+          name: e.name,
+          id: e.id,
+          content_tree: e.content_tree,
+        } as PRASI_COMPONENT;
+      });
+    };
+  }
+  
   useEffect(() => {
     local.comp = null;
     local.render();
@@ -689,26 +710,6 @@ const CompPreview: FC<{
 
         if (local.comp && local.comp.component?.props) {
           local.comp.nprops = {};
-          if (!rg.component.load) {
-            rg.component.load = async (ids: string[]) => {
-              const all = await db.component.findMany({
-                where: { id: { in: ids } },
-                select: {
-                  id: true,
-                  content_tree: true,
-                  name: true,
-                },
-              });
-
-              return (all || []).map((e) => {
-                return {
-                  name: e.name,
-                  id: e.id,
-                  content_tree: e.content_tree,
-                } as PRASI_COMPONENT;
-              });
-            };
-          }
 
           getRenderPropVal(
             local.comp.component.props,

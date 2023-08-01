@@ -17,7 +17,7 @@ export const CPMaster: FC<{
   doc: CompDoc | null;
   reload: () => void;
 }> = ({ name, prop, mprop, doc, props, reload }) => {
-  const local = useLocal({ name });
+  const local = useLocal({ name, open: false });
   const type = prop.meta?.type || "text";
 
   useEffect(() => {
@@ -78,7 +78,12 @@ export const CPMaster: FC<{
     <Popover
       backdrop={false}
       placement="left-start"
+      open={local.open}
       popoverClassName="bg-white shadow-lg border border-slate-300"
+      onOpenChange={(open) => {
+        local.open = open;
+        local.render();
+      }}
       content={
         <div className="flex text-sm flex-col items-stretch space-y-1 py-1 w-[300px]">
           <div className="px-2 py-1 flex space-x-1">
@@ -147,6 +152,7 @@ export const CPMaster: FC<{
               defaultValue={prop.value}
               onChange={async (e) => {
                 prop.value = e.currentTarget.value;
+                mprop.set("value", prop.value);
                 update("value", prop.value);
                 if (jscript.build) {
                   const res = await jscript.build(
@@ -157,9 +163,6 @@ export const CPMaster: FC<{
                     update("valueBuilt", res.substring(6));
                   }
                 }
-              }}
-              onBlur={() => {
-                mprop.set("value", meta.type);
               }}
               placeholder="VALUE"
               className="p-1 outline-none font-mono text-[11px] border focus:border-blue-500"
@@ -174,11 +177,10 @@ export const CPMaster: FC<{
                 defaultValue={meta.options}
                 onChange={(e) => {
                   meta.options = e.currentTarget.value as any;
+                  mmeta.set("options", meta.options);
                   local.render();
                 }}
-                onBlur={() => {
-                  mmeta.set("options", meta.options);
-                }}
+                onBlur={() => {}}
                 minRows={5}
                 onFocus={(e) => {
                   if (!e.currentTarget.value) {
@@ -211,6 +213,10 @@ export const CPMaster: FC<{
         className={cx(
           "border-b bg-white cursor-pointer hover:bg-orange-50 flex flex-col items-stretch"
         )}
+        onClick={() => {
+          local.open = true;
+          local.render();
+        }}
       >
         <div className="flex justify-between items-stretch flex-wrap">
           <input
