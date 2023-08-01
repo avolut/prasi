@@ -32,9 +32,6 @@ export const ContentEditor: FC<{ id: string }> = ({ id }) => {
       c.editor.componentActiveID = "";
       while (item.parent) {
         if (item) {
-          const isProp = item.get("isPropContent");
-          if (isProp) break;
-
           const comp = item.get("component");
           if (comp) {
             const compid = comp.get("id");

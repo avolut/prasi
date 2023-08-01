@@ -39,7 +39,7 @@ export const initElProp = (
       if (item && mitem) {
         ev.stopPropagation();
         ev.preventDefault();
-        
+
         if (c.editor && ["item", "text"].includes(item.type)) {
           if (
             c.editor.hover?.get("id") !== item.id &&

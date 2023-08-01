@@ -9,6 +9,7 @@ import { component } from "../component";
 import { CERender } from "./ce-render";
 import { instantiateComp } from "../../editor/comp/load-comp";
 import { fillID } from "../tools/fill-id";
+import { FNCompDef, FNComponent } from "../../types/meta-fn";
 
 export const CEComponent: FC<{
   ceid: string;
@@ -52,6 +53,25 @@ export const CEComponent: FC<{
   if (!id || (id && !c.instances[id])) return loading;
 
   const instance = c.instances[id];
+
+  let shouldOver = false;
+  if (c.editor.componentActiveID === compid) {
+    shouldOver = true;
+    const comp = component.docs[c.editor.componentActiveID]
+      ?.getMap("map")
+      .get("content_tree")
+      ?.get("component")
+      ?.toJSON() as FNComponent;
+
+    if (comp && comp.props) {
+      for (const prop of Object.values(comp.props)) {
+        if (prop.meta?.type === "content-element") {
+          shouldOver = false;
+        }
+      }
+    }
+  }
+
   return (
     <CERender ceid={ceid} item={item} citem={instance}>
       {instance.childs.map((e) => {
@@ -60,7 +80,7 @@ export const CEComponent: FC<{
         if (e.type === "text")
           return <CCText key={e.id} ceid={ceid} item={e} />;
       })}
-      {c.editor.componentActiveID === compid && (
+      {shouldOver && (
         <div
           className={cx(
             "absolute inset-0 flex items-center justify-center opacity-0 transition-all",
