@@ -124,7 +124,7 @@ packages:
         minify: true,
         treeShaking: true,
         sourcemap: true,
-        plugins: [style()],
+        plugins: [style(), httpPlugin],
         logLevel: "silent",
       });
     } catch (e) {
@@ -172,21 +172,17 @@ packages:
 let httpPlugin: esbuild.Plugin = {
   name: "http",
   setup(build) {
-    // Intercept import paths starting with "http:" and "https:" so
-    // esbuild doesn't attempt to map them to a file system location.
-    // Tag them with the "http-url" namespace to associate them with
-    // this plugin.
-    // build.onResolve({ filter: /react|react\-dom/ }, (args) => ({
-    //   path: args.path,
-    //   namespace: "http-url",
-    // }));
-    // build.onLoad({ filter: /.*/, namespace: "http-url" }, async (args) => {
-    //   if (args.path.startsWith("react@")) {
-    //     return { contents: "return window.React" };
-    //   }
-    //   if (args.path.startsWith("https://cdn.jsdelivr.net/npm/react-dom@")) {
-    //     return { contents: "return window.ReactDOM" };
-    //   }
-    // });
+    build.onResolve({ filter: /react|react\-dom/ }, (args) => ({
+      path: args.path,
+      namespace: "http-url",
+    }));
+    build.onLoad({ filter: /.*/, namespace: "http-url" }, async (args) => {
+      if (args.path.startsWith("react@")) {
+        return { contents: "return window.React" };
+      }
+      if (args.path.startsWith("https://cdn.jsdelivr.net/npm/react-dom@")) {
+        return { contents: "return window.ReactDOM" };
+      }
+    });
   },
 };
