@@ -57,7 +57,7 @@ export const SiteEditor: FC<{
           window.exports = {};
         }
         await importModule(
-          `${serverurl}/npm/page/${page.getMap("map").get("id")}/index.js`
+          `${serverurl}/npm/page/${wsdoc.page_id}/index.js?` + Date.now()
         );
       } catch (e) {
         console.error(e);
@@ -68,14 +68,15 @@ export const SiteEditor: FC<{
   if (!local.init) {
     if (page_id && page_id.length > 4) {
       wsdoc.page_id = page_id;
+
       connectWS({
         id: page_id,
         ce: ce,
         async connected(page) {
+          await loadNpmPage(page);
           local.init = true;
           local.page = page;
           local.loading = false;
-          await loadNpmPage(page);
           local.render();
         },
       });

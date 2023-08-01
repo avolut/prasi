@@ -141,10 +141,17 @@ packages:
           },
           data: { bundled: true },
         });
-        if (eg.edit.page[id]) {
-          eg.edit.page[id].doc
-            .getMap("map")
-            .set("updated_at", new Date().toISOString());
+        const p = eg.edit.page[id];
+        if (p) {
+          await db.page.update({
+            where: {
+              id,
+            },
+            data: {
+              updated_at: new Date(),
+            },
+          });
+          p.doc.getMap("map").set("updated_at", new Date().toISOString());
         }
       } else if (mode === "site") {
         await db.npm_site.updateMany({
