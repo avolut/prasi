@@ -76,7 +76,7 @@ export const CEComponent: FC<{
             className={cx(
               "flex items-center border border-slate-500 bg-white text-black rounded-sm text-[13px] px-[2px] min-h-[20px] text-center leading-3 absolute cursor-pointer z-10",
               css`
-                font-family: "Source Sans Pro", system-ui, -apple-system,
+                font-family: "Source Sans 3", system-ui, -apple-system,
                   BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
                   Cantarell, Open Sans, Helvetica Neue, sans-serif;
               `

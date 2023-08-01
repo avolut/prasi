@@ -1,4 +1,5 @@
 import type { OnMount } from "@monaco-editor/react";
+import trim from "lodash.trim";
 import {
   MonacoJsxSyntaxHighlight,
   getWorker,
@@ -52,10 +53,13 @@ export const jsMount = async (editor: MonacoEditor, monaco: Monaco) => {
 
       const prettier = w.importCache.prettier;
       const prettier_babel = w.importCache.prettier_babel;
-      const text = prettier.format(model.getValue(), {
-        parser: "babel",
-        plugins: [prettier_babel],
-      });
+      const text = trim(
+        prettier.format(model.getValue(), {
+          parser: "babel",
+          plugins: [prettier_babel],
+        }),
+        "; \n"
+      );
 
       return [
         {
@@ -107,4 +111,8 @@ export const jsMount = async (editor: MonacoEditor, monaco: Monaco) => {
   monaco.languages.typescript.typescriptDefaults.setCompilerOptions(
     compilerOptions
   );
+
+  setTimeout(() => {
+    editor.getAction("editor.action.formatDocument")?.run();
+  }, 100);
 };

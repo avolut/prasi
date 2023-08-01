@@ -5,6 +5,7 @@ import { Loading } from "../../../ui/loading";
 import { ScriptMonacoCustom } from "./monaco/monaco-custom";
 import { MonacoEditor } from "./monaco/typings";
 import { jscript } from "./script-element";
+import { Monaco } from "@monaco-editor/react";
 
 export const ScriptCustom: FC<{
   ceid: string;
@@ -13,7 +14,7 @@ export const ScriptCustom: FC<{
   props?: Record<string, any>;
   propTypes?: Record<string, string>;
   wrap?: (src: string) => string;
-  onLoad?: (editor: MonacoEditor) => void;
+  onLoad?: (editor: MonacoEditor, monaco: Monaco) => void;
   src: string;
   onChange: (src: string, built: string) => void;
 }> = ({

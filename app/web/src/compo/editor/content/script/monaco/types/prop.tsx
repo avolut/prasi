@@ -1,5 +1,4 @@
 import { forwardRef, isValidElement } from "react";
-import { isForwardRef } from "react-is";
 import { typeStringify } from "./type-stringify";
 
 const A = forwardRef((prop: { a: "string" }, ref) => {

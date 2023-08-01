@@ -78,14 +78,14 @@ const loadText = async (url: string) => {
   return await res.text();
 };
 
-const iftext = (condition: any, text: string) => {
+export const iftext = (condition: any, text: string) => {
   if (condition) {
     return text;
   }
   return "";
 };
 
-const register = (monaco: Monaco, source: string, uri: string) => {
+export const register = (monaco: Monaco, source: string, uri: string) => {
   const model = monaco.editor.getModels().find((e) => {
     return e.uri.toString() === uri;
   });

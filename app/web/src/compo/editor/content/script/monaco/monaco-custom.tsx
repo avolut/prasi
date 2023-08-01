@@ -1,4 +1,4 @@
-import type { Editor as MonacoEditor } from "@monaco-editor/react";
+import type { Monaco, Editor as MonacoEditor } from "@monaco-editor/react";
 import { FC } from "react";
 import { useGlobal, useLocal } from "web-utils";
 import { CEGlobal } from "../../../../../base/global/content-editor";
@@ -23,7 +23,7 @@ export const ScriptMonacoCustom: FC<{
   Editor: typeof MonacoEditor;
   build: FBuild;
   src: string;
-  onLoad?: (editor: MonacoEditor) => void;
+  onLoad?: (editor: MonacoEditor, monaco: Monaco) => void;
   wrap?: (src: string) => string;
   onChange: (val: string, built: string) => void;
   item_id?: string;
@@ -64,6 +64,9 @@ export const ScriptMonacoCustom: FC<{
             wordWrap: "wordWrapColumn",
             autoClosingBrackets: "always",
             tabSize: 2,
+            autoIndent: "full",
+            formatOnPaste: true,
+            formatOnType: true,
             useTabStops: true,
           }}
           defaultValue={src}
@@ -74,7 +77,7 @@ export const ScriptMonacoCustom: FC<{
               editor.focus();
             }, 300);
 
-            if (onLoad) onLoad(editor);
+            if (onLoad) onLoad(editor, monaco);
 
             if (c.editor.script.active?.default && !editor.getValue().trim()) {
               editor.executeEdits(null, [
@@ -106,25 +109,6 @@ export const ScriptMonacoCustom: FC<{
 
             if (!customMonacoState[monacoid]) {
               editor.trigger("fold", "editor.foldAllMarkerRegions", null);
-
-              // const registerOnDidChangeFolding = () => {
-              //   const foldingContrib = editor.getContribution<any>(
-              //     "editor.contrib.folding"
-              //   );
-              //   if (foldingContrib) {
-              //     const fm = foldingContrib.getFoldingModel();
-              //     if (fm) {
-              //       fm.then((foldingModel: any) => {
-              //         foldingModel.onDidChange((e: any) => {
-              //           console.log(e);
-              //           (window as any).preventFold = true;
-              //         });
-              //       });
-              //     }
-              //   }
-              // };
-              // registerOnDidChangeFolding();
-              // editor.onDidChangeModel(registerOnDidChangeFolding);
             } else {
               editor.restoreViewState(customMonacoState[monacoid]);
             }

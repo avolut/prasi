@@ -201,6 +201,7 @@ export const CompProps: FC<{
             if (mode === "instance")
               return (
                 <CPInstance
+                  ceid={id}
                   key={key}
                   name={key}
                   prop={prop}

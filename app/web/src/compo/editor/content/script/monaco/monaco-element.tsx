@@ -178,6 +178,9 @@ export const ScriptMonacoElement: FC<{
             minimap: { enabled: false },
             wordWrap: "wordWrapColumn",
             autoClosingBrackets: "always",
+            autoIndent: "full",
+            formatOnPaste: true,
+            formatOnType: true,
             tabSize: 2,
             useTabStops: true,
           }}
@@ -188,6 +191,7 @@ export const ScriptMonacoElement: FC<{
             setTimeout(() => {
               editor.focus();
             }, 300);
+
             if (c.editor.script.active?.default && !editor.getValue().trim()) {
               editor.executeEdits(null, [
                 {

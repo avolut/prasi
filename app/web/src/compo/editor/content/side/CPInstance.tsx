@@ -1,23 +1,31 @@
 import trim from "lodash.trim";
 import { FC, useEffect } from "react";
-import { useLocal } from "web-utils";
+import { useGlobal, useLocal } from "web-utils";
 import { syncronize } from "y-pojo";
 import * as Y from "yjs";
 import { TypedMap } from "yjs-types";
-import { CompDoc } from "../../../../base/global/content-editor";
+import { CEGlobal, CompDoc } from "../../../../base/global/content-editor";
 import { FMCompDef, FNCompDef } from "../../../types/meta-fn";
 import { jscript } from "../script/script-element";
 import { AutoHeightTextarea } from "./panel/link";
 import { Menu, MenuItem } from "../../../ui/context-menu";
 import { Popover } from "../../../ui/popover";
+import { ScriptCustom } from "../script/script-custom";
+import { Modal } from "../../../ui/modal";
+import { findScope } from "../../../page/content-edit/render-tools/init-scope";
+import { typeStringify } from "../script/monaco/types/type-stringify";
+import { iftext, register } from "../script/monaco/typings";
+import { wsdoc } from "../../ws/wsdoc";
+import { baseTypings } from "../script/monaco/types/base";
 
 export const CPInstance: FC<{
+  ceid: string;
   prop: FNCompDef;
   props: TypedMap<Record<string, FMCompDef>>;
   name: string;
   doc: CompDoc | null;
   reload: () => void;
-}> = ({ name, prop, doc, props, reload }) => {
+}> = ({ name, prop, doc, props, reload, ceid }) => {
   const local = useLocal({ mevent: null as any, editCode: false });
   const type = prop.meta?.type || "text";
 
@@ -136,32 +144,38 @@ export const CPInstance: FC<{
             </div>
           );
 
-          if (local.editCode) {
-            return (
-              <Popover
-                content={
-                  <div className="flex flex-col p-2 h-[300px] ">
-                    <div className="pb-1 text-xs">Code:</div>
-                    <CodeEdit value={prop.value} onChange={updateValue} />
-                  </div>
-                }
-                open={true}
-                placement="left"
-                onOpenChange={(open) => {
-                  if (!open) {
-                    local.editCode = false;
-                    local.render();
+          return (
+            <>
+              {local.editCode ? (
+                <Popover
+                  open={true}
+                  onOpenChange={(open) => {
+                    if (!open) {
+                      local.editCode = false;
+                      local.render();
+                    }
+                  }}
+                  placement="left-start"
+                  autoFocus={false}
+                  backdrop={false}
+                  content={
+                    <div className="bg-white w-[40vw] h-[40vh] flex">
+                      <CodeEdit
+                        ceid={ceid}
+                        value={prop.value}
+                        onChange={updateValue}
+                      />
+                    </div>
                   }
-                }}
-                popoverClassName="p-0 bg-white shadow-xl"
-                className={cx("flex items-stretch")}
-              >
-                {label}
-              </Popover>
-            );
-          }
-
-          return label;
+                  className="bg-orange-500 text-white px-2 flex items-center"
+                >
+                  {name}
+                </Popover>
+              ) : (
+                label
+              )}
+            </>
+          );
         })()}
         <div className="flex items-stretch flex-1">
           {type === "text" && (
@@ -313,31 +327,87 @@ const Coded: FC<{
   );
 };
 
-const CodeEdit: FC<{ value: string; onChange: (v: string) => void }> = ({
-  value,
-  onChange,
-}) => {
+const CodeEdit: FC<{
+  ceid: string;
+  value: string;
+  onChange: (v: string) => void;
+}> = ({ ceid, value, onChange }) => {
   const local = useLocal({ value, timer: null as any });
+  const c = useGlobal(CEGlobal, ceid);
+  const scope = findScope(c.scope, c.editor.active?.get("id") || "");
+  const propVal: any = { ...(window.exports || {}) };
+  const propTypes: any = {};
+  for (const [k, v] of Object.entries(scope)) {
+    propVal[k] = v;
+  }
+  if (c.scope.types.root) {
+    for (const [k, v] of Object.entries(c.scope.types.root)) {
+      if (!propTypes[k]) propTypes[k] = v;
+    }
+  }
+  for (const [k, v] of Object.entries(propVal)) {
+    if (!propTypes[k]) {
+      if (typeof v !== "function") {
+        propTypes[k] = JSON.stringify(v, typeStringify)
+          .replaceAll('"___FFF||', "")
+          .replaceAll('||FFF___"', "");
+      } else {
+        propTypes[k] = "function";
+      }
+    }
+  }
 
   return (
-    <textarea
-      defaultValue={local.value}
-      onChange={async (e) => {
-        local.value = e.currentTarget.value;
+    <ScriptCustom
+      ceid={ceid}
+      monacoid={"value"}
+      src={value || ""}
+      wrap={(src) => {
+        return `${src}`;
+      }}
+      onLoad={(editor, monaco) => {
+        register(
+          monaco,
+          `\
+import React from 'react';
+import prisma from 'prisma';
+
+${iftext(
+  wsdoc.apiDef.apiTypes,
+  `\
+import "./api"
+import type * as SRVAPI from "app/gen/srv/api/srv";`
+)}
+
+
+declare global {
+  const db: prisma.PrismaClient; 
+  
+  ${baseTypings}
+
+  ${iftext(
+    wsdoc.apiDef.apiTypes,
+    `
+  type Api = typeof SRVAPI;
+  type ApiName = keyof Api;
+  const api: { [k in ApiName]: Awaited<Api[k]["handler"]>["_"]["api"] };
+  `
+  )}
+}
+
+  `,
+          "ts:global.d.ts"
+        );
+      }}
+      onChange={(src) => {
+        local.value = src;
         local.render();
         clearTimeout(local.timer);
         local.timer = setTimeout(() => {
           onChange(local.value);
         }, 1000);
       }}
-      onContextMenu={(e) => {
-        e.stopPropagation();
-      }}
-      onBlur={() => {
-        onChange(local.value);
-      }}
-      className="flex-1 focus:bg-white focus:border-blue-500 font-mono border-2 border-transparent outline-none bg-transparent text-[11px] w-[300px] p-1"
-      spellCheck={false}
+      propTypes={propTypes}
     />
   );
 };
