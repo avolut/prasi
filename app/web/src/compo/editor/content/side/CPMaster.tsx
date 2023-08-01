@@ -68,7 +68,12 @@ export const CPMaster: FC<{
 
   const mmeta = mprop.get("meta");
   const meta = prop.meta;
-  if (!mmeta || !meta) return null;
+  if (!mmeta || !meta) {
+    const map = new Y.Map();
+    syncronize(map as any, { type: "text" });
+    mprop.set("meta", map as any);
+    return null;
+  }
   return (
     <Popover
       backdrop={false}
