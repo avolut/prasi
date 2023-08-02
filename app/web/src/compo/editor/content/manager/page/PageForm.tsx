@@ -174,5 +174,5 @@ const slugify = (...args: string[]): string => {
     .toLowerCase()
     .trim()
     .replace(/[^a-z0-9 ]/g, "") // remove all chars not letters, numbers and spaces (to be replaced)
-    .replace(/\s+/g, "-"); // separator
+    .replace(/\s+/g, "/"); // separator
 };

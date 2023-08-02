@@ -1,3 +1,27 @@
+export const _dbs = {
+  url: "/_dbs/:dbName/:action",
+  args: ["dbName","action"],
+}
+export const _delete = {
+  url: "/_delete",
+  args: ["path"],
+}
+export const _file = {
+  url: "/_file/**",
+  args: [],
+}
+export const _img = {
+  url: "/_img/**",
+  args: [],
+}
+export const _parsejs = {
+  url: "/_parsejs",
+  args: ["js"],
+}
+export const _upload = {
+  url: "/_upload/:site",
+  args: ["site"],
+}
 export const change_password = {
   url: "/change-password",
   args: ["data"],
@@ -37,30 +61,6 @@ export const payment = {
 export const user_create = {
   url: "/user-create",
   args: ["user"],
-}
-export const _dbs = {
-  url: "/_dbs/:dbName/:action",
-  args: ["dbName","action"],
-}
-export const _delete = {
-  url: "/_delete",
-  args: ["path"],
-}
-export const _file = {
-  url: "/_file/**",
-  args: [],
-}
-export const _img = {
-  url: "/_img/**",
-  args: [],
-}
-export const _parsejs = {
-  url: "/_parsejs",
-  args: ["js"],
-}
-export const _upload = {
-  url: "/_upload/:site",
-  args: ["site"],
 }
 export const comp_attach = {
   url: "/comp-attach",
