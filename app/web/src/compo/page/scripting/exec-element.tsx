@@ -40,8 +40,11 @@ export const execElement = (arg: JsArg, api_url?: string) => {
   return null;
 };
 
-const Preload = ({ children, url }: { children: ReactNode; url: string[] }) => {
-  return children;
+const Preload = (args: { children: ReactNode; url: string[] }) => {
+  const props: any = { ...args };
+  delete props.children;
+  delete props.url;
+  return <div {...props}>{args.children}</div>;
 };
 
 const produceEvalArgs = (

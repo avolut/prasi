@@ -102,7 +102,7 @@ export const CEPage: FC<{ ceid: string }> = ({ ceid }) => {
             ? css`
                 border-left: 1px solid #ccc;
                 border-right: 1px solid #ccc;
-                width: 480px;
+                width: 420px;
                 top: 0px;
                 bottom: 0px;
                 contain: content;

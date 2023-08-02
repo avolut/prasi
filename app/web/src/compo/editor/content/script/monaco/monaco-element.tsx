@@ -185,7 +185,10 @@ export const ScriptMonacoElement: FC<{
 
             <Button
               onClick={() => {
-                doEdit(`<Preload url={[""]}>{children}</Preload>`);
+                doEdit(
+                  `<Preload {...props} url={[""]}>{children}</Preload>`,
+                  true
+                );
               }}
             >
               &lt;Preload/&gt;
