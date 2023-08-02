@@ -6,6 +6,7 @@ export const execQuery = async (args: DBArg, prismaLocal: any, key: string) => {
   const { table, action, params } = args;
 
   if (!prismaLocal[key]) {
+    console.log('connet')
     console.log(`Waiting db to connect...`);
     await waitUntil(() => prismaLocal[key]);
   }

@@ -51,6 +51,33 @@ export const PanelDimension: FC<{
 
   const dim = local.dim;
 
+  const calculateAspectRatioFit = (props: {
+    srcWidth: any;
+    srcHeight: any;
+    maxWidth: any;
+    maxHeight: any;
+  }) => {
+    const { srcWidth, srcHeight, maxWidth, maxHeight } = props;
+    var height = maxHeight;
+    var width = maxWidth;
+    if (
+      typeof maxWidth === "number" &&
+      typeof maxHeight === "number" &&
+      typeof srcWidth === "number" &&
+      typeof srcHeight === "number"
+    ) {
+      height =
+        srcHeight === maxHeight ? (maxWidth * srcHeight) / srcWidth : maxHeight;
+      width =
+        srcWidth === maxWidth ? maxHeight * (srcWidth / srcHeight) : maxWidth;
+      width = Number(width.toFixed(2));
+      height = Number(height.toFixed(2));
+    }
+    return {
+      width: width,
+      height: height,
+    };
+  };
   return (
     <div
       className={cx(
@@ -85,11 +112,27 @@ export const PanelDimension: FC<{
                 setVal(nval);
               }
 
-              local.dim.w = parseInt(_val);
-              update("dim", {
-                ...dim,
-                w: parseInt(_val),
-              });
+              if (dim.proportion) {
+                let res: any = calculateAspectRatioFit({
+                  srcWidth: dim.w,
+                  srcHeight: dim.h,
+                  maxWidth: parseInt(_val),
+                  maxHeight: dim.h,
+                });
+                update("dim", {
+                  ...dim,
+                  h: res.height,
+                  w: parseInt(_val),
+                });
+                local.dim.h = res.height;
+                local.dim.w = parseInt(_val);
+              } else {
+                local.dim.w = parseInt(_val);
+                update("dim", {
+                  ...dim,
+                  w: parseInt(_val),
+                });
+              }
             }}
           />
         </Tooltip>
@@ -105,30 +148,57 @@ export const PanelDimension: FC<{
               label="Fit"
               onClick={() => {
                 local.dim.w = "fit";
-                update("dim", {
-                  ...dim,
-                  w: "fit",
-                });
+                if (dim.proportion) {
+                  local.dim.h = "fit";
+                  update("dim", {
+                    ...dim,
+                    w: "fit",
+                    h: "fit",
+                  });
+                } else {
+                  update("dim", {
+                    ...dim,
+                    h: "fit",
+                  });
+                }
               }}
             />
             <MenuItem
               label="Full"
               onClick={() => {
                 local.dim.w = "full";
-                update("dim", {
-                  ...dim,
-                  w: "full",
-                });
+                if (dim.proportion) {
+                  local.dim.h = "full";
+                  update("dim", {
+                    ...dim,
+                    w: "full",
+                    h: "full",
+                  });
+                } else {
+                  update("dim", {
+                    ...dim,
+                    w: "full",
+                  });
+                }
               }}
             />
             <MenuItem
               label="Custom"
               onClick={() => {
                 local.dim.w = local.activeWidth || 0;
-                update("dim", {
-                  ...dim,
-                  w: local.activeWidth || 0,
-                });
+                if (dim.proportion) {
+                  local.dim.h = local.activeWidth || 0;
+                  update("dim", {
+                    ...dim,
+                    w: local.activeWidth || 0,
+                    h: local.activeWidth || 0,
+                  });
+                } else {
+                  update("dim", {
+                    ...dim,
+                    w: local.activeWidth || 0,
+                  });
+                }
               }}
             />
           </Menu>
@@ -208,11 +278,27 @@ export const PanelDimension: FC<{
                 setVal(nval);
               }
 
-              local.dim.h = parseInt(_val);
-              update("dim", {
-                ...dim,
-                h: parseInt(_val),
-              });
+              if (dim.proportion) {
+                let res: any = calculateAspectRatioFit({
+                  srcWidth: dim.w,
+                  srcHeight: dim.h,
+                  maxWidth: dim.w,
+                  maxHeight: parseInt(_val),
+                });
+                update("dim", {
+                  ...dim,
+                  h: parseInt(_val),
+                  w: res.width,
+                });
+                local.dim.h = parseInt(_val);
+                local.dim.w = res.width;
+              } else {
+                update("dim", {
+                  ...dim,
+                  h: parseInt(_val),
+                });
+                local.dim.h = parseInt(_val);
+              }
             }}
           />
         </Tooltip>
@@ -228,30 +314,57 @@ export const PanelDimension: FC<{
               label="Fit"
               onClick={() => {
                 local.dim.h = "fit";
-                update("dim", {
-                  ...dim,
-                  h: "fit",
-                });
+                if (dim.proportion) {
+                  local.dim.w = "fit";
+                  update("dim", {
+                    ...dim,
+                    w: "fit",
+                    h: "fit",
+                  });
+                } else {
+                  update("dim", {
+                    ...dim,
+                    h: "fit",
+                  });
+                }
               }}
             />
             <MenuItem
               label="Full"
               onClick={() => {
                 local.dim.h = "full";
-                update("dim", {
-                  ...dim,
-                  h: "full",
-                });
+                if (dim.proportion) {
+                  local.dim.w = "full";
+                  update("dim", {
+                    ...dim,
+                    w: "full",
+                    h: "full",
+                  });
+                } else {
+                  update("dim", {
+                    ...dim,
+                    h: "full",
+                  });
+                }
               }}
             />
             <MenuItem
               label="Custom"
               onClick={() => {
                 local.dim.h = local.activeHeight || 0;
-                update("dim", {
-                  ...dim,
-                  h: local.activeHeight || 0,
-                });
+                if (dim.proportion) {
+                  local.dim.w = local.activeHeight || 0;
+                  update("dim", {
+                    ...dim,
+                    h: local.activeHeight || 0,
+                    w: local.activeHeight || 0,
+                  });
+                } else {
+                  update("dim", {
+                    ...dim,
+                    h: local.activeHeight || 0,
+                  });
+                }
               }}
             />
           </Menu>
@@ -316,6 +429,68 @@ export const PanelDimension: FC<{
             </div>
           )}
         </Button>
+      </div>
+
+      <div className="flex">
+        <Tooltip content="Constrain proportions">
+          <Button
+            className={cx(
+              "flex-1",
+              css`
+                width: 20px;
+                max-width: 20px;
+                padding: 0px !important;
+                min-width: 0px !important;
+              `
+            )}
+            onClick={(e) => {
+              update("dim", {
+                ...dim,
+                proportion: !dim.proportion,
+              });
+            }}
+          >
+            <div className="w-[10px] h-[16px] flex items-center justify-center">
+              {dim.proportion ? (
+                <>
+                  <svg
+                    className="svg"
+                    width="8"
+                    height="14"
+                    viewBox="0 0 8 14"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M6 3.5V5h1V3.5C7 1.567 5.433 0 3.5 0 1.567 0 0 1.567 0 3.5V5h1V3.5C1 2.12 2.12 1 3.5 1 4.88 1 6 2.12 6 3.5zM6 9h1v1.5C7 12.433 5.433 14 3.5 14 1.567 14 0 12.433 0 10.5V9h1v1.5C1 11.88 2.12 13 3.5 13 4.88 13 6 11.88 6 10.5V9zM3 4v6h1V4H3z"
+                      fillRule="evenodd"
+                      fillOpacity="1"
+                      fill="#000"
+                      stroke="none"
+                    ></path>
+                  </svg>
+                </>
+              ) : (
+                <>
+                  <svg
+                    className="svg"
+                    width="8"
+                    height="14"
+                    viewBox="0 0 8 14"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M6 5V3.5C6 2.12 4.88 1 3.5 1 2.12 1 1 2.12 1 3.5V5H0V3.5C0 1.567 1.567 0 3.5 0 5.433 0 7 1.567 7 3.5V5H6zm1 4H6v1.5C6 11.88 4.88 13 3.5 13 2.12 13 1 11.88 1 10.5V9H0v1.5C0 12.433 1.567 14 3.5 14 5.433 14 7 12.433 7 10.5V9z"
+                      fillRule="evenodd"
+                      fillOpacity="1"
+                      fill="#000"
+                      stroke="none"
+                    ></path>
+                  </svg>
+                </>
+              )}
+            </div>
+          </Button>
+        </Tooltip>
       </div>
     </div>
   );

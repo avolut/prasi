@@ -22,9 +22,7 @@ export const _ = {
             fieldname: field.name
           };
           const upath = generateUploadPath(file, path, site);
-          // console.log(upath.path)
           await dirAsync(dirname(upath.path));
-          // await field.write(upath.path)
           await pipeline(field.file.stream, fs.createWriteStream(upath.path));
           result.push([upath.url].join("/"));
         }

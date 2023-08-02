@@ -79,6 +79,7 @@ export type FMPadding = TypedMap<FNPadding>;
 export type FNDimension = {
   w?: number | "fit" | "full";
   h?: number | "fit" | "full";
+  proportion?: boolean;
 };
 export type FMDimension = TypedMap<FNDimension>;
 
