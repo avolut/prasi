@@ -6,7 +6,7 @@ const fs = require("node:fs");
 export const _ = {
   url: "/get-gallery/:site_id",
   async api(site_id: string) {
-    let path = join(process.cwd(), "..", "content", "upload", site_id);
+    let path = join(process.cwd(), "..", "content", "upload","file", site_id);
     if (fs.existsSync(path)) {
       let files = fs.readdirSync(path);
       let fileList: any = [];
