@@ -8,7 +8,7 @@ import { FNAdv, FNLinkTag } from "../../../types/meta-fn";
 import { IText } from "../../../types/text";
 import { instantiateComp } from "../components";
 import { RendererGlobal } from "../renderer-global";
-import { scriptExec } from "./script-exec";
+import { preload, scriptExec } from "./script-exec";
 
 export const RRender: FC<{
   item: IContent;
@@ -77,6 +77,7 @@ export const RRender: FC<{
   if (linktag && linktag.link) {
     let href = linktag.link || "";
     if (href.startsWith("/")) {
+      preload(rg, href);
       if (
         location.pathname.startsWith("/site/") &&
         ["localhost", "127.0.0.1", "prasi.app"].includes(location.hostname)

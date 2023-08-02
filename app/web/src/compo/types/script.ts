@@ -1,10 +1,7 @@
 export type SingleScope = {
   value: Record<string, any>;
   types: Record<string, Record<string, string>>;
-  effect: Record<
-    string,
-    { name: string; effects: { effect: (local: any) => any; deps: any[] }[] }
-  >;
+  effectRun: Record<string, true>;
   tree: Record<
     string,
     {

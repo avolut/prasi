@@ -19,7 +19,6 @@ export const RendererGlobal = {
     load: async (ids: string[]) => {
       return [] as PRASI_COMPONENT[];
     },
-    scanMode: "server-side" as "server-side" | "client-side",
   },
   page: {
     active: null as null | PRASI_PAGE,

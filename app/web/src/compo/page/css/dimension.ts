@@ -37,7 +37,7 @@ export const cssDimension = (
           : "100" +
             (cur.type === "section"
               ? mode === "mobile"
-                ? "svh"
+                ? "vh"
                 : "vh"
               : "%")};
         margin-bottom: auto;

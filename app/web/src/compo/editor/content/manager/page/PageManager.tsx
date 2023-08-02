@@ -62,6 +62,8 @@ export const PageManager = () => {
         !local.page.data &&
         document.activeElement?.tagName.toLowerCase() !== "input"
       ) {
+        w.pageManagerSearch = "";
+        local.render();
         local.searchRef.focus();
       }
     };
@@ -102,7 +104,7 @@ export const PageManager = () => {
           id_folder: true,
         },
       });
-    } 
+    }
     local.loading = false;
     local.render();
   };

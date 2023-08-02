@@ -21,6 +21,18 @@ export const defineWindow = async (baseurl?: URL) => {
         : "https";
 
   w.serverurl = __SRV_URL__;
+  const serverURL = new URL(w.serverurl);
+  if (
+    serverURL.hostname === "localhost" ||
+    serverURL.hostname === "127.0.0.1"
+  ) {
+    serverURL.hostname = location.hostname;
+    serverURL.pathname = serverURL.pathname === "/" ? "" : serverURL.pathname;
+    w.serverurl = serverURL.toString();
+    if (w.serverurl.endsWith("/")) {
+      w.serverurl = w.serverurl.substring(0, w.serverurl.length - 1);
+    }
+  }
 
   const port = location.port;
   w.baseurl = scheme + "://" + host + (port ? ":" + port : "") + "/";
@@ -63,7 +75,9 @@ export const defineWindow = async (baseurl?: URL) => {
       }
       if (
         location.hostname === "prasi.app" ||
-        location.hostname === "localhost"
+        location.hostname === "localhost" ||
+        location.hostname === "127.0.0.1" ||
+        location.hostname === "10.0.2.2" // android localhost
       ) {
         if (
           location.pathname.startsWith("/site") &&

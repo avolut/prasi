@@ -61,9 +61,9 @@ export const createLocal = (opt: {
     const local = scope[name];
     local.render = opt.render;
 
-    if (!w.isEditor) {
-      if (effect) {
-        useEffect(() => {
+    useEffect(() => {
+      if (!w.isEditor) {
+        if (effect) {
           const result: any = effect(local);
 
           if (typeof result === "function") {
@@ -75,31 +75,20 @@ export const createLocal = (opt: {
               });
             };
           }
-        }, []);
-      }
+        }
+      } else {
+        if (effect) {
+          if (!opt.scope.effectRun) {
+            opt.scope.effectRun = {};
+          }
 
-      if (effects) {
-        for (const f of effects) {
-          useEffect(() => {
-            const result: any = f.effect(local);
-
-            if (typeof result === "function") {
-              return () => {};
-            } else if (
-              typeof result === "object" &&
-              result instanceof Promise
-            ) {
-              return () => {
-                result.then((e: any) => {
-                  if (typeof e === "function") e();
-                });
-              };
-            }
-          }, f.deps);
+          if (!opt.scope.effectRun[opt.item.id]) {
+            effect(local);
+            opt.scope.effectRun[opt.item.id] = true;
+          }
         }
       }
-    } else {
-    }
+    }, []);
 
     if (typeof children === "function") {
       return children(local);

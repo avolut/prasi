@@ -70,7 +70,6 @@ export default page({
             }
             return null;
           }
-          rg.component.scanMode = "client-side";
           const doc = await new Promise<MPage>(async (resolve) => {
             await pagePreview(local, page_id, resolve);
           });

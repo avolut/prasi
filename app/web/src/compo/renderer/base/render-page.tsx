@@ -46,17 +46,11 @@ export const PrasiPage = (props: {
     if (typeof page.active.content_tree === "undefined") {
       if (!rg.loading) {
         rg.loading = true;
-        const preload = rg.page.preloads[page.active.id] as any;
+        const preloads = rg.page.preloads[page.active.id] as any;
         const loadComp = async () => {
           if (page.active) {
             let res: any[] = [];
-            if (rg.component.scanMode === "server-side") {
-              res = await api.comp_scan(page.active.id);
-            } else if (page.active.content_tree) {
-              res = await rg.component.load([
-                ...scanComponent(page.active.content_tree),
-              ]);
-            }
+            res = await api.comp_scan(page.active.id);
             if (res) {
               for (const c of res) {
                 rg.component.def[c.id] = {
@@ -85,8 +79,8 @@ export const PrasiPage = (props: {
           }
         };
 
-        if (preload) {
-          preload.then(loaded).then(() => {
+        if (preloads) {
+          preloads.then(loaded).then(() => {
             rg.loading = false;
             rg.render();
           });
@@ -140,7 +134,7 @@ export const PrasiPage = (props: {
   if (!page.active) return ui.notfound;
 
   return (
-    <div className="w-full h-full flex flex-col items-stretch flex-1 bg-white">
+    <div className="flex flex-col items-stretch flex-1 bg-white">
       {page.active.content_tree?.childs.map((e) => (
         <RSection key={e.id} item={e} />
       ))}

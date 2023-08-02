@@ -28,10 +28,7 @@ export const CEPage: FC<{ ceid: string }> = ({ ceid }) => {
   const mode = responsiveMode();
   const local = useLocal({
     init: false,
-    effects: new WeakSet<any>(),
   });
-
-  useEffect(() => {}, [local.effects]);
 
   if (!local.init) {
     local.init = true;
@@ -77,22 +74,7 @@ export const CEPage: FC<{ ceid: string }> = ({ ceid }) => {
     <div
       className={cx(
         "w-full h-full relative flex items-center justify-center",
-        mode === "mobile"
-          ? css`
-              background-color: white;
-              background-image: linear-gradient(
-                  45deg,
-                  #fafafa 25%,
-                  transparent 25%
-                ),
-                linear-gradient(-45deg, #fafafa 25%, transparent 25%),
-                linear-gradient(45deg, transparent 75%, #fafafa 75%),
-                linear-gradient(-45deg, transparent 75%, #fafafa 75%);
-
-              background-size: 20px 20px;
-              background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
-            `
-          : "bg-white"
+        mode === "mobile" ? mobileCSS : "bg-white"
       )}
     >
       <div
@@ -139,3 +121,14 @@ export const CEPage: FC<{ ceid: string }> = ({ ceid }) => {
     </div>
   );
 };
+
+const mobileCSS = css`
+  background-color: white;
+  background-image: linear-gradient(45deg, #fafafa 25%, transparent 25%),
+    linear-gradient(-45deg, #fafafa 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #fafafa 75%),
+    linear-gradient(-45deg, transparent 75%, #fafafa 75%);
+
+  background-size: 20px 20px;
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+`;

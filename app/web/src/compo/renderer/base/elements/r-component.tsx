@@ -9,6 +9,7 @@ import { RItem } from "./r-item";
 import { RRender } from "./r-render";
 import { RText } from "./r-text";
 import { FNCompDef } from "../../../types/meta-fn";
+import { preload } from "./script-exec";
 
 export const RComponent: FC<{
   item: IItem;
@@ -52,6 +53,7 @@ export const RComponent: FC<{
   }
   const props = comp.content_tree.component?.props || {};
   const nprops: any = {};
+
   if (props) {
     getRenderPropVal(props, item, nprops, rg);
   }
@@ -68,18 +70,55 @@ export const RComponent: FC<{
   );
 };
 
+const extractNavigate = (str: string) => {
+  let i = 0;
+  const nstr = "navigate(";
+  const founds: string[] = [];
+  let lasti = 0;
+  while (true) {
+    const start = str.indexOf(nstr, i);
+    lasti = i;
+    if (start >= 0) {
+      const char = str[start + nstr.length];
+      const end = str.indexOf(`${char})`, start + nstr.length + 1);
+      const text = str.substring(start + nstr.length + 1, end);
+      i = end + 3;
+      founds.push(text);
+    }
+
+    if (lasti === i) {
+      break;
+    }
+  }
+  return founds;
+};
+
 export const getRenderPropVal = (
   props: Record<string, FNCompDef>,
   item: IItem,
   nprops: any,
-  rg?: any
+  rg?: typeof RendererGlobal & { render: () => void }
 ) => {
   const exec = (fn: string, scopes: any) => {
-    scopes["api"] = createAPI(rg?.site.api_url);
-    scopes["db"] = createDB(rg?.site.api_url);
-    const f = new Function(...Object.keys(scopes), `return ${fn}`);
-    const res = f(...Object.values(scopes));
-    return res;
+    if (rg) {
+      scopes["api"] = createAPI(rg.site.api_url);
+      scopes["db"] = createDB(rg.site.api_url);
+
+      if (fn.includes("navigate(") && rg.page.router) {
+        const navs = extractNavigate(fn);
+        for (const n of navs) {
+          const found = rg.page.router.lookup(n);
+          if (found && !found.content_tree && !rg.page.preloads[found.id]) {
+            preload(rg, found);
+          }
+        }
+      }
+
+      const f = new Function(...Object.keys(scopes), `return ${fn}`);
+      const res = f(...Object.values(scopes));
+      return res;
+    }
+    return null;
   };
 
   for (const [key, _prop] of Object.entries(props)) {

@@ -47,6 +47,7 @@ export const CompManager: FC<{ id: string }> = ({ id }) => {
         local.searchRef &&
         document.activeElement?.tagName.toLowerCase() !== "input"
       ) {
+        local.searchRef.value = "";
         local.searchRef.focus();
       }
     };

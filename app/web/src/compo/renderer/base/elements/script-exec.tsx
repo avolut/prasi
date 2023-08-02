@@ -6,6 +6,11 @@ import { createPassChild } from "../../../page/scripting/pass-child-r";
 import { IContent } from "../../../types/general";
 import { RendererGlobal } from "../renderer-global";
 import { useGlobal } from "web-utils";
+import { MatchedRoute } from "web-init";
+import { PRASI_PAGE } from "../renderer-types";
+import { scanComponent } from "../components";
+import { IRoot } from "../../../types/root";
+import { IItem } from "../../../types/item";
 
 type JsArg = {
   rg: typeof RendererGlobal;
@@ -37,6 +42,65 @@ export const scriptExec = (arg: JsArg, api_url?: string) => {
   return null;
 };
 
+export const preload = (
+  rg: typeof RendererGlobal & { render: () => void },
+  urlOrFound: string | MatchedRoute<PRASI_PAGE>
+) => {
+  let found: MatchedRoute<PRASI_PAGE> = null as any;
+  if (typeof urlOrFound === "string") {
+    const router = rg.page.router;
+    if (router) {
+      const _found = router.lookup(urlOrFound);
+      if (_found) found = _found;
+      else {
+        return null;
+      }
+    }
+  } else {
+    found = urlOrFound;
+  }
+
+  if (found) {
+    rg.page.preloads[found.id] = new Promise(async (resolve) => {
+      const page = await rg.page.load(found.id, true);
+      if (page) {
+        found.content_tree = page.content_tree;
+        found.js_compiled = page.js_compiled;
+        delete rg.page.preloads[found.id];
+        resolve(found as any);
+
+        await recurseComponentLoad(rg, found.content_tree as IRoot);
+      }
+    });
+  }
+};
+
+const recurseComponentLoad = async (
+  rg: typeof RendererGlobal & { render: () => void },
+  tree: IRoot | IItem
+) => {
+  const comps = scanComponent(tree);
+  const loadCompIds: string[] = [];
+  comps.forEach((cid) => {
+    if (!rg.component.def[cid] && !rg.component.loading[cid]) {
+      loadCompIds.push(cid);
+      rg.component.loading[cid] = true;
+    }
+  });
+
+  if (loadCompIds.length > 0) {
+    const comps = await rg.component.load(loadCompIds);
+    if (comps) {
+      for (const comp of comps) {
+        rg.component.def[comp.id] = comp;
+        delete rg.component.loading[comp.id];
+        rg.render();
+        recurseComponentLoad(rg, comp.content_tree);
+      }
+    }
+  }
+};
+
 const Preload = ({ children, url }: { children: ReactNode; url: string[] }) => {
   const rg = useGlobal(RendererGlobal, "PRASI_SITE");
   useEffect(() => {
@@ -45,28 +109,7 @@ const Preload = ({ children, url }: { children: ReactNode; url: string[] }) => {
       if (router) {
         const found = router.lookup(u);
         if (found && !found.content_tree && !rg.page.preloads[found.id]) {
-          rg.page.preloads[found.id] = new Promise(async (resolve) => {
-            const page = await rg.page.load(found.id, true);
-            if (page) {
-              found.content_tree = page.content_tree;
-              found.js_compiled = page.js_compiled;
-              delete rg.page.preloads[found.id];
-              resolve(found as any);
-
-              let res: any[] = [];
-              res = await api.comp_scan(found.id);
-              if (res) {
-                for (const c of res) {
-                  if (!rg.component.def[c.id]) {
-                    rg.component.def[c.id] = {
-                      id: c.id,
-                      content_tree: c.content_tree,
-                    };
-                  }
-                }
-              }
-            }
-          });
+          preload(rg, found);
         }
       }
     }
@@ -195,6 +238,21 @@ const createLocal = (arg: { item: IContent; render: () => void }): LocalFC => {
       child = children(local);
     }
     thru(child, { [name]: local });
+
+    useEffect(() => {
+      if (effect) {
+        const res = effect(local);
+        if (res && res instanceof Promise) {
+          return () => {
+            res.then((e) => {
+              if (typeof e === "function") e();
+            });
+          };
+        } else {
+          return res;
+        }
+      }
+    }, []);
 
     return child as ReactNode;
   };
