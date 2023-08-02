@@ -52,6 +52,19 @@ const Preload = ({ children, url }: { children: ReactNode; url: string[] }) => {
               found.js_compiled = page.js_compiled;
               delete rg.page.preloads[found.id];
               resolve(found as any);
+
+              let res: any[] = [];
+              res = await api.comp_scan(found.id);
+              if (res) {
+                for (const c of res) {
+                  if (!rg.component.def[c.id]) {
+                    rg.component.def[c.id] = {
+                      id: c.id,
+                      content_tree: c.content_tree,
+                    };
+                  }
+                }
+              }
             }
           });
         }

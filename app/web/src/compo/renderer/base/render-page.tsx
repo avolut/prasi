@@ -47,21 +47,8 @@ export const PrasiPage = (props: {
       if (!rg.loading) {
         rg.loading = true;
         const preload = rg.page.preloads[page.active.id] as any;
-        const loaded = async (loadedPage: Required<PRASI_PAGE> | null) => {
+        const loadComp = async () => {
           if (page.active) {
-            try {
-              if (typeof window.exports === "undefined") {
-                window.exports = {};
-              }
-              const ts = new Date(page.active.updated_at || "").getTime();
-              await importModule(
-                `${serverurl}/npm/page/${page.active.id}/index.js?${ts}`
-              );
-            } catch (e) {
-              console.error(e);
-            }
-            page.active.content_tree = loadedPage?.content_tree || null;
-            page.active.js_compiled = loadedPage?.js_compiled;
             let res: any[] = [];
             if (rg.component.scanMode === "server-side") {
               res = await api.comp_scan(page.active.id);
@@ -79,14 +66,39 @@ export const PrasiPage = (props: {
               }
             }
           }
-          rg.loading = false;
-          rg.render();
+        };
+        const loaded = async (loadedPage: Required<PRASI_PAGE> | null) => {
+          if (page.active) {
+            try {
+              if (typeof window.exports === "undefined") {
+                window.exports = {};
+              }
+              const ts = new Date(page.active.updated_at || "").getTime();
+              await importModule(
+                `${serverurl}/npm/page/${page.active.id}/index.js?${ts}`
+              );
+            } catch (e) {
+              console.error(e);
+            }
+            page.active.content_tree = loadedPage?.content_tree || null;
+            page.active.js_compiled = loadedPage?.js_compiled;
+          }
         };
 
         if (preload) {
-          preload.then(loaded);
+          preload.then(loaded).then(() => {
+            rg.loading = false;
+            rg.render();
+          });
         } else {
-          rg.page.load(page.active.id).then(loaded);
+          rg.page
+            .load(page.active.id)
+            .then(loaded)
+            .then(loadComp)
+            .then(() => {
+              rg.loading = false;
+              rg.render();
+            });
         }
       }
     }
