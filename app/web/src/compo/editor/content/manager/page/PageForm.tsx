@@ -9,7 +9,7 @@ import { Input } from "../../../../ui/form/input";
 export const PageForm: FC<{
   page: Partial<page>;
   onClose: () => void;
-  onSave: (res: any) => void;
+  onSave: (res: any, isNew: boolean) => void;
 }> = ({ page, onClose, onSave }) => {
   const c = useGlobal(CEGlobal, "PAGE");
   const local = useLocal({ init: false, saving: false, fillUrl: false });
@@ -51,8 +51,15 @@ export const PageForm: FC<{
                     id_folder,
                   },
                 });
-                onSave(res);
+                onSave(res, true);
               } else {
+                const res = await db.page.update({
+                  data: {
+                    name: form.name,
+                    url: form.url || "",
+                  },
+                  where: { id: form.id },
+                });
                 if (wsdoc.page_id === form.id && wsdoc.page) {
                   wsdoc.page.doc.transact(() => {
                     if (wsdoc.page) {
@@ -61,18 +68,11 @@ export const PageForm: FC<{
                         (page as any).set("name", form.name);
                         (page as any).set("url", form.url);
                       }
-                      onSave(page.toJSON());
+                      onSave(page.toJSON(), false);
                     }
                   });
                 } else {
-                  const res = await db.page.update({
-                    data: {
-                      name: form.name,
-                      url: form.url || "",
-                    },
-                    where: { id: form.id },
-                  });
-                  onSave(res);
+                  onSave(res, false);
                 }
               }
 
@@ -138,7 +138,7 @@ export const PageForm: FC<{
                         is_deleted: true,
                       },
                     });
-                    onSave(res);
+                    onSave(res, false);
                   }
                 }}
               >

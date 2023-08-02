@@ -72,30 +72,37 @@ export const PageManager = () => {
   }, []);
 
   const reloadPages = async () => {
+    if (local.loading) return true;
+    local.loading = true;
+    local.render();
+
     const folders = await db.page_folder.findMany({
       where: {
         id_site: wsdoc.site?.id,
         is_deleted: false,
       },
     });
-    data.folder = {};
-    for (const f of folders) {
-      data.folder[f.id] = { ...f };
-    }
+    if (folders) {
+      data.folder = {};
 
-    data.all = await db.page.findMany({
-      where: {
-        id_site: wsdoc.site?.id,
-        is_deleted: false,
-      },
-      select: {
-        id: true,
-        name: true,
-        url: true,
-        id_site: true,
-        id_folder: true,
-      },
-    });
+      for (const f of folders) {
+        data.folder[f.id] = { ...f };
+      }
+
+      data.all = await db.page.findMany({
+        where: {
+          id_site: wsdoc.site?.id,
+          is_deleted: false,
+        },
+        select: {
+          id: true,
+          name: true,
+          url: true,
+          id_site: true,
+          id_folder: true,
+        },
+      });
+    } 
     local.loading = false;
     local.render();
   };
@@ -105,7 +112,6 @@ export const PageManager = () => {
 
   if (data.all.length === 0) {
     reloadPages();
-    local.loading = true;
   }
 
   if (!local.init && !local.loading) {
@@ -221,7 +227,7 @@ export const PageManager = () => {
             <div className="fixed top-0 right-[20px] bg-white z-10 m-[8px]">
               <input
                 type="search"
-                value={w.pageManagerSearch}
+                value={w.pageManagerSearch || ""}
                 onChange={(e) => {
                   w.pageManagerSearch = e.currentTarget.value;
                   local.render();
@@ -340,7 +346,7 @@ export const PageManager = () => {
                     {local.editFolderID === node.id ? (
                       <input
                         type="text"
-                        value={local.newFolder.name}
+                        value={local.newFolder.name || ""}
                         autoFocus
                         onClick={(e) => {
                           e.stopPropagation();
@@ -365,6 +371,8 @@ export const PageManager = () => {
                                       : local.newFolder.parentID,
                                 },
                               });
+
+                              local.loading = false;
                               await reloadPages();
                               local.loading = false;
                               local.init = false;
@@ -383,9 +391,8 @@ export const PageManager = () => {
                               },
                               select: { id: true },
                             });
-
-                            await reloadPages();
                             local.loading = false;
+                            await reloadPages();
                             local.init = false;
                             local.render();
                           }
@@ -575,14 +582,18 @@ export const PageManager = () => {
               local.page.data = null;
               local.render();
             }}
-            onSave={async (res) => {
-              local.page.data = null;
-              local.loading = true;
-              local.render();
-              await reloadPages();
-              local.loading = false;
-              local.init = false;
-              local.render();
+            onSave={async (res, isNew) => {
+              if (isNew) {
+                c.editor.manager.showPage = false;
+                location.href = `/editor/${wsdoc.site?.id}/${res.id}`;
+              } else {
+                local.page.data = null;
+                data.all = [];
+                local.loading = false;
+                await reloadPages();
+                local.init = false;
+                local.render();
+              }
             }}
             page={local.page.data}
           />
