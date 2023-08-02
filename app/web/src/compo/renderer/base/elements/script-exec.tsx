@@ -34,7 +34,7 @@ export const scriptExec = (arg: JsArg, api_url?: string) => {
     } catch (e) {
       error = true;
       console.warn(e);
-      console.warn(`ERROR: ` + adv.js);
+      console.warn(`ERROR in ${arg.item.type} [${arg.item.name}]:\n ` + adv.js);
     }
     return output.jsx;
   }
