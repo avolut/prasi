@@ -44,7 +44,7 @@ const Preload = ({ children, url }: { children: ReactNode; url: string[] }) => {
       const router = rg.page.router;
       if (router) {
         const found = router.lookup(u);
-        if (found && !rg.page.preloads[found.id]) {
+        if (found && !found.content_tree && !rg.page.preloads[found.id]) {
           rg.page.preloads[found.id] = new Promise(async (resolve) => {
             const page = await rg.page.load(found.id, true);
             if (page) {
