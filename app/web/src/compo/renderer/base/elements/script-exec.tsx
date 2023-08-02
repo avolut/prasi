@@ -33,8 +33,8 @@ export const scriptExec = (arg: JsArg, api_url?: string) => {
       scriptEval(...Object.values(evalArgs));
     } catch (e) {
       error = true;
-      console.log(e);
-      console.log(`ERROR: ` + adv.jsBuilt);
+      console.warn(e);
+      console.warn(`ERROR: ` + adv.js);
     }
     return output.jsx;
   }
