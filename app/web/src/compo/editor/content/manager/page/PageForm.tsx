@@ -99,7 +99,7 @@ export const PageForm: FC<{
               }}
               onChange={(e) => {
                 if (local.fillUrl) {
-                  form.url = `/${slugify(e)}`;
+                  form.url = `/${e.replace(/\W/g, "/").replace(/\/\/+/g, "/")}`;
                 }
                 form.render();
               }}
