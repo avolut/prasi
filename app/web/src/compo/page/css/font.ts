@@ -41,7 +41,6 @@ export const cssFont = (
         ? "break-word"
         : "normal"};
     `,
-
     font.color &&
       css`
         color: ${font.color};
