@@ -58,6 +58,7 @@ export const CEGlobal = {
         activeEl: null as null | Array<HTMLElement>,
       },
     },
+    drag: false,
     copy: null as null | "multiple",
     activeEl: null as HTMLElement | null,
     hover: null as null | MContent,

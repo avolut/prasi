@@ -11,7 +11,7 @@ import { FC, useEffect } from "react";
 import { useGlobal, useLocal } from "web-utils";
 import { CEGlobal } from "../../../../base/global/content-editor";
 import { NodeContent, flattenTree } from "../../../page/tools/flatten-tree";
-import { MContent } from "../../../types/general";
+import { IContent, MContent } from "../../../types/general";
 import { MRoot } from "../../../types/root";
 import { CETreeItem, DEPTH_WIDTH } from "./tree-item";
 import { wsdoc } from "../../ws/wsdoc";
@@ -22,6 +22,11 @@ import findIndex from "lodash.findindex";
 import slice from "lodash.slice";
 import { Loading } from "../../../ui/loading";
 import get from "lodash.get";
+import { IItem } from "../../../types/item";
+import { flatTree } from "../../../page/tools/flat-tree";
+import { newMap } from "../../tools/yjs-tools";
+import { fillID } from "../../../page/tools/fill-id";
+import { filterFlatTree } from "../../../page/tools/filter-tree";
 
 export const CETree: FC<{ id: string }> = ({ id }) => {
   const c = useGlobal(CEGlobal, id);
@@ -77,15 +82,15 @@ export const CETree: FC<{ id: string }> = ({ id }) => {
         )}
         onMouseLeave={() => {
           wsdoc.keyDown = "";
-
-          if ((c.editor.multiple.active || []).length > 0) {
-            c.editor.active = (c.editor.multiple.active as any)[0];
-            c.editor.multiple = {
-              active: null,
-              activeEl: null,
-            };
-            c.render();
-          }
+          if (!c.editor.drag)
+            if ((c.editor.multiple.active || []).length > 0) {
+              c.editor.active = (c.editor.multiple.active as any)[0];
+              c.editor.multiple = {
+                active: null,
+                activeEl: null,
+              };
+              c.render();
+            }
         }}
       >
         {c.editor.tree.reload ? (
@@ -130,6 +135,10 @@ export const CETree: FC<{ id: string }> = ({ id }) => {
                         if (node.data?.content) {
                           local.childs = walk(node.data?.content);
                         }
+                        c.editor.drag = true;
+                      }}
+                      onDragEnd={() => {
+                        c.editor.drag = false;
                       }}
                       canDrop={(
                         _,
@@ -190,36 +199,48 @@ export const CETree: FC<{ id: string }> = ({ id }) => {
                         _,
                         { dropTarget, dropTargetId, dragSource, relativeIndex }
                       ) => {
-                        if (
-                          dragSource?.data &&
-                          (dropTarget?.data || dropTargetId === "root")
-                        ) {
-                          const from = dragSource.data;
-                          const insert = from.content.clone();
-                          from.content.parent.forEach((e, idx) => {
-                            if (e === from.content) {
-                              from.content.parent.delete(idx);
-                            }
+                        let mode = c.editor.copy;
+                        let listItem = c.editor.multiple.active || [];
+                        if (mode === "multiple" && get(listItem, "length")) {
+                          // Execution drag multiple data
+                          drapMultiple({
+                            dropTarget,
+                            dropTargetId,
+                            dragSource,
+                            relativeIndex,
+                            global: c,
                           });
-
-                          if (dropTargetId !== "root") {
-                            const to = dropTarget?.data;
-                            if (to) {
-                              const childs = to.content.get("childs");
-                              if (
-                                childs &&
-                                childs.length - 1 >= (relativeIndex || 0)
-                              ) {
-                                childs?.insert(relativeIndex || 0, [insert]);
-                              } else {
-                                childs?.push([insert]);
+                        } else {
+                          if (
+                            dragSource?.data &&
+                            (dropTarget?.data || dropTargetId === "root")
+                          ) {
+                            const from = dragSource.data;
+                            const insert = from.content.clone();
+                            from.content.parent.forEach((e, idx) => {
+                              if (e === from.content) {
+                                from.content.parent.delete(idx);
                               }
+                            });
+                            if (dropTargetId !== "root") {
+                              const to = dropTarget?.data;
+                              if (to) {
+                                const childs = to.content.get("childs");
+                                if (
+                                  childs &&
+                                  childs.length - 1 >= (relativeIndex || 0)
+                                ) {
+                                  childs?.insert(relativeIndex || 0, [insert]);
+                                } else {
+                                  childs?.push([insert]);
+                                }
+                              }
+                            } else {
+                              const childs = (c.root as MRoot).get("childs");
+                              childs?.insert(relativeIndex || 0, [insert]);
                             }
-                          } else {
-                            const childs = (c.root as MRoot).get("childs");
-                            childs?.insert(relativeIndex || 0, [insert]);
+                            c.render();
                           }
-                          c.render();
                         }
                       }}
                       render={(node, { depth, isOpen, onToggle }) => {
@@ -308,6 +329,72 @@ export const CETree: FC<{ id: string }> = ({ id }) => {
       </div>
     </div>
   );
+};
+const drapMultiple = (props: {
+  dropTarget: any;
+  dropTargetId: any;
+  dragSource: any;
+  relativeIndex: any;
+  global: any;
+}) => {
+  const { dropTarget, dropTargetId, dragSource, relativeIndex, global } = props;
+  const c = global;
+  let mode = c.editor.copy;
+  // let listItem = c.editor.multiple.active || [];
+  let data: any = c.editor.multiple.active;
+  data = data.map((e: MContent) => {
+    let jso = e.toJSON();
+    if (jso.type === "section") {
+      const newItem = {
+        id: jso.id,
+        name: jso.name,
+        type: "item",
+        dim: { w: "fit", h: "fit" },
+        childs: jso.childs,
+        component: get(jso, "component"),
+        adv: jso.adv,
+      } as IItem;
+      return newItem;
+    }
+    return jso;
+  });
+  let rootContent = JSON.parse(JSON.stringify({ data }));
+  let flat = rootContent.data as Array<IContent>;
+  let res = flatTree(flat);
+  let syncTarget = data.find((e: any) => e.id === dropTargetId);
+  if (!syncTarget) {
+    const content = dropTarget.data.content;
+    const child = content.get("childs");
+    const type = content.get("type");
+    let select = [] as Array<MContent>;
+    if (type === "text") {
+      content.parent.forEach((e: MContent, idx: any) => {
+        res.map((e: any) => {
+          const map = newMap(fillID(e)) as MContent;
+          select = select.concat(map);
+          if (map) {
+            content.parent.insert(idx, [map]);
+          }
+        });
+      });
+    } else {
+      res.map((e: any) => {
+        const map = newMap(fillID(e)) as MContent;
+        child.push([map]);
+        select = select.concat(map);
+      });
+    }
+    let childs = c.editor.tree.list;
+    let iSelect = get(c, "editor.multiple.active") as Array<MContent>;
+    filterFlatTree(iSelect, childs);
+    let wlk: any = [];
+    select.map((e: MContent) => {
+      let walk2 = walkContent(e);
+      wlk.concat(walk2);
+    });
+    c.editor.multiple.active = [];
+    c.render();
+  }
 };
 export const selectMultiple = (props: { item: MContent; global: any }) => {
   const { item, global } = props;

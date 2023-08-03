@@ -43,11 +43,12 @@ export const CETreeMenu: FC<{
       isActiveComponent = true;
     }
   }
-
-  navigator.clipboard.readText().then((e) => {
-    local.paste = e;
-    local.render();
-  });
+  try {
+    navigator.clipboard.readText().then((e) => {
+      local.paste = e;
+      local.render();
+    });
+  } catch (error) {}
 
   const rootComponentID = (c.root as MItem).get("component")?.get("id");
   let itemComponent: Partial<FNComponent> =

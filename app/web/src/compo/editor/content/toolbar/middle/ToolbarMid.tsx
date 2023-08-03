@@ -29,9 +29,6 @@ export const ToolbarMid = () => {
   const c = useGlobal(CEGlobal, "PAGE");
   const local = useLocal({
     apiConfigOpen: false,
-    searchItem: {
-      open: false,
-    },
     siteJS: {
       open: false,
       timeout: null as any,
