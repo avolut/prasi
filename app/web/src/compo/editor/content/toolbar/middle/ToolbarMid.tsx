@@ -13,6 +13,7 @@ import { AddElement } from "./AddElement";
 import { NPMImport } from "./NPMImport";
 import { APIConfig } from "./api/APIConfig";
 import { customMonacoState } from "../../script/monaco/monaco-custom";
+import { Icon } from "@iconify/react";
 
 const ua = navigator.userAgent.toLowerCase();
 const isMac =
@@ -28,6 +29,9 @@ export const ToolbarMid = () => {
   const c = useGlobal(CEGlobal, "PAGE");
   const local = useLocal({
     apiConfigOpen: false,
+    searchItem: {
+      open: false,
+    },
     siteJS: {
       open: false,
       timeout: null as any,

@@ -41,6 +41,11 @@ export const cssFont = (
         ? "break-word"
         : "normal"};
     `,
+
+    font.color &&
+      css`
+        color: ${font.color};
+      `,
     font.whitespace && font.whitespace,
     css`
       text-align: ${font.align ? font.align : "left"};
