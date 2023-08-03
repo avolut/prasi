@@ -36,6 +36,10 @@ export const cssFont = (
   }
 
   return cx(
+    font.color &&
+      css`
+        color: ${font.color};
+      `,
     css`
       word-break: ${font.whitespace === "whitespace-normal"
         ? "break-word"

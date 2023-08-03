@@ -216,7 +216,6 @@ export const PanelFont: FC<{
             Changing font family for current element.
           </>
         }
-        asChild
       >
         <Dropdown
           {...dropdownProp}
