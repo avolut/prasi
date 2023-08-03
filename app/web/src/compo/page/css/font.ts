@@ -36,10 +36,11 @@ export const cssFont = (
   }
 
   return cx(
-    font.color &&
-      css`
-        color: ${font.color};
-      `,
+    font.wordBreak && font.wordBreak,
+    font.whitespace && font.whitespace,
+    css`
+      text-align: ${font.align ? font.align : "left"};
+    `,
     font.size &&
       css`
         font-size: ${font.size}px;

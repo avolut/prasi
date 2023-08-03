@@ -13,6 +13,9 @@ import { dropdownProp } from "../ui/style";
 import { w } from "../../../../types/general";
 import { Tooltip } from "../../../../ui/tooltip";
 import { Dropdown } from "../../../../ui/dropdown";
+import { BoxSep } from "../ui/BoxSep";
+import { FieldBtnRadio } from "../ui/FieldBtnRadio";
+import { Icon } from "@iconify/react";
 
 type FontUpdate = {
   font: FNFont;
@@ -34,6 +37,9 @@ export const PanelFont: FC<{
   const font = responsiveVal<FNFont>(value, "font", mode, {
     size: 15,
     height: "auto",
+    align: "left",
+    whitespace: "whitespace-normal",
+    wordBreak: "break-normal",
   });
 
   if (font.height === 0) font.height = "auto";
@@ -201,30 +207,69 @@ export const PanelFont: FC<{
           </Tooltip>
         </div>
       </div>
-
-      <Tooltip
-        content={
-          <>
-            Font Family
-            <br />
-            Changing font family for current element.
-          </>
-        }
-        asChild
-      >
-        <div
+      <div className={cx("flex flex-row justify-between text-xs ")}>
+        <BoxSep
           className={cx(
-            "bg-white p-[2px] border border-gray-300 flex items-stretch",
+            "justify-between",
             css`
-              > * {
+              padding: 0px;
+              & > button {
+                min-width: 0px;
                 flex: 1;
-              }
-
-              .fui-Combobox {
-                flex: 1;
+                padding: 2px 4px;
               }
             `
           )}
+        >
+          <FieldBtnRadio
+            items={{
+              left: (
+                <Tooltip content="Direction: Column">
+                  <div>
+                    <Icon
+                      icon="gridicons:align-left"
+                      className="text-lg text-gray-700"
+                    />
+                  </div>
+                </Tooltip>
+              ),
+              center: (
+                <Tooltip content="Direction: Column Reverse">
+                  <div>
+                    <Icon
+                      icon="gridicons:align-center"
+                      className="text-lg text-gray-700"
+                    />
+                  </div>
+                </Tooltip>
+              ),
+              right: (
+                <Tooltip content="Direction: Row">
+                  <div>
+                    <Icon
+                      icon="gridicons:align-right"
+                      className="text-lg text-gray-700"
+                    />
+                  </div>
+                </Tooltip>
+              ),
+            }}
+            value={font.align}
+            disabled={false}
+            update={(dir) => {
+              update("font", { ...font, align: dir as any });
+            }}
+          />
+        </BoxSep>
+        <Tooltip
+          content={
+            <>
+              Font Family
+              <br />
+              Changing font family for current element.
+            </>
+          }
+          asChild
         >
           <Dropdown
             {...dropdownProp}
@@ -282,8 +327,51 @@ export const PanelFont: FC<{
               }
             }}
           />
-        </div>
-      </Tooltip>
+        </Tooltip>
+      </div>
+      <div
+        className={cx(
+          "flex flex-row justify-between text-xs ",
+          css`
+            .dropdown {
+              width: 95%;
+            }
+          `
+        )}
+      >
+        <Tooltip content={"Whitespace"}>
+          <Dropdown
+            {...dropdownProp}
+            value={font.whitespace}
+            items={[
+              { value: "whitespace-normal", label: "Normal" },
+              { value: "whitespace-nowrap", label: "nowrap" },
+              { value: "whitespace-pre", label: "pre" },
+              { value: "whitespace-pre-line", label: "pre-line" },
+              { value: "whitespace-pre-wrap", label: "pre-wrap" },
+              { value: "whitespace-break-spaces", label: "break-spaces" },
+            ]}
+            onChange={(val) => {
+              update("font", { ...font, whitespace: val as any });
+            }}
+          />
+        </Tooltip>
+        <Tooltip content={"Break Word"}>
+          <Dropdown
+            {...dropdownProp}
+            value={font.wordBreak}
+            items={[
+              { value: "break-normal", label: "Normal" },
+              { value: "break-words", label: "Words" },
+              { value: "break-all", label: "All" },
+              { value: "break-keep", label: "Keep" },
+            ]}
+            onChange={(val) => {
+              update("font", { ...font, wordBreak: val as any });
+            }}
+          />
+        </Tooltip>
+      </div>
     </div>
   );
 };

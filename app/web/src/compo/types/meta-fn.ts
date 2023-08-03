@@ -116,6 +116,15 @@ export type FNFont = {
   size?: number;
   family?: string;
   height?: number | "auto";
+  align?: "center" | "left" | "right";
+  whitespace?:
+    | "whitespace-normal"
+    | "whitespace-nowrap"
+    | "whitespace-pre"
+    | "whitespace-pre-line"
+    | "whitespace-pre-wrap"
+    | "whitespace-break-spaces";
+  wordBreak?: "break-normal" | "break-words" | "break-all" | "break-keep";
 };
 export type FMFont = TypedMap<FNFont>;
 

@@ -7,6 +7,7 @@ export const RText: FC<{ item: IText }> = ({ item }) => {
     <RRender item={item}>
       {() => (
         <div
+          className="w-full"
           dangerouslySetInnerHTML={{
             __html: item.html || "",
           }}
