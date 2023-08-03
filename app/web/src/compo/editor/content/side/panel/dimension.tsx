@@ -10,6 +10,7 @@ import { useGlobal, useLocal } from "web-utils";
 import { Tooltip } from "../../../../ui/tooltip";
 import { Menu, MenuItem } from "../../../../ui/context-menu";
 import { CEGlobal } from "../../../../../base/global/content-editor";
+import { Icon } from "@iconify/react";
 
 type DimensionUpdate = {
   dim: FNDimension;
@@ -28,6 +29,7 @@ export const PanelDimension: FC<{
   const local = useLocal({
     menuWidth: null as any,
     menuHeight: null as any,
+    toggle: true as any,
     activeWidth: 0,
     activeHeight: 0,
     dim: responsiveVal<FNDimension>(value, "dim", mode, {
@@ -112,7 +114,7 @@ export const PanelDimension: FC<{
                 setVal(nval);
               }
 
-              if (dim.proportion) {
+              if (false) {
                 let res: any = calculateAspectRatioFit({
                   srcWidth: dim.w,
                   srcHeight: dim.h,
@@ -130,9 +132,11 @@ export const PanelDimension: FC<{
                 local.dim.w = parseInt(_val);
                 update("dim", {
                   ...dim,
-                  w: parseInt(_val),
+                  w: local.dim.w,
+                  h: local.dim.h,
                 });
               }
+              local.render();
             }}
           />
         </Tooltip>
@@ -148,7 +152,7 @@ export const PanelDimension: FC<{
               label="Fit"
               onClick={() => {
                 local.dim.w = "fit";
-                if (dim.proportion) {
+                if (false) {
                   local.dim.h = "fit";
                   update("dim", {
                     ...dim,
@@ -167,7 +171,7 @@ export const PanelDimension: FC<{
               label="Full"
               onClick={() => {
                 local.dim.w = "full";
-                if (dim.proportion) {
+                if (false) {
                   local.dim.h = "full";
                   update("dim", {
                     ...dim,
@@ -186,7 +190,7 @@ export const PanelDimension: FC<{
               label="Custom"
               onClick={() => {
                 local.dim.w = local.activeWidth || 0;
-                if (dim.proportion) {
+                if (false) {
                   local.dim.h = local.activeWidth || 0;
                   update("dim", {
                     ...dim,
@@ -278,7 +282,7 @@ export const PanelDimension: FC<{
                 setVal(nval);
               }
 
-              if (dim.proportion) {
+              if (false) {
                 let res: any = calculateAspectRatioFit({
                   srcWidth: dim.w,
                   srcHeight: dim.h,
@@ -293,12 +297,14 @@ export const PanelDimension: FC<{
                 local.dim.h = parseInt(_val);
                 local.dim.w = res.width;
               } else {
+                local.dim.h = parseInt(_val);
                 update("dim", {
                   ...dim,
-                  h: parseInt(_val),
+                  w: local.dim.w,
+                  h: local.dim.h,
                 });
-                local.dim.h = parseInt(_val);
               }
+              local.render();
             }}
           />
         </Tooltip>
@@ -314,7 +320,7 @@ export const PanelDimension: FC<{
               label="Fit"
               onClick={() => {
                 local.dim.h = "fit";
-                if (dim.proportion) {
+                if (false) {
                   local.dim.w = "fit";
                   update("dim", {
                     ...dim,
@@ -333,7 +339,7 @@ export const PanelDimension: FC<{
               label="Full"
               onClick={() => {
                 local.dim.h = "full";
-                if (dim.proportion) {
+                if (false) {
                   local.dim.w = "full";
                   update("dim", {
                     ...dim,
@@ -352,7 +358,7 @@ export const PanelDimension: FC<{
               label="Custom"
               onClick={() => {
                 local.dim.h = local.activeHeight || 0;
-                if (dim.proportion) {
+                if (false) {
                   local.dim.w = local.activeHeight || 0;
                   update("dim", {
                     ...dim,
@@ -430,9 +436,8 @@ export const PanelDimension: FC<{
           )}
         </Button>
       </div>
-
       <div className="flex">
-        <Tooltip content="Constrain proportions">
+        <Tooltip content={local.toggle ? "Full" : "Fit"}>
           <Button
             className={cx(
               "flex-1",
@@ -446,46 +451,27 @@ export const PanelDimension: FC<{
             onClick={(e) => {
               update("dim", {
                 ...dim,
-                proportion: !dim.proportion,
+                w: !local.toggle ? "fit" : "full",
+                h: !local.toggle ? "fit" : "full",
               });
+              local.toggle = !local.toggle;
+              local.render();
             }}
           >
             <div className="w-[10px] h-[16px] flex items-center justify-center">
-              {dim.proportion ? (
+              {local.toggle ? (
                 <>
-                  <svg
-                    className="svg"
-                    width="8"
-                    height="14"
-                    viewBox="0 0 8 14"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M6 3.5V5h1V3.5C7 1.567 5.433 0 3.5 0 1.567 0 0 1.567 0 3.5V5h1V3.5C1 2.12 2.12 1 3.5 1 4.88 1 6 2.12 6 3.5zM6 9h1v1.5C7 12.433 5.433 14 3.5 14 1.567 14 0 12.433 0 10.5V9h1v1.5C1 11.88 2.12 13 3.5 13 4.88 13 6 11.88 6 10.5V9zM3 4v6h1V4H3z"
-                      fillRule="evenodd"
-                      fillOpacity="1"
-                      fill="#000"
-                      stroke="none"
-                    ></path>
-                  </svg>
+                  <Icon
+                    icon="cil:fullscreen"
+                    className="text-lg text-gray-700"
+                  />
                 </>
               ) : (
                 <>
-                  <svg
-                    className="svg"
-                    width="8"
-                    height="14"
-                    viewBox="0 0 8 14"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M6 5V3.5C6 2.12 4.88 1 3.5 1 2.12 1 1 2.12 1 3.5V5H0V3.5C0 1.567 1.567 0 3.5 0 5.433 0 7 1.567 7 3.5V5H6zm1 4H6v1.5C6 11.88 4.88 13 3.5 13 2.12 13 1 11.88 1 10.5V9H0v1.5C0 12.433 1.567 14 3.5 14 5.433 14 7 12.433 7 10.5V9z"
-                      fillRule="evenodd"
-                      fillOpacity="1"
-                      fill="#000"
-                      stroke="none"
-                    ></path>
-                  </svg>
+                  <Icon
+                    icon="cil:fullscreen-exit"
+                    className="text-lg text-gray-700"
+                  />
                 </>
               )}
             </div>
