@@ -207,6 +207,74 @@ export const PanelFont: FC<{
           </Tooltip>
         </div>
       </div>
+
+      <Tooltip
+        content={
+          <>
+            Font Family
+            <br />
+            Changing font family for current element.
+          </>
+        }
+        asChild
+      >
+        <Dropdown
+          {...dropdownProp}
+          value={local.font.name || "DEFAULT"}
+          items={Object.entries(fflist).map((e, idx) => {
+            return {
+              label: e[1].name,
+              value: e[1].name,
+            };
+          })}
+          popover={{
+            ...dropdownProp.popover,
+            renderItem(item, idx) {
+              if (typeof item === "string") return null;
+              if (!w.loadedFonts) w.loadedFonts = [];
+              if (
+                !isSSR &&
+                w.loadedFonts.indexOf(item.value) < 0 &&
+                item.value !== "DEFAULT"
+              ) {
+                w.loadedFonts.push(item.value);
+                const doc = document;
+                let weight = `:wght@${[300, 400, 500, 600].join(";")}`;
+                let fontName = item.value.replace(/ /g, "+");
+                const _href = `https://fonts.googleapis.com/css2?family=${fontName}${weight}&display=block`;
+                if (!doc.querySelector(`link[href="${_href}]`)) {
+                  const link = doc.createElement("link");
+                  link.type = "text/css";
+                  link.rel = "stylesheet";
+                  link.href = _href;
+                  doc.head.appendChild(link);
+                }
+              }
+              return (
+                <div
+                  className={cx(
+                    item.value !== "DEFAULT" &&
+                      css`
+                        font-family: "${item.value}", "Inter";
+                      `
+                  )}
+                >
+                  {item.label}
+                </div>
+              );
+            },
+          }}
+          onChange={(val) => {
+            if (val) {
+              if (val === EmptyFont.name) {
+                update("font", { ...font, family: undefined });
+              } else {
+                update("font", { ...font, family: val });
+              }
+            }
+          }}
+        />
+      </Tooltip>
       <div className={cx("flex flex-row justify-between text-xs ")}>
         <BoxSep
           className={cx(
@@ -261,116 +329,49 @@ export const PanelFont: FC<{
             }}
           />
         </BoxSep>
-        <Tooltip
-          content={
-            <>
-              Font Family
-              <br />
-              Changing font family for current element.
-            </>
-          }
-          asChild
-        >
-          <Dropdown
-            {...dropdownProp}
-            value={local.font.name || "DEFAULT"}
-            items={Object.entries(fflist).map((e, idx) => {
-              return {
-                label: e[1].name,
-                value: e[1].name,
-              };
-            })}
-            popover={{
-              ...dropdownProp.popover,
-              renderItem(item, idx) {
-                if (typeof item === "string") return null;
-                if (!w.loadedFonts) w.loadedFonts = [];
-                if (
-                  !isSSR &&
-                  w.loadedFonts.indexOf(item.value) < 0 &&
-                  item.value !== "DEFAULT"
-                ) {
-                  w.loadedFonts.push(item.value);
-                  const doc = document;
-                  let weight = `:wght@${[300, 400, 500, 600].join(";")}`;
-                  let fontName = item.value.replace(/ /g, "+");
-                  const _href = `https://fonts.googleapis.com/css2?family=${fontName}${weight}&display=block`;
-                  if (!doc.querySelector(`link[href="${_href}]`)) {
-                    const link = doc.createElement("link");
-                    link.type = "text/css";
-                    link.rel = "stylesheet";
-                    link.href = _href;
-                    doc.head.appendChild(link);
-                  }
-                }
-                return (
-                  <div
-                    className={cx(
-                      item.value !== "DEFAULT" &&
-                        css`
-                          font-family: "${item.value}", "Inter";
-                        `
-                    )}
-                  >
-                    {item.label}
-                  </div>
-                );
-              },
-            }}
-            onChange={(val) => {
-              if (val) {
-                if (val === EmptyFont.name) {
-                  update("font", { ...font, family: undefined });
-                } else {
-                  update("font", { ...font, family: val });
-                }
+        <BoxSep
+          className={cx(
+            "justify-between",
+            css`
+              padding: 0px;
+              & > button {
+                min-width: 0px;
+                flex: 1;
+                padding: 2px 4px;
               }
+            `
+          )}
+        >
+          <FieldBtnRadio
+            items={{
+              "whitespace-normal": (
+                <Tooltip content="Whitespace Normal">
+                  <div>
+                    <Icon
+                      icon="material-symbols:format-text-wrap"
+                      className="text-lg text-gray-700"
+                    />
+                  </div>
+                </Tooltip>
+              ),
+              "whitespace-nowrap": (
+                <Tooltip content="Whitespace no wrap">
+                  <div>
+                    <Icon
+                      icon="icon-park:text-wrap-overflow"
+                      className="text-lg text-gray-700"
+                    />
+                  </div>
+                </Tooltip>
+              ),
             }}
-          />
-        </Tooltip>
-      </div>
-      <div
-        className={cx(
-          "flex flex-row justify-between text-xs ",
-          css`
-            .dropdown {
-              width: 95%;
-            }
-          `
-        )}
-      >
-        <Tooltip content={"Whitespace"}>
-          <Dropdown
-            {...dropdownProp}
             value={font.whitespace}
-            items={[
-              { value: "whitespace-normal", label: "Normal" },
-              { value: "whitespace-nowrap", label: "nowrap" },
-              { value: "whitespace-pre", label: "pre" },
-              { value: "whitespace-pre-line", label: "pre-line" },
-              { value: "whitespace-pre-wrap", label: "pre-wrap" },
-              { value: "whitespace-break-spaces", label: "break-spaces" },
-            ]}
-            onChange={(val) => {
-              update("font", { ...font, whitespace: val as any });
+            disabled={false}
+            update={(dir) => {
+              update("font", { ...font, whitespace: dir as any });
             }}
           />
-        </Tooltip>
-        <Tooltip content={"Break Word"}>
-          <Dropdown
-            {...dropdownProp}
-            value={font.wordBreak}
-            items={[
-              { value: "break-normal", label: "Normal" },
-              { value: "break-words", label: "Words" },
-              { value: "break-all", label: "All" },
-              { value: "break-keep", label: "Keep" },
-            ]}
-            onChange={(val) => {
-              update("font", { ...font, wordBreak: val as any });
-            }}
-          />
-        </Tooltip>
+        </BoxSep>
       </div>
     </div>
   );

@@ -162,7 +162,8 @@ export const PanelDimension: FC<{
                 } else {
                   update("dim", {
                     ...dim,
-                    h: "fit",
+                    w: local.dim.w,
+                    h: local.dim.h,
                   });
                 }
               }}
@@ -181,7 +182,8 @@ export const PanelDimension: FC<{
                 } else {
                   update("dim", {
                     ...dim,
-                    w: "full",
+                    w: local.dim.w,
+                    h: local.dim.h,
                   });
                 }
               }}
@@ -200,7 +202,8 @@ export const PanelDimension: FC<{
                 } else {
                   update("dim", {
                     ...dim,
-                    w: local.activeWidth || 0,
+                    w: local.dim.w,
+                    h: local.dim.h,
                   });
                 }
               }}
@@ -330,7 +333,8 @@ export const PanelDimension: FC<{
                 } else {
                   update("dim", {
                     ...dim,
-                    h: "fit",
+                    w: local.dim.w,
+                    h: local.dim.h,
                   });
                 }
               }}
@@ -349,7 +353,8 @@ export const PanelDimension: FC<{
                 } else {
                   update("dim", {
                     ...dim,
-                    h: "full",
+                    w: local.dim.w,
+                    h: local.dim.h,
                   });
                 }
               }}
@@ -368,7 +373,8 @@ export const PanelDimension: FC<{
                 } else {
                   update("dim", {
                     ...dim,
-                    h: local.activeHeight || 0,
+                    w: local.dim.w,
+                    h: local.dim.h,
                   });
                 }
               }}

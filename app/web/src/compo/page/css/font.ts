@@ -36,7 +36,7 @@ export const cssFont = (
   }
 
   return cx(
-    font.wordBreak && font.wordBreak,
+    "break-words",
     font.whitespace && font.whitespace,
     css`
       text-align: ${font.align ? font.align : "left"};
