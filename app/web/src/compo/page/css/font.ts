@@ -36,7 +36,11 @@ export const cssFont = (
   }
 
   return cx(
-    "break-words",
+    css`
+      word-break: ${font.whitespace === "whitespace-normal"
+        ? "break-word"
+        : "normal"};
+    `,
     font.whitespace && font.whitespace,
     css`
       text-align: ${font.align ? font.align : "left"};
