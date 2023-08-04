@@ -10,6 +10,7 @@ import { Tooltip } from "../../../../ui/tooltip";
 import { FieldColor } from "../ui/FieldColor";
 import { FieldImg } from "../ui/FieldImg";
 import { dropdownProp } from "../ui/style";
+import { Button } from "../ui/Button";
 
 type BackgroundUpdate = {
   bg: FNBackground;
@@ -84,6 +85,49 @@ export const PanelBackground: FC<{
             />
           </div>
         </Tooltip>
+        {bg.url ? (
+          <>
+            <Tooltip asChild content={"Unlink Image"}>
+              <div className={"flex flex-row bg-white"}>
+                <Button
+                  className={cx(
+                    "flex-1 flex-grow",
+                    css`
+                      height: 30px;
+                      width: 20px;
+                      max-width: 20px;
+                      padding: 0px !important;
+                      min-width: 0px !important;
+                    `
+                  )}
+                  onClick={(e) => {
+                    update("bg", { ...bg, url: "" });
+                  }}
+                >
+                  <div className="w-[10px]  flex items-center justify-center">
+                    <>
+                      <div className="text-lg text-gray-700">
+                        <svg
+                          width="15"
+                          height="15"
+                          viewBox="0 0 24 24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            fill="currentColor"
+                            d="M16.949 14.121L19.071 12a5.008 5.008 0 0 0 0-7.071a5.006 5.006 0 0 0-7.071 0l-.707.707l1.414 1.414l.707-.707a3.007 3.007 0 0 1 4.243 0a3.005 3.005 0 0 1 0 4.243l-2.122 2.121a2.723 2.723 0 0 1-.844.57L13.414 12l1.414-1.414l-.707-.707a4.965 4.965 0 0 0-3.535-1.465c-.235 0-.464.032-.691.066L3.707 2.293L2.293 3.707l18 18l1.414-1.414l-5.536-5.536c.277-.184.538-.396.778-.636zm-6.363 3.536a3.007 3.007 0 0 1-4.243 0a3.005 3.005 0 0 1 0-4.243l1.476-1.475l-1.414-1.414L4.929 12a5.008 5.008 0 0 0 0 7.071a4.983 4.983 0 0 0 3.535 1.462A4.982 4.982 0 0 0 12 19.071l.707-.707l-1.414-1.414l-.707.707z"
+                          />
+                        </svg>
+                      </div>
+                    </>
+                  </div>
+                </Button>
+              </div>
+            </Tooltip>
+          </>
+        ) : (
+          <></>
+        )}
       </div>
 
       <div className="flex items-stretch space-x-2">
