@@ -10,7 +10,6 @@ import { useGlobal, useLocal } from "web-utils";
 import { Tooltip } from "../../../../ui/tooltip";
 import { Menu, MenuItem } from "../../../../ui/context-menu";
 import { CEGlobal } from "../../../../../base/global/content-editor";
-import { Icon } from "@iconify/react";
 
 type DimensionUpdate = {
   dim: FNDimension;
@@ -467,17 +466,35 @@ export const PanelDimension: FC<{
             <div className="w-[10px] h-[16px] flex items-center justify-center">
               {local.toggle ? (
                 <>
-                  <Icon
-                    icon="cil:fullscreen"
-                    className="text-lg text-gray-700"
-                  />
+                  <div className="text-lg text-gray-700">
+                    <svg
+                      width="15"
+                      height="15"
+                      viewBox="0 0 512 512"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        fill="currentColor"
+                        d="M208 48V16H16v192h32V70.627l160.687 160.686l22.626-22.626L70.627 48H208zm256 256v137.373L299.313 276.687l-22.626 22.626L441.373 464H304v32h192V304h-32z"
+                      />
+                    </svg>
+                  </div>
                 </>
               ) : (
                 <>
-                  <Icon
-                    icon="cil:fullscreen-exit"
-                    className="text-lg text-gray-700"
-                  />
+                  <div className="text-lg text-gray-700">
+                    <svg
+                      width="15"
+                      height="15"
+                      viewBox="0 0 512 512"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        fill="currentColor"
+                        d="M204 181.372L38.628 16H16v22.628L181.372 204H44v32h192V44h-32v137.372zM326.628 304H464v-32H272v192h32V326.628L473.372 496H496v-22.628L326.628 304z"
+                      />
+                    </svg>
+                  </div>
                 </>
               )}
             </div>

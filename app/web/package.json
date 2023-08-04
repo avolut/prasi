@@ -8,8 +8,6 @@
   "dependencies": {
     "@babel/parser": "^7.22.5",
     "@floating-ui/react": "^0.24.2",
-    "@iconify/iconify": "^3.1.1",
-    "@iconify/react": "^4.1.1",
     "@minoru/react-dnd-treeview": "^3.4.4",
     "@monaco-editor/react": "^4.5.1",
     "@paralleldrive/cuid2": "2.2.1",

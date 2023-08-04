@@ -4,7 +4,6 @@ import { useLocal } from "web-utils";
 import { Button } from "./Button";
 import { Loading } from "../../../../ui/loading";
 import { ToolbarBox } from "../../../../ui/box";
-import { Icon } from "@iconify/react";
 import get from "lodash.get";
 import { format } from "date-fns";
 export const Gallery: FC<{
@@ -172,10 +171,19 @@ export const Gallery: FC<{
                                     }}
                                     className="relative flex flex-row p-2 cursor-pointer bg-red-500 rounded font-medium"
                                   >
-                                    <Icon
-                                      icon="fluent:delete-28-regular"
-                                      className="text-lg text-gray-700"
-                                    />
+                                    <div className="text-lg text-gray-700">
+                                      <svg
+                                        width="15"
+                                        height="15"
+                                        viewBox="0 0 28 28"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                      >
+                                        <path
+                                          fill="currentColor"
+                                          d="M11.5 6h5a2.5 2.5 0 0 0-5 0ZM10 6a4 4 0 0 1 8 0h6.25a.75.75 0 0 1 0 1.5h-1.31l-1.217 14.603A4.25 4.25 0 0 1 17.488 26h-6.976a4.25 4.25 0 0 1-4.235-3.897L5.06 7.5H3.75a.75.75 0 0 1 0-1.5H10ZM7.772 21.978a2.75 2.75 0 0 0 2.74 2.522h6.976a2.75 2.75 0 0 0 2.74-2.522L21.436 7.5H6.565l1.207 14.478ZM11.75 11a.75.75 0 0 1 .75.75v8.5a.75.75 0 0 1-1.5 0v-8.5a.75.75 0 0 1 .75-.75Zm5.25.75a.75.75 0 0 0-1.5 0v8.5a.75.75 0 0 0 1.5 0v-8.5Z"
+                                        />
+                                      </svg>
+                                    </div>
                                   </div>
                                 </>
                               ) : (

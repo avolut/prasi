@@ -1,4 +1,3 @@
-import { Icon } from "@iconify/react";
 import get from "lodash.get";
 import transform from "lodash.transform";
 import uniq from "lodash.uniq";
@@ -147,10 +146,19 @@ export const PanelBorder: FC<{
               positiveOnly
               hideUnit
               icon={
-                <Icon
-                  icon="ic:round-line-weight"
-                  className="text-lg text-gray-700"
-                />
+                <div className="text-lg text-gray-700">
+                  <svg
+                    width="15"
+                    height="15"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      fill="currentColor"
+                      d="M20 15H4c-.55 0-1 .45-1 1s.45 1 1 1h16c.55 0 1-.45 1-1s-.45-1-1-1zm0-5H4c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1h16c.55 0 1-.45 1-1v-1c0-.55-.45-1-1-1zm0-6H4c-.55 0-1 .45-1 1v2c0 .55.45 1 1 1h16c.55 0 1-.45 1-1V5c0-.55-.45-1-1-1zm.5 15h-17c-.28 0-.5.22-.5.5s.22.5.5.5h17c.28 0 .5-.22.5-.5s-.22-.5-.5-.5z"
+                    />
+                  </svg>
+                </div>
               }
               value={
                 get(detectMixedCorner(params.stroke), "isMix")
@@ -201,10 +209,23 @@ export const PanelBorder: FC<{
                 local.render();
               }}
             >
-              <Icon
-                icon="tabler:border-sides"
-                className="text-lg text-gray-700"
-              />
+              <div className="text-lg text-gray-700">
+                <svg
+                  width="15"
+                  height="15"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M4 8v8m16 0V8M8 4h8M8 20h8"
+                  />
+                </svg>
+              </div>
             </Button>
           </div>
         </Tooltip>
@@ -234,10 +255,131 @@ export const PanelBorder: FC<{
                   positiveOnly
                   hideUnit
                   icon={
-                    <Icon
-                      icon="uim:border-left"
-                      className="text-lg text-gray-700"
-                    />
+                    <div className="text-lg text-gray-700">
+                      <svg
+                        width="15"
+                        height="15"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          fill="currentColor"
+                          d="M3.5 21a1 1 0 0 1-1-1V4a1 1 0 0 1 2 0v16a1 1 0 0 1-1 1Z"
+                        />
+                        <circle
+                          cx="7.5"
+                          cy="12"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="11.5"
+                          cy="12"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="15.5"
+                          cy="12"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="19.5"
+                          cy="12"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="7.5"
+                          cy="4"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="11.5"
+                          cy="4"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="15.5"
+                          cy="4"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="19.5"
+                          cy="4"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="19.5"
+                          cy="8"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="19.5"
+                          cy="16"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="11.5"
+                          cy="8"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="11.5"
+                          cy="16"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="7.5"
+                          cy="20"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="11.5"
+                          cy="20"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="15.5"
+                          cy="20"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="19.5"
+                          cy="20"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                      </svg>
+                    </div>
                   }
                   value={get(params, "stroke.l") + "px"}
                   update={(val) => {
@@ -264,10 +406,131 @@ export const PanelBorder: FC<{
                   positiveOnly
                   hideUnit
                   icon={
-                    <Icon
-                      icon="uim:border-top"
-                      className="text-lg text-gray-700"
-                    />
+                    <div className="text-lg text-gray-700">
+                      <svg
+                        width="15"
+                        height="15"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          fill="currentColor"
+                          d="M20 4.5H4a1 1 0 0 1 0-2h16a1 1 0 0 1 0 2Z"
+                        />
+                        <circle
+                          cx="12"
+                          cy="7.5"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="12"
+                          cy="11.5"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="12"
+                          cy="15.5"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="12"
+                          cy="19.5"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="20"
+                          cy="7.5"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="20"
+                          cy="11.5"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="20"
+                          cy="15.5"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="20"
+                          cy="19.5"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="16"
+                          cy="19.5"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="8"
+                          cy="19.5"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="16"
+                          cy="11.5"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="8"
+                          cy="11.5"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="4"
+                          cy="7.5"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="4"
+                          cy="11.5"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="4"
+                          cy="15.5"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="4"
+                          cy="19.5"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                      </svg>
+                    </div>
                   }
                   value={get(params, "stroke.t") + "px"}
                   update={(val) => {
@@ -293,10 +556,131 @@ export const PanelBorder: FC<{
                   positiveOnly
                   hideUnit
                   icon={
-                    <Icon
-                      icon="uim:border-right"
-                      className="text-lg text-gray-700"
-                    />
+                    <div className="text-lg text-gray-700">
+                      <svg
+                        width="15"
+                        height="15"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          fill="currentColor"
+                          d="M20.5 21a1 1 0 0 1-1-1V4a1 1 0 0 1 2 0v16a1 1 0 0 1-1 1Z"
+                        />
+                        <circle
+                          cx="16.5"
+                          cy="12"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="12.5"
+                          cy="12"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="8.5"
+                          cy="12"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="4.5"
+                          cy="12"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="16.5"
+                          cy="20"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="12.5"
+                          cy="20"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="8.5"
+                          cy="20"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="4.5"
+                          cy="20"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="4.5"
+                          cy="16"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="4.5"
+                          cy="8"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="12.5"
+                          cy="16"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="12.5"
+                          cy="8"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="16.5"
+                          cy="4"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="12.5"
+                          cy="4"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="8.5"
+                          cy="4"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="4.5"
+                          cy="4"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                      </svg>
+                    </div>
                   }
                   value={get(params, "stroke.r") + "px"}
                   update={(val) => {
@@ -322,10 +706,131 @@ export const PanelBorder: FC<{
                   positiveOnly
                   hideUnit
                   icon={
-                    <Icon
-                      icon="uim:border-bottom"
-                      className="text-lg text-gray-700"
-                    />
+                    <div className="text-lg text-gray-700">
+                      <svg
+                        width="15"
+                        height="15"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          fill="currentColor"
+                          d="M20 21.5H4a1 1 0 0 1 0-2h16a1 1 0 0 1 0 2Z"
+                        />
+                        <circle
+                          cx="12"
+                          cy="16.5"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="12"
+                          cy="12.5"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="12"
+                          cy="8.5"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="12"
+                          cy="4.5"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="4"
+                          cy="16.5"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="4"
+                          cy="12.5"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="4"
+                          cy="8.5"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="4"
+                          cy="4.5"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="8"
+                          cy="4.5"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="16"
+                          cy="4.5"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="8"
+                          cy="12.5"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="16"
+                          cy="12.5"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="20"
+                          cy="16.5"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="20"
+                          cy="12.5"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="20"
+                          cy="8.5"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                        <circle
+                          cx="20"
+                          cy="4.5"
+                          r="1"
+                          fill="currentColor"
+                          opacity=".5"
+                        />
+                      </svg>
+                    </div>
                   }
                   value={get(params, "stroke.b") + "px"}
                   update={(val) => {
@@ -397,10 +902,19 @@ export const PanelBorder: FC<{
               positiveOnly
               hideUnit
               icon={
-                <Icon
-                  icon="ic:baseline-rounded-corner"
-                  className="text-lg text-gray-700"
-                />
+                <div className="text-lg text-gray-700">
+                  <svg
+                    width="15"
+                    height="15"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      fill="currentColor"
+                      d="M19 19h2v2h-2v-2zm0-2h2v-2h-2v2zM3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm0-4h2V3H3v2zm4 0h2V3H7v2zm8 16h2v-2h-2v2zm-4 0h2v-2h-2v2zm4 0h2v-2h-2v2zm-8 0h2v-2H7v2zm-4 0h2v-2H3v2zM21 8c0-2.76-2.24-5-5-5h-5v2h5c1.65 0 3 1.35 3 3v5h2V8z"
+                    />
+                  </svg>
+                </div>
               }
               width={"100%"}
               enableWhenDrag
@@ -450,10 +964,23 @@ export const PanelBorder: FC<{
                 local.render();
               }}
             >
-              <Icon
-                icon="tabler:border-corners"
-                className="text-lg text-gray-700"
-              />
+              <div className="text-lg text-gray-700">
+                <svg
+                  width="15"
+                  height="15"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M16 4h2a2 2 0 0 1 2 2v2m0 8v2a2 2 0 0 1-2 2h-2m-8 0H6a2 2 0 0 1-2-2v-2m0-8V6a2 2 0 0 1 2-2h2"
+                  />
+                </svg>
+              </div>
             </Button>
           </div>
         </Tooltip>
@@ -483,10 +1010,23 @@ export const PanelBorder: FC<{
                   positiveOnly
                   hideUnit
                   icon={
-                    <Icon
-                      icon="iconoir:corner-top-left"
-                      className="text-lg text-gray-700"
-                    />
+                    <div className="text-lg text-gray-700">
+                      <svg
+                        width="15"
+                        height="15"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="1.5"
+                          d="m20.01 16.01l-.01-.011m.01 4.011l-.01-.011m-3.99.011l-.01-.011m-3.99.011l-.01-.011m-3.99.011L8 19.999m-3.99.011L4 19.999m.01-3.989L4 15.999m.01-3.989L4 11.999m.01-3.989L4 7.999m.01-3.989L4 3.999m4.01.011L8 3.999M20.01 12V4h-8v8h8Z"
+                        />
+                      </svg>
+                    </div>
                   }
                   value={get(params, "rounded.tr") + "px"}
                   update={(val) => {
@@ -515,10 +1055,23 @@ export const PanelBorder: FC<{
                   positiveOnly
                   hideUnit
                   icon={
-                    <Icon
-                      icon="iconoir:corner-top-right"
-                      className="text-lg text-gray-700"
-                    />
+                    <div className="text-lg text-gray-700">
+                      <svg
+                        width="15"
+                        height="15"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="1.5"
+                          d="m4 16.01l.01-.011M4 20.01l.01-.011M8 20.01l.01-.011m3.99.011l.01-.011m3.99.011l.01-.011m3.99.011l.01-.011M20 16.01l.01-.011M20 12.01l.01-.011M20 8.01l.01-.011M20 4.01l.01-.011M16 4.01l.01-.011M4 12V4h8v8H4Z"
+                        />
+                      </svg>
+                    </div>
                   }
                   value={get(params, "rounded.tl") + "px"}
                   update={(val) => {
@@ -546,10 +1099,23 @@ export const PanelBorder: FC<{
                   positiveOnly
                   hideUnit
                   icon={
-                    <Icon
-                      icon="iconoir:corner-bottom-right"
-                      className="text-lg text-gray-700"
-                    />
+                    <div className="text-lg text-gray-700">
+                      <svg
+                        width="15"
+                        height="15"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="1.5"
+                          d="m4 8l.01.011M4 4l.01.011M8 4l.01.011M12 4l.01.011M16 4l.01.011M20 4l.01.011M20 8l.01.011M20 12l.01.011M20 16l.01.011M20 20l.01.011M16 20l.01.011M4 12.01v8h8v-8H4Z"
+                        />
+                      </svg>
+                    </div>
                   }
                   value={get(params, "rounded.bl") + "px"}
                   update={(val) => {
@@ -577,10 +1143,23 @@ export const PanelBorder: FC<{
                   positiveOnly
                   hideUnit
                   icon={
-                    <Icon
-                      icon="iconoir:corner-bottom-left"
-                      className="text-lg text-gray-700"
-                    />
+                    <div className="text-lg text-gray-700">
+                      <svg
+                        width="15"
+                        height="15"
+                        viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          fill="none"
+                          stroke="currentColor"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="1.5"
+                          d="m20.01 8l-.01.011M20.01 4l-.01.011M16.01 4l-.01.011M12.01 4l-.01.011M8.01 4L8 4.011M4.01 4L4 4.011M4.01 8L4 8.011M4.01 12l-.01.011M4.01 16l-.01.011M4.01 20l-.01.011M8.01 20l-.01.011m12.01-8.001v8h-8v-8h8Z"
+                        />
+                      </svg>
+                    </div>
                   }
                   value={get(params, "rounded.br") + "px"}
                   update={(val) => {
