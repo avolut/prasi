@@ -13,6 +13,7 @@ import { AddElement } from "./AddElement";
 import { NPMImport } from "./NPMImport";
 import { APIConfig } from "./api/APIConfig";
 import { customMonacoState } from "../../script/monaco/monaco-custom";
+import { LiveDeploy } from "./deploy/Deploy";
 
 const ua = navigator.userAgent.toLowerCase();
 const isMac =
@@ -245,7 +246,7 @@ export const ToolbarMid = () => {
           {
             content: (
               <>
-                <Deploy />
+                <LiveDeploy />
               </>
             ),
           },
@@ -293,23 +294,6 @@ const NPMIcon = () => (
     <path
       fill="currentColor"
       d="M4 10v4h2v-3h1v3h1v-4H4m5 0v5h2v-1h2v-4H9m3 1v2h-1v-2h1m2-1v4h2v-3h1v3h1v-3h1v3h1v-4h-6M3 9h18v6h-9v1H8v-1H3V9z"
-    ></path>
-  </svg>
-);
-
-const Deploy = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="13"
-    height="13"
-    fill="none"
-    viewBox="0 0 15 15"
-  >
-    <path
-      fill="currentColor"
-      fillRule="evenodd"
-      d="M6.854 3.854l.8-.8c.644-.645 1.775-1.092 2.898-1.253a5.342 5.342 0 011.504-.02c.443.066.714.196.84.323.127.126.257.397.323.84.064.427.059.95-.02 1.504-.24 1.123-.608 2.254-1.253 2.898L7.5 11.793l-1.146-1.146a.5.5 0 10-.708.707l1.5 1.5a.5.5 0 00.708 0l.547-.548 1.17 1.951a.5.5 0 00.783.097l2-2a.5.5 0 00.141-.425l-.465-3.252.624-.623c.855-.856 1.358-2.225 1.535-3.465.09-.627.1-1.25.019-1.794-.08-.528-.256-1.05-.604-1.399-.349-.348-.871-.525-1.4-.604a6.333 6.333 0 00-1.793.02C9.17.987 7.8 1.49 6.946 2.345l-.623.624-3.252-.465a.5.5 0 00-.425.141l-2 2a.5.5 0 00.097.783l1.95 1.17-.547.547a.5.5 0 000 .708l1.5 1.5a.5.5 0 10.708-.708L3.207 7.5l.647-.646 3-3zm3.245 9.34l-.97-1.617 2.017-2.016.324 2.262-1.37 1.37zM3.423 5.87l2.016-2.016-2.262-.324-1.37 1.37 1.616.97zm-1.07 4.484a.5.5 0 10-.707-.708l-1 1a.5.5 0 10.708.707l1-1zm1.5 1.5a.5.5 0 10-.707-.707l-2 2a.5.5 0 00.708.707l2-2zm1.5 1.5a.5.5 0 10-.707-.708l-1 1a.5.5 0 10.708.707l1-1zM9.5 6.748a1.249 1.249 0 100-2.498 1.249 1.249 0 000 2.498z"
-      clipRule="evenodd"
     ></path>
   </svg>
 );
