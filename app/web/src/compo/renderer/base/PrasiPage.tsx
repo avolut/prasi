@@ -112,7 +112,6 @@ export const PrasiPage = (props: {
         if (!window.exports) {
           window.exports = {};
         }
-        const exports = window.exports;
         const types = {};
         const fn = new Function(
           ...Object.keys(args),
@@ -123,8 +122,18 @@ export const PrasiPage = (props: {
           rg.site.js_compiled
         );
         try {
-          fn(exports, types, importModule);
-        } catch (e) {}
+          fn(
+            ...Object.values(args),
+            window.exports,
+            types,
+            importModule,
+            local.render
+          );
+        } catch (e) {
+          console.warn("ERROR in GlobalJS:");
+          console.warn(e);
+          console.log("\n\n\n\n");
+        }
       }
     }
     local.isNewPage = false;

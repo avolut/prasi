@@ -77,7 +77,7 @@ export class PrasiRenderer extends Renderer {
           rg.loading = true;
           rg.render();
           rg.site = await arg.load.site(rg);
-          window.exports = {};
+          if (!window.exports) window.exports = {};
 
           const ts = new Date(rg.site?.updated_at || "").getTime();
           await importModule(
