@@ -1,7 +1,7 @@
-import { ReactElement, ReactNode } from "react";
+import { ReactElement } from "react";
+import { PrasiPage } from "./PrasiPage";
 import { RendererGlobal } from "./renderer-global";
 import { COMPONENT_ID, COMPONENT_PROPS } from "./renderer-types";
-import { PrasiPage } from "./render-page";
 
 export abstract class Renderer {
   abstract rg: typeof RendererGlobal & { render: () => void };

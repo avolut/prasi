@@ -1,22 +1,16 @@
 import { validate } from "uuid";
 import { page } from "web-init";
-import { useLocal } from "web-utils";
-import {
-  PageLocal,
-  compPreview,
-  pagePreview,
-} from "../../compo/editor/ws/preview";
 import { SiteConfig } from "../../compo/editor/ws/wsdoc";
-import { PRASI_PAGE } from "../../compo/renderer/base/renderer-types";
+import {
+  PRASI_COMPONENT,
+  PRASI_PAGE,
+} from "../../compo/renderer/base/renderer-types";
 import { PrasiRenderer } from "../../compo/renderer/prasi/prasi-renderer";
-import { MPage } from "../../compo/types/general";
 
 export default page({
-  url: "/site/:name/**",
-  component: () => {
-    const local = useLocal(PageLocal);
-
-    local.site = new PrasiRenderer({
+  url: "/ssr/:name/**",
+  component: ({}) => {
+    const site = new PrasiRenderer({
       load: {
         async site() {
           const site = await db.site.findFirst({
@@ -50,28 +44,21 @@ export default page({
           return { id: "", api_url: "", updated_at: "", js_compiled: "" };
         },
         async page(rg, page_id, preload) {
-          if (preload) {
-            const page = await db.page.findFirst({
-              where: { id: page_id },
-              select: {
-                id: true,
-                url: true,
-                name: true,
-                js_compiled: true,
-                content_tree: true,
-              },
-            });
-
-            if (page) {
-              return page as Required<PRASI_PAGE>;
-            }
-            return null;
-          }
-          const doc = await new Promise<MPage>(async (resolve) => {
-            await pagePreview(local, page_id, resolve);
+          const page = await db.page.findFirst({
+            where: { id: page_id },
+            select: {
+              id: true,
+              url: true,
+              name: true,
+              js_compiled: true,
+              content_tree: true,
+            },
           });
 
-          return doc.getMap("map").toJSON() as Required<PRASI_PAGE>;
+          if (page) {
+            return page as Required<PRASI_PAGE>;
+          }
+          return null;
         },
         async pages(rg) {
           const all = await db.page.findMany({
@@ -95,23 +82,18 @@ export default page({
           return pages;
         },
         async components(rg, ids) {
-          return (
-            await Promise.all(
-              ids.map((id) => {
-                return compPreview(local, id);
-              })
-            )
-          ).map((e) => {
-            return {
-              name: e.name,
-              id: e.id,
-              content_tree: e.content_tree,
-            };
-          });
+          return (await db.component.findMany({
+            where: { id: { in: ids } },
+            select: {
+              id: true,
+              content_tree: true,
+              name: true,
+            },
+          })) as PRASI_COMPONENT[];
         },
       },
     });
 
-    return local.site.renderPage(params._ === "_" ? "/" : `/${params._}`);
+    return <></>;
   },
 });

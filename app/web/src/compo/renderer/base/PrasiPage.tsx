@@ -1,10 +1,9 @@
 import { useLocal } from "web-utils";
 import { createAPI, createDB } from "../../page/scripting/api-db";
-import { scanComponent } from "./components";
+import importModule from "../../page/tools/dynamic-import";
 import { RSection } from "./elements/r-section";
 import { RendererGlobal } from "./renderer-global";
 import { PRASI_PAGE } from "./renderer-types";
-import importModule from "../../page/tools/dynamic-import";
 
 (window as any).isEditor = false;
 
@@ -124,7 +123,7 @@ export const PrasiPage = (props: {
           rg.site.js_compiled
         );
         try {
-          fn();
+          fn(exports, types, importModule);
         } catch (e) {}
       }
     }

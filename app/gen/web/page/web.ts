@@ -46,3 +46,11 @@ export const site = {
   layout: undefined,
   component: () => import("../../../web/src/base/page/site")
 }
+export const ssr = {
+  name: "ssr",
+  url: "/ssr/:name/**",
+  path: "app/web/src/base/page/ssr.tsx",
+  ssr: false,
+  layout: undefined,
+  component: () => import("../../../web/src/base/page/ssr")
+}

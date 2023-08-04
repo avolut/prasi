@@ -1,21 +1,20 @@
-import { FC, useEffect } from "react";
+import { Icon } from "@iconify/react";
+import get from "lodash.get";
+import transform from "lodash.transform";
+import uniq from "lodash.uniq";
+import { FC } from "react";
 import { useLocal } from "web-utils";
 import { responsiveVal } from "../../../../page/tools/responsive-val";
 import { IItem } from "../../../../types/item";
-import { FNBackground, FNBorder } from "../../../../types/meta-fn";
+import { FNBorder } from "../../../../types/meta-fn";
 import { ISection } from "../../../../types/section";
 import { IText } from "../../../../types/text";
 import { Dropdown } from "../../../../ui/dropdown";
 import { Tooltip } from "../../../../ui/tooltip";
-import { FieldColor } from "../ui/FieldColor";
-import { FieldImg } from "../ui/FieldImg";
-import { dropdownProp } from "../ui/style";
-import { FieldNumUnit } from "../ui/FieldNumUnit";
-import { Icon } from "@iconify/react";
 import { Button } from "../ui/Button";
-import get from "lodash.get";
-import transform from "lodash.transform";
-import uniq from "lodash.uniq";
+import { FieldColor } from "../ui/FieldColor";
+import { FieldNumUnit } from "../ui/FieldNumUnit";
+import { dropdownProp } from "../ui/style";
 
 type BorderUpdate = {
   border: FNBorder;
