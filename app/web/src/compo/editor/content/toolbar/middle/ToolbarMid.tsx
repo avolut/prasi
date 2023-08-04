@@ -13,7 +13,7 @@ import { AddElement } from "./AddElement";
 import { NPMImport } from "./NPMImport";
 import { APIConfig } from "./api/APIConfig";
 import { customMonacoState } from "../../script/monaco/monaco-custom";
-import { LiveDeploy } from "./deploy/Deploy";
+import { LiveDeploy } from "./deploy/LiveDeploy";
 
 const ua = navigator.userAgent.toLowerCase();
 const isMac =

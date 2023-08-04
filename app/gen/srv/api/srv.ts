@@ -215,3 +215,10 @@ export const srvapi_op = {
   args: ["site_id","op"],
   handler: import("../../../srv/api/srvapi-op")
 }
+export const ssr = {
+  name: "ssr",
+  url: "/ssr/:page_id",
+  path: "app/srv/api/ssr.ts",
+  args: ["page_id"],
+  handler: import("../../../srv/api/ssr")
+}
