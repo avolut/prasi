@@ -123,6 +123,6 @@ export const srvapi_op = {
   args: ["site_id","op"],
 }
 export const ssr = {
-  url: "/ssr/:page_id",
-  args: ["page_id"],
+  url: "/ssr/:site_id/:page_id",
+  args: ["site_id","page_id"],
 }

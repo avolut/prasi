@@ -2644,8 +2644,8 @@
         times: true,
         absolutePath: true
       };
-      var shouldThrowDestinationExistsError = (context2) => {
-        return typeof context2.opts.overwrite !== "function" && context2.opts.overwrite !== true;
+      var shouldThrowDestinationExistsError = (context3) => {
+        return typeof context3.opts.overwrite !== "function" && context3.opts.overwrite !== true;
       };
       var checksBeforeCopyingSync = (from, to, opts) => {
         if (!exists.sync(from)) {
@@ -2655,14 +2655,14 @@
           throw generateDestinationExistsError(to);
         }
       };
-      var canOverwriteItSync = (context2) => {
-        if (typeof context2.opts.overwrite === "function") {
-          const destInspectData = inspect2.sync(context2.destPath, inspectOptions);
-          return context2.opts.overwrite(context2.srcInspectData, destInspectData);
+      var canOverwriteItSync = (context3) => {
+        if (typeof context3.opts.overwrite === "function") {
+          const destInspectData = inspect2.sync(context3.destPath, inspectOptions);
+          return context3.opts.overwrite(context3.srcInspectData, destInspectData);
         }
-        return context2.opts.overwrite === true;
+        return context3.opts.overwrite === true;
       };
-      var copyFileSync = (srcPath, destPath, mode, context2) => {
+      var copyFileSync = (srcPath, destPath, mode, context3) => {
         const data = fs2.readFileSync(srcPath);
         try {
           fs2.writeFileSync(destPath, data, { mode, flag: "wx" });
@@ -2670,10 +2670,10 @@
           if (err2.code === "ENOENT") {
             write.sync(destPath, data, { mode });
           } else if (err2.code === "EEXIST") {
-            if (canOverwriteItSync(context2)) {
+            if (canOverwriteItSync(context3)) {
               fs2.writeFileSync(destPath, data, { mode });
-            } else if (shouldThrowDestinationExistsError(context2)) {
-              throw generateDestinationExistsError(context2.destPath);
+            } else if (shouldThrowDestinationExistsError(context3)) {
+              throw generateDestinationExistsError(context3.destPath);
             }
           } else {
             throw err2;
@@ -2694,12 +2694,12 @@
         }
       };
       var copyItemSync = (srcPath, srcInspectData, destPath, opts) => {
-        const context2 = { srcPath, destPath, srcInspectData, opts };
+        const context3 = { srcPath, destPath, srcInspectData, opts };
         const mode = fileMode.normalizeFileMode(srcInspectData.mode);
         if (srcInspectData.type === "dir") {
           dir2.createSync(destPath, { mode });
         } else if (srcInspectData.type === "file") {
-          copyFileSync(srcPath, destPath, mode, context2);
+          copyFileSync(srcPath, destPath, mode, context3);
         } else if (srcInspectData.type === "symlink") {
           copySymlinkSync(srcPath, destPath);
         }
@@ -2728,20 +2728,20 @@
           }
         });
       };
-      var canOverwriteItAsync = (context2) => {
+      var canOverwriteItAsync = (context3) => {
         return new Promise((resolve, reject) => {
-          if (typeof context2.opts.overwrite === "function") {
-            inspect2.async(context2.destPath, inspectOptions).then((destInspectData) => {
+          if (typeof context3.opts.overwrite === "function") {
+            inspect2.async(context3.destPath, inspectOptions).then((destInspectData) => {
               resolve(
-                context2.opts.overwrite(context2.srcInspectData, destInspectData)
+                context3.opts.overwrite(context3.srcInspectData, destInspectData)
               );
             }).catch(reject);
           } else {
-            resolve(context2.opts.overwrite === true);
+            resolve(context3.opts.overwrite === true);
           }
         });
       };
-      var copyFileAsync = (srcPath, destPath, mode, context2, runOptions) => {
+      var copyFileAsync = (srcPath, destPath, mode, context3, runOptions) => {
         return new Promise((resolve, reject) => {
           const runOpts = runOptions || {};
           let flags = "wx";
@@ -2755,18 +2755,18 @@
             readStream.resume();
             if (err2.code === "ENOENT") {
               dir2.createAsync(pathUtil.dirname(destPath)).then(() => {
-                copyFileAsync(srcPath, destPath, mode, context2).then(
+                copyFileAsync(srcPath, destPath, mode, context3).then(
                   resolve,
                   reject
                 );
               }).catch(reject);
             } else if (err2.code === "EEXIST") {
-              canOverwriteItAsync(context2).then((canOverwite) => {
+              canOverwriteItAsync(context3).then((canOverwite) => {
                 if (canOverwite) {
-                  copyFileAsync(srcPath, destPath, mode, context2, {
+                  copyFileAsync(srcPath, destPath, mode, context3, {
                     overwrite: true
                   }).then(resolve, reject);
-                } else if (shouldThrowDestinationExistsError(context2)) {
+                } else if (shouldThrowDestinationExistsError(context3)) {
                   reject(generateDestinationExistsError(destPath));
                 } else {
                   resolve();
@@ -2796,12 +2796,12 @@
         });
       };
       var copyItemAsync = (srcPath, srcInspectData, destPath, opts) => {
-        const context2 = { srcPath, destPath, srcInspectData, opts };
+        const context3 = { srcPath, destPath, srcInspectData, opts };
         const mode = fileMode.normalizeFileMode(srcInspectData.mode);
         if (srcInspectData.type === "dir") {
           return dir2.createAsync(destPath, { mode });
         } else if (srcInspectData.type === "file") {
-          return copyFileAsync(srcPath, destPath, mode, context2);
+          return copyFileAsync(srcPath, destPath, mode, context3);
         } else if (srcInspectData.type === "symlink") {
           return copySymlinkAsync(srcPath, destPath);
         }
@@ -18075,18 +18075,18 @@
             return (parent == null || !adapter.isTag(parent)) && next(elem);
           };
         },
-        scope: function(next, rule, options, context2) {
+        scope: function(next, rule, options, context3) {
           var equals = options.equals;
-          if (!context2 || context2.length === 0) {
+          if (!context3 || context3.length === 0) {
             return exports2.filters.root(next, rule, options);
           }
-          if (context2.length === 1) {
+          if (context3.length === 1) {
             return function(elem) {
-              return equals(context2[0], elem) && next(elem);
+              return equals(context3[0], elem) && next(elem);
             };
           }
           return function(elem) {
-            return context2.includes(elem) && next(elem);
+            return context3.includes(elem) && next(elem);
           };
         },
         hover: dynamicStatePseudo("isHovered"),
@@ -18268,13 +18268,13 @@
         return siblings.slice(elemIndex + 1).filter(adapter.isTag);
       }
       exports2.getNextSiblings = getNextSiblings;
-      var is = function(next, token, options, context2, compileToken) {
+      var is = function(next, token, options, context3, compileToken) {
         var opts = {
           xmlMode: !!options.xmlMode,
           adapter: options.adapter,
           equals: options.equals
         };
-        var func = compileToken(token, opts, context2);
+        var func = compileToken(token, opts, context3);
         return function(elem) {
           return func(elem) && next(elem);
         };
@@ -18286,13 +18286,13 @@
          */
         matches: is,
         where: is,
-        not: function(next, token, options, context2, compileToken) {
+        not: function(next, token, options, context3, compileToken) {
           var opts = {
             xmlMode: !!options.xmlMode,
             adapter: options.adapter,
             equals: options.equals
           };
-          var func = compileToken(token, opts, context2);
+          var func = compileToken(token, opts, context3);
           if (func === boolbase_1.falseFunc)
             return next;
           if (func === boolbase_1.trueFunc)
@@ -18308,10 +18308,10 @@
             adapter,
             equals: options.equals
           };
-          var context2 = subselect.some(function(s) {
+          var context3 = subselect.some(function(s) {
             return s.some(procedure_1.isTraversal);
           }) ? [exports2.PLACEHOLDER_ELEMENT] : void 0;
-          var compiled = compileToken(subselect, opts, context2);
+          var compiled = compileToken(subselect, opts, context3);
           if (compiled === boolbase_1.falseFunc)
             return boolbase_1.falseFunc;
           if (compiled === boolbase_1.trueFunc) {
@@ -18321,9 +18321,9 @@
           }
           var hasElement = ensureIsTag(compiled, adapter);
           var _a2 = compiled.shouldTestNextSiblings, shouldTestNextSiblings = _a2 === void 0 ? false : _a2;
-          if (context2) {
+          if (context3) {
             return function(elem) {
-              context2[0] = elem;
+              context3[0] = elem;
               var childs = adapter.getChildren(elem);
               var nextElements = shouldTestNextSiblings ? __spreadArray(__spreadArray([], childs, true), getNextSiblings(elem, adapter), true) : childs;
               return next(elem) && adapter.existsOne(hasElement, nextElements);
@@ -18358,20 +18358,20 @@
         return aliases_1.aliases;
       } });
       var subselects_1 = require_subselects();
-      function compilePseudoSelector(next, selector, options, context2, compileToken) {
+      function compilePseudoSelector(next, selector, options, context3, compileToken) {
         var name = selector.name, data = selector.data;
         if (Array.isArray(data)) {
-          return subselects_1.subselects[name](next, data, options, context2, compileToken);
+          return subselects_1.subselects[name](next, data, options, context3, compileToken);
         }
         if (name in aliases_1.aliases) {
           if (data != null) {
             throw new Error("Pseudo ".concat(name, " doesn't have any arguments"));
           }
           var alias = (0, css_what_1.parse)(aliases_1.aliases[name]);
-          return subselects_1.subselects.is(next, alias, options, context2, compileToken);
+          return subselects_1.subselects.is(next, alias, options, context3, compileToken);
         }
         if (name in filters_1.filters) {
-          return filters_1.filters[name](next, data, options, context2);
+          return filters_1.filters[name](next, data, options, context3);
         }
         if (name in pseudos_1.pseudos) {
           var pseudo_1 = pseudos_1.pseudos[name];
@@ -18397,7 +18397,7 @@
       var attributes_1 = require_attributes();
       var pseudo_selectors_1 = require_pseudo_selectors();
       var css_what_1 = require_commonjs();
-      function compileGeneralSelector(next, selector, options, context2, compileToken) {
+      function compileGeneralSelector(next, selector, options, context3, compileToken) {
         var adapter = options.adapter, equals = options.equals;
         switch (selector.type) {
           case css_what_1.SelectorType.PseudoElement: {
@@ -18416,7 +18416,7 @@
             return attributes_1.attributeRules[selector.action](next, selector, options);
           }
           case css_what_1.SelectorType.Pseudo: {
-            return (0, pseudo_selectors_1.compilePseudoSelector)(next, selector, options, context2, compileToken);
+            return (0, pseudo_selectors_1.compilePseudoSelector)(next, selector, options, context3, compileToken);
           }
           case css_what_1.SelectorType.Tag: {
             if (selector.namespace != null) {
@@ -18541,14 +18541,14 @@
       var procedure_1 = require_procedure();
       var general_1 = require_general();
       var subselects_1 = require_subselects();
-      function compile(selector, options, context2) {
-        var next = compileUnsafe(selector, options, context2);
+      function compile(selector, options, context3) {
+        var next = compileUnsafe(selector, options, context3);
         return (0, subselects_1.ensureIsTag)(next, options.adapter);
       }
       exports2.compile = compile;
-      function compileUnsafe(selector, options, context2) {
+      function compileUnsafe(selector, options, context3) {
         var token = typeof selector === "string" ? (0, css_what_1.parse)(selector) : selector;
-        return compileToken(token, options, context2);
+        return compileToken(token, options, context3);
       }
       exports2.compileUnsafe = compileUnsafe;
       function includesScopePseudo(t) {
@@ -18565,9 +18565,9 @@
         name: "scope",
         data: null
       };
-      function absolutize(token, _a2, context2) {
+      function absolutize(token, _a2, context3) {
         var adapter = _a2.adapter;
-        var hasContext = !!(context2 === null || context2 === void 0 ? void 0 : context2.every(function(e) {
+        var hasContext = !!(context3 === null || context3 === void 0 ? void 0 : context3.every(function(e) {
           var parent = adapter.isTag(e) && adapter.getParent(e);
           return e === subselects_1.PLACEHOLDER_ELEMENT || parent && adapter.isTag(parent);
         }));
@@ -18582,15 +18582,15 @@
           t.unshift(SCOPE_TOKEN);
         }
       }
-      function compileToken(token, options, context2) {
+      function compileToken(token, options, context3) {
         var _a2;
         token = token.filter(function(t) {
           return t.length > 0;
         });
         token.forEach(sort_1.default);
-        context2 = (_a2 = options.context) !== null && _a2 !== void 0 ? _a2 : context2;
-        var isArrayContext = Array.isArray(context2);
-        var finalContext = context2 && (Array.isArray(context2) ? context2 : [context2]);
+        context3 = (_a2 = options.context) !== null && _a2 !== void 0 ? _a2 : context3;
+        var isArrayContext = Array.isArray(context3);
+        var finalContext = context3 && (Array.isArray(context3) ? context3 : [context3]);
         absolutize(token, options, finalContext);
         var shouldTestNextSiblings = false;
         var query = token.map(function(rules) {
@@ -18609,10 +18609,10 @@
         return query;
       }
       exports2.compileToken = compileToken;
-      function compileRules(rules, options, context2) {
+      function compileRules(rules, options, context3) {
         var _a2;
         return rules.reduce(function(previous, rule) {
-          return previous === boolbase_1.falseFunc ? boolbase_1.falseFunc : (0, general_1.compileGeneralSelector)(previous, rule, options, context2, compileToken);
+          return previous === boolbase_1.falseFunc ? boolbase_1.falseFunc : (0, general_1.compileGeneralSelector)(previous, rule, options, context3, compileToken);
         }, (_a2 = options.rootFunc) !== null && _a2 !== void 0 ? _a2 : boolbase_1.trueFunc);
       }
       function reduceRules(a, b) {
@@ -18686,9 +18686,9 @@
         return opts;
       }
       function wrapCompile(func) {
-        return function addAdapter(selector, options, context2) {
+        return function addAdapter(selector, options, context3) {
           var opts = convertOptionFormats(options);
-          return func(selector, opts, context2);
+          return func(selector, opts, context3);
         };
       }
       exports2.compile = wrapCompile(compile_1.compile);
@@ -37038,16 +37038,112 @@ ERROR: Async operation of type "${type}" was created in "process.exit" callback.
     }
   });
 
+  // node_modules/.pnpm/@fal-works+esbuild-plugin-global-externals@2.1.2/node_modules/@fal-works/esbuild-plugin-global-externals/lib/module-info.js
+  var normalizeModuleInfo;
+  var init_module_info = __esm({
+    "node_modules/.pnpm/@fal-works+esbuild-plugin-global-externals@2.1.2/node_modules/@fal-works/esbuild-plugin-global-externals/lib/module-info.js"() {
+      normalizeModuleInfo = (value) => {
+        const {
+          type = "esm",
+          varName,
+          namedExports = null,
+          defaultExport = true
+        } = typeof value === "string" ? { varName: value } : value;
+        return { type, varName, namedExports, defaultExport };
+      };
+    }
+  });
+
+  // node_modules/.pnpm/@fal-works+esbuild-plugin-global-externals@2.1.2/node_modules/@fal-works/esbuild-plugin-global-externals/lib/on-load.js
+  var createCjsContents, createEsmContents, createContents;
+  var init_on_load = __esm({
+    "node_modules/.pnpm/@fal-works+esbuild-plugin-global-externals@2.1.2/node_modules/@fal-works/esbuild-plugin-global-externals/lib/on-load.js"() {
+      createCjsContents = (variableName) => `module.exports = ${variableName};`;
+      createEsmContents = (variableName, namedExports, defaultExport) => {
+        const codeElements = defaultExport ? [`export default ${variableName};`] : [];
+        if (namedExports && namedExports.length) {
+          const exportNames = [...new Set(namedExports)].join(", ");
+          codeElements.push(`const { ${exportNames} } = ${variableName};`);
+          codeElements.push(`export { ${exportNames} };`);
+        }
+        return codeElements.join("\n");
+      };
+      createContents = (moduleInfo) => {
+        const { type, varName, namedExports, defaultExport } = moduleInfo;
+        switch (type) {
+          case "esm":
+            return createEsmContents(varName, namedExports, defaultExport);
+          case "cjs":
+            return createCjsContents(varName);
+        }
+      };
+    }
+  });
+
+  // node_modules/.pnpm/@fal-works+esbuild-plugin-global-externals@2.1.2/node_modules/@fal-works/esbuild-plugin-global-externals/lib/with-reg-exp.js
+  var PLUGIN_NAME, globalExternalsWithRegExp;
+  var init_with_reg_exp = __esm({
+    "node_modules/.pnpm/@fal-works+esbuild-plugin-global-externals@2.1.2/node_modules/@fal-works/esbuild-plugin-global-externals/lib/with-reg-exp.js"() {
+      init_module_info();
+      init_on_load();
+      PLUGIN_NAME = "global-externals";
+      globalExternalsWithRegExp = (globals) => {
+        const { modulePathFilter, getModuleInfo } = globals;
+        return {
+          name: PLUGIN_NAME,
+          setup(build2) {
+            build2.onResolve({ filter: modulePathFilter }, (args2) => ({
+              path: args2.path,
+              namespace: PLUGIN_NAME
+            }));
+            build2.onLoad({ filter: /.*/, namespace: PLUGIN_NAME }, (args2) => {
+              const modulePath = args2.path;
+              const moduleInfo = normalizeModuleInfo(getModuleInfo(modulePath));
+              return { contents: createContents(moduleInfo) };
+            });
+          }
+        };
+      };
+    }
+  });
+
+  // node_modules/.pnpm/@fal-works+esbuild-plugin-global-externals@2.1.2/node_modules/@fal-works/esbuild-plugin-global-externals/lib/with-object.js
+  var globalExternals;
+  var init_with_object = __esm({
+    "node_modules/.pnpm/@fal-works+esbuild-plugin-global-externals@2.1.2/node_modules/@fal-works/esbuild-plugin-global-externals/lib/with-object.js"() {
+      init_with_reg_exp();
+      globalExternals = (globals) => {
+        const normalizedGlobals = {
+          modulePathFilter: new RegExp(`^(?:${Object.keys(globals).join("|")})$`),
+          getModuleInfo: (modulePath) => globals[modulePath]
+        };
+        return globalExternalsWithRegExp(normalizedGlobals);
+      };
+    }
+  });
+
+  // node_modules/.pnpm/@fal-works+esbuild-plugin-global-externals@2.1.2/node_modules/@fal-works/esbuild-plugin-global-externals/lib/index.js
+  var lib_default;
+  var init_lib = __esm({
+    "node_modules/.pnpm/@fal-works+esbuild-plugin-global-externals@2.1.2/node_modules/@fal-works/esbuild-plugin-global-externals/lib/index.js"() {
+      init_with_object();
+      init_with_reg_exp();
+      lib_default = globalExternals;
+    }
+  });
+
   // app/build.ts
   var build_exports = {};
   __export(build_exports, {
     build: () => build
   });
-  var import_fs_jetpack17, build;
+  var import_esbuild2, import_fs_jetpack17, build;
   var init_build = __esm({
     "app/build.ts"() {
       "use strict";
+      init_lib();
       init_export();
+      import_esbuild2 = __require("esbuild");
       import_fs_jetpack17 = __toESM(require_main());
       build = async (mode) => {
         if (!await (0, import_fs_jetpack17.existsAsync)(dir.root(".output/app/prasi-api"))) {
@@ -37058,6 +37154,44 @@ ERROR: Async operation of type "${type}" was created in "process.exit" callback.
               overwrite: true
             }
           );
+        }
+        const ctx = await (0, import_esbuild2.context)({
+          bundle: true,
+          entryPoints: [
+            dir.root("app/web/src/compo/renderer/prasi/bundle/ssr/prasi.tsx")
+          ],
+          outfile: dir.root(".output/app/srv/ssr/index.jsx"),
+          format: "iife",
+          jsx: "transform",
+          logLevel: "silent",
+          define: {
+            "process.env.NODE_ENV": `"production"`
+          },
+          external: ["react"],
+          plugins: [
+            lib_default({
+              react: {
+                varName: "window.React",
+                type: "cjs"
+              },
+              "react-dom/server": {
+                varName: "window.ReactDOMServer",
+                type: "cjs"
+              },
+              "react/jsx-runtime": {
+                varName: "window.JSXRuntime",
+                type: "cjs"
+              }
+            })
+          ],
+          banner: {
+            js: `if (typeof isSSR === 'undefined') window.isSSR = false;`
+          }
+        });
+        if (mode === "dev") {
+          await ctx.watch({});
+        } else {
+          await ctx.rebuild();
         }
       };
     }
@@ -42992,10 +43126,10 @@ ${error.message}` : execaMessage;
     }
     return forceKillAfterTimeout;
   };
-  var spawnedCancel = (spawned, context2) => {
+  var spawnedCancel = (spawned, context3) => {
     const killResult = spawned.kill();
     if (killResult) {
-      context2.isCanceled = true;
+      context3.isCanceled = true;
     }
   };
   var timeoutKill = (spawned, signal, reject) => {
@@ -43359,9 +43493,9 @@ ${error.message}` : execaMessage;
     const spawnedPromise = getSpawnedPromise(spawned);
     const timedPromise = setupTimeout(spawned, parsed.options, spawnedPromise);
     const processDone = setExitHandler(spawned, parsed.options, timedPromise);
-    const context2 = { isCanceled: false };
+    const context3 = { isCanceled: false };
     spawned.kill = spawnedKill.bind(null, spawned.kill.bind(spawned));
-    spawned.cancel = spawnedCancel.bind(null, spawned, context2);
+    spawned.cancel = spawnedCancel.bind(null, spawned, context3);
     const handlePromise = async () => {
       const [{ error, exitCode, signal, timedOut }, stdoutResult, stderrResult, allResult] = await getSpawnedResult(spawned, parsed.options, processDone);
       const stdout = handleOutput(parsed.options, stdoutResult);
@@ -43379,7 +43513,7 @@ ${error.message}` : execaMessage;
           escapedCommand,
           parsed,
           timedOut,
-          isCanceled: context2.isCanceled || (parsed.options.signal ? parsed.options.signal.aborted : false),
+          isCanceled: context3.isCanceled || (parsed.options.signal ? parsed.options.signal.aborted : false),
           killed: spawned.killed
         });
         if (!parsed.options.reject) {

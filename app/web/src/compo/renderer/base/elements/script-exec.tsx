@@ -234,9 +234,6 @@ const createLocal = (arg: { item: IContent; render: () => void }): LocalFC => {
 
     const local = item.scope;
     let child = children;
-    if (typeof children === "function") {
-      child = children(local);
-    }
     thru(child, { [name]: local });
 
     useEffect(() => {

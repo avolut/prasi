@@ -2,7 +2,9 @@
   "name": "app",
   "main": "app.ts",
   "dependencies": {
+    "@fal-works/esbuild-plugin-global-externals": "^2.1.2",
     "dir": "workspace:^",
+    "esbuild": "^0.18.11",
     "execa": "^7.1.1",
     "fs-jetpack": "^5.1.0",
     "service": "workspace:^",

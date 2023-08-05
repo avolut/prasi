@@ -1,11 +1,8 @@
 import { FC, ReactElement } from "react";
 import { defineWindow } from "web-init/src/web/define-window";
 import { GlobalContext, useLocal } from "web-utils";
-import { PrasiLiveArg, createPrasiLive } from "./prasi-live";
-
+import { PrasiLiveArg, praseiLiveRenderer } from "./prasi-live-renderer";
 export { useGlobal, useLocal } from "web-utils";
-
-import "../../../../../../.output/app/web/public/index.css";
 
 const w = window as unknown as {
   __SRV_URL__: string;
@@ -57,7 +54,7 @@ const PrasiLive: FC<{
     defineWindow();
   }
 
-  const site = createPrasiLive({ Loading, NotFound, live, props });
+  const site = praseiLiveRenderer({ Loading, NotFound, live, props });
   if (!site) return <NotFound />;
   return site.renderPage(live.pathname);
 };

@@ -1,14 +1,14 @@
-import type { SiteConfig } from "../../editor/ws/wsdoc";
-import importModule from "../../page/tools/dynamic-import";
-import type { PRASI_COMPONENT, PRASI_PAGE } from "../base/renderer-types";
-import { PrasiRenderer } from "./prasi-renderer";
+import type { SiteConfig } from "../../../editor/ws/wsdoc";
+import importModule from "../../../page/tools/dynamic-import";
+import type { PRASI_COMPONENT, PRASI_PAGE } from "../../base/renderer-types";
+import { PrasiRenderer } from "../prasi-renderer";
 
 export type PrasiLiveArg = {
   domain?: string;
   site_id?: string;
   pathname: string;
 };
-export const createPrasiLive = (arg: {
+export const praseiLiveRenderer = (arg: {
   Loading: any;
   NotFound: any;
   live: PrasiLiveArg;

@@ -12,7 +12,7 @@ export type LocalEffects<T extends Record<string, any>> = {
 export type LocalFC = <T extends Record<string, any>>(arg: {
   name: string;
   value: T;
-  children: ReactNode | ((local: T & { render: () => void }) => ReactNode);
+  children: ReactNode;
   effect?: (
     local: T & { render: () => void }
   ) => void | (() => void) | Promise<void | (() => void)>;
@@ -90,9 +90,6 @@ export const createLocal = (opt: {
       }
     }, []);
 
-    if (typeof children === "function") {
-      return children(local);
-    }
     return children;
   };
 };

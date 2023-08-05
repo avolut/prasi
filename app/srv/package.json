@@ -35,12 +35,14 @@
     "uuid": "9.0.0",
     "vscode-ws-jsonrpc": "^3.0.0",
     "y-pojo": "^0.0.8",
+    "jsdom": "^22.1.0",
     "yjs": "^13.6.1",
     "yjs-types": "^0.0.1"
   },
   "devDependencies": {
     "@types/lodash.get": "4.4.7",
     "@types/lodash.set": "4.3.7",
+    "@types/jsdom": "^21.1.1",
     "@types/lodash.trim": "4.5.7",
     "@types/mime-types": "2.1.1",
     "@types/sharp": "0.31.1"
@@ -49,6 +51,7 @@
     "puppeteer-core",
     "sharp",
     "hyper-express",
+    "jsdom",
     "@node-rs/argon2",
     "@swc/core",
     "lmdb"

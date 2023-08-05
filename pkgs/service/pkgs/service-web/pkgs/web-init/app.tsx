@@ -1,11 +1,12 @@
 import { setup } from "goober";
+import { decompressFromBase64 as decompress } from "lz-string";
 import React from "react";
 import { createRoot, hydrateRoot } from "react-dom/client";
-import { initRouter } from "./src/web/router";
-import { defineWindow } from "./src/web/define-window";
 import { SSR } from "web-types";
 import { g } from "./src/types";
-import { decompressFromBase64 as decompress } from "lz-string";
+import { defineReact } from "./src/web/define-react";
+import { defineWindow } from "./src/web/define-window";
+import { initRouter } from "./src/web/router";
 
 const w = window as any;
 new Function(decompress(w.royal))();
@@ -13,6 +14,7 @@ new Function(decompress(w.royal))();
 export const initApp = async (name: string, App: SSR["App"]) => {
   if (!isSSR) {
     setup(React.createElement);
+    defineReact();
     defineWindow();
 
     const pageImport = (await import(
