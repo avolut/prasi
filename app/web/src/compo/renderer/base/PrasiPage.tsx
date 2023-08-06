@@ -24,6 +24,11 @@ export const PrasiPage = (props: {
       newPage = page.list[location.search.substring("?page_id=".length)];
     } else {
       newPage = router.lookup(pathname);
+
+      if (typeof window.exports === "undefined") {
+        window.exports = {};
+      }
+      window.exports.params = newPage?.params || {};
     }
 
     if (newPage) {

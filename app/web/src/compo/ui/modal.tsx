@@ -178,9 +178,9 @@ export const ModalContent = React.forwardRef<
               }
             }}
             onPointerLeave={(e) => {
-              if (Object.keys(w.openedPopupID || {}).length > 0) {
-                return;
-              }
+              // if (Object.keys(w.openedPopupID || {}).length > 0) {
+              //   return;
+              // }
 
               clearTimeout(local.timeout);
               local.timeout = setTimeout(() => {

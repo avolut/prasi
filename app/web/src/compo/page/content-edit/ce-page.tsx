@@ -87,11 +87,11 @@ export const CEPage: FC<{ ceid: string }> = ({ ceid }) => {
                 width: 420px;
                 top: 0px;
                 bottom: 0px;
-                contain: content;
               `
             : "inset-0",
 
           css`
+            contain: content;
             ${c.global.scss}
           `
         )}

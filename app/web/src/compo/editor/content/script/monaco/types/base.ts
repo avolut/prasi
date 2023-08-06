@@ -11,6 +11,7 @@ const useState = React.useState;
 
 const isEditor: boolean;
 const navigate: (url:string) => void;
+const params: any;
 const cx = (...classNames: any[]) => string;
 const css = (
   tag: CSSAttribute | TemplateStringsArray | string,
