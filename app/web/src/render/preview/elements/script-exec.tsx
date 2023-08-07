@@ -4,7 +4,7 @@ import { useLocal } from "web-utils";
 import { RItem } from "../../../compo/renderer/base/elements/r-item";
 import { RText } from "../../../compo/renderer/base/elements/r-text";
 import { IContent, w } from "../../../compo/types/general";
-import { PG } from "../parts/global";
+import { PG } from "../logic/global";
 
 type JsArg = {
   p: PG;

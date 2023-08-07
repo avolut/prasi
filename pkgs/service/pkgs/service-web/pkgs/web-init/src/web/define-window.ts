@@ -58,24 +58,9 @@ export const defineWindow = async (baseurl?: URL) => {
   w.navigate = (href: string) => {
     let _href = href;
 
-    if (_href.startsWith("/")) {
-      if (w.basepath.length > 1) {
-        _href = `${w.basepath}${_href}`;
-      }
-      if (
-        location.hostname === "prasi.app" ||
-        location.hostname === "localhost" ||
-        location.hostname === "127.0.0.1" ||
-        location.hostname === "10.0.2.2" // android localhost
-      ) {
-        if (
-          location.pathname.startsWith("/site") &&
-          !_href.startsWith("/site")
-        ) {
-          const patharr = location.pathname.split("/");
-          _href = `/site/${patharr[2]}${_href}`;
-        }
-      }
+
+    if (typeof w.navigateOverride === "function") {
+      _href = w.navigateOverride(href);
     }
 
     history.pushState({}, "", _href);

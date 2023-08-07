@@ -1,15 +1,17 @@
 import { FC, ReactNode } from "react";
 import { useGlobal } from "web-utils";
+import { produceCSS } from "../../../compo/page/css/gen";
+import { responsiveVal } from "../../../compo/page/tools/responsive-val";
 import { IContent } from "../../../compo/types/general";
 import { IItem } from "../../../compo/types/item";
-import { IText } from "../../../compo/types/text";
-import { PreviewGlobal } from "../parts/global";
-import { newPageComp } from "../parts/comp";
-import { produceCSS } from "../../../compo/page/css/gen";
-import { scriptExec } from "./script-exec";
-import { responsiveVal } from "../../../compo/page/tools/responsive-val";
 import { FNAdv, FNLinkTag } from "../../../compo/types/meta-fn";
-import { preload } from "../parts/route";
+import { IText } from "../../../compo/types/text";
+import { newPageComp } from "../logic/comp";
+import { PreviewGlobal } from "../logic/global";
+import { extractNavigate, preload } from "../logic/route";
+import { scriptExec } from "./script-exec";
+
+const navExtracted = new Set<string>();
 
 export const PRender: FC<{
   item: IContent;
@@ -57,6 +59,14 @@ export const PRender: FC<{
 
     if (html) _children = html;
     else if (adv.jsBuilt && adv.js) {
+      if (!navExtracted.has(item.id)) {
+        navExtracted.add(item.id);
+        const navs = extractNavigate(adv.js);
+        navs.forEach((n) => {
+          preload(p, n);
+        });
+      }
+
       return (
         <>
           {scriptExec(

@@ -1,5 +1,5 @@
 import { useGlobal } from "web-utils";
-import { PreviewGlobal } from "../parts/global";
+import { PreviewGlobal } from "../logic/global";
 import { PSection } from "./p-section";
 
 export const PPage = () => {

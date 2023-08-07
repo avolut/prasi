@@ -45,9 +45,11 @@ export const scanComponent = (
   if (item.type === "item" && item.component?.id) {
     ids.add(item.component.id);
 
-    for (const p of Object.values(item.component.props)) {
-      if (p.meta?.type === "content-element" && p.content) {
-        scanComponent(p.content, ids);
+    if (item.component.props) {
+      for (const p of Object.values(item.component.props)) {
+        if (p.meta?.type === "content-element" && p.content) {
+          scanComponent(p.content, ids);
+        }
       }
     }
   }

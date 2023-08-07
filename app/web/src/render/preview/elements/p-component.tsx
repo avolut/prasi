@@ -2,13 +2,13 @@ import { FC, useState } from "react";
 import { useGlobal } from "web-utils";
 import { IItem } from "../../../compo/types/item";
 import { FNCompDef } from "../../../compo/types/meta-fn";
-import { PG, PreviewGlobal } from "../parts/global";
-import { preload } from "../parts/route";
+import { PG, PreviewGlobal } from "../logic/global";
+import { extractNavigate, preload } from "../logic/route";
 import { PItem } from "./p-item";
 import { PRender } from "./p-render";
 import { PText } from "./p-text";
 import { createAPI, createDB } from "./script-exec";
-import { loadComponent } from "../parts/comp";
+import { loadComponent } from "../logic/comp";
 
 export const PComponent: FC<{
   item: IItem;
@@ -61,40 +61,26 @@ export const PComponent: FC<{
   );
 };
 
-const extractNavigate = (str: string) => {
-  let i = 0;
-  const nstr = "navigate(";
-  const founds: string[] = [];
-  let lasti = 0;
-  while (true) {
-    const start = str.indexOf(nstr, i);
-    lasti = i;
-    if (start >= 0) {
-      const char = str[start + nstr.length];
-      const end = str.indexOf(`${char})`, start + nstr.length + 1);
-      const text = str.substring(start + nstr.length + 1, end);
-      i = end + 3;
-      founds.push(text);
-    }
-
-    if (lasti === i) {
-      break;
-    }
-  }
-  return founds;
-};
-
 export const getRenderPropVal = (
   props: Record<string, FNCompDef>,
   item: IItem,
   nprops: any,
   p?: PG
 ) => {
-  const exec = (fn: string, scopes: any) => {
+  const exec = (key: string, fn: string, scopes: any) => {
     if (p) {
       scopes["api"] = createAPI(p.site.api_url);
       scopes["db"] = createDB(p.site.api_url);
 
+      if (key.includes("url") || key.includes("href") || key.includes("link")) {
+        try {
+          let url = "";
+          eval(`url = ${fn}`);
+          if (typeof url === "string" && url.startsWith("/")) {
+            preload(p, url);
+          }
+        } catch (e) {}
+      }
       if (fn.includes("navigate(") && p.route) {
         const navs = extractNavigate(fn);
         for (const n of navs) {
@@ -124,7 +110,7 @@ export const getRenderPropVal = (
 
     if (shouldEval) {
       try {
-        val = exec(prop.valueBuilt || prop.value, {
+        val = exec(key, prop.valueBuilt || prop.value, {
           ...window.exports,
           ...item.nprops,
         });

@@ -17,7 +17,8 @@ import { scanComponent } from "./comp";
 
 export const previewWS = async (p: PG) => {
   if (p.ws && p.ws.readyState === p.ws.OPEN) {
-    console.log("reconnecting");
+    if (p.page) {
+    }
     return;
   }
 
@@ -65,7 +66,6 @@ export const previewWS = async (p: PG) => {
                   if (!p.pages[page.id]) {
                     p.pages[page.id] = {
                       id: page.id,
-                      npm: "",
                       js: page.js_compiled || "",
                       content_tree: page.content_tree as any,
                     };
@@ -113,7 +113,6 @@ export const previewWS = async (p: PG) => {
                 p.comp.doc[msg.comp_id].on(
                   "update",
                   throttle((e, origin) => {
-                    console.log(origin);
                     console.log(
                       `🔥 Component updated: ${p.comp.doc[msg.comp_id]
                         .getMap("map")

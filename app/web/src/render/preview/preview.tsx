@@ -1,9 +1,9 @@
 import { FC } from "react";
 import { useGlobal } from "web-utils";
 import { Loading } from "../../compo/ui/loading";
-import { PreviewGlobal } from "./parts/global";
-import { initPreview } from "./parts/init";
-import { routePreview } from "./parts/route";
+import { PreviewGlobal } from "./logic/global";
+import { initPreview } from "./logic/init";
+import { routePreview } from "./logic/route";
 import { PPage } from "./elements/p-page";
 import parseUA from "ua-parser-js";
 

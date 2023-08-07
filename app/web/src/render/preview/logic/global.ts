@@ -18,7 +18,6 @@ export const PreviewGlobal = {
     id: string;
     content_tree: IRoot;
     js: string;
-    npm: string;
   },
   pages: {} as Record<
     string,
@@ -26,7 +25,6 @@ export const PreviewGlobal = {
       id: string;
       content_tree: IRoot;
       js: string;
-      npm: string;
     }
   >,
   pageComp: {} as Record<string, IItem>,

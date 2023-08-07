@@ -1,9 +1,39 @@
 import { createRouter } from "web-init";
 import { PG } from "./global";
 
+const w = window as unknown as {
+  basepath: string;
+  navigateOverride: (s: string) => string;
+  isEditor: boolean;
+};
+
 export const initPreview = async (p: PG, domain: string) => {
   if (p.status === "init") {
     p.status = "loading";
+
+    w.isEditor = false;
+    w.navigateOverride = (_href) => {
+      if (_href.startsWith("/")) {
+        if (w.basepath.length > 1) {
+          _href = `${w.basepath}${_href}`;
+        }
+        if (
+          location.hostname === "prasi.app" ||
+          location.hostname === "localhost" ||
+          location.hostname === "127.0.0.1" ||
+          location.hostname === "10.0.2.2" // android localhost
+        ) {
+          if (
+            location.pathname.startsWith("/preview") &&
+            !_href.startsWith("/preview")
+          ) {
+            const patharr = location.pathname.split("/");
+            _href = `/preview/${patharr[2]}${_href}`;
+          }
+        }
+      }
+      return _href;
+    };
 
     const site = await db.site.findFirst({
       where: { domain },
