@@ -1,8 +1,8 @@
 import { FC } from "react";
-import { ISection } from "../../../compo/types/section";
+import { ISection } from "../../../utils/types/section";
 import { PRender } from "./p-render";
 import { PItem } from "./p-item";
-import { IItem } from "../../../compo/types/item";
+import { IItem } from "../../../utils/types/item";
 
 export const PSection: FC<{ item: ISection }> = ({ item }) => {
   return (

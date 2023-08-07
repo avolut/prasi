@@ -7,17 +7,18 @@ import { IItem } from "../../../utils/types/item";
 import { FNAdv, FNLinkTag } from "../../../utils/types/meta-fn";
 import { IText } from "../../../utils/types/text";
 import { newPageComp } from "../logic/comp";
-import { PreviewGlobal } from "../logic/global";
+import { EditorGlobal } from "../logic/global";
 import { extractNavigate, preload } from "../logic/route";
 import { scriptExec } from "./script-exec";
 
 const navExtracted = new Set<string>();
 
-export const PRender: FC<{
+export const ERender: FC<{
   item: IContent;
   children: (childs: (IItem | IText)[]) => ReactNode;
-}> = ({ item, children }) => {
-  const p = useGlobal(PreviewGlobal, "PREVIEW");
+  gid: string;
+}> = ({ item, children, gid }) => {
+  const p = useGlobal(EditorGlobal, "EDITOR");
 
   if (item.hidden === "all") {
     return null;
@@ -72,6 +73,7 @@ export const PRender: FC<{
           {scriptExec(
             {
               item,
+              gid,
               children: _children,
               p,
               className,

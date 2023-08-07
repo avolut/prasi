@@ -9,37 +9,18 @@ const w = window as unknown as {
   exports: any;
 };
 
-export const initPreview = async (p: PG, domain: string) => {
+export const initEditor = async (p: PG, site_id: string) => {
   if (p.status === "init") {
     p.status = "loading";
 
     w.isEditor = false;
     w.navigateOverride = (_href) => {
-      if (_href.startsWith("/")) {
-        if (w.basepath.length > 1) {
-          _href = `${w.basepath}${_href}`;
-        }
-        if (
-          location.hostname === "prasi.app" ||
-          location.hostname === "localhost" ||
-          location.hostname === "127.0.0.1" ||
-          location.hostname === "10.0.2.2" // android localhost
-        ) {
-          if (
-            location.pathname.startsWith("/preview") &&
-            !_href.startsWith("/preview")
-          ) {
-            const patharr = location.pathname.split("/");
-            _href = `/preview/${patharr[2]}${_href}`;
-          }
-        }
-      }
-      return _href;
+      return "";
     };
 
     const site = await db.site.findFirst({
-      where: { domain },
-      select: { id: true, config: true },
+      where: { id: site_id },
+      select: { id: true, config: true, domain: true },
     });
 
     if (site) {
@@ -49,6 +30,7 @@ export const initPreview = async (p: PG, domain: string) => {
       );
 
       p.site.id = site.id;
+      p.site.domain = site.domain;
       p.site.api_url = ((site.config || {}) as any).api_url || "";
       const pages = await db.page.findMany({
         where: {

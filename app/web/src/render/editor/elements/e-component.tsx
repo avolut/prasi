@@ -2,26 +2,27 @@ import { FC, useState } from "react";
 import { useGlobal } from "web-utils";
 import { IItem } from "../../../utils/types/item";
 import { FNCompDef } from "../../../utils/types/meta-fn";
-import { PG, PreviewGlobal } from "../logic/global";
-import { extractNavigate, preload } from "../logic/route";
-import { PItem } from "./p-item";
-import { PRender } from "./p-render";
-import { PText } from "./p-text";
-import { createAPI, createDB } from "./script-exec";
 import { loadComponent } from "../logic/comp";
+import { EditorGlobal, PG } from "../logic/global";
+import { extractNavigate, preload } from "../logic/route";
+import { EItem } from "./e-item";
+import { ERender } from "./e-render";
+import { EText } from "./e-text";
+import { createAPI, createDB } from "./script-exec";
 
-export const PComponent: FC<{
+export const EComponent: FC<{
   item: IItem;
-}> = ({ item }) => {
+  gid: string;
+}> = ({ item, gid }) => {
   const [_, render] = useState({});
-  const p = useGlobal(PreviewGlobal, "PREVIEW");
+  const p = useGlobal(EditorGlobal, "EDITOR");
 
   if (!item.component) return null;
   const compid = item.component.id;
 
-  let pcomp = p.comp.doc[compid];
+  let pcomp = p.comps.doc[compid];
   if (!pcomp) {
-    if (!p.comp.pending[compid]) {
+    if (!p.comps.pending[compid]) {
       loadComponent(p, compid).then(() => {
         render({});
       });
@@ -46,18 +47,18 @@ export const PComponent: FC<{
   const nprops: any = {};
 
   if (props) {
-    getRenderPropVal(props, item, nprops, p);
+    getRenderPropVal(props, item, nprops, gid, p);
   }
 
   return (
-    <PRender item={item}>
+    <ERender item={item} gid={gid}>
       {(childs) =>
         childs.map((e) => {
-          if (e.type === "item") return <PItem item={e} key={e.id} />;
-          else return <PText item={e} key={e.id} />;
+          if (e.type === "item") return <EItem gid={gid} item={e} key={e.id} />;
+          else return <EText item={e} key={e.id} gid={gid} />;
         })
       }
-    </PRender>
+    </ERender>
   );
 };
 
@@ -65,6 +66,7 @@ export const getRenderPropVal = (
   props: Record<string, FNCompDef>,
   item: IItem,
   nprops: any,
+  gid: string,
   p?: PG
 ) => {
   const exec = (key: string, fn: string, scopes: any) => {
@@ -103,7 +105,7 @@ export const getRenderPropVal = (
     if (prop.meta?.type === "content-element") {
       if (prop.content) {
         prop.content.nprops = item.nprops;
-        val = <PItem item={prop.content} />;
+        val = <EItem gid={gid} item={prop.content} />;
         shouldEval = false;
       }
     }

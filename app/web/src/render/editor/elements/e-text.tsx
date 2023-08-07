@@ -1,10 +1,10 @@
 import { FC } from "react";
 import { IText } from "../../../utils/types/text";
-import { PRender } from "./p-render";
+import { ERender } from "./e-render";
 
-export const PText: FC<{ item: IText }> = ({ item }) => {
+export const EText: FC<{ item: IText; gid: string }> = ({ item, gid }) => {
   return (
-    <PRender item={item}>
+    <ERender item={item} gid={gid}>
       {() => (
         <div
           className="w-full"
@@ -13,6 +13,6 @@ export const PText: FC<{ item: IText }> = ({ item }) => {
           }}
         ></div>
       )}
-    </PRender>
+    </ERender>
   );
 };

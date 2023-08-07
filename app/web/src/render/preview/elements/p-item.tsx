@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { IItem } from "../../../compo/types/item";
+import { IItem } from "../../../utils/types/item";
 import { PComponent } from "./p-component";
 import { PRender } from "./p-render";
 import { PText } from "./p-text";

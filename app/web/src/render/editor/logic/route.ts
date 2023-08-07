@@ -2,55 +2,50 @@ import { page } from "dbgen";
 import { WS_MSG_GET_PAGE } from "../../../compo/editor/ws/msg";
 import { loadComponent } from "./comp";
 import { PG } from "./global";
-import { previewWS, wsend } from "./ws";
+import { editorWS, wsend } from "./ws";
 import importModule from "../../../compo/page/tools/dynamic-import";
 
 export const pageNpmStatus: Record<string, "loaded" | "loading"> = {};
 
-export const routePreview = (p: PG, pathname: string) => {
+export const routeEditor = (p: PG, page_id: string) => {
   if (p.status !== "loading") {
-    const found = p.route.lookup(pathname);
-    if (!found) {
-      p.status = "not-found";
+    const id = page_id;
+    const page = p.pages[id];
+    if (!page) {
+      p.status = "loading";
+      loadPage(p, id).then(() => {
+        p.status = "ready";
+        p.render();
+      });
     } else {
-      const id = found.id;
-      const page = p.pages[id];
-      if (!page) {
+      const mpage = p.mpage?.getMap("map");
+      if (mpage) {
+        p.status = "ready";
+        if (mpage.get("id") !== p.page?.id) {
+          loadPage(p, id).then(() => {
+            p.render();
+          });
+        }
+      } else {
+        p.status = "not-found";
+      }
+    }
+
+    if (page) {
+      if (!pageNpmStatus[page.id]) {
         p.status = "loading";
-        loadPage(p, id).then(() => {
+        pageNpmStatus[page_id] = "loading";
+        loadNpmPage(page.id).then(() => {
+          p.page = page;
           p.status = "ready";
+          pageNpmStatus[page_id] = "loaded";
           p.render();
         });
       } else {
-        const mpage = p.mpage?.getMap("map");
-        if (mpage) {
-          p.status = "ready";
-          if (mpage.get("id") !== p.page?.id) {
-            loadPage(p, id).then(() => {
-              p.render();
-            });
-          }
+        if (pageNpmStatus[page.id] === "loaded") {
+          p.page = page;
         } else {
-          p.status = "not-found";
-        }
-      }
-
-      if (page) {
-        if (!pageNpmStatus[page.id]) {
           p.status = "loading";
-          pageNpmStatus[page.id] = "loading";
-          loadNpmPage(page.id).then(() => {
-            p.page = page;
-            p.status = "ready";
-            pageNpmStatus[page.id] = "loaded";
-            p.render();
-          });
-        } else {
-          if (pageNpmStatus[page.id] === "loaded") {
-            p.page = page;
-          } else {
-            p.status = "loading";
-          }
         }
       }
     }
@@ -99,7 +94,7 @@ const loadNpmPage = async (id: string) => {
 
 const loadPage = (p: PG, id: string) => {
   return new Promise<void>(async (resolve) => {
-    await previewWS(p);
+    await editorWS(p);
     p.mpageLoaded = async (mpage) => {
       const dbpage = mpage.getMap("map").toJSON() as page;
       p.pages[dbpage.id] = {

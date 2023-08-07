@@ -58,9 +58,9 @@ export const defineWindow = async (baseurl?: URL) => {
   w.navigate = (href: string) => {
     let _href = href;
 
-
     if (typeof w.navigateOverride === "function") {
       _href = w.navigateOverride(href);
+      if (!_href) return null;
     }
 
     history.pushState({}, "", _href);

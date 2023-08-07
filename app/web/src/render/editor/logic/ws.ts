@@ -15,7 +15,7 @@ import { PRASI_COMPONENT } from "../../../compo/renderer/base/renderer-types";
 import { IItem } from "../../../utils/types/item";
 import { scanComponent } from "./comp";
 
-export const previewWS = async (p: PG) => {
+export const editorWS = async (p: PG) => {
   if (p.ws && p.ws.readyState === p.ws.OPEN) {
     if (p.page) {
     }
@@ -94,7 +94,7 @@ export const previewWS = async (p: PG) => {
             }
             if (msg.mode === "comp") {
               Y.applyUpdate(
-                p.comp.doc[msg.id] as any,
+                p.comps.doc[msg.id] as any,
                 extract(msg.diff_local),
                 "remote"
               );
@@ -102,26 +102,26 @@ export const previewWS = async (p: PG) => {
             break;
           case "set_comp":
             {
-              const callback = p.comp.pending[msg.comp_id];
+              const callback = p.comps.pending[msg.comp_id];
               if (callback) {
-                p.comp.doc[msg.comp_id] = new Y.Doc() as CompDoc;
+                p.comps.doc[msg.comp_id] = new Y.Doc() as CompDoc;
                 Y.applyUpdate(
-                  p.comp.doc[msg.comp_id] as any,
+                  p.comps.doc[msg.comp_id] as any,
                   extract(msg.changes),
                   "remote"
                 );
-                p.comp.doc[msg.comp_id].on(
+                p.comps.doc[msg.comp_id].on(
                   "update",
                   throttle((e, origin) => {
                     console.log(
-                      `🔥 Component updated: ${p.comp.doc[msg.comp_id]
+                      `🔥 Component updated: ${p.comps.doc[msg.comp_id]
                         .getMap("map")
                         .get("name")}`
                     );
                     p.render();
                   })
                 );
-                const comp = p.comp.doc[msg.comp_id]
+                const comp = p.comps.doc[msg.comp_id]
                   .getMap("map")
                   .get("content_tree")
                   ?.toJSON() as IItem;
@@ -130,11 +130,11 @@ export const previewWS = async (p: PG) => {
                 scanComponent(comp, ids);
 
                 callback(
-                  p.comp.doc[msg.comp_id]
+                  p.comps.doc[msg.comp_id]
                     .getMap("map")
                     .toJSON() as PRASI_COMPONENT
                 );
-                delete p.comp.pending[msg.comp_id];
+                delete p.comps.pending[msg.comp_id];
               }
             }
             break;
@@ -174,7 +174,7 @@ const svLocal = async (arg: {
 
   let doc = null as any;
   if (mode === "page") doc = p.mpage;
-  if (mode === "comp") doc = p.comp.doc[id];
+  if (mode === "comp") doc = p.comps.doc[id];
   if (!doc) return;
 
   const diff_remote = Y.encodeStateAsUpdate(doc, bin);
@@ -222,7 +222,7 @@ const svdRemote = async (arg: {
 
   let doc = null as any;
   if (mode === "page") doc = p.mpage;
-  if (mode === "comp") doc = p.comp.doc[id];
+  if (mode === "comp") doc = p.comps.doc[id];
   if (!doc) return;
   sendDoc(doc);
 };

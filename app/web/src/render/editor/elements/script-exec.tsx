@@ -3,14 +3,15 @@ import { ErrorBoundary } from "web-init/src/web/error-boundary";
 import { useLocal } from "web-utils";
 import { IContent, w } from "../../../utils/types/general";
 import { PG } from "../logic/global";
-import { PItem } from "./p-item";
-import { PText } from "./p-text";
+import { EItem } from "./e-item";
+import { EText } from "./e-text";
 
 type JsArg = {
   p: PG;
   item: IContent;
   children: ReactNode;
   className: string;
+  gid: string;
   render: () => void;
 };
 
@@ -40,12 +41,12 @@ const produceEvalArgs = (
   arg: JsArg & { output: { jsx: ReactNode } },
   api_url?: string
 ) => {
-  const { item, p, children, output, className, render } = arg;
+  const { item, p, children, output, className, gid, render } = arg;
 
   if (!item.cmemo) {
     item.cmemo = {
       local: createLocal({ item, render }),
-      passchild: createPassChild({ item }),
+      passchild: createPassChild({ item, gid }),
       passprop: createPassProp(),
     };
   }
@@ -90,7 +91,7 @@ const produceEvalArgs = (
 };
 
 const createPassChild =
-  (arg: { item: IContent }) =>
+  (arg: { item: IContent; gid: string }) =>
   ({ name }: { name: string }) => {
     const local = useLocal({ child: null as any });
     if (!local.child) {
@@ -104,9 +105,9 @@ const createPassChild =
     }
     if (local.child) {
       if (local.child.type === "item")
-        return <PItem item={{ ...local.child, hidden: false }} />;
+        return <EItem gid={arg.gid} item={{ ...local.child, hidden: false }} />;
       else if (local.child.type === "text")
-        return <PText item={{ ...local.child, hidden: false }} />;
+        return <EText gid={arg.gid} item={{ ...local.child, hidden: false }} />;
     }
   };
 

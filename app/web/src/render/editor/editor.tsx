@@ -1,21 +1,19 @@
 import { FC } from "react";
 import { useGlobal } from "web-utils";
 import { Loading } from "../../utils/ui/loading";
-import { PreviewGlobal } from "./logic/global";
-import { initPreview } from "./logic/init";
-import { routePreview } from "./logic/route";
-import { PPage } from "./elements/p-page";
-import parseUA from "ua-parser-js";
+import { EMainEditor } from "./panel/e-main-editor";
+import { EditorGlobal } from "./logic/global";
+import { initEditor } from "./logic/init";
+import { routeEditor } from "./logic/route";
 
-export const Preview: FC<{ domain: string; pathname: string }> = ({
-  domain,
-  pathname,
+export const Editor: FC<{ site_id: string; page_id: string }> = ({
+  site_id,
+  page_id,
 }) => {
-  const p = useGlobal(PreviewGlobal, "PREVIEW");
+  const p = useGlobal(EditorGlobal, "EDITOR");
 
   if (!p.mode) {
-    const parsed = parseUA();
-    p.mode = parsed.device.type === "mobile" ? "mobile" : "desktop";
+    p.mode = (localStorage.getItem("editor-mode") || "desktop") as any;
   }
 
   if (p.status === "init") {
@@ -29,10 +27,10 @@ export const Preview: FC<{ domain: string; pathname: string }> = ({
         PREVIEW ERROR
       </div>
     );
-    initPreview(p, domain);
+    initEditor(p, site_id);
   }
 
-  routePreview(p, pathname);
+  routeEditor(p, page_id);
 
   if (p.status !== "ready") {
     if (p.status === "not-found") {
@@ -44,5 +42,5 @@ export const Preview: FC<{ domain: string; pathname: string }> = ({
     return p.ui.loading;
   }
 
-  return <PPage />;
+  return <EMainEditor />;
 };

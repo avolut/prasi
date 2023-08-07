@@ -30,6 +30,14 @@ export const auth_register = {
   layout: undefined,
   
 }
+export const ed = {
+  name: "ed",
+  url: "/ed/:site_id/:page_id",
+  path: "app/web/src/base/page/ed.tsx",
+  ssr: false,
+  layout: undefined,
+  
+}
 export const editor = {
   name: "editor",
   url: "/editor/:site/:page",

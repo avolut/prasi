@@ -9,12 +9,12 @@ import { wsend } from "./ws";
 
 export const newPageComp = (p: PG, item: IItem) => {
   if (item.component?.id) {
-    if (!p.comp.doc[item.component.id]) {
+    if (!p.comps.doc[item.component.id]) {
       console.error("Component Not Found: ", item.component.id);
       return null;
     }
 
-    const comp = p.comp.doc[item.component.id].getMap("map").toJSON();
+    const comp = p.comps.doc[item.component.id].getMap("map").toJSON();
     if (comp && comp.content_tree) {
       const citem = fillID(comp.content_tree) as IItem;
 
@@ -79,7 +79,7 @@ export const loadComponent = async (
   await Promise.all(
     [...compIds]
       .filter((id) => {
-        if (!p.comp.doc[id] && !p.comp.pending[id]) return true;
+        if (!p.comps.doc[id] && !p.comps.pending[id]) return true;
         return false;
       })
       .map(async (id) => {
@@ -92,7 +92,7 @@ export const loadComponent = async (
 
 const loadSingleComponent = (p: PG, comp_id: string) => {
   return new Promise<PRASI_COMPONENT>(async (resolve) => {
-    p.comp.pending[comp_id] = resolve;
+    p.comps.pending[comp_id] = resolve;
     await wsend(
       p,
       JSON.stringify({
