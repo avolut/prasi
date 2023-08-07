@@ -8,10 +8,7 @@ import { FNAdv, FNLinkTag } from "../../../utils/types/meta-fn";
 import { IText } from "../../../utils/types/text";
 import { newPageComp } from "../logic/comp";
 import { EditorGlobal } from "../logic/global";
-import { extractNavigate, preload } from "../logic/route";
 import { scriptExec } from "./script-exec";
-
-const navExtracted = new Set<string>();
 
 export const ERender: FC<{
   item: IContent;
@@ -60,14 +57,6 @@ export const ERender: FC<{
 
     if (html) _children = html;
     else if (adv.jsBuilt && adv.js) {
-      if (!navExtracted.has(item.id)) {
-        navExtracted.add(item.id);
-        const navs = extractNavigate(adv.js);
-        navs.forEach((n) => {
-          preload(p, n);
-        });
-      }
-
       return (
         <>
           {scriptExec(
@@ -91,7 +80,6 @@ export const ERender: FC<{
   if (linktag && linktag.link) {
     let href = linktag.link || "";
     if (href.startsWith("/")) {
-      preload(p, href);
       if (
         (location.pathname.startsWith("/preview/") ||
           location.pathname.startsWith("/site/")) &&

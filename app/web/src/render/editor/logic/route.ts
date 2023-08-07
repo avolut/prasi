@@ -10,74 +10,12 @@ export const pageNpmStatus: Record<string, "loaded" | "loading"> = {};
 export const routeEditor = (p: PG, page_id: string) => {
   if (p.status !== "loading") {
     const id = page_id;
-    const page = p.pages[id];
-    if (!page) {
-      p.status = "loading";
-      loadPage(p, id).then(() => {
-        p.status = "ready";
-        p.render();
-      });
-    } else {
-      const mpage = p.mpage?.getMap("map");
-      if (mpage) {
-        p.status = "ready";
-        if (mpage.get("id") !== p.page?.id) {
-          loadPage(p, id).then(() => {
-            p.render();
-          });
-        }
-      } else {
-        p.status = "not-found";
-      }
-    }
-
-    if (page) {
-      if (!pageNpmStatus[page.id]) {
-        p.status = "loading";
-        pageNpmStatus[page_id] = "loading";
-        loadNpmPage(page.id).then(() => {
-          p.page = page;
-          p.status = "ready";
-          pageNpmStatus[page_id] = "loaded";
-          p.render();
-        });
-      } else {
-        if (pageNpmStatus[page.id] === "loaded") {
-          p.page = page;
-        } else {
-          p.status = "loading";
-        }
-      }
-    }
-  }
-};
-
-export const preload = async (p: PG, pathname: string) => {
-  const found = p.route.lookup(pathname);
-  if (found) {
-    if (!p.pages[found.id] && !p.pagePreload[found.id]) {
-      p.pagePreload[found.id] = true;
-      const page = await db.page.findFirst({
-        where: { id: found.id },
-        select: {
-          id: true,
-          content_tree: true,
-          js_compiled: true,
-        },
-      });
-      if (page) {
-        pageNpmStatus[page.id] = "loading";
-        await loadNpmPage(page.id);
-        delete p.pagePreload[found.id];
-        p.pages[found.id] = {
-          id: page.id,
-          js: page.js_compiled as any,
-          content_tree: page.content_tree as any,
-        };
-        await loadComponent(p, p.pages[found.id].content_tree);
-        pageNpmStatus[page.id] = "loaded";
-      }
-    }
+    p.status = "loading";
+    loadPage(p, id).then(async () => {
+      await loadNpmPage(id);
+      p.status = "ready";
+      p.render();
+    });
   }
 };
 
@@ -97,13 +35,13 @@ const loadPage = (p: PG, id: string) => {
     await editorWS(p);
     p.mpageLoaded = async (mpage) => {
       const dbpage = mpage.getMap("map").toJSON() as page;
-      p.pages[dbpage.id] = {
+      const page = {
         id: dbpage.id,
         content_tree: dbpage.content_tree as any,
         js: dbpage.js_compiled as any,
       };
-      const page = p.pages[dbpage.id];
       if (page && page.content_tree) {
+        p.page = page;
         await loadComponent(p, page.content_tree);
       }
       resolve();

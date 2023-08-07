@@ -15,8 +15,8 @@ export const EditorGlobal = {
     api_url: "",
     domain: "",
   },
-  mpage: null as null | MPage,
-  mpageLoaded: null as null | ((mpage: MPage) => void),
+
+  /**  read-only */
   page: null as null | {
     id: string;
     content_tree: IRoot;
@@ -27,24 +27,17 @@ export const EditorGlobal = {
     content_tree: IItem;
     props: Record<string, FNCompDef>;
   },
-  pages: {} as Record<
-    string,
-    {
-      id: string;
-      content_tree: IRoot;
-      js: string;
-    }
-  >,
   pageComp: {} as Record<string, IItem>,
-  pagePreload: {} as Record<string, true>,
+
+  /** write-only */
+  mpage: null as null | MPage,
+  mpageLoaded: null as null | ((mpage: MPage) => void),
   comps: {
     pending: {} as Record<string, any>,
     doc: {} as Record<string, CompDoc>,
   },
-  route: createRouter<{
-    id: string;
-    url: string;
-  }>(),
+
+  /** connection */
   ws: null as null | WebSocket,
   wsRetry: { fast: false, localIP: false, disabled: false },
   ui: {

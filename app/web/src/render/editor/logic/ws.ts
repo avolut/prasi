@@ -57,24 +57,7 @@ export const editorWS = async (p: PG) => {
             p.mpage.on(
               "update",
               throttle((e, origin) => {
-                if (p.mpage) {
-                  const page = p.mpage.getMap("map")?.toJSON() as page;
-                  console.clear();
-                  console.log(`🔥 Page updated: ${page.url}`);
-                  p.pageComp = {};
-
-                  if (!p.pages[page.id]) {
-                    p.pages[page.id] = {
-                      id: page.id,
-                      js: page.js_compiled || "",
-                      content_tree: page.content_tree as any,
-                    };
-                  } else {
-                    p.pages[page.id].content_tree = page.content_tree as any;
-                    p.pages[page.id].js = page.js_compiled as any;
-                  }
-                  p.render();
-                }
+                //TODO: write page on update
               })
             );
             if (p.mpageLoaded) {
@@ -113,12 +96,7 @@ export const editorWS = async (p: PG) => {
                 p.comps.doc[msg.comp_id].on(
                   "update",
                   throttle((e, origin) => {
-                    console.log(
-                      `🔥 Component updated: ${p.comps.doc[msg.comp_id]
-                        .getMap("map")
-                        .get("name")}`
-                    );
-                    p.render();
+                    //TODO: write comp on update
                   })
                 );
                 const comp = p.comps.doc[msg.comp_id]

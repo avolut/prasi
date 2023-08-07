@@ -4,7 +4,6 @@ import { IItem } from "../../../utils/types/item";
 import { FNCompDef } from "../../../utils/types/meta-fn";
 import { loadComponent } from "../logic/comp";
 import { EditorGlobal, PG } from "../logic/global";
-import { extractNavigate, preload } from "../logic/route";
 import { EItem } from "./e-item";
 import { ERender } from "./e-render";
 import { EText } from "./e-text";
@@ -78,16 +77,7 @@ export const getRenderPropVal = (
         try {
           let url = "";
           eval(`url = ${fn}`);
-          if (typeof url === "string" && url.startsWith("/")) {
-            preload(p, url);
-          }
         } catch (e) {}
-      }
-      if (fn.includes("navigate(") && p.route) {
-        const navs = extractNavigate(fn);
-        for (const n of navs) {
-          preload(p, n);
-        }
       }
 
       const f = new Function(...Object.keys(scopes), `return ${fn}`);

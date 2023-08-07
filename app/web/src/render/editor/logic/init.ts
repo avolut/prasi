@@ -40,12 +40,6 @@ export const initEditor = async (p: PG, site_id: string) => {
         select: { id: true, url: true },
       });
 
-      if (pages.length > 0) {
-        p.route = createRouter();
-        for (const page of pages) {
-          p.route.insert(page.url, page);
-        }
-      }
       p.status = "ready";
       p.render();
     } else {
