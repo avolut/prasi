@@ -38,6 +38,14 @@ export const editor = {
   layout: "blank",
   
 }
+export const preview = {
+  name: "preview",
+  url: "/preview/:domain/**",
+  path: "app/web/src/base/page/preview.tsx",
+  ssr: false,
+  layout: undefined,
+  
+}
 export const site = {
   name: "site",
   url: "/site/:name/**",

@@ -42,7 +42,7 @@ export const instantiateComp = (rg: typeof RendererGlobal, item: IItem) => {
           },
         },
       };
-      
+
       return nitem;
     }
   }
