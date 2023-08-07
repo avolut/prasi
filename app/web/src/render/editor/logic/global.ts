@@ -6,6 +6,7 @@ import { IItem } from "../../../utils/types/item";
 import { IRoot } from "../../../utils/types/root";
 import { FNAdv } from "../../../utils/types/meta-fn";
 import { FNCompDef } from "../../../compo/types/meta-fn";
+import { MetaItem } from "../../../utils/types/meta";
 
 export const EditorGlobal = {
   mode: "" as "desktop" | "mobile",
@@ -27,6 +28,7 @@ export const EditorGlobal = {
     content_tree: IItem;
     props: Record<string, FNCompDef>;
   },
+  pageCMemo: {} as Record<string, Exclude<MetaItem["cmemo"], undefined>>,
   pageComp: {} as Record<string, IItem>,
 
   /** write-only */

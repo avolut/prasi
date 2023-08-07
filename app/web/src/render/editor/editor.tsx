@@ -39,6 +39,7 @@ export const Editor: FC<{ site_id: string; page_id: string }> = ({
     if (p.status === "error") {
       return p.ui.error;
     }
+
     return p.ui.loading;
   }
 

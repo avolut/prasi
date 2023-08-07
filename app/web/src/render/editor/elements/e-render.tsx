@@ -1,10 +1,9 @@
 import { FC, ReactNode } from "react";
 import { useGlobal } from "web-utils";
 import { produceCSS } from "../../../compo/page/css/gen";
-import { responsiveVal } from "../../../compo/page/tools/responsive-val";
 import { IContent } from "../../../utils/types/general";
 import { IItem } from "../../../utils/types/item";
-import { FNAdv, FNLinkTag } from "../../../utils/types/meta-fn";
+import { FNAdv } from "../../../utils/types/meta-fn";
 import { IText } from "../../../utils/types/text";
 import { newPageComp } from "../logic/comp";
 import { EditorGlobal } from "../logic/global";
@@ -13,8 +12,7 @@ import { scriptExec } from "./script-exec";
 export const ERender: FC<{
   item: IContent;
   children: (childs: (IItem | IText)[]) => ReactNode;
-  gid: string;
-}> = ({ item, children, gid }) => {
+}> = ({ item, children }) => {
   const p = useGlobal(EditorGlobal, "EDITOR");
 
   if (item.hidden === "all") {
@@ -62,7 +60,6 @@ export const ERender: FC<{
           {scriptExec(
             {
               item,
-              gid,
               children: _children,
               p,
               className,
@@ -73,41 +70,6 @@ export const ERender: FC<{
         </>
       );
     }
-  }
-
-  const linktag = responsiveVal<FNLinkTag>(item, "linktag", p.mode, {});
-
-  if (linktag && linktag.link) {
-    let href = linktag.link || "";
-    if (href.startsWith("/")) {
-      if (
-        (location.pathname.startsWith("/preview/") ||
-          location.pathname.startsWith("/site/")) &&
-        ["localhost", "127.0.0.1", "prasi.app"].includes(location.hostname)
-      ) {
-        const parts = location.pathname.split("/");
-        if (parts.length >= 3) {
-          href = `/${parts[1]}/${parts[2]}${href}`;
-        }
-      }
-    }
-
-    return (
-      <a
-        className={className}
-        href={href}
-        onClick={(e) => {
-          e.preventDefault();
-          if (href.startsWith("/")) {
-            navigate(href);
-          } else {
-            location.href = href;
-          }
-        }}
-      >
-        {_children}
-      </a>
-    );
   }
 
   return <div className={className}>{_children}</div>;

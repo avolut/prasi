@@ -4,18 +4,20 @@ import { loadComponent } from "./comp";
 import { PG } from "./global";
 import { editorWS, wsend } from "./ws";
 import importModule from "../../../compo/page/tools/dynamic-import";
+import { MPage } from "../../../utils/types/general";
 
 export const pageNpmStatus: Record<string, "loaded" | "loading"> = {};
 
 export const routeEditor = (p: PG, page_id: string) => {
   if (p.status !== "loading") {
-    const id = page_id;
-    p.status = "loading";
-    loadPage(p, id).then(async () => {
-      await loadNpmPage(id);
-      p.status = "ready";
-      p.render();
-    });
+    if (!p.mpage || p.mpage.getMap("map").get("id") !== page_id) {
+      p.status = "loading";
+      loadPage(p, page_id).then(async () => {
+        await loadNpmPage(page_id);
+        p.status = "ready";
+        p.render();
+      });
+    }
   }
 };
 
@@ -31,7 +33,7 @@ const loadNpmPage = async (id: string) => {
 };
 
 const loadPage = (p: PG, id: string) => {
-  return new Promise<void>(async (resolve) => {
+  return new Promise<MPage>(async (resolve) => {
     await editorWS(p);
     p.mpageLoaded = async (mpage) => {
       const dbpage = mpage.getMap("map").toJSON() as page;
@@ -41,10 +43,11 @@ const loadPage = (p: PG, id: string) => {
         js: dbpage.js_compiled as any,
       };
       if (page && page.content_tree) {
+        p.mpage = mpage;
         p.page = page;
         await loadComponent(p, page.content_tree);
       }
-      resolve();
+      resolve(mpage);
     };
     wsend(
       p,

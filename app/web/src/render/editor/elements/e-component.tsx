@@ -11,8 +11,7 @@ import { createAPI, createDB } from "./script-exec";
 
 export const EComponent: FC<{
   item: IItem;
-  gid: string;
-}> = ({ item, gid }) => {
+}> = ({ item }) => {
   const [_, render] = useState({});
   const p = useGlobal(EditorGlobal, "EDITOR");
 
@@ -46,15 +45,15 @@ export const EComponent: FC<{
   const nprops: any = {};
 
   if (props) {
-    getRenderPropVal(props, item, nprops, gid, p);
+    getRenderPropVal(props, item, nprops, p);
   }
 
   return (
-    <ERender item={item} gid={gid}>
+    <ERender item={item}>
       {(childs) =>
         childs.map((e) => {
-          if (e.type === "item") return <EItem gid={gid} item={e} key={e.id} />;
-          else return <EText item={e} key={e.id} gid={gid} />;
+          if (e.type === "item") return <EItem item={e} key={e.id} />;
+          else return <EText item={e} key={e.id} />;
         })
       }
     </ERender>
@@ -65,7 +64,6 @@ export const getRenderPropVal = (
   props: Record<string, FNCompDef>,
   item: IItem,
   nprops: any,
-  gid: string,
   p?: PG
 ) => {
   const exec = (key: string, fn: string, scopes: any) => {
@@ -95,7 +93,7 @@ export const getRenderPropVal = (
     if (prop.meta?.type === "content-element") {
       if (prop.content) {
         prop.content.nprops = item.nprops;
-        val = <EItem gid={gid} item={prop.content} />;
+        val = <EItem item={prop.content} />;
         shouldEval = false;
       }
     }

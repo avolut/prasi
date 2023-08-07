@@ -32,14 +32,7 @@ export const initEditor = async (p: PG, site_id: string) => {
       p.site.id = site.id;
       p.site.domain = site.domain;
       p.site.api_url = ((site.config || {}) as any).api_url || "";
-      const pages = await db.page.findMany({
-        where: {
-          id_site: site.id,
-          is_deleted: false,
-        },
-        select: { id: true, url: true },
-      });
-
+    
       p.status = "ready";
       p.render();
     } else {

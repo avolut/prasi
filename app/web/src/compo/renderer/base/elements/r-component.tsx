@@ -1,4 +1,3 @@
-import { produce } from "immer";
 import { FC } from "react";
 import { useGlobal } from "web-utils";
 import { createAPI, createDB } from "../../../page/scripting/api-db";
@@ -28,7 +27,7 @@ export const RComponent: FC<{
         comps.map((e) => {
           rg.component.def[e.id] = {
             id: e.id,
-            content_tree: produce(e.content_tree, () => {}),
+            content_tree: e.content_tree,
           };
         });
         rg.loading = false;

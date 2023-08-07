@@ -11,7 +11,6 @@ type JsArg = {
   item: IContent;
   children: ReactNode;
   className: string;
-  gid: string;
   render: () => void;
 };
 
@@ -41,19 +40,19 @@ const produceEvalArgs = (
   arg: JsArg & { output: { jsx: ReactNode } },
   api_url?: string
 ) => {
-  const { item, p, children, output, className, gid, render } = arg;
+  const { item, p, children, output, className, render } = arg;
 
-  if (!item.cmemo) {
-    item.cmemo = {
+  if (typeof p.pageCMemo[item.id] === "undefined") {
+    p.pageCMemo[item.id] = {
       local: createLocal({ item, render }),
-      passchild: createPassChild({ item, gid }),
+      passchild: createPassChild({ item }),
       passprop: createPassProp(),
     };
   }
-
-  const PassProp = item.cmemo.passprop;
-  const Local = item.cmemo.local;
-  const PassChild = item.cmemo.passchild;
+  const cmemo = p.pageCMemo[item.id];
+  const PassProp = cmemo.passprop;
+  const Local = cmemo.local;
+  const PassChild = cmemo.passchild;
   const scopeProps = { ...window.exports, ...arg.item.nprops };
 
   const result: any = {
@@ -91,7 +90,7 @@ const produceEvalArgs = (
 };
 
 const createPassChild =
-  (arg: { item: IContent; gid: string }) =>
+  (arg: { item: IContent }) =>
   ({ name }: { name: string }) => {
     const local = useLocal({ child: null as any });
     if (!local.child) {
@@ -105,9 +104,9 @@ const createPassChild =
     }
     if (local.child) {
       if (local.child.type === "item")
-        return <EItem gid={arg.gid} item={{ ...local.child, hidden: false }} />;
+        return <EItem item={{ ...local.child, hidden: false }} />;
       else if (local.child.type === "text")
-        return <EText gid={arg.gid} item={{ ...local.child, hidden: false }} />;
+        return <EText item={{ ...local.child, hidden: false }} />;
     }
   };
 
