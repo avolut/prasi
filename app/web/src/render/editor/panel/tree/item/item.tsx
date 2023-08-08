@@ -6,6 +6,7 @@ import { ETreeItemName } from "./name";
 import { treeItemStyle } from "./style";
 import { IItem } from "../../../../../utils/types/item";
 import { useLocal } from "web-utils";
+import { ETreeItemAction } from "./action";
 
 export const ETreeItem: FC<{
   node: NodeModel<NodeContent>;
@@ -73,6 +74,8 @@ export const ETreeItem: FC<{
           local.render();
         }}
       />
+
+      {!local.renaming && <ETreeItemAction item={item} />}
     </div>
   );
 };
