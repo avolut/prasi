@@ -1,5 +1,5 @@
-import { FNLayout } from "../../types/meta-fn";
-import { responsiveVal } from "../tools/responsive-val";
+import { responsiveVal } from "../../render/editor/tools/responsive-val";
+import { FNLayout } from "../types/meta-fn";
 
 export const cssLayout = (
   cur: { layout?: FNLayout },

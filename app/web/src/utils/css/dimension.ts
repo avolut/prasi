@@ -1,6 +1,6 @@
-import { MetaItem } from "../../types/meta";
-import { FNDimension } from "../../types/meta-fn";
-import { responsiveVal } from "../tools/responsive-val";
+import { responsiveVal } from "../../render/editor/tools/responsive-val";
+import { MetaItem } from "../types/meta";
+import { FNDimension } from "../types/meta-fn";
 
 export const cssDimension = (
   cur: { dim?: FNDimension; type: MetaItem["type"] },
@@ -35,11 +35,7 @@ export const cssDimension = (
         height: ${editor
           ? "100%"
           : "100" +
-            (cur.type === "section"
-              ? mode === "mobile"
-                ? "vh"
-                : "vh"
-              : "%")};
+            (cur.type === "section" ? (mode === "mobile" ? "vh" : "vh") : "%")};
         margin-bottom: auto;
       `,
 

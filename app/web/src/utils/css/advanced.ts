@@ -1,6 +1,6 @@
-import { MetaItem } from "../../types/meta";
-import { FNAdv } from "../../types/meta-fn";
-import { responsiveVal } from "../tools/responsive-val";
+import { responsiveVal } from "../../compo/page/tools/responsive-val";
+import { MetaItem } from "../types/meta";
+import { FNAdv } from "../types/meta-fn";
 
 export const cssAdv = (
   cur: { adv?: FNAdv; type: MetaItem["type"] },

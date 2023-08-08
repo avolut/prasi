@@ -1,6 +1,6 @@
-import { MetaItem } from "../../types/meta";
-import { FNBackground } from "../../types/meta-fn";
-import { responsiveVal } from "../tools/responsive-val";
+import { responsiveVal } from "../../render/editor/tools/responsive-val";
+import { MetaItem } from "../types/meta";
+import { FNBackground } from "../types/meta-fn";
 
 export const cssBackground = (
   cur: { bg?: FNBackground; type: MetaItem["type"] },

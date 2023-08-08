@@ -1,6 +1,6 @@
-import { MetaItem } from "../../types/meta";
-import { FNFont } from "../../types/meta-fn";
-import { responsiveVal } from "../tools/responsive-val";
+import { responsiveVal } from "../../compo/page/tools/responsive-val";
+import { MetaItem } from "../types/meta";
+import { FNFont } from "../types/meta-fn";
 
 export const glbFont = (!isSSR ? window : {}) as {
   defaultFont: string;

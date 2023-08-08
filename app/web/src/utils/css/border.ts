@@ -1,6 +1,6 @@
 import get from "lodash.get";
-import { FNBorder, FNPadding } from "../../types/meta-fn";
-import { responsiveVal } from "../tools/responsive-val";
+import { FNBorder } from "../types/meta-fn";
+import { responsiveVal } from "../../compo/page/tools/responsive-val";
 
 export const cssBorder = (
   cur: { border?: FNBorder },
@@ -8,7 +8,7 @@ export const cssBorder = (
 ) => {
   const border = responsiveVal<FNBorder>(cur, "border", mode, {
     style: "solid",
-    stroke: 0,
+    stroke: {},
     rounded: {
       tr: 0,
       tl: 0,

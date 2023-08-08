@@ -1,4 +1,4 @@
-import { IContent } from "../../types/general";
+import { IContent } from "../types/general";
 
 export const cssEditor = ({
   item,
