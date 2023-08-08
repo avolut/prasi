@@ -6,8 +6,8 @@ import {
 } from "@minoru/react-dnd-treeview";
 import get from "lodash.get";
 import { FC } from "react";
-import { MContent } from "../../../../utils/types/general";
-import { PG } from "../../logic/global";
+import { MContent } from "../../../../../utils/types/general";
+import { PG } from "../../../logic/global";
 import { NodeContent } from "./flatten";
 
 export const DEPTH_WIDTH = 8;

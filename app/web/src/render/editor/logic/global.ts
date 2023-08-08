@@ -11,6 +11,10 @@ export const EditorGlobal = {
   mode: "" as "desktop" | "mobile",
   status: "init" as "init" | "loading" | "ready" | "not-found" | "error",
   manager: { page: false, site: false },
+  item: {
+    active: "",
+    hover: "",
+  },
 
   /**  read-only */
   session: { id: "", data: { user: { id: "", username: "" } } },

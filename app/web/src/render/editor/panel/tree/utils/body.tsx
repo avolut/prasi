@@ -5,9 +5,9 @@ import {
   NodeModel,
   getBackendOptions,
 } from "@minoru/react-dnd-treeview";
-import { FC } from "react";
+import { FC, useCallback } from "react";
 import { useGlobal } from "web-utils";
-import { EditorGlobal } from "../../logic/global";
+import { EditorGlobal } from "../../../logic/global";
 import {
   DragPreview,
   Placeholder,
@@ -15,13 +15,33 @@ import {
   onDragEnd,
   onDragStart,
   onDrop,
-} from "./body-tool";
+} from "./tree-utils";
 import { NodeContent } from "./flatten";
-import { ETreeItem } from "./item/item";
+import { ETreeItem } from "../item/item";
 
 export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[] }> = ({ tree }) => {
   const TypedTree = DNDTree<NodeContent>;
   const p = useGlobal(EditorGlobal, "EDITOR");
+
+  const onClick = useCallback(
+    (node: NodeModel<NodeContent>) => {
+      if (node.data) {
+        p.item.active = node.data.content.id;
+        p.render();
+      }
+    },
+    [tree]
+  );
+
+  const onHover = useCallback(
+    (node: NodeModel<NodeContent>) => {
+      if (node.data) {
+        p.item.hover = node.data.content.id;
+        p.render();
+      }
+    },
+    [tree]
+  );
 
   return (
     <div
@@ -64,6 +84,11 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[] }> = ({ tree }) => {
                   depth={depth}
                   isOpen={isOpen}
                   onToggle={onToggle}
+                  onHover={onHover}
+                  onClick={onClick}
+                  isActive={p.item.active === node.data?.content.id}
+                  isHover={p.item.hover === node.data?.content.id}
+                  isComponent={false}
                 />
               );
             }}
