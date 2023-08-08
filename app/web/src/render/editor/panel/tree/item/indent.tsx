@@ -8,9 +8,15 @@ export const ETreeItemIndent: FC<{
   type: IContent["type"];
   hasChilds: boolean;
   isOpen: boolean;
-}> = ({ depth, onToggle, type, hasChilds, isOpen }) => {
+  isActive: boolean;
+  isComponent: boolean;
+}> = ({ depth, onToggle, type, hasChilds, isOpen, isActive, isComponent }) => {
   return (
     <>
+      {isActive && !isComponent && (
+        <div className="bg-blue-500 absolute left-0 top-0 bottom-0 w-[3px]"></div>
+      )}
+
       <div
         className={cx(
           css`
@@ -32,6 +38,7 @@ export const ETreeItemIndent: FC<{
         )}
         onClick={(e) => {
           e.stopPropagation();
+
           onToggle();
         }}
       >

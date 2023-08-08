@@ -3,17 +3,23 @@ import { CompDoc } from "../../../base/global/content-editor";
 import { MContent, MPage } from "../../../utils/types/general";
 import { IItem } from "../../../utils/types/item";
 import { MetaItem } from "../../../utils/types/meta";
-import { IRoot } from "../../../utils/types/root";
 import { FNCompDef } from "../../../utils/types/meta-fn";
+import { IRoot } from "../../../utils/types/root";
 
 export const EditorGlobal = {
   /** ui */
   mode: "" as "desktop" | "mobile",
   status: "init" as "init" | "loading" | "ready" | "not-found" | "error",
-  manager: { page: false, site: false },
+  manager: {
+    page: false,
+    site: false,
+    comp: true,
+    compCallback: (comp: IItem) => {},
+  },
   item: {
     active: "",
     hover: "",
+    multiple: [] as string[],
   },
 
   /**  read-only */

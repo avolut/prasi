@@ -6,7 +6,7 @@ import {
   getBackendOptions,
 } from "@minoru/react-dnd-treeview";
 import { FC, useCallback } from "react";
-import { useGlobal } from "web-utils";
+import { useGlobal, useLocal } from "web-utils";
 import { EditorGlobal } from "../../../logic/global";
 import {
   DragPreview,
@@ -18,10 +18,19 @@ import {
 } from "./tree-utils";
 import { NodeContent } from "./flatten";
 import { ETreeItem } from "../item/item";
+import { ETreeRightClick } from "../item/right-click";
+import { IItem } from "../../../../../utils/types/item";
 
 export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[] }> = ({ tree }) => {
   const TypedTree = DNDTree<NodeContent>;
   const p = useGlobal(EditorGlobal, "EDITOR");
+
+  const local = useLocal({
+    rightClick: {
+      event: null as any,
+      node: null as null | NodeModel<NodeContent>,
+    },
+  });
 
   const onClick = useCallback(
     (node: NodeModel<NodeContent>) => {
@@ -68,6 +77,17 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[] }> = ({ tree }) => {
     >
       <DndProvider backend={MultiBackend} options={getBackendOptions()}>
         <div className="flex flex-col items-stretch bg-white right-0 left-0">
+          {local.rightClick.node && (
+            <ETreeRightClick
+              node={local.rightClick.node}
+              event={local.rightClick.event}
+              onClose={() => {
+                local.rightClick.event = null;
+                local.rightClick.node = null;
+                local.render();
+              }}
+            />
+          )}
           <TypedTree
             tree={tree}
             rootId={"root"}
@@ -88,7 +108,11 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[] }> = ({ tree }) => {
                   onClick={onClick}
                   isActive={p.item.active === node.data?.content.id}
                   isHover={p.item.hover === node.data?.content.id}
-                  isComponent={false}
+                  onRightClick={(node, event) => {
+                    local.rightClick.node = node;
+                    local.rightClick.event = event;
+                    local.render();
+                  }}
                 />
               );
             }}

@@ -4,6 +4,7 @@ import { NodeContent } from "../utils/flatten";
 import { ETreeItemIndent } from "./indent";
 import { ETreeItemName } from "./name";
 import { treeItemStyle } from "./style";
+import { IItem } from "../../../../../utils/types/item";
 
 export const ETreeItem: FC<{
   node: NodeModel<NodeContent>;
@@ -12,9 +13,12 @@ export const ETreeItem: FC<{
   onToggle: () => void;
   onClick: (node: NodeModel<NodeContent>) => void;
   onHover: (node: NodeModel<NodeContent>) => void;
+  onRightClick: (
+    node: NodeModel<NodeContent>,
+    event: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => void;
   isActive: boolean;
   isHover: boolean;
-  isComponent: boolean;
 }> = ({
   node,
   depth,
@@ -24,7 +28,7 @@ export const ETreeItem: FC<{
   onClick,
   isActive,
   isHover,
-  isComponent,
+  onRightClick,
 }) => {
   if (!node.data) return <></>;
 
@@ -36,19 +40,26 @@ export const ETreeItem: FC<{
     hasChilds = true;
   }
   let itemName = item.name;
+  const isComponent = !!(item as IItem).component?.id;
 
   return (
     <div
       className={treeItemStyle({ isActive, isHover, isComponent })}
       onClick={() => onClick(node)}
       onPointerOver={() => onHover(node)}
+      onContextMenu={(e) => onRightClick(node, e)}
     >
       <ETreeItemIndent
         depth={depth}
-        onToggle={onToggle}
+        onToggle={() => {
+          if (hasChilds) onToggle();
+          else onClick(node);
+        }}
         type={type}
         isOpen={isOpen}
         hasChilds={hasChilds}
+        isActive={isActive}
+        isComponent={isComponent}
       />
       <ETreeItemName item={item} name={itemName} />
     </div>

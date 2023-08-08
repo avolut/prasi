@@ -1,27 +1,26 @@
 import trim from "lodash.trim";
-import { syncronize } from "y-pojo";
 import * as Y from "yjs";
-import { CEGlobal } from "../../../../base/global/content-editor";
-import { component } from "../../../page/component";
-import { fillID } from "../../../page/tools/fill-id";
-import { IItem, MItem } from "../../../types/item";
-import { FNCompDef } from "../../../types/meta-fn";
-import { FBuild } from "../script/monaco/monaco-element";
+import { IItem, MItem } from "../../../../../../utils/types/item";
+import { FNCompDef } from "../../../../../../utils/types/meta-fn";
+import { PG } from "../../../../logic/global";
+import { FBuild } from "../../../script/monaco/monaco-element";
+import { fillID } from "../../../../tools/fill-id";
+import { syncronize } from "y-pojo";
 
 export const detachComp = async (
-  ceid: string,
-  c: typeof CEGlobal,
+  p: PG,
+  id: string,
   item: MItem,
   build: FBuild
 ) => {
-  const id = item.get("id");
   if (id) {
     const js_original = trim(
-      (c.instances[id].adv?.js || `<div {...props}>{children}</div>`).trim(),
+      (p.pageComp[id].adv?.js || `<div {...props}>{children}</div>`).trim(),
       ";"
     );
+
     const pass: Record<string, string> = {};
-    const doc = component.docs[item.get("component")?.get("id") || ""];
+    const doc = p.comps.doc[item.get("component")?.get("id") || ""];
     let newitem = null as unknown as IItem;
     const propChild: Record<string, MItem> = {};
     if (doc) {
@@ -65,24 +64,7 @@ export const detachComp = async (
     newitem.id = id;
     delete newitem.component;
 
-    c.doc.transact(() => {
-      const ids = [];
-      const walk = (s: Set<string>) => {
-        s.forEach((e) => {
-          ids.push(e);
-          if (c.scope.tree[e]) {
-            walk(c.scope.tree[e].childs);
-          }
-        });
-      };
-      ids.push(id);
-      walk(c.scope.tree[id].childs);
-      for (const id of ids) {
-        delete c.scope.value[id];
-        delete c.scope.tree[id];
-        delete c.instances[id];
-      }
-
+    p.mpage?.transact(() => {
       item.parent.forEach((e, idx) => {
         if (e === item) {
           const map = new Y.Map();
