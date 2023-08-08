@@ -37,32 +37,32 @@ export const cssFont = (
 
   return cx(
     font.color &&
-      css`
+      `
         color: ${font.color};
       `,
-    css`
-      word-break: ${font.whitespace === "whitespace-normal"
-        ? "break-word"
-        : "normal"};
+    `
+      word-break: ${
+        font.whitespace === "whitespace-normal" ? "break-word" : "normal"
+      };
     `,
     font.color &&
-      css`
+      `
         color: ${font.color};
       `,
     font.whitespace && font.whitespace,
-    css`
+    `
       text-align: ${font.align ? font.align : "left"};
     `,
     font.size &&
-      css`
+      `
         font-size: ${font.size}px;
       `,
     font.height &&
-      css`
+      `
         line-height: ${font.height === "auto" ? "normal" : `${font.height}%`};
       `,
     font.family &&
-      css`
+      `
         font-family: ${font.family};
       `
   );

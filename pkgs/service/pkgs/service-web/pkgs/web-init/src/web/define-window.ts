@@ -41,13 +41,21 @@ export const defineWindow = async (baseurl?: URL) => {
     const result: string[] = [];
 
     classNames
-      .filter((e) => !!e)
+      .filter((e) => {
+        if (e) {
+          if (typeof e === "string" && e.trim()) return true;
+          else return true;
+        }
+        return false;
+      })
       .forEach((e) => {
         if (Array.isArray(e)) {
           for (const f of e) {
-            result.push(f);
+            if (typeof f === "string" && f.trim()) {
+              result.push(f.trim());
+            }
           }
-        } else result.push(e);
+        } else result.push(e.trim());
       });
     return result.join(" ");
   };

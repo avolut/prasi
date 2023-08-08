@@ -102,23 +102,32 @@ export const PRender: FC<{
       }
     }
 
-    return (
-      <a
-        className={className}
-        href={href}
-        onClick={(e) => {
-          e.preventDefault();
-          if (href.startsWith("/")) {
-            navigate(href);
-          } else {
-            location.href = href;
-          }
-        }}
-      >
-        {_children}
-      </a>
-    );
+    const props = {
+      className: className,
+      href: href,
+      onClick: (e: any) => {
+        e.preventDefault();
+        if (href.startsWith("/")) {
+          navigate(href);
+        } else {
+          location.href = href;
+        }
+      },
+    };
+
+    if (item.type === "text" && _children) {
+      return <a {...props} dangerouslySetInnerHTML={{ __html: _children }} />;
+    }
+    return <a {...props}>{_children}</a>;
   }
+
+  if (item.type === "text" && _children)
+    return (
+      <div
+        className={className}
+        dangerouslySetInnerHTML={{ __html: _children }}
+      />
+    );
 
   return <div className={className}>{_children}</div>;
 };

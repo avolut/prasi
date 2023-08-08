@@ -72,6 +72,14 @@ export const ERender: FC<{
     }
   }
 
+  if (item.type === "text" && _children)
+    return (
+      <div
+        className={className}
+        dangerouslySetInnerHTML={{ __html: _children }}
+      />
+    );
+
   return <div className={className}>{_children}</div>;
 };
 

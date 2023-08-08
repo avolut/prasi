@@ -14,19 +14,19 @@ export const cssPadding = (
 
   return cx(
     padding.l !== undefined &&
-      css`
+      `
         padding-left: ${padding.l}px;
       `,
     padding.r !== undefined &&
-      css`
+      `
         padding-right: ${padding.r}px;
       `,
     padding.b !== undefined &&
-      css`
+      `
         padding-bottom: ${padding.b}px;
       `,
     padding.t !== undefined &&
-      css`
+      `
         padding-top: ${padding.t}px; 
       `
   );

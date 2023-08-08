@@ -17,24 +17,24 @@ export const cssBackground = (
   }
 
   return cx(
-    css`
+    `
       background-repeat: no-repeat;
     `,
     bg.color &&
-      css`
+      `
         background-color: ${bg.color};
       `,
     bg.url &&
       typeof siteApiUrl === "string" &&
-      css`
+      `
         background-image: url("${bgurl}");
       `,
     bg.size &&
-      css`
+      `
         background-size: ${bg.size};
       `,
     bg.pos &&
-      css`
+      `
         background-position: ${bg.pos};
       `
   );
