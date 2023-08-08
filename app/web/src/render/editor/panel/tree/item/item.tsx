@@ -5,6 +5,7 @@ import { ETreeItemIndent } from "./indent";
 import { ETreeItemName } from "./name";
 import { treeItemStyle } from "./style";
 import { IItem } from "../../../../../utils/types/item";
+import { useLocal } from "web-utils";
 
 export const ETreeItem: FC<{
   node: NodeModel<NodeContent>;
@@ -31,6 +32,7 @@ export const ETreeItem: FC<{
   onRightClick,
 }) => {
   if (!node.data) return <></>;
+  const local = useLocal({ renaming: false });
 
   const item = node.data.content;
   const type = item.type;
@@ -61,7 +63,16 @@ export const ETreeItem: FC<{
         isActive={isActive}
         isComponent={isComponent}
       />
-      <ETreeItemName item={item} name={itemName} />
+      <ETreeItemName
+        item={item}
+        name={itemName}
+        renaming={local.renaming}
+        isComponent={isComponent}
+        doneRenaming={() => {
+          local.renaming = false;
+          local.render();
+        }}
+      />
     </div>
   );
 };
