@@ -41,7 +41,17 @@ export const editorWS = async (p: PG) => {
 
     if (ws) {
       const retry = (e: any) => {
-        console.log("Reconnecting...");
+        if (p.wsRetry.disabled) return;
+
+        p.wsRetry.localIP = true;
+        if (p.wsRetry.fast) {
+          editorWS(p);
+        } else {
+          setTimeout(() => {
+            console.log("Reconnecting...");
+            editorWS(p);
+          }, 2000);
+        }
       };
       ws.addEventListener("error", retry);
       ws.addEventListener("close", retry);

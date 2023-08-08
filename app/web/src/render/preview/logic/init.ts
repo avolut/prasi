@@ -1,6 +1,7 @@
 import { createRouter } from "web-init";
 import { PG } from "./global";
 import importModule from "../../../compo/page/tools/dynamic-import";
+import { createAPI, createDB } from "../elements/script-exec";
 
 const w = window as unknown as {
   basepath: string;
@@ -39,7 +40,7 @@ export const initPreview = async (p: PG, domain: string) => {
 
     const site = await db.site.findFirst({
       where: { domain },
-      select: { id: true, config: true },
+      select: { id: true, config: true, js_compiled: true },
     });
 
     if (site) {
@@ -49,6 +50,7 @@ export const initPreview = async (p: PG, domain: string) => {
       );
 
       p.site.id = site.id;
+      p.site.js = site.js_compiled || "";
       p.site.api_url = ((site.config || {}) as any).api_url || "";
       const pages = await db.page.findMany({
         where: {
@@ -57,6 +59,24 @@ export const initPreview = async (p: PG, domain: string) => {
         },
         select: { id: true, url: true },
       });
+
+      const exec = (fn: string, scopes: any) => {
+        if (p) {
+          scopes["api"] = createAPI(p.site.api_url);
+          scopes["db"] = createDB(p.site.api_url);
+          const f = new Function(...Object.keys(scopes), fn);
+          const res = f(...Object.values(scopes));
+          return res;
+        }
+        return null;
+      };
+      const scope = {
+        types: {},
+        exports: w.exports,
+        load: importModule,
+        render: p.render,
+      };
+      exec(p.site.js, scope);
 
       if (pages.length > 0) {
         p.route = createRouter();

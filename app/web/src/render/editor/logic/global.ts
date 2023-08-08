@@ -1,25 +1,30 @@
 import { ReactElement } from "react";
-import { createRouter } from "web-init";
 import { CompDoc } from "../../../base/global/content-editor";
+import { FNCompDef } from "../../../compo/types/meta-fn";
 import { MPage } from "../../../utils/types/general";
 import { IItem } from "../../../utils/types/item";
-import { IRoot } from "../../../utils/types/root";
-import { FNAdv } from "../../../utils/types/meta-fn";
-import { FNCompDef } from "../../../compo/types/meta-fn";
 import { MetaItem } from "../../../utils/types/meta";
+import { IRoot } from "../../../utils/types/root";
 
 export const EditorGlobal = {
+  /** ui */
   mode: "" as "desktop" | "mobile",
   status: "init" as "init" | "loading" | "ready" | "not-found" | "error",
+  manager: { page: false, site: false },
+
+  /**  read-only */
+  session: { id: "", data: { user: { id: "", username: "" } } },
   site: {
     id: "",
     api_url: "",
     domain: "",
+    name: "",
+    js: "",
   },
-
-  /**  read-only */
   page: null as null | {
     id: string;
+    name: string;
+    url: string;
     content_tree: IRoot;
     js: string;
   },

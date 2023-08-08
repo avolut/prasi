@@ -6,11 +6,13 @@ import { EditorGlobal } from "./logic/global";
 import { initEditor } from "./logic/init";
 import { routeEditor } from "./logic/route";
 
-export const Editor: FC<{ site_id: string; page_id: string }> = ({
+export const Editor: FC<{ site_id: string; page_id: string; session: any }> = ({
+  session,
   site_id,
   page_id,
 }) => {
   const p = useGlobal(EditorGlobal, "EDITOR");
+  p.session = session;
 
   if (!p.mode) {
     p.mode = (localStorage.getItem("editor-mode") || "desktop") as any;

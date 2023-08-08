@@ -39,6 +39,8 @@ const loadPage = (p: PG, id: string) => {
       const dbpage = mpage.getMap("map").toJSON() as page;
       const page = {
         id: dbpage.id,
+        name: dbpage.name,
+        url: dbpage.url,
         content_tree: dbpage.content_tree as any,
         js: dbpage.js_compiled as any,
       };

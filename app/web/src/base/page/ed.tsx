@@ -12,18 +12,17 @@ export default page({
       notfound: false,
       init: false,
     });
+    const site_id = params.site_id === "_" ? "" : params.site_id;
+    const page_id = params.page_id === "_" ? "" : params.page_id;
 
     if (!local.init) {
-      local.init = true;
       api.session().then(async (e) => {
         if (!e) {
           navigate("/login");
           return;
         }
         local.session = e;
-        local.loading = false;
-        local.render();
-        if (params.site_id.length < 4) {
+        if (!site_id) {
           const res = await db.site.findFirst({
             where: {
               is_deleted: false,
@@ -38,32 +37,45 @@ export default page({
             },
           });
           if (res) {
-            navigate(`/ed/${res.id}`);
+            const page = await db.page.findFirst({
+              where: { id_site: res.id },
+              select: {
+                id: true,
+              },
+            });
+            if (page) {
+              navigate(`/ed/${res.id}/${page.id}`);
+            }
           } else {
             local.loading = false;
             local.render();
           }
-        } else if (params.page_id.length < 4) {
+        } else if (!page_id) {
           const res = await db.page.findFirst({
-            where: { id_site: params.site_id },
+            where: { id_site: site_id },
             select: {
               id: true,
             },
           });
-
           if (res) {
-            navigate(`/ed/${params.site_id}/${res.id}`);
+            navigate(`/ed/${site_id}/${res.id}`);
           } else {
             local.loading = false;
             local.notfound = true;
             local.render();
           }
+        } else {
+          local.init = true;
+          local.loading = false;
+          local.render();
         }
       });
     }
 
     if (local.loading) return <Loading />;
 
-    return <Editor site_id={params.site_id} page_id={params.page_id} />;
+    return (
+      <Editor session={local.session} site_id={site_id} page_id={page_id} />
+    );
   },
 });

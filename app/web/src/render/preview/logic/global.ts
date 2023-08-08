@@ -11,6 +11,7 @@ export const PreviewGlobal = {
   site: {
     id: "",
     api_url: "",
+    js: "",
   },
   mpage: null as null | MPage,
   mpageLoaded: null as null | ((mpage: MPage) => void),

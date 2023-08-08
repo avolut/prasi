@@ -5,13 +5,14 @@ import { EditorGlobal } from "../../../logic/global";
 
 export const ResponsiveToggle = () => {
   const c = useGlobal(EditorGlobal, "EDITOR");
-  const mode = responsiveMode();
+  const mode = c.mode;
   const activeModeClassName = "border-b-2 border-blue-500 bg-blue-50";
   return (
     <ToolbarBox
       items={[
         {
           onClick() {
+            c.mode = "mobile";
             localStorage.setItem("editor-mode", "mobile");
             c.render();
           },
@@ -35,6 +36,7 @@ export const ResponsiveToggle = () => {
         },
         {
           onClick() {
+            c.mode = "desktop";
             localStorage.setItem("editor-mode", "desktop");
             c.render();
           },
