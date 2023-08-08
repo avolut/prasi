@@ -1,7 +1,5 @@
 import { FC, ReactNode } from "react";
 import { useGlobal } from "web-utils";
-import { produceCSS } from "../../../compo/page/css/gen";
-import { responsiveVal } from "../../../compo/page/tools/responsive-val";
 import { IContent } from "../../../utils/types/general";
 import { IItem } from "../../../utils/types/item";
 import { FNAdv, FNLinkTag } from "../../../utils/types/meta-fn";
@@ -10,6 +8,8 @@ import { newPageComp } from "../logic/comp";
 import { PreviewGlobal } from "../logic/global";
 import { extractNavigate, preload } from "../logic/route";
 import { scriptExec } from "./script-exec";
+import { produceCSS } from "../../../utils/css/gen";
+import { responsiveVal } from "../../editor/tools/responsive-val";
 
 const navExtracted = new Set<string>();
 

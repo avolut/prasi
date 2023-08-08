@@ -1,9 +1,9 @@
-import { WS_MSG_GET_COMP } from "../../../compo/editor/ws/msg";
-import { fillID } from "../../../compo/page/tools/fill-id";
-import { PRASI_COMPONENT } from "../../../compo/renderer/base/renderer-types";
 import { IContent } from "../../../utils/types/general";
 import { IItem } from "../../../utils/types/item";
+import { PRASI_COMPONENT } from "../../../utils/types/render";
 import { IRoot } from "../../../utils/types/root";
+import { WS_MSG_GET_COMP } from "../../../utils/types/ws";
+import { fillID } from "../../editor/tools/fill-id";
 import { PG } from "./global";
 import { wsend } from "./ws";
 

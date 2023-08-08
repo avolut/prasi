@@ -1,7 +1,6 @@
-import { createRouter } from "web-init";
+import { createAPI, createDB } from "../elements/script-exec";
+import importModule from "../tools/dynamic-import";
 import { PG } from "./global";
-import importModule from "../../../compo/page/tools/dynamic-import";
-import { createAPI, createDB, scriptExec } from "../elements/script-exec";
 
 const w = window as unknown as {
   basepath: string;

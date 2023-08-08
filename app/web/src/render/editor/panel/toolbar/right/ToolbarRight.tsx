@@ -1,9 +1,9 @@
 import { useGlobal } from "web-utils";
-import { ToolbarBox } from "../../../../../compo/ui/box";
 import { Popover } from "../../../../../utils/ui/popover";
 import { EditorGlobal } from "../../../logic/global";
 import { ResponsiveToggle } from "./ResponsiveToggle";
 import { AutoHeightTextarea } from "../../../../../utils/ui/auto-textarea";
+import { ToolbarBox } from "../../../../../utils/ui/box";
 
 export const ToolbarRight = () => {
   const p = useGlobal(EditorGlobal, "EDITOR");

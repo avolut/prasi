@@ -1,6 +1,6 @@
 import { FC, ReactNode } from "react";
 import { useGlobal } from "web-utils";
-import { produceCSS } from "../../../compo/page/css/gen";
+import { produceCSS } from "../../../utils/css/gen";
 import { IContent } from "../../../utils/types/general";
 import { IItem } from "../../../utils/types/item";
 import { FNAdv } from "../../../utils/types/meta-fn";

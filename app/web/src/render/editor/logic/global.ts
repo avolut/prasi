@@ -1,10 +1,10 @@
 import { ReactElement } from "react";
 import { CompDoc } from "../../../base/global/content-editor";
-import { FNCompDef } from "../../../compo/types/meta-fn";
 import { MPage } from "../../../utils/types/general";
 import { IItem } from "../../../utils/types/item";
 import { MetaItem } from "../../../utils/types/meta";
 import { IRoot } from "../../../utils/types/root";
+import { FNCompDef } from "../../../utils/types/meta-fn";
 
 export const EditorGlobal = {
   /** ui */

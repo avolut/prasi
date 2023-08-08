@@ -5,14 +5,15 @@ import throttle from "lodash.throttle";
 import { compress, decompress } from "lz-string";
 import * as Y from "yjs";
 import { CompDoc } from "../../../base/global/content-editor";
-import { setPage } from "../../../compo/editor/ws/actions/set-page";
+import { MPage } from "../../../utils/types/general";
+import { IItem } from "../../../utils/types/item";
+import { PRASI_COMPONENT } from "../../../utils/types/render";
 import {
   WS_MSG,
   WS_MSG_DIFF_LOCAL,
+  WS_MSG_SET_PAGE,
   WS_MSG_SVDIFF_REMOTE,
-} from "../../../compo/editor/ws/msg";
-import { PRASI_COMPONENT } from "../../../compo/renderer/base/renderer-types";
-import { IItem } from "../../../utils/types/item";
+} from "../../../utils/types/ws";
 import { scanComponent } from "./comp";
 
 export const previewWS = async (p: PG) => {
@@ -243,4 +244,17 @@ export const wsend = async (local: PG, payload: string) => {
 
     ws.send(payload);
   }
+};
+
+const setPage = async (msg: WS_MSG_SET_PAGE) => {
+  const page = Uint8Array.from(
+    decompress(msg.changes)
+      .split(",")
+      .map((x) => parseInt(x, 10))
+  );
+
+  const doc = new Y.Doc();
+  Y.applyUpdate(doc as any, page, "remote");
+
+  return doc as unknown as MPage;
 };

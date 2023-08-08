@@ -1,9 +1,9 @@
 import { page } from "dbgen";
-import { WS_MSG_GET_PAGE } from "../../../compo/editor/ws/msg";
 import { loadComponent } from "./comp";
 import { PG } from "./global";
 import { previewWS, wsend } from "./ws";
-import importModule from "../../../compo/page/tools/dynamic-import";
+import importModule from "../../editor/tools/dynamic-import";
+import { WS_MSG_GET_PAGE } from "../../../utils/types/ws";
 
 export const pageNpmStatus: Record<string, "loaded" | "loading"> = {};
 

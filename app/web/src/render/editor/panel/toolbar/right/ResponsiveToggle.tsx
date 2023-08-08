@@ -1,5 +1,4 @@
 import { useGlobal } from "web-utils";
-import { responsiveMode } from "../../../../../compo/page/tools/responsive-mode";
 import { ToolbarBox } from "../../../../../utils/ui/box";
 import { EditorGlobal } from "../../../logic/global";
 
