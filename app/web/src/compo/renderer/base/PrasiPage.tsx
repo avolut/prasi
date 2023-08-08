@@ -147,10 +147,16 @@ export const PrasiPage = (props: {
   if (!page.active) return ui.notfound;
 
   return (
-    <div className="flex flex-col items-stretch flex-1 bg-white">
-      {page.active.content_tree?.childs.map((e) => (
-        <RSection key={e.id} item={e} />
-      ))}
-    </div>
+    <>
+      <div className="relative w-screen h-screen">
+        <div className="absolute top-0 left-0 w-full h-full ">
+          <div className="flex flex-col items-stretch flex-1 bg-white  w-full h-full">
+            {page.active.content_tree?.childs.map((e) => (
+              <RSection key={e.id} item={e} />
+            ))}
+          </div>
+        </div>
+      </div>
+    </>
   );
 };
