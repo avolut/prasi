@@ -16,7 +16,7 @@ type JsArg = {
 
 export const scriptExec = (arg: JsArg, api_url?: string) => {
   const adv = arg.item.adv;
-  if (adv && adv.jsBuilt) {
+  if (adv && adv.jsBuilt && arg.p.treeMeta[arg.item.id]) {
     const output = { jsx: null };
 
     let error = false;
@@ -42,17 +42,16 @@ const produceEvalArgs = (
 ) => {
   const { item, p, children, output, className, render } = arg;
 
-  if (typeof p.pageCMemo[item.id] === "undefined") {
-    p.pageCMemo[item.id] = {
-      local: createLocal({ item, render }),
-      passchild: createPassChild({ item }),
-      passprop: createPassProp(),
-    };
+  if (typeof p.treeMeta[item.id].local === "undefined") {
+    p.treeMeta[item.id].local = createLocal({ item, render });
+    p.treeMeta[item.id].passchild = createPassChild({ item });
+    p.treeMeta[item.id].passprop = createPassProp();
   }
-  const cmemo = p.pageCMemo[item.id];
-  const PassProp = cmemo.passprop;
-  const Local = cmemo.local;
-  const PassChild = cmemo.passchild;
+
+  const tm = p.treeMeta[item.id];
+  const PassProp = tm.passprop;
+  const Local = tm.local;
+  const PassChild = tm.passchild;
   const scopeProps = { ...window.exports, ...arg.item.nprops };
 
   const result: any = {
@@ -128,38 +127,26 @@ const thru = (prop: any, nprops: any) => {
   } else {
     child = prop.children;
   }
-  if (Array.isArray(child)) {
-    for (const c of child) {
-      if (isValidElement(c)) {
-        const cprops: any = c.props;
-        if (cprops.item) {
-          if (!cprops.item.nprops) cprops.item.nprops = {};
-          for (const [k, v] of Object.entries(nprops)) {
-            cprops.item.nprops[k] = v;
-          }
-        }
-      }
-    }
-  } else {
-    if (isValidElement(child)) {
-      const cprops: any = child.props;
-      if (cprops.item) {
+
+  const assign = (c: any) => {
+    if (isValidElement(c)) {
+      const cprops: any = c.props;
+      if (cprops && cprops.item) {
         if (!cprops.item.nprops) cprops.item.nprops = {};
         for (const [k, v] of Object.entries(nprops)) {
           cprops.item.nprops[k] = v;
         }
       } else if (cprops.children) {
-        for (const [ck, cv] of Object.entries(cprops.children)) {
-          const cprops = (cv as any).props;
-          if (cprops.item) {
-            if (!cprops.item.nprops) cprops.item.nprops = {};
-            for (const [k, v] of Object.entries(nprops)) {
-              cprops.item.nprops[k] = v;
-            }
-          }
-        }
+        thru(cprops, nprops);
       }
     }
+  };
+  if (Array.isArray(child)) {
+    for (const c of child) {
+      assign(c);
+    }
+  } else {
+    assign(child);
   }
 };
 

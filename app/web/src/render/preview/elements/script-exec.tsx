@@ -128,38 +128,26 @@ const thru = (prop: any, nprops: any) => {
   } else {
     child = prop.children;
   }
-  if (Array.isArray(child)) {
-    for (const c of child) {
-      if (isValidElement(c)) {
-        const cprops: any = c.props;
-        if (cprops.item) {
-          if (!cprops.item.nprops) cprops.item.nprops = {};
-          for (const [k, v] of Object.entries(nprops)) {
-            cprops.item.nprops[k] = v;
-          }
-        }
-      }
-    }
-  } else {
-    if (isValidElement(child)) {
-      const cprops: any = child.props;
-      if (cprops.item) {
+
+  const assign = (c: any) => {
+    if (isValidElement(c)) {
+      const cprops: any = c.props;
+      if (cprops && cprops.item) {
         if (!cprops.item.nprops) cprops.item.nprops = {};
         for (const [k, v] of Object.entries(nprops)) {
           cprops.item.nprops[k] = v;
         }
       } else if (cprops.children) {
-        for (const [ck, cv] of Object.entries(cprops.children)) {
-          const cprops = (cv as any).props;
-          if (cprops.item) {
-            if (!cprops.item.nprops) cprops.item.nprops = {};
-            for (const [k, v] of Object.entries(nprops)) {
-              cprops.item.nprops[k] = v;
-            }
-          }
-        }
+        thru(cprops, nprops);
       }
     }
+  };
+  if (Array.isArray(child)) {
+    for (const c of child) {
+      assign(c);
+    }
+  } else {
+    assign(child);
   }
 };
 

@@ -1,6 +1,6 @@
 import { ReactElement } from "react";
 import { CompDoc } from "../../../base/global/content-editor";
-import { MPage } from "../../../utils/types/general";
+import { MContent, MPage } from "../../../utils/types/general";
 import { IItem } from "../../../utils/types/item";
 import { MetaItem } from "../../../utils/types/meta";
 import { IRoot } from "../../../utils/types/root";
@@ -33,7 +33,10 @@ export const EditorGlobal = {
     content_tree: IItem;
     props: Record<string, FNCompDef>;
   },
-  pageCMemo: {} as Record<string, Exclude<MetaItem["cmemo"], undefined>>,
+  treeMeta: {} as Record<
+    string,
+    { item: MContent } & Partial<Exclude<MetaItem["cmemo"], undefined>>
+  >,
   pageComp: {} as Record<string, IItem>,
 
   /** write-only */
