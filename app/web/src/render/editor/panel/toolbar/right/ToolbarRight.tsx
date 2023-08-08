@@ -14,7 +14,7 @@ export const ToolbarRight = () => {
           {
             content: "Preview",
             onClick: () => {
-              window.open(`/site/${p.site.id}?page_id=${p.page?.id}`, "_blank");
+              window.open(`/preview/${p.site.id}/${p.page?.id}`, "_blank");
             },
           },
           {
@@ -32,7 +32,7 @@ export const ToolbarRight = () => {
                     onFocus={(e) => {
                       e.currentTarget.select();
                     }}
-                    value={`${location.protocol}//${location.host}/site/${p.site.domain}?page_id=${p.page?.id}`}
+                    value={`${location.protocol}//${location.host}/preview/${p.site.id}/${p.page?.id}`}
                   />
                 }
               >

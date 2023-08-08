@@ -30,9 +30,12 @@ export const Preview: FC<{ domain: string; pathname: string }> = ({
       </div>
     );
     initPreview(p, domain);
+    return p.ui.loading;
   }
 
-  routePreview(p, pathname);
+  if (p.site.id) {
+    routePreview(p, pathname);
+  }
 
   if (p.status !== "ready") {
     if (p.status === "not-found") {

@@ -30,6 +30,8 @@ export const Editor: FC<{ site_id: string; page_id: string; session: any }> = ({
       </div>
     );
     initEditor(p, site_id);
+
+    return p.ui.loading;
   }
 
   routeEditor(p, page_id);

@@ -2,6 +2,7 @@ import { createRouter } from "web-init";
 import { createAPI, createDB } from "../elements/script-exec";
 import { PG } from "./global";
 import importModule from "../../editor/tools/dynamic-import";
+import { validate } from "uuid";
 
 const w = window as unknown as {
   basepath: string;
@@ -39,7 +40,7 @@ export const initPreview = async (p: PG, domain: string) => {
     };
 
     const site = await db.site.findFirst({
-      where: { domain },
+      where: validate(domain) ? { id: domain } : { domain },
       select: { id: true, config: true, js_compiled: true },
     });
 
@@ -78,8 +79,8 @@ export const initPreview = async (p: PG, domain: string) => {
       };
       exec(p.site.js, scope);
 
+      p.route = createRouter();
       if (pages.length > 0) {
-        p.route = createRouter();
         for (const page of pages) {
           p.route.insert(page.url, page);
         }

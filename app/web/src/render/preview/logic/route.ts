@@ -4,20 +4,29 @@ import { PG } from "./global";
 import { previewWS, wsend } from "./ws";
 import importModule from "../../editor/tools/dynamic-import";
 import { WS_MSG_GET_PAGE } from "../../../utils/types/ws";
+import { validate } from "uuid";
 
 export const pageNpmStatus: Record<string, "loaded" | "loading"> = {};
 
 export const routePreview = (p: PG, pathname: string) => {
   if (p.status !== "loading") {
-    const found = p.route.lookup(pathname);
-    if (!found) {
-      p.status = "not-found";
+    let page_id = "";
+    if (validate(pathname.substring(1))) {
+      page_id = pathname.substring(1);
     } else {
-      const id = found.id;
-      const page = p.pages[id];
+      const found = p.route.lookup(pathname);
+      if (!found) {
+        p.status = "not-found";
+      } else {
+        page_id = found.id;
+      }
+    }
+
+    if (page_id) {
+      const page = p.pages[page_id];
       if (!page) {
         p.status = "loading";
-        loadPage(p, id).then(() => {
+        loadPage(p, page_id).then(() => {
           p.status = "ready";
           p.render();
         });
@@ -26,7 +35,7 @@ export const routePreview = (p: PG, pathname: string) => {
         if (mpage) {
           p.status = "ready";
           if (mpage.get("id") !== p.page?.id) {
-            loadPage(p, id).then(() => {
+            loadPage(p, page_id).then(() => {
               p.render();
             });
           }
