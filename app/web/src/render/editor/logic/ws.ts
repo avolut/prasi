@@ -11,6 +11,7 @@ import {
   WS_MSG_DIFF_LOCAL,
   WS_MSG_SET_PAGE,
   WS_MSG_SVDIFF_REMOTE,
+  WS_MSG_SV_LOCAL,
 } from "../../../utils/types/ws";
 import { PRASI_COMPONENT } from "../../../utils/types/render";
 import { MPage } from "../../../utils/types/general";
@@ -67,7 +68,33 @@ export const editorWS = async (p: PG) => {
             p.mpage.on(
               "update",
               throttle((e, origin) => {
-                //TODO: write page on update
+                const doc = p.mpage;
+                if (doc) {
+                  if (!origin && origin !== "updated_at") {
+                    const id = doc.getMap("map").get("id");
+                    if (id) {
+                      doc.transact(() => {
+                        doc
+                          .getMap("map")
+                          .set("updated_at", new Date().toISOString());
+                      }, "updated_at");
+
+                      const sendmsg: WS_MSG_SV_LOCAL = {
+                        type: "sv_local",
+                        mode: "page",
+                        id,
+                        sv_local: compress(
+                          Y.encodeStateVector(doc as any).toString()
+                        ),
+                      };
+                      wsend(p, JSON.stringify(sendmsg));
+                    }
+                  }
+                  if (origin === "updated_at") {
+                    p.page = doc?.getMap("map").toJSON() as any;
+                    p.render();
+                  }
+                }
               })
             );
             if (p.mpageLoaded) {
