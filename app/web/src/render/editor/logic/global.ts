@@ -20,6 +20,9 @@ export const EditorGlobal = {
     active: "",
     hover: "",
     multiple: [] as string[],
+    copy: {
+      mode: "single" as "single" | "multiple",
+    },
   },
 
   /**  read-only */

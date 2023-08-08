@@ -76,6 +76,7 @@ export const CEGlobal = {
     value: {},
     evargs: {},
     types: {},
+    effectRun: {}
   } as SingleScope,
   global: {
     scss: "",
