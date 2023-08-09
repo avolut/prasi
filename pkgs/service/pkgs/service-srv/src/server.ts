@@ -35,7 +35,7 @@ export const server = async ({
     }
   }
 
-  server.any("/",  (_, res) => {
+  server.any("/", (_, res) => {
     res.send("OK");
   });
   server.any("/_api_frm", apiFrm);
@@ -154,7 +154,11 @@ export const server = async ({
                 }
               }
 
-              result = await im(...passedParams);
+              try {
+                result = await im(...passedParams);
+              } catch (e) {
+                console.error(`APIError ${url}:\n ${e}`);
+              }
             }
 
             if (!res.headersSent && !res.aborted) {
