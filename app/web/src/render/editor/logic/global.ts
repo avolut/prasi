@@ -50,13 +50,13 @@ export const EditorGlobal = {
     content_tree: IItem;
     props: Record<string, FNCompDef>;
   },
+
+  /** write-only */
+  pageComp: {} as Record<string, IItem>,
   treeMeta: {} as Record<
     string,
     { item: MContent } & Partial<Exclude<MetaItem["cmemo"], undefined>>
   >,
-  pageComp: {} as Record<string, IItem>,
-
-  /** write-only */
   mpage: null as null | MPage,
   mpageLoaded: null as null | ((mpage: MPage) => void),
   comps: {
