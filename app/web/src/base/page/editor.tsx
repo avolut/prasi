@@ -121,7 +121,10 @@ export default page({
       );
     }
 
-    if (!validate(params.page) || !validate(params.site)) {
+    if (
+      (params.page !== "_" && !validate(params.page)) ||
+      !validate(params.site)
+    ) {
       return (
         <div className="flex-1 flex justify-center items-center">
           Invalid Page ID
