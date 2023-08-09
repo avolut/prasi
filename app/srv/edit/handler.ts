@@ -21,25 +21,25 @@ export const collabEditHandler = (ws: Websocket) => {
     clientID: createId(),
   });
 
-  ws.on("message", (raw: string) => {
+  ws.on("message", async (raw: string) => {
     try {
       const msg = JSON.parse(raw) as WS_MSG;
 
       switch (msg.type) {
         case "get_page":
-          getPage(ws, msg);
+          await getPage(ws, msg);
           break;
         case "get_comp":
-          getComp(ws, msg);
+          await getComp(ws, msg);
           break;
         case "sv_local":
-          svLocal(ws, msg);
+          await svLocal(ws, msg);
           break;
         case "diff_local":
           diffLocal(ws, msg);
           break;
         case "svd_remote":
-          svdiffRemote(ws, msg);
+          await svdiffRemote(ws, msg);
           break;
         case "undo":
           undo(ws, msg);

@@ -8,6 +8,7 @@ import { w } from "../../compo/types/general";
 import { Loading } from "../../compo/ui/loading";
 import { SiteConfig } from "../../../../srv/edit/tools/load-site";
 import importModule from "../../compo/page/tools/dynamic-import";
+import { validate } from "uuid";
 
 export default page({
   url: "/editor/:site/:page",
@@ -113,6 +114,14 @@ export default page({
       return (
         <div className="flex-1 flex justify-center items-center">
           Site Not Found
+        </div>
+      );
+    }
+
+    if (!validate(params.page) || !validate(params.site)) {
+      return (
+        <div className="flex-1 flex justify-center items-center">
+          Invalid Page ID
         </div>
       );
     }
