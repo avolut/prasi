@@ -16,6 +16,10 @@ export const EditorGlobal = {
     comp: true,
     compCallback: (comp: IItem) => {},
   },
+  code: {
+    src: "",
+    type: "",
+  },
   item: {
     active: "",
     hover: "",

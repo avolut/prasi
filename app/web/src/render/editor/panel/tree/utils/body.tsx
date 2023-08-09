@@ -101,6 +101,7 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[] }> = ({ tree }) => {
               return (
                 <ETreeItem
                   node={node}
+                  mode={p.mode}
                   depth={depth}
                   isOpen={isOpen}
                   onToggle={onToggle}

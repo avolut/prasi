@@ -12,6 +12,7 @@ export const ETreeItem: FC<{
   node: NodeModel<NodeContent>;
   isOpen: boolean;
   depth: number;
+  mode: "mobile" | "desktop";
   onToggle: () => void;
   onClick: (node: NodeModel<NodeContent>) => void;
   onHover: (node: NodeModel<NodeContent>) => void;
@@ -31,6 +32,7 @@ export const ETreeItem: FC<{
   isActive,
   isHover,
   onRightClick,
+  mode,
 }) => {
   if (!node.data) return <></>;
   const local = useLocal({ renaming: false });
@@ -75,7 +77,17 @@ export const ETreeItem: FC<{
         }}
       />
 
-      {!local.renaming && <ETreeItemAction item={item} />}
+      {!local.renaming && (
+        <ETreeItemAction
+          isComponent={isComponent}
+          mode={mode}
+          item={item}
+          rename={() => {
+            local.renaming = true;
+            local.render();
+          }}
+        />
+      )}
     </div>
   );
 };
