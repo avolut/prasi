@@ -9,12 +9,15 @@ import { Loading } from "../../compo/ui/loading";
 import { SiteConfig } from "../../../../srv/edit/tools/load-site";
 import importModule from "../../compo/page/tools/dynamic-import";
 import { validate } from "uuid";
+import { navOverride } from "../../compo/editor/nav";
 
 export default page({
   url: "/editor/:site/:page",
   layout: "blank",
   component: ({}) => {
     const local = useLocal({ site: null as site | null, init: false });
+    navOverride();
+
     if (!local.init) {
       let site_id = "";
 

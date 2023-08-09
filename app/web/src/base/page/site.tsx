@@ -10,11 +10,13 @@ import { SiteConfig } from "../../compo/editor/ws/wsdoc";
 import { PRASI_PAGE } from "../../compo/renderer/base/renderer-types";
 import { PrasiRenderer } from "../../compo/renderer/prasi/prasi-renderer";
 import { MPage } from "../../compo/types/general";
+import { navOverride } from "../../compo/editor/nav";
 
 export default page({
   url: "/site/:name/**",
   component: () => {
     const local = useLocal(PageLocal);
+    navOverride();
 
     local.site = new PrasiRenderer({
       load: {
