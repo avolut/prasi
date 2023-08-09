@@ -10,6 +10,8 @@ export const loadCachedPage = async (site_id: string, page_id: string) => {
     site_cache = eg.cache[site_id];
   }
 
+  if (!page_id) return {};
+
   let cache = site_cache[page_id];
   if (
     !cache ||

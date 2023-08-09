@@ -1,18 +1,20 @@
-import { apiContext } from "service-srv";
 import { IContent } from "../../web/src/compo/types/general";
 export const _ = {
   url: "/comp-scan/:page_id",
   async api(page_id: string) {
-    const res = await db.page.findFirst({
-      where: {
-        id: page_id,
-      },
-      select: { content_tree: true },
-    });
     const comps = {};
 
-    if (res) {
-      await scanComponent(res.content_tree as any, comps);
+    if (page_id) {
+      const res = await db.page.findFirst({
+        where: {
+          id: page_id,
+        },
+        select: { content_tree: true },
+      });
+
+      if (res) {
+        await scanComponent(res.content_tree as any, comps);
+      }
     }
     return Object.values(comps);
   },
