@@ -1,7 +1,8 @@
+import { validate } from "uuid";
 import { Page } from "../../../web/src/compo/types/general";
 
 export const loadPage = async (page_id: string) => {
-  if (page_id) {
+  if (page_id && validate(page_id)) {
     let page = (await db.page.findFirst({
       where: { id: page_id },
       select: {

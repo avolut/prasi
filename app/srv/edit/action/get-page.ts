@@ -10,9 +10,11 @@ import {
 import { MPage } from "../../../web/src/compo/types/general";
 import { eg } from "../edit-global";
 import { loadPage } from "../tools/load-page";
+import { validate } from "uuid";
 
 export const getPage = async (ws: Websocket, msg: WS_MSG_GET_PAGE) => {
   const page_id = msg.page_id;
+  if (!validate(page_id)) return;
   if (!eg.edit.page[page_id]) {
     const rawPage = await loadPage(page_id);
 

@@ -22,30 +22,34 @@ export const collabEditHandler = (ws: Websocket) => {
   });
 
   ws.on("message", (raw: string) => {
-    const msg = JSON.parse(raw) as WS_MSG;
+    try {
+      const msg = JSON.parse(raw) as WS_MSG;
 
-    switch (msg.type) {
-      case "get_page":
-        getPage(ws, msg);
-        break;
-      case "get_comp":
-        getComp(ws, msg);
-        break;
-      case "sv_local":
-        svLocal(ws, msg);
-        break;
-      case "diff_local":
-        diffLocal(ws, msg);
-        break;
-      case "svd_remote":
-        svdiffRemote(ws, msg);
-        break;
-      case "undo":
-        undo(ws, msg);
-        break;
-      case "redo":
-        redo(ws, msg);
-        break;
+      switch (msg.type) {
+        case "get_page":
+          getPage(ws, msg);
+          break;
+        case "get_comp":
+          getComp(ws, msg);
+          break;
+        case "sv_local":
+          svLocal(ws, msg);
+          break;
+        case "diff_local":
+          diffLocal(ws, msg);
+          break;
+        case "svd_remote":
+          svdiffRemote(ws, msg);
+          break;
+        case "undo":
+          undo(ws, msg);
+          break;
+        case "redo":
+          redo(ws, msg);
+          break;
+      }
+    } catch (e) {
+      console.log(e);
     }
   });
 
