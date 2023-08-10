@@ -36,7 +36,7 @@ export const _ = {
     }
 
     if (element) {
-      if (element) {
+      if (element && page.id) {
         const json = element.toJSON() as IItem;
         syncronize(
           element as any,

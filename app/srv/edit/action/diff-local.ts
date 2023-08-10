@@ -32,14 +32,16 @@ export const diffLocal = (ws: Websocket, msg: any) => {
     if (msg.mode === "page") {
       clearTimeout(eg.edit.page[msg.id].saveTimeout);
       eg.edit.page[msg.id].saveTimeout = setTimeout(() => {
-        const page = eg.edit.page[msg.id].doc.getMap("map").toJSON();
-        db.page.update({
-          where: { id: msg.id },
-          data: {
-            ...page,
-            updated_at: new Date(),
-          },
-        });
+        if (msg.id) {
+          const page = eg.edit.page[msg.id].doc.getMap("map").toJSON();
+          db.page.update({
+            where: { id: msg.id },
+            data: {
+              ...page,
+              updated_at: new Date(),
+            },
+          });
+        }
       }, 1500);
     } else if (msg.mode === "comp") {
       eg.edit.comp[msg.id].saveTimeout = setTimeout(() => {

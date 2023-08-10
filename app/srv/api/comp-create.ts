@@ -145,7 +145,7 @@ export const _ = {
                 ?.toJSON(),
             },
           });
-        } else if (page) {
+        } else if (page && page.id) {
           await db.page.update({
             where: {
               id: page.id,

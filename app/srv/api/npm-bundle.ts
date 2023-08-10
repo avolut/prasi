@@ -8,6 +8,7 @@ import { dirAsync, writeAsync } from "fs-jetpack";
 import { stat } from "fs/promises";
 import { apiContext } from "service-srv";
 import { eg } from "../edit/edit-global";
+import { validate } from "uuid";
 
 globalThis.window = {
   react: {},
@@ -24,6 +25,7 @@ export const _ = {
   url: "/npm-bundle/:mode/:id",
   async api(mode: "site" | "page", id: string) {
     const { req, res } = apiContext(this);
+    if (!validate(id)) return "-";
 
     let items = [] as npm_page[] | npm_site[];
 
