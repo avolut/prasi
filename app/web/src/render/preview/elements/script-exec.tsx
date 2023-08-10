@@ -42,17 +42,18 @@ const produceEvalArgs = (
 ) => {
   const { item, p, children, output, className, render } = arg;
 
-  if (!item.cmemo) {
-    item.cmemo = {
+  if (!p.treeMeta[item.id]) {
+    p.treeMeta[item.id] = {
       local: createLocal({ item, render }),
       passchild: createPassChild({ item }),
       passprop: createPassProp(),
     };
   }
 
-  const PassProp = item.cmemo.passprop;
-  const Local = item.cmemo.local;
-  const PassChild = item.cmemo.passchild;
+  const meta = p.treeMeta[item.id];
+  const PassProp = meta.passprop;
+  const Local = meta.local;
+  const PassChild = meta.passchild;
   const scopeProps = { ...window.exports, ...arg.item.nprops };
 
   const result: any = {

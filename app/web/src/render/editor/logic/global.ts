@@ -65,7 +65,7 @@ export const EditorGlobal = {
   pageComp: {} as Record<string, IItem>,
   treeMeta: {} as Record<
     string,
-    { item: MContent } & Partial<Exclude<MetaItem["cmemo"], undefined>>
+    { item: MContent; passprop?: any; local?: any; passchild?: any }
   >,
   mpage: null as null | MPage,
   mpageLoaded: null as null | ((mpage: MPage) => void),

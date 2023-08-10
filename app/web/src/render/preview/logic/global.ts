@@ -29,6 +29,15 @@ export const PreviewGlobal = {
     }
   >,
   pageComp: {} as Record<string, IItem>,
+  treeMeta: {} as Record<
+    string,
+    {
+      passprop?: any;
+      local?: any;
+      passchild?: any;
+    }
+  >,
+  treeMetaInit: { local: () => {} },
   pagePreload: {} as Record<string, true>,
   comp: {
     pending: {} as Record<string, any>,

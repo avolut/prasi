@@ -27,11 +27,6 @@ export type MetaItem = {
   text?: string;
   nprops?: any;
   scope?: any;
-  cmemo?: {
-    passprop: any;
-    local: any;
-    passchild: any;
-  };
   hidden?: "only-editor" | "all" | false;
   isPropContent?: boolean;
 };

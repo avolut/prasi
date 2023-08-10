@@ -7,10 +7,15 @@ import { routePreview } from "./logic/route";
 import { PPage } from "./elements/p-page";
 import parseUA from "ua-parser-js";
 
-export const Preview: FC<{ domain: string; pathname: string }> = ({
-  domain,
-  pathname,
-}) => {
+export const Preview: FC<{
+  domain: string;
+  pathname: string;
+  override?: {
+    passprop?: any;
+    local?: any;
+    exports?: any;
+  };
+}> = ({ domain, pathname }) => {
   const p = useGlobal(PreviewGlobal, "PREVIEW");
 
   if (!p.mode) {
