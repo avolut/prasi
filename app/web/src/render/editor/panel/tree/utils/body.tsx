@@ -24,13 +24,13 @@ import { IItem } from "../../../../../utils/types/item";
 export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[] }> = ({ tree }) => {
   const TypedTree = DNDTree<NodeContent>;
   const p = useGlobal(EditorGlobal, "EDITOR");
-
   const local = useLocal({
     rightClick: {
       event: null as any,
       node: null as null | NodeModel<NodeContent>,
     },
   });
+  p._render.tree = local.render;
 
   const onClick = useCallback(
     (node: NodeModel<NodeContent>) => {
@@ -46,7 +46,8 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[] }> = ({ tree }) => {
     (node: NodeModel<NodeContent>) => {
       if (node.data) {
         p.item.hover = node.data.content.id;
-        p.render();
+        p._render.tree();
+        p._render.page();
       }
     },
     [tree]

@@ -28,6 +28,10 @@ export const EditorGlobal = {
       mode: "single" as "single" | "multiple",
     },
   },
+  _render: {
+    tree: () => {},
+    page: () => {},
+  },
 
   /**  read-only */
   session: { id: "", data: { user: { id: "", username: "" } } },
