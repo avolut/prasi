@@ -61,7 +61,17 @@ export const ETreeItemAction: FC<{
           <Adv item={item} p={p} />
         </>
       )}
-
+      {rootComponentID !== item.id && isComponent && (
+        <>
+          <Tooltip
+            content="Edit Component"
+            className="flex items-center border border-slate-500 bg-white rounded-sm text-[10px] px-[2px]"
+            onClick={() => {}}
+          >
+            <>Edit</>
+          </Tooltip>
+        </>
+      )}
       {canDelete && (
         <Tooltip
           content="Rename"

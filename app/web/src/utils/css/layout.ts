@@ -10,6 +10,7 @@ export const cssLayout = (
     dir: "col",
     align: "top-left",
     gap: 0,
+    wrap: "flex-wrap",
   });
 
   if (layout) {
@@ -19,7 +20,11 @@ export const cssLayout = (
       } else if (layout.dir === "col-reverse") {
         result.push("flex-col-reverse");
       }
-
+      if (!layout.wrap) {
+        result.push("flex-wrap");
+      } else {
+        result.push(layout.wrap);
+      }
       if (layout.gap === "auto") {
         if (layout.align === "left") result.push("items-start justify-between");
         if (layout.align === "center")

@@ -5,6 +5,7 @@ export type FNLayout = {
   dir: "row" | "col" | "row-reverse" | "col-reverse";
   align: FNAlign;
   gap: number | "auto";
+  wrap: "flex-wrap" | "flex-nowrap";
 };
 
 export type FMLayout = TypedMap<FNLayout>;

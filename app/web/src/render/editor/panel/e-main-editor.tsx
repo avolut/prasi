@@ -6,6 +6,7 @@ import { PageManager } from "./manager/page/PageManager";
 import { SiteManager } from "./manager/site/SiteManager";
 import { Toolbar } from "./toolbar/Toolbar";
 import { ETree } from "./tree/tree";
+import { ESide } from "./side/Side";
 
 export const EMainEditor = () => {
   const p = useGlobal(EditorGlobal, "EDITOR");
@@ -18,6 +19,7 @@ export const EMainEditor = () => {
       <div className={cx("editor-box flex flex-row flex-1")}>
         <ETree />
         <EPage />
+        <ESide />
       </div>
       {p.manager.site && <SiteManager />}
       {p.manager.page && <PageManager />}
