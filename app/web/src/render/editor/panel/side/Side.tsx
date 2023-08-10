@@ -19,6 +19,8 @@ import { PanelAdv } from "./panel/advanced";
 export const ESide = () => {
   const p = useGlobal(EditorGlobal, "EDITOR");
   const local = useLocal({ rootEditingProps: false, lastActive: null as any });
+  p.softRender.side = local.render;
+
   const update = useCallback(
     (key: string, value: any) => {
       if (p.item.active) {

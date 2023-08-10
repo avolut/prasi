@@ -1,6 +1,6 @@
 import { useGlobal } from "web-utils";
 import { EditorGlobal } from "../../logic/global";
-import { ETreeBody } from "./utils/body";
+import { ETreeBody } from "./body";
 import { NodeContent, flattenTree } from "./utils/flatten";
 import { NodeModel } from "@minoru/react-dnd-treeview";
 

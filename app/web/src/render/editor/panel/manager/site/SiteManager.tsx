@@ -32,23 +32,26 @@ export const SiteManager = () => {
     });
 
     local.orgs = {};
-    for (const org of orgs) {
-      local.orgs[org.org.id] = org.org;
-    }
-    const sites = await db.site.findMany({
-      where: {
-        id_org: { in: Object.keys(local.orgs) },
-        is_deleted: false,
-      },
-      select: {
-        id_org: true,
-        id: true,
-        name: true,
-        domain: true,
-      },
-    });
 
-    local.sites = sites;
+    if (orgs) {
+      for (const org of orgs) {
+        local.orgs[org.org.id] = org.org;
+      }
+      const sites = await db.site.findMany({
+        where: {
+          id_org: { in: Object.keys(local.orgs) },
+          is_deleted: false,
+        },
+        select: {
+          id_org: true,
+          id: true,
+          name: true,
+          domain: true,
+        },
+      });
+      local.sites = sites;
+    }
+
     local.loading = false;
     local.render();
   };

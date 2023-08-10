@@ -84,14 +84,9 @@ const deepClone = (object: any): any => {
   for (var key in object) {
     if (typeof object[key] === "object") {
       newObject[key] = deepClone(object[key]);
-    } else if (typeof object[key] === "function") {
-      newObject[key] = cloneFunction(object[key], object);
     } else {
       newObject[key] = object[key];
     }
   }
   return newObject as any;
 };
-function cloneFunction(fn: any, bind: any) {
-  return fn.bind(bind);
-}

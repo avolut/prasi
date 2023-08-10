@@ -7,10 +7,10 @@ import {
 } from "@minoru/react-dnd-treeview";
 import { FC, useCallback } from "react";
 import { useGlobal, useLocal } from "web-utils";
-import { EditorGlobal } from "../../../logic/global";
-import { ETreeItem } from "../item/item";
-import { ETreeRightClick } from "../item/right-click";
-import { NodeContent } from "./flatten";
+import { EditorGlobal } from "../../logic/global";
+import { ETreeItem } from "./item/item";
+import { ETreeRightClick } from "./item/right-click";
+import { NodeContent } from "./utils/flatten";
 import {
   DragPreview,
   Placeholder,
@@ -18,7 +18,7 @@ import {
   onDragEnd,
   onDragStart,
   onDrop,
-} from "./tree-utils";
+} from "./utils/tree-utils";
 
 export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[] }> = ({ tree }) => {
   const TypedTree = DNDTree<NodeContent>;

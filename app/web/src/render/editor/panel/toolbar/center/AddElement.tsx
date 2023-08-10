@@ -3,14 +3,13 @@ import { FC } from "react";
 import { useGlobal } from "web-utils";
 import { syncronize } from "y-pojo";
 import * as Y from "yjs";
-import { EditorGlobal } from "../../../logic/global";
-import { ToolbarBox } from "../../../../../utils/ui/box";
-import { IText } from "../../../../../utils/types/text";
-import { ISection } from "../../../../../utils/types/section";
 import { MContent } from "../../../../../utils/types/general";
-import { fillID } from "../../../tools/fill-id";
-import { newMap } from "../../../tools/yjs-tools";
 import { IItem } from "../../../../../utils/types/item";
+import { ISection } from "../../../../../utils/types/section";
+import { IText } from "../../../../../utils/types/text";
+import { ToolbarBox } from "../../../../../utils/ui/box";
+import { EditorGlobal } from "../../../logic/global";
+import { fillID } from "../../../tools/fill-id";
 
 export const AddElement: FC<{ disableSection?: boolean }> = ({
   disableSection,

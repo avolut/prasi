@@ -351,14 +351,11 @@ export const PanelAutoLayout: FC<{
                       <div className="text-lg text-gray-700">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
-                          width="15"
-                          height="15"
-                          viewBox="0 0 24 24"
+                          width="19"
+                          height="19"
+                          viewBox="0 -960 960 960"
                         >
-                          <path
-                            fill="currentColor"
-                            d="M1 21v-7q0-.425.288-.713T2 13h4q.425 0 .713.288T7 14v7q0 .425-.288.713T6 22H2q-.425 0-.713-.288T1 21zm8 0v-7q0-.425.288-.713T10 13h4q.425 0 .713.288T15 14v7q0 .425-.288.713T14 22h-4q-.425 0-.713-.288T9 21zm8 0v-7q0-.425.288-.713T18 13h4q.425 0 .713.288T23 14v7q0 .425-.288.713T22 22h-4q-.425 0-.713-.288T17 21zm-6-1h2v-5h-2v5zM1 10V3q0-.425.288-.713T2 2h4q.425 0 .713.288T7 3v7q0 .425-.288.713T6 11H2q-.425 0-.713-.288T1 10zm8 0V3q0-.425.288-.713T10 2h4q.425 0 .713.288T15 3v7q0 .425-.288.713T14 11h-4q-.425 0-.713-.288T9 10zm8 0V3q0-.425.288-.713T18 2h4q.425 0 .713.288T23 3v7q0 .425-.288.713T22 11h-4q-.425 0-.713-.288T17 10zM3 9h2V4H3v5zm16 0h2V4h-2v5z"
-                          ></path>
+                          <path d="M92-132v-286h176v286H92zm300 0v-286h176v286H392zm300 0v-286h176v286H692zm-278-22h132v-242H414v242zM92-542v-286h176v286H92zm300 0v-286h176v286H392zm300 0v-286h176v286H692zm-578-22h132v-242H114v242zm610 0h122v-242H724v242z"></path>
                         </svg>
                       </div>
                     </Tooltip>
@@ -368,14 +365,11 @@ export const PanelAutoLayout: FC<{
                       <div className="text-lg text-gray-700">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
-                          width="15"
-                          height="15"
-                          viewBox="0 0 24 24"
+                          width="19"
+                          height="19"
+                          viewBox="0 -960 960 960"
                         >
-                          <path
-                            fill="currentColor"
-                            d="M1 16V8q0-.425.288-.713T2 7h4q.425 0 .713.288T7 8v8q0 .425-.288.713T6 17H2q-.425 0-.713-.288T1 16zm8 0V8q0-.425.288-.713T10 7h4q.425 0 .713.288T15 8v8q0 .425-.288.713T14 17h-4q-.425 0-.713-.288T9 16zm8 0V8q0-.425.288-.713T18 7h4q.425 0 .713.288T23 8v8q0 .425-.288.713T22 17h-4q-.425 0-.713-.288T17 16zM3 15h2V9H3v6zm16 0h2V9h-2v6z"
-                          ></path>
+                          <path d="M92-317v-326h176v326H92zm300 0v-326h176v326H392zm300 0v-326h176v326H692zm-578-22h132v-282H114v282zm610 0h122v-282H724v282z"></path>
                         </svg>
                       </div>
                     </Tooltip>

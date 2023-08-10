@@ -1,11 +1,21 @@
 import { useGlobal, useLocal } from "web-utils";
 import { EditorGlobal } from "../logic/global";
 import { ESection } from "./e-section";
+import { useEffect } from "react";
 
 export const EPage = () => {
   const p = useGlobal(EditorGlobal, "EDITOR");
   const local = useLocal({});
   p.softRender.page = local.render;
+  
+  useEffect(() => {
+    if (
+      p.item.active &&
+      localStorage.getItem("prasi-item-active-id") !== p.item.active
+    ) {
+      localStorage.setItem("prasi-item-active-id", p.item.active);
+    }
+  }, [p.item.active]);
 
   if (!p.page) return null;
   const mode = p.mode;
@@ -25,6 +35,7 @@ export const EPage = () => {
                 border-right: 1px solid #ccc;
                 width: 420px;
                 top: 0px;
+                overflow-x: hidden;
                 bottom: 0px;
               `
             : "inset-0",

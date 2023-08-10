@@ -7,6 +7,7 @@ import { SiteManager } from "./manager/site/SiteManager";
 import { Toolbar } from "./toolbar/Toolbar";
 import { ETree } from "./tree/tree";
 import { ESide } from "./side/Side";
+import { useEffect } from "react";
 
 export const EMainEditor = () => {
   const p = useGlobal(EditorGlobal, "EDITOR");
