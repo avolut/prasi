@@ -49,7 +49,10 @@ export const onDrop = (
   p: PG,
   tree: NodeModel<NodeContent>[],
   options: DropOptions<NodeContent>
-) => {};
+) => {
+  const { dragSource, dropTargetId, dropTarget } = options;
+  console.log({ p, tree, options, dragSource, dropTargetId, dropTarget });
+};
 
 export const canDrop = (p: PG, arg: DropOptions<NodeContent>) => {
   const { dragSource, dropTargetId, dropTarget } = arg;

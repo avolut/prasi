@@ -3,13 +3,13 @@ import { FC } from "react";
 import { useGlobal } from "web-utils";
 import { syncronize } from "y-pojo";
 import * as Y from "yjs";
-import { MContent } from "../../../../../utils/types/general";
-import { IItem } from "../../../../../utils/types/item";
-import { ISection } from "../../../../../utils/types/section";
-import { IText } from "../../../../../utils/types/text";
-import { ToolbarBox } from "../../../../../utils/ui/box";
 import { EditorGlobal } from "../../../logic/global";
+import { ToolbarBox } from "../../../../../utils/ui/box";
+import { IText } from "../../../../../utils/types/text";
+import { ISection } from "../../../../../utils/types/section";
+import { MContent } from "../../../../../utils/types/general";
 import { fillID } from "../../../tools/fill-id";
+import { IItem } from "../../../../../utils/types/item";
 
 export const AddElement: FC<{ disableSection?: boolean }> = ({
   disableSection,
@@ -33,7 +33,6 @@ export const AddElement: FC<{ disableSection?: boolean }> = ({
   return (
     <>
       <ToolbarBox
-        // label="ADD"
         label={
           <>
             <IconPlus />
@@ -54,6 +53,8 @@ export const AddElement: FC<{ disableSection?: boolean }> = ({
                   css: "",
                 },
               } as IText;
+              const item = p.item.active ? p.treeMeta[p.item.active] : null;
+              const mitem = item ? item.item : null;
               if (p.item.active && mitem) {
                 if (type === "item") {
                   const map = new Y.Map() as MContent;
@@ -79,6 +80,7 @@ export const AddElement: FC<{ disableSection?: boolean }> = ({
                         const item = active.toJSON();
                         p.item.active = item.id;
                         done = true;
+                        p.render();
                       }
                     }
                   });
@@ -123,6 +125,8 @@ export const AddElement: FC<{ disableSection?: boolean }> = ({
                   css: "",
                 },
               } as IItem;
+              const item = p.item.active ? p.treeMeta[p.item.active] : null;
+              const mitem = item ? item.item : null;
               if (p.item.active && mitem) {
                 if (type !== "text") {
                   const map = new Y.Map() as MContent;
@@ -134,6 +138,7 @@ export const AddElement: FC<{ disableSection?: boolean }> = ({
                     }
                     const item = map.toJSON();
                     p.item.active = item.id;
+                    p.render();
                   }
                 } else {
                   let done = false;
@@ -148,6 +153,7 @@ export const AddElement: FC<{ disableSection?: boolean }> = ({
                         const item = active.toJSON();
                         p.item.active = item.id;
                         done = true;
+                        p.render();
                       }
                     }
                   });
@@ -200,6 +206,8 @@ export const AddElement: FC<{ disableSection?: boolean }> = ({
                         childs.push([map]);
                         const mitem = map.toJSON();
                         p.item.active = mitem.id;
+                        console.log(p.item.active);
+                        p.render();
                       }
                     }
                   }
