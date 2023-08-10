@@ -1,8 +1,9 @@
-import { useGlobal } from "web-utils";
+import { useGlobal, useLocal } from "web-utils";
 import { EditorGlobal } from "../../logic/global";
 import { ETreeBody } from "./body";
 import { NodeContent, flattenTree } from "./utils/flatten";
 import { NodeModel } from "@minoru/react-dnd-treeview";
+import { Loading } from "../../../../utils/ui/loading";
 
 export const ETree = () => {
   const p = useGlobal(EditorGlobal, "EDITOR");
@@ -13,7 +14,6 @@ export const ETree = () => {
   } else if (p.mpage) {
     tree = flattenTree(p, p.mpage.getMap("map").get("content_tree"));
   }
-
   return (
     <div
       className={cx(

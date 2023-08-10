@@ -3,14 +3,15 @@ import {
   DndProvider,
   MultiBackend,
   NodeModel,
+  TreeMethods,
   getBackendOptions,
 } from "@minoru/react-dnd-treeview";
-import { FC, useCallback } from "react";
+import { FC, useCallback, useEffect } from "react";
 import { useGlobal, useLocal } from "web-utils";
 import { EditorGlobal } from "../../logic/global";
 import { ETreeItem } from "./item/item";
 import { ETreeRightClick } from "./item/right-click";
-import { NodeContent } from "./utils/flatten";
+import { NodeContent, flattenTree } from "./utils/flatten";
 import {
   DragPreview,
   Placeholder,
@@ -19,15 +20,16 @@ import {
   onDragStart,
   onDrop,
 } from "./utils/tree-utils";
-
 export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[] }> = ({ tree }) => {
   const TypedTree = DNDTree<NodeContent>;
   const p = useGlobal(EditorGlobal, "EDITOR");
+  // const
   const local = useLocal({
     rightClick: {
       event: null as any,
       node: null as null | NodeModel<NodeContent>,
     },
+    method: null as TreeMethods | null,
   });
   p.softRender.tree = local.render;
 
@@ -36,6 +38,7 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[] }> = ({ tree }) => {
       if (node.data) {
         p.item.active = node.data.content.id;
         p.softRender.all();
+        p.render();
       }
     },
     [tree]
@@ -50,7 +53,29 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[] }> = ({ tree }) => {
     },
     [tree]
   );
-
+  useEffect(() => {
+    p.softRender.all();
+    if (p.item.active) {
+      let m = p.treeMeta[p.item.active];
+      if (m.item) {
+        let mitem = m.item;
+        if (mitem.parent) {
+          let item = mitem.parent.parent as any;
+          const open = new Set<string>();
+          const walkParent = (item: any) => {
+            if (!item) return;
+            const id = item.get("id");
+            if (id !== "root") open.add(id);
+            if (item.parent && item.parent.parent) {
+              walkParent(item.parent.parent);
+            }
+          };
+          walkParent(item);
+          local.method?.open([...open]);
+        }
+      }
+    }
+  }, [p.item.active]);
   return (
     <div
       className={cx(
@@ -95,6 +120,9 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[] }> = ({ tree }) => {
               container: "flex flex-col",
               dropTarget: "drop-target",
               placeholder: "placeholder",
+            }}
+            ref={(el) => {
+              local.method = el;
             }}
             render={(node, { depth, isOpen, onToggle }) => {
               return (

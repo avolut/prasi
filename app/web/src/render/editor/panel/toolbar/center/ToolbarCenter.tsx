@@ -65,7 +65,7 @@ export const ToolbarCenter = () => {
           },
         ]}
       />
-      <AddElement />
+      <AddElement id={p.item.active} />
       <div className="w-[5px] h-1"></div>
 
       <ToolbarBox

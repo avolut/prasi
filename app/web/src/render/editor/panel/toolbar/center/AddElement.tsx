@@ -1,5 +1,5 @@
 import { createId } from "@paralleldrive/cuid2";
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import { useGlobal } from "web-utils";
 import { syncronize } from "y-pojo";
 import * as Y from "yjs";
@@ -10,26 +10,33 @@ import { ISection } from "../../../../../utils/types/section";
 import { MContent } from "../../../../../utils/types/general";
 import { fillID } from "../../../tools/fill-id";
 import { IItem } from "../../../../../utils/types/item";
+import { NodeModel } from "@minoru/react-dnd-treeview";
+import { NodeContent } from "../../tree/utils/flatten";
+import { flattenTree } from "../../tree/utils/flatten";
+import find from "lodash.find";
 
 export const AddElement: FC<{ disableSection?: boolean }> = ({
   disableSection,
 }) => {
   const p = useGlobal(EditorGlobal, "EDITOR");
-  //   console.log(p);
   let canAdd = true;
   if (!p.item.active) {
     canAdd = false;
   }
-
-  const item = p.item.active ? p.treeMeta[p.item.active] : null;
-
-  const mitem = item ? item.item : null;
+  let tree: NodeModel<NodeContent>[] = [];
+  const comp: any = p.comps.doc[p.comp?.id || ""];
+  if (comp) {
+    tree = flattenTree(p, comp.getMap("map").get("content_tree"));
+  } else if (p.mpage) {
+    tree = flattenTree(p, p.mpage.getMap("map").get("content_tree"));
+  }
+  const item = p.treeMeta[p.item.active];
+  let mitem = item ? item.item : null;
   const type = mitem?.get("type");
   if (p.item.active && mitem?.get("component")?.get("id")) {
     canAdd = false;
   }
   if (disableSection && type !== "text") canAdd = true;
-
   return (
     <>
       <ToolbarBox
@@ -202,7 +209,6 @@ export const AddElement: FC<{ disableSection?: boolean }> = ({
                         childs.push([map]);
                         const mitem = map.toJSON();
                         p.item.active = mitem.id;
-                        console.log(p.item.active);
                         p.render();
                       }
                     }
