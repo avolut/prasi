@@ -55,6 +55,7 @@ export const AddElement: FC<{ disableSection?: boolean }> = ({
               } as IText;
               const item = p.item.active ? p.treeMeta[p.item.active] : null;
               const mitem = item ? item.item : null;
+              const type = mitem?.get("type");
               if (p.item.active && mitem) {
                 if (type === "item") {
                   const map = new Y.Map() as MContent;
@@ -85,11 +86,6 @@ export const AddElement: FC<{ disableSection?: boolean }> = ({
                     }
                   });
                 }
-                //   setTimeout(() => {
-                //     if (ed.active?.get("type") === "text") {
-                //       c.editor.activeEl?.focus();
-                //     }
-                //   }, 100);
               }
             },
             disabled: !canAdd || type === "section",
