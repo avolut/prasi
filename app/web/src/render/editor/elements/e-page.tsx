@@ -5,7 +5,7 @@ import { ESection } from "./e-section";
 export const EPage = () => {
   const p = useGlobal(EditorGlobal, "EDITOR");
   const local = useLocal({});
-  p._render.page = local.render;
+  p.softRender.page = local.render;
 
   if (!p.page) return null;
   const mode = p.mode;

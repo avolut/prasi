@@ -28,7 +28,13 @@ export const reloadCE = async (
     p.scroll = scroll;
   }
 
-  ce.scope = { effect: {}, evargs: {}, tree: {}, types: {}, value: {} };
+  ce.scope = {
+    effectRun: {},
+    evargs: {},
+    tree: {},
+    types: {},
+    value: {},
+  };
   ce.editor.page.render();
   await importModule(
     `${serverurl}/npm/site/${wsdoc.site?.id}/index.js?` + Date.now()

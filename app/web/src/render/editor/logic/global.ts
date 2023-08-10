@@ -28,9 +28,15 @@ export const EditorGlobal = {
       mode: "single" as "single" | "multiple",
     },
   },
-  _render: {
+  softRender: {
     tree: () => {},
     page: () => {},
+    side: () => {},
+    all() {
+      this.tree();
+      this.page();
+      this.side();
+    },
   },
 
   /**  read-only */

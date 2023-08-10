@@ -40,7 +40,7 @@ export const useGlobal = <T extends object>(
   const { global, render } = ctx;
 
   if (!global[_id]) {
-    global[_id] = JSON.parse(JSON.stringify(defaultValue));
+    global[_id] = deepClone(defaultValue);
   }
   useEffect(() => {
     let res: any = null;
@@ -68,3 +68,30 @@ export const useGlobal = <T extends object>(
 
   return res as any;
 };
+const deepClone = (object: any): any => {
+  if (null == object || typeof object != "object") return object;
+  // Handle Date
+  if (object instanceof Date) {
+    var copy = new Date();
+    copy.setTime(object.getTime());
+    return copy;
+  }
+  if (object instanceof Array) {
+    return object.map((item) => deepClone(item));
+  }
+
+  var newObject: any = {};
+  for (var key in object) {
+    if (typeof object[key] === "object") {
+      newObject[key] = deepClone(object[key]);
+    } else if (typeof object[key] === "function") {
+      newObject[key] = cloneFunction(object[key], object);
+    } else {
+      newObject[key] = object[key];
+    }
+  }
+  return newObject as any;
+};
+function cloneFunction(fn: any, bind: any) {
+  return fn.bind(bind);
+}

@@ -8,6 +8,9 @@ import {
 import { FC, useCallback } from "react";
 import { useGlobal, useLocal } from "web-utils";
 import { EditorGlobal } from "../../../logic/global";
+import { ETreeItem } from "../item/item";
+import { ETreeRightClick } from "../item/right-click";
+import { NodeContent } from "./flatten";
 import {
   DragPreview,
   Placeholder,
@@ -16,10 +19,6 @@ import {
   onDragStart,
   onDrop,
 } from "./tree-utils";
-import { NodeContent } from "./flatten";
-import { ETreeItem } from "../item/item";
-import { ETreeRightClick } from "../item/right-click";
-import { IItem } from "../../../../../utils/types/item";
 
 export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[] }> = ({ tree }) => {
   const TypedTree = DNDTree<NodeContent>;
@@ -30,13 +29,13 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[] }> = ({ tree }) => {
       node: null as null | NodeModel<NodeContent>,
     },
   });
-  p._render.tree = local.render;
+  p.softRender.tree = local.render;
 
   const onClick = useCallback(
     (node: NodeModel<NodeContent>) => {
       if (node.data) {
         p.item.active = node.data.content.id;
-        p.render();
+        p.softRender.all();
       }
     },
     [tree]
@@ -46,8 +45,7 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[] }> = ({ tree }) => {
     (node: NodeModel<NodeContent>) => {
       if (node.data) {
         p.item.hover = node.data.content.id;
-        p._render.tree();
-        p._render.page();
+        p.softRender.all();
       }
     },
     [tree]
