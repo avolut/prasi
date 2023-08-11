@@ -1,8 +1,8 @@
-import { createRouter } from "web-init";
-import { createAPI, createDB } from "../elements/script-exec";
-import { PG } from "./global";
-import importModule from "../../editor/tools/dynamic-import";
 import { validate } from "uuid";
+import { createRouter } from "web-init";
+import { createAPI, createDB, initApi } from "../../../utils/script/api";
+import importModule from "../../editor/tools/dynamic-import";
+import { PG } from "./global";
 
 const w = window as unknown as {
   basepath: string;
@@ -53,6 +53,8 @@ export const initPreview = async (p: PG, domain: string) => {
       p.site.id = site.id;
       p.site.js = site.js_compiled || "";
       p.site.api_url = ((site.config || {}) as any).api_url || "";
+      await initApi(p.site.api_url);
+
       const pages = await db.page.findMany({
         where: {
           id_site: site.id,

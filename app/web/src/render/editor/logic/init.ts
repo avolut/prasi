@@ -1,4 +1,4 @@
-import { createAPI, createDB } from "../elements/script-exec";
+import { createAPI, createDB, initApi } from "../../../utils/script/api";
 import importModule from "../tools/dynamic-import";
 import { PG } from "./global";
 
@@ -41,6 +41,8 @@ export const initEditor = async (p: PG, site_id: string) => {
       p.site.name = site.name;
       p.site.domain = site.domain;
       p.site.api_url = ((site.config || {}) as any).api_url || "";
+
+      await initApi(p.site.api_url);
 
       const exec = (fn: string, scopes: any) => {
         if (p) {

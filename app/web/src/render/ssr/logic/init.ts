@@ -1,7 +1,7 @@
 import { ReactElement } from "react";
 import { renderToString } from "react-dom/server";
+import { createAPI, createDB, initApi } from "../../../utils/script/api";
 import importModule from "../../editor/tools/dynamic-import";
-import { createAPI, createDB } from "../elements/script-exec";
 import { PG } from "./global";
 
 const w = window as unknown as {
@@ -50,6 +50,8 @@ export const initSSR = async (p: PG) => {
       p.site.id = site.id;
       p.site.js = site.js_compiled || "";
       p.site.api_url = ((site.config || {}) as any).api_url || "";
+      await initApi(p.site.api_url);
+
       const exec = (fn: string, scopes: any) => {
         if (p) {
           scopes["api"] = createAPI(p.site.api_url);

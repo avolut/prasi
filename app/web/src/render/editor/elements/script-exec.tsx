@@ -5,6 +5,7 @@ import { IContent, w } from "../../../utils/types/general";
 import { PG } from "../logic/global";
 import { EItem } from "./e-item";
 import { EText } from "./e-text";
+import { createAPI, createDB } from "../../../utils/script/api";
 
 type JsArg = {
   p: PG;
@@ -178,15 +179,6 @@ const createLocal = (arg: { item: IContent; render: () => void }): LocalFC => {
 
     return child as ReactNode;
   };
-};
-
-export const createAPI = (url: string) => {
-  if (w.prasiApi && w.prasiApi[url]?.apiEntry) {
-    return (window as any).apiClient(w.prasiApi[url]?.apiEntry, url);
-  }
-};
-export const createDB = (url: string) => {
-  return (window as any).dbClient("db", url);
 };
 
 export type LocalEffects<T extends Record<string, any>> = {
