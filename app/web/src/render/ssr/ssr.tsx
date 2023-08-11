@@ -1,7 +1,7 @@
-import { type FC } from "react";
+import { ReactElement, type FC } from "react";
+import { renderToString } from "react-dom/server";
 import { defineWindow } from "web-init/src/web/define-window";
 import { GlobalContext } from "web-utils";
-import { Coba, renderSSR } from "./scope";
 import { w } from "./ssr-window";
 export { useGlobal, useLocal } from "web-utils";
 
@@ -33,7 +33,6 @@ const Root: FC<{
 w.ssrResult = new Promise<string>((resolve) => {
   const app = (
     <Root>
-      <Coba />
       <style>{w.extractCss()}</style>
     </Root>
   );
@@ -51,3 +50,7 @@ w.ssrResult = new Promise<string>((resolve) => {
   }
   resolve(result);
 });
+
+const renderSSR = (el: ReactElement) => {
+  return renderToString(el);
+};

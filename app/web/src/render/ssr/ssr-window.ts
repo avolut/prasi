@@ -7,6 +7,10 @@ export const w = window as unknown as {
   isSSR: true;
   ssrRender: ReactElement;
   ssrResult: Promise<string>;
+  ssrPrasi: {
+    site_id: string;
+    page_id: string;
+  };
   ssrConfig: {
     timeout: number;
     waitDone: false;

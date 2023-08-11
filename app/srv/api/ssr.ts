@@ -15,13 +15,17 @@ const ssr = {
 };
 
 export const _ = {
-  url: "/ssr/:domain/**",
-  async api(domain: string, options: { timeout?: number; waitDone?: boolean }) {
+  url: "/ssr/:site_id/:page_id",
+  async api(
+    site_id: string,
+    page_id: string,
+    options: { timeout?: number; waitDone?: boolean }
+  ) {
     const { req, res, mode } = apiContext(this);
 
     const pathname = `/${req.params._}`;
 
-    if (!ssr.vms[domain] || mode === "dev") {
+    if (!ssr.vms[site_id] || mode === "dev") {
       if (!ssr.script || mode === "dev") {
         const script = await readAsync(dir.path("srv/ssr/index.jsx"));
         if (script) {
@@ -29,14 +33,14 @@ export const _ = {
         }
       }
 
-      ssr.vms[domain] = new vm.Script(ssr.script);
+      ssr.vms[site_id] = new vm.Script(ssr.script);
     }
 
-    const v = ssr.vms[domain];
+    const v = ssr.vms[site_id];
     const dom = new JSDOM();
-    dom.window.prasi = {
-      pathname,
-      domain,
+    dom.window.ssrPrasi = {
+      site_id,
+      page_id,
     };
     dom.window.process = process;
     dom.window.React = React;
@@ -47,7 +51,7 @@ export const _ = {
     dom.window.TextDecoder = TextDecoder;
     const waitDone = get(options, "waitDone");
     dom.window.ssrConfig = {
-      timeout: get(options, "timeout", 1000),
+      timeout: get(options, "timeout", 0),
       waitDone: typeof waitDone === "undefined" ? true : waitDone,
     };
 

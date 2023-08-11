@@ -217,8 +217,8 @@ export const srvapi_op = {
 }
 export const ssr = {
   name: "ssr",
-  url: "/ssr/:domain/**",
+  url: "/ssr/:site_id/:page_id",
   path: "app/srv/api/ssr.ts",
-  args: ["domain","options"],
+  args: ["site_id","page_id","options"],
   handler: import("../../../srv/api/ssr")
 }
