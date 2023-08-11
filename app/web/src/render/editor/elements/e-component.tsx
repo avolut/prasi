@@ -50,12 +50,12 @@ export const EComponent: FC<{
 
   return (
     <ERender item={item}>
-      {(childs) =>
-        childs.map((e) => {
+      {(childs) => {
+        return childs.map((e) => {
           if (e.type === "item") return <EItem item={e} key={e.id} />;
           else return <EText item={e} key={e.id} />;
-        })
-      }
+        });
+      }}
     </ERender>
   );
 };

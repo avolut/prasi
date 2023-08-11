@@ -17,7 +17,8 @@ type JsArg = {
 
 export const scriptExec = (arg: JsArg, api_url?: string) => {
   const adv = arg.item.adv;
-  if (adv && adv.jsBuilt && arg.p.treeMeta[arg.item.id]) {
+
+  if (adv && adv.jsBuilt) {
     const output = { jsx: null };
 
     let error = false;
@@ -37,19 +38,26 @@ export const scriptExec = (arg: JsArg, api_url?: string) => {
   return null;
 };
 
+const tempMeta: any = {};
 const produceEvalArgs = (
   arg: JsArg & { output: { jsx: ReactNode } },
   api_url?: string
 ) => {
   const { item, p, children, output, className, render } = arg;
 
-  if (typeof p.treeMeta[item.id].local === "undefined") {
-    p.treeMeta[item.id].local = createLocal({ item, render });
-    p.treeMeta[item.id].passchild = createPassChild({ item });
-    p.treeMeta[item.id].passprop = createPassProp();
+  let meta = p.treeMeta;
+  if (!p.treeMeta[item.id]) {
+    tempMeta[item.id] = {} as any;
+    meta = tempMeta;
   }
 
-  const tm = p.treeMeta[item.id];
+  if (typeof meta[item.id].local === "undefined") {
+    meta[item.id].local = createLocal({ item, render });
+    meta[item.id].passchild = createPassChild({ item });
+    meta[item.id].passprop = createPassProp();
+  }
+
+  const tm = meta[item.id];
   const PassProp = tm.passprop;
   const Local = tm.local;
   const PassChild = tm.passchild;

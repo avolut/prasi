@@ -32,7 +32,7 @@ export const newPageComp = (p: PG, item: IItem) => {
       };
 
       return nitem as IItem;
-    }
+    } 
   }
 };
 
