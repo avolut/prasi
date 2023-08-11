@@ -402,7 +402,7 @@ export const PanelFont: FC<{
                         fill="none"
                         stroke="#000"
                         strokeLinecap="round"
-                        stroke-width="4"
+                        strokeWidth="4"
                       >
                         <path d="M8 10V38" />
                         <path d="M24 4V16" />

@@ -36,7 +36,7 @@ export const collabEditHandler = (ws: Websocket) => {
           await svLocal(ws, msg);
           break;
         case "diff_local":
-          diffLocal(ws, msg);
+          await diffLocal(ws, msg);
           break;
         case "svd_remote":
           await svdiffRemote(ws, msg);

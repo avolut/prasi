@@ -48,7 +48,7 @@ const PrasiLive: FC<{
   props?: any;
 }> = ({ NotFound, Loading, live, props }) => {
   if (typeof __SRV_URL__ === "undefined") {
-    w.__SRV_URL__ = "https://apilmtd.goperasi.id/";
+    w.__SRV_URL__ = "https://api.prasi.app/";
     w.siteApiUrl = __SRV_URL__;
     w.isEditor = false;
     defineWindow();
