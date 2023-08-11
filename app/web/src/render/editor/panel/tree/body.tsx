@@ -57,23 +57,24 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[] }> = ({ tree }) => {
     p.softRender.all();
     if (p.item.active) {
       let m = p.treeMeta[p.item.active];
-      if (m.item) {
-        let mitem = m.item;
-        if (mitem.parent) {
-          let item = mitem.parent.parent as any;
-          const open = new Set<string>();
-          const walkParent = (item: any) => {
-            if (!item) return;
-            const id = item.get("id");
-            if (id !== "root") open.add(id);
-            if (item.parent && item.parent.parent) {
-              walkParent(item.parent.parent);
-            }
-          };
-          walkParent(item);
-          local.method?.open([...open]);
+      if (m)
+        if (m.item) {
+          let mitem = m.item;
+          if (mitem.parent) {
+            let item = mitem.parent.parent as any;
+            const open = new Set<string>();
+            const walkParent = (item: any) => {
+              if (!item) return;
+              const id = item.get("id");
+              if (id !== "root") open.add(id);
+              if (item.parent && item.parent.parent) {
+                walkParent(item.parent.parent);
+              }
+            };
+            walkParent(item);
+            local.method?.open([...open]);
+          }
         }
-      }
     }
   }, [p.item.active]);
   return (
