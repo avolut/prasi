@@ -230,7 +230,7 @@ export const PanelDimension: FC<{
             "flex-1",
             css`
               width: 24px;
-              max-width: 24px;
+              max-width: 25px;
               border-left: 0px !important;
               padding: 0px !important;
               min-width: 0px !important;
@@ -415,7 +415,7 @@ export const PanelDimension: FC<{
             "flex-1",
             css`
               width: 24px;
-              max-width: 24px;
+              max-width: 25px;
               border-left: 0px !important;
               padding: 0px !important;
               min-width: 0px !important;
@@ -477,8 +477,9 @@ export const PanelDimension: FC<{
             className={cx(
               "flex-1",
               css`
-                width: 20px;
-                max-width: 20px;
+                width: 30px;
+                max-width: 30px;
+                min-width: 0px !important;
                 padding: 0px !important;
                 min-width: 0px !important;
               `

@@ -12,6 +12,8 @@ import { ISection } from "../../../../../utils/types/section";
 import { IText } from "../../../../../utils/types/text";
 import { Tooltip } from "../../../../../utils/ui/tooltip";
 import { responsiveVal } from "../../../tools/responsive-val";
+import { Popover } from "../../../../../utils/ui/popover";
+import { SideLabel } from "../ui/SideLabel";
 
 type AutoLayoutUpdate = {
   layout: FNLayout;
@@ -25,7 +27,7 @@ export const PanelAutoLayout: FC<{
     val: AutoLayoutUpdate[T]
   ) => void;
 }> = ({ value, update, mode }) => {
-  const local = useLocal({ lastGap: 0 });
+  const local = useLocal({ lastGap: 0, open: false });
 
   const layout = responsiveVal<FNLayout>(value, "layout", mode, {
     dir: "col",
@@ -38,67 +40,223 @@ export const PanelAutoLayout: FC<{
     <>
       <div className="flex items-stretch justify-between">
         <div className="flex flex-col items-stretch justify-around w-[125px] space-y-[5px]">
-          <BoxSep
+          <div
             className={cx(
-              "justify-between",
-              css`
-                padding: 0px;
-                & > button {
-                  min-width: 0px;
-                  flex: 1;
-                  padding: 2px 4px;
-                }
-              `
+              "flex flex-row space-x-1 items-center"
+              // css`
+              //   .fg:hover .other {
+              //     opacity: 1 !important;
+              //   }
+              // `
             )}
           >
-            <FieldBtnRadio
-              items={{
-                col: (
-                  <Tooltip content="Direction: Column">
-                    <div>
-                      <TapDown />
-                    </div>
-                  </Tooltip>
-                ),
-                "col-reverse": (
-                  <Tooltip content="Direction: Column Reverse">
-                    <div className="rotate-180">
-                      <TapDown />
-                    </div>
-                  </Tooltip>
-                ),
-                row: (
-                  <Tooltip content="Direction: Row">
-                    <div>
-                      <TapRight />
-                    </div>
-                  </Tooltip>
-                ),
-                "row-reverse": (
-                  <Tooltip content="Direction: Row Reverse">
-                    <div className="rotate-180">
-                      <TapRight />
-                    </div>
-                  </Tooltip>
-                ),
-              }}
-              value={layout.dir}
-              disabled={false}
-              update={(dir) => {
-                let align = layout.align;
-                if (layout.gap === "auto") {
-                  if (dir.startsWith("col") && align === "top") align = "left";
-                  if (dir.startsWith("col") && align === "bottom")
-                    align = "right";
-                  if (dir.startsWith("row") && align === "left") align = "top";
-                  if (dir.startsWith("row") && align === "right")
-                    align = "bottom";
-                }
+            <div
+              className={cx(
+                `flex flex-row space-x-1 border ${
+                  false
+                    ? "border-transparent hover:border-slate-300"
+                    : "border-slate-300"
+                } fg`,
+                css`
+                  padding-left: 1px;
+                `
+              )}
+            >
+              <BoxSep
+                className={cx(
+                  "justify-between  my-0.5",
+                  css`
+                    padding: 0px;
+                    & > button {
+                      min-width: 0px;
+                      flex: 1;
+                      padding: 2px 4px;
+                    }
+                  `
+                )}
+              >
+                <FieldBtnRadio
+                  items={{
+                    col: (
+                      <Tooltip content="Direction: Column">
+                        <div>
+                          <TapDown />
+                        </div>
+                      </Tooltip>
+                    ),
+                    row: (
+                      <Tooltip content="Direction: Row">
+                        <div>
+                          <TapRight />
+                        </div>
+                      </Tooltip>
+                    ),
+                    // wrap: (
+                    //   <Tooltip content="Wrap">
+                    //     <div>
+                    //       <Wrap />
+                    //     </div>
+                    //   </Tooltip>
+                    // ),
+                  }}
+                  value={layout.dir}
+                  disabled={false}
+                  update={(dir) => {
+                    let align = layout.align;
+                    if (layout.gap === "auto") {
+                      if (dir.startsWith("col") && align === "top")
+                        align = "left";
+                      if (dir.startsWith("col") && align === "bottom")
+                        align = "right";
+                      if (dir.startsWith("row") && align === "left")
+                        align = "top";
+                      if (dir.startsWith("row") && align === "right")
+                        align = "bottom";
+                    }
 
-                update("layout", { ...layout, align, dir });
-              }}
-            />
-          </BoxSep>
+                    update("layout", { ...layout, align, dir });
+                    local.render();
+                  }}
+                />
+              </BoxSep>
+              <Popover
+                open={local.open}
+                onOpenChange={(open) => {
+                  local.open = open;
+                  local.render();
+                }}
+                backdrop={false}
+                autoFocus={false}
+                popoverClassName="rounded-md p-2 text-sm bg-white shadow-2xl border border-slate-300"
+                content={
+                  <div className="flex flex-col">
+                    <p>Direction</p>
+                    <BoxSep
+                      className={cx(
+                        "justify-between",
+                        css`
+                          padding: 0px;
+                          & > button {
+                            min-width: 0px;
+                            flex: 1;
+                            padding: 2px 4px;
+                          }
+                        `
+                      )}
+                    >
+                      <FieldBtnRadio
+                        items={{
+                          col: (
+                            <Tooltip content="Direction: Column">
+                              <div>
+                                <TapDown />
+                              </div>
+                            </Tooltip>
+                          ),
+                          "col-reverse": (
+                            <Tooltip content="Direction: Column Reverse">
+                              <div className="rotate-180">
+                                <TapDown />
+                              </div>
+                            </Tooltip>
+                          ),
+                          row: (
+                            <Tooltip content="Direction: Row">
+                              <div>
+                                <TapRight />
+                              </div>
+                            </Tooltip>
+                          ),
+                          "row-reverse": (
+                            <Tooltip content="Direction: Row Reverse">
+                              <div className="rotate-180">
+                                <TapRight />
+                              </div>
+                            </Tooltip>
+                          ),
+                        }}
+                        value={layout.dir}
+                        disabled={false}
+                        update={(dir) => {
+                          let align = layout.align;
+                          if (layout.gap === "auto") {
+                            if (dir.startsWith("col") && align === "top")
+                              align = "left";
+                            if (dir.startsWith("col") && align === "bottom")
+                              align = "right";
+                            if (dir.startsWith("row") && align === "left")
+                              align = "top";
+                            if (dir.startsWith("row") && align === "right")
+                              align = "bottom";
+                          }
+
+                          update("layout", { ...layout, align, dir });
+                          local.render();
+                        }}
+                      />
+                    </BoxSep>
+                  </div>
+                }
+              >
+                <div
+                  onClick={() => {
+                    local.open = !local.open;
+                    local.render();
+                  }}
+                  className={`${
+                    false && "opacity-0"
+                  }	 h-full px-1 flex flew-row items-center justify-center bg-slate-300 other cursor-pointer`}
+                >
+                  <Down />
+                </div>
+              </Popover>
+            </div>
+            {/* <div className="p-0.5 flex flex-row"></div> */}
+            <Tooltip
+              content={
+                layout.wrap === "flex-wrap" ? "Disable Wrap" : "Active Wrap"
+              }
+            >
+              <Button
+                className={cx(
+                  "flex-1",
+                  css`
+                    width: 30px;
+                    min-width: 0px !important;
+                    margin-left: 5px !important;
+                    padding: 0px 5px !important;
+                    height: 30px !important;
+                  `,
+                  layout.wrap === "flex-wrap" &&
+                    css`
+                      background-color: #3c82f6;
+                      border-color: #7baeff;
+                    `
+                )}
+                onClick={() => {
+                  update("layout", {
+                    ...layout,
+                    wrap:
+                      layout.wrap === "flex-wrap" ? "flex-nowrap" : "flex-wrap",
+                  });
+                }}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fill={
+                      layout.wrap === "flex-wrap" ? `#ffffff` : "currentColor"
+                    }
+                    d="M3 4a1.5 1.5 0 00-1.5 1.5v2A1.5 1.5 0 003 9h2a1.5 1.5 0 001.5-1.5v-2A1.5 1.5 0 005 4H3zm-.5 1.5A.5.5 0 013 5h2a.5.5 0 01.5.5v2A.5.5 0 015 8H3a.5.5 0 01-.5-.5v-2zM3 10a1.5 1.5 0 00-1.5 1.5v2A1.5 1.5 0 003 15h2a1.5 1.5 0 001.5-1.5v-2A1.5 1.5 0 005 10H3zm-.5 1.5A.5.5 0 013 11h2a.5.5 0 01.5.5v2a.5.5 0 01-.5.5H3a.5.5 0 01-.5-.5v-2zm5-6A1.5 1.5 0 019 4h2a1.5 1.5 0 011.5 1.5v2A1.5 1.5 0 0111 9H9a1.5 1.5 0 01-1.5-1.5v-2zM9 5a.5.5 0 00-.5.5v2A.5.5 0 009 8h2a.5.5 0 00.5-.5v-2A.5.5 0 0011 5H9zm0 5a1.5 1.5 0 00-1.5 1.5v2A1.5 1.5 0 009 15h2a1.5 1.5 0 001.5-1.5v-2A1.5 1.5 0 0011 10H9zm-.5 1.5A.5.5 0 019 11h2a.5.5 0 01.5.5v2a.5.5 0 01-.5.5H9a.5.5 0 01-.5-.5v-2zm5-6A1.5 1.5 0 0115 4h2a1.5 1.5 0 011.5 1.5v2A1.5 1.5 0 0117 9h-2a1.5 1.5 0 01-1.5-1.5v-2zM15 5a.5.5 0 00-.5.5v2a.5.5 0 00.5.5h2a.5.5 0 00.5-.5v-2A.5.5 0 0017 5h-2zm0 5a1.5 1.5 0 00-1.5 1.5v2A1.5 1.5 0 0015 15h2a1.5 1.5 0 001.5-1.5v-2A1.5 1.5 0 0017 10h-2zm-.5 1.5a.5.5 0 01.5-.5h2a.5.5 0 01.5.5v2a.5.5 0 01-.5.5h-2a.5.5 0 01-.5-.5v-2z"
+                  ></path>
+                </svg>
+              </Button>
+            </Tooltip>
+          </div>
 
           <div className="flex items-stretch justify-between">
             <Tooltip content="Gap Size">
@@ -330,7 +488,7 @@ export const PanelAutoLayout: FC<{
             </Tooltip>
           </div>
 
-          <div className={cx("flex flex-row justify-between text-xs ")}>
+          {/* <div className={cx("flex flex-row justify-between text-xs ")}>
             <BoxSep
               className={cx(
                 "justify-between",
@@ -384,7 +542,7 @@ export const PanelAutoLayout: FC<{
                 }}
               />
             </BoxSep>
-          </div>
+          </div> */}
         </div>
         {layout.gap === "auto" ? (
           <LayoutSpaced
@@ -407,7 +565,33 @@ export const PanelAutoLayout: FC<{
     </>
   );
 };
-
+const Down = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="15"
+    height="15"
+    viewBox="0 0 48 48"
+  >
+    <path
+      fill="none"
+      stroke="#000"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="4"
+      d="M36 18L24 30 12 18"
+    ></path>
+  </svg>
+);
+const Wrap = () => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="15"
+    height="15"
+    viewBox="0 0 24 24"
+  >
+    <path d="M4 20V4h2v16H4zm14 0V4h2v16h-2zm-7.4-2.45L7.05 14l3.55-3.525 1.4 1.4L10.875 13H13q.825 0 1.413-.588T15 11q0-.825-.588-1.413T13 9H7V7h6q1.65 0 2.825 1.175T17 11q0 1.65-1.175 2.825T13 15h-2.125L12 16.125l-1.4 1.425z"></path>
+  </svg>
+);
 const TapDown = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"

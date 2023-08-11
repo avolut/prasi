@@ -129,7 +129,7 @@ export const FieldNumUnit: FC<{
 
   return (
     <>
-      <div className="field-num flex flex-row items-stretch justify-between space-x-1 bg-white border border-transparent btn-hover h-full">
+      <div className="field-num flex flex-row items-stretch justify-between bg-white border border-transparent btn-hover h-full">
         <div className="flex cursor-ew-resize" onPointerDown={onStart}>
           {icon && (
             <div

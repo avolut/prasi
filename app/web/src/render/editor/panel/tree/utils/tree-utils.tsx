@@ -7,8 +7,9 @@ import {
 import get from "lodash.get";
 import { FC } from "react";
 import { MContent } from "../../../../../utils/types/general";
-import { PG } from "../../../logic/global";
+import { EditorGlobal, PG } from "../../../logic/global";
 import { NodeContent } from "./flatten";
+import { useGlobal } from "web-utils";
 
 export const DEPTH_WIDTH = 8;
 
@@ -50,8 +51,48 @@ export const onDrop = (
   tree: NodeModel<NodeContent>[],
   options: DropOptions<NodeContent>
 ) => {
-  const { dragSource, dropTargetId, dropTarget } = options;
-  console.log({ p, tree, options, dragSource, dropTargetId, dropTarget });
+  const { dragSource, dropTargetId, dropTarget, relativeIndex } = options;
+  let listItem = p.item.multiple;
+  if (listItem.length) {
+    // Multiple drop targets
+  } else {
+    // Single drop targets
+    if (
+      dragSource?.data &&
+      (dropTarget?.data || dropTargetId === "root") &&
+      dropTarget
+    ) {
+      let from = p.treeMeta[dragSource.id];
+      let to = p.treeMeta[dropTarget.id];
+      if (from && to && p.mpage) {
+        const mitem = from.item;
+        const insert = mitem.clone();
+        mitem.parent.forEach((e, idx) => {
+          if (e === mitem) {
+            mitem.parent.delete(idx);
+          }
+        });
+        if (dropTargetId !== "root") {
+          const titem = to.item;
+          if (titem) {
+            const childs = titem.get("childs");
+            if (childs && childs.length - 1 >= (relativeIndex || 0)) {
+              childs?.insert(relativeIndex || 0, [insert]);
+            } else {
+              childs?.push([insert]);
+            }
+          }
+        } else {
+          const childs = p.mpage
+            .getMap("map")
+            .get("content_tree")
+            ?.get("childs");
+          childs?.insert(relativeIndex || 0, [insert]);
+        }
+        p.render();
+      }
+    }
+  }
 };
 
 export const canDrop = (p: PG, arg: DropOptions<NodeContent>) => {

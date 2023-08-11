@@ -53,14 +53,14 @@ export const PanelPadding: FC<{
     r: 0,
   });
 
-  useEffect(() => {
-    if (!local.all) {
-      if (padding.l !== padding.r || padding.b !== padding.t) {
-        local.all = true;
-        local.render();
-      }
-    }
-  }, [value]);
+  // useEffect(() => {
+  //   if (!local.all) {
+  //     if (padding.l !== padding.r || padding.b !== padding.t) {
+  //       local.all = true;
+  //       local.render();
+  //     }
+  //   }
+  // }, [value]);
 
   return (
     <div className="flex flex-col space-y-2">
@@ -71,19 +71,9 @@ export const PanelPadding: FC<{
             .field-num {
               height: 25px;
               border: 1px solid #d1d1d1;
+              width: 74px !important;
             }
-          `,
-          local.all
-            ? css`
-                .field-num {
-                  width: 43px !important;
-                }
-              `
-            : css`
-                .field-num {
-                  width: 66px !important;
-                }
-              `
+          `
         )}
       >
         {!local.all && (
@@ -94,7 +84,7 @@ export const PanelPadding: FC<{
                   positiveOnly
                   hideUnit
                   icon={
-                    <div className="w-[22px] h-[14px] flex items-center justify-center pr-2 border-r border-gray-300 mr-1">
+                    <div className="w-[22px] h-[14px] flex items-center justify-center  border-r border-gray-300 mr-1">
                       <svg
                         width={12}
                         height={12}
@@ -125,7 +115,7 @@ export const PanelPadding: FC<{
                   positiveOnly
                   hideUnit
                   icon={
-                    <div className="w-[22px] h-[14px] flex items-center justify-center pr-2 border-r border-gray-300 mr-1">
+                    <div className="w-[22px] h-[14px] flex items-center justify-center  border-r border-gray-300 mr-1">
                       <svg
                         width={12}
                         height={12}
@@ -156,23 +146,15 @@ export const PanelPadding: FC<{
         {local.all && (
           <>
             <Tooltip asChild content="Left Padding">
-              <div
-                className={cx(
-                  "bg-white flex items-stretch",
-                  css`
-                    input {
-                      width: 100% !important;
-                    }
-                    .field-num {
-                      width: 60px !important;
-                    }
-                  `
-                )}
-              >
+              <div>
                 <FieldNumUnit
                   positiveOnly
                   hideUnit
-                  icon={<ArrowLeft />}
+                  icon={
+                    <div className="w-[22px] h-[14px] flex items-center justify-center  border-r border-gray-300 mr-1">
+                      <ArrowLeft />
+                    </div>
+                  }
                   value={padding.l + "px"}
                   update={(val) => {
                     update("padding", {
@@ -185,23 +167,15 @@ export const PanelPadding: FC<{
             </Tooltip>
 
             <Tooltip asChild content="Right Padding">
-              <div
-                className={cx(
-                  "bg-white flex items-stretch",
-                  css`
-                    input {
-                      width: 100% !important;
-                    }
-                    .field-num {
-                      width: 60px !important;
-                    }
-                  `
-                )}
-              >
+              <div>
                 <FieldNumUnit
                   positiveOnly
                   hideUnit
-                  icon={<ArrowRight />}
+                  icon={
+                    <div className="w-[22px] h-[14px] flex items-center justify-center  border-r border-gray-300 mr-1">
+                      <ArrowRight />
+                    </div>
+                  }
                   value={padding.r + "px"}
                   update={(val) => {
                     update("padding", {
@@ -253,41 +227,23 @@ export const PanelPadding: FC<{
               .field-num {
                 height: 25px;
                 border: 1px solid #d1d1d1;
+                width: 74px !important;
               }
-            `,
-            local.all
-              ? css`
-                  .field-num {
-                    width: 43px !important;
-                  }
-                `
-              : css`
-                  .field-num {
-                    width: 66px !important;
-                  }
-                `
+            `
           )}
         >
           {local.all && (
             <>
               <Tooltip asChild content="Top Padding">
-                <div
-                  className={cx(
-                    "bg-white flex items-stretch",
-                    css`
-                      input {
-                        width: 100% !important;
-                      }
-                      .field-num {
-                        width: 60px !important;
-                      }
-                    `
-                  )}
-                >
+                <div>
                   <FieldNumUnit
                     positiveOnly
                     hideUnit
-                    icon={<ArrowUp />}
+                    icon={
+                      <div className="w-[22px] h-[14px] flex items-center justify-center  border-r border-gray-300 mr-1">
+                        <ArrowUp />
+                      </div>
+                    }
                     value={padding.t + "px"}
                     update={(val) => {
                       update("padding", {
@@ -299,23 +255,15 @@ export const PanelPadding: FC<{
                 </div>
               </Tooltip>
               <Tooltip asChild content="Bottom Padding">
-                <div
-                  className={cx(
-                    "bg-white flex items-stretch",
-                    css`
-                      input {
-                        width: 100% !important;
-                      }
-                      .field-num {
-                        width: 60px !important;
-                      }
-                    `
-                  )}
-                >
+                <div>
                   <FieldNumUnit
                     positiveOnly
                     hideUnit
-                    icon={<ArrowDown />}
+                    icon={
+                      <div className="w-[22px] h-[14px] flex items-center justify-center  border-r border-gray-300 mr-1">
+                        <ArrowDown />
+                      </div>
+                    }
                     value={padding.b + "px"}
                     update={(val) => {
                       update("padding", {
