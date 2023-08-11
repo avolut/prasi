@@ -1,3 +1,4 @@
+import { page, site } from "dbgen";
 import { ReactElement } from "react";
 
 export const w = window as unknown as {
@@ -8,8 +9,9 @@ export const w = window as unknown as {
   ssrRender: ReactElement;
   ssrResult: Promise<string>;
   ssrPrasi: {
-    site_id: string;
-    page_id: string;
+    site: site;
+    page: page;
+    mode: "mobile" | "desktop";
   };
   ssrConfig: {
     timeout: number;
@@ -17,7 +19,6 @@ export const w = window as unknown as {
   };
   extractCss: () => string;
   stream: any;
-  prasi: { domain: string; pathname: string };
   npm: {
     site?: string;
     page?: string;

@@ -2,7 +2,7 @@ import { ReactElement, type FC } from "react";
 import { renderToString } from "react-dom/server";
 import { defineWindow } from "web-init/src/web/define-window";
 import { GlobalContext } from "web-utils";
-import { w } from "./ssr-window";
+import { w } from "./logic/window";
 export { useGlobal, useLocal } from "web-utils";
 
 if (typeof __SRV_URL__ === "undefined") {

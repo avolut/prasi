@@ -19,11 +19,21 @@ export const _ = {
   async api(
     site_id: string,
     page_id: string,
-    options: { timeout?: number; waitDone?: boolean }
+    options: {
+      timeout?: number;
+      waitDone?: boolean;
+      mode?: "mobile" | "desktop";
+    }
   ) {
     const { req, res, mode } = apiContext(this);
 
-    const pathname = `/${req.params._}`;
+    if (!site_id && !page_id) {
+      return `NOT FOUND`;
+    }
+    const site = await db.site.findFirst({ where: { id: site_id } });
+    const page = await db.page.findFirst({ where: { id: page_id } });
+
+    if (!site && !page) return `NOT FOUND`;
 
     if (!ssr.vms[site_id] || mode === "dev") {
       if (!ssr.script || mode === "dev") {
@@ -39,8 +49,9 @@ export const _ = {
     const v = ssr.vms[site_id];
     const dom = new JSDOM();
     dom.window.ssrPrasi = {
-      site_id,
-      page_id,
+      site,
+      page,
+      mode: get(options, "mode", "desktop"),
     };
     dom.window.process = process;
     dom.window.React = React;

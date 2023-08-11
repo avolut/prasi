@@ -3,31 +3,13 @@ import { createRouter } from "web-init";
 import { CompDoc } from "../../../base/global/content-editor";
 import { MPage } from "../../../utils/types/general";
 import { IItem } from "../../../utils/types/item";
-import { IRoot } from "../../../utils/types/root";
+import { w } from "./window";
 
-export const PreviewGlobal = {
-  mode: "" as "desktop" | "mobile",
+export const SSRGlobal = {
+  mode: w.ssrPrasi.mode,
   status: "init" as "init" | "loading" | "ready" | "not-found" | "error",
-  site: {
-    id: "",
-    api_url: "",
-    js: "",
-  },
-  mpage: null as null | MPage,
-  mpageLoaded: null as null | ((mpage: MPage) => void),
-  page: null as null | {
-    id: string;
-    content_tree: IRoot;
-    js: string;
-  },
-  pages: {} as Record<
-    string,
-    {
-      id: string;
-      content_tree: IRoot;
-      js: string;
-    }
-  >,
+  site: w.ssrPrasi.site,
+  page: w.ssrPrasi.page,
   pageComp: {} as Record<string, IItem>,
   treeMeta: {} as Record<
     string,
@@ -37,17 +19,10 @@ export const PreviewGlobal = {
       passchild?: any;
     }
   >,
-  pagePreload: {} as Record<string, true>,
   comp: {
     pending: {} as Record<string, any>,
     doc: {} as Record<string, CompDoc>,
   },
-  route: createRouter<{
-    id: string;
-    url: string;
-  }>(),
-  ws: null as null | WebSocket,
-  wsRetry: { fast: false, localIP: false, disabled: false },
   ui: {
     loading: null as null | ReactElement,
     preload: null as null | ReactElement,
@@ -56,4 +31,4 @@ export const PreviewGlobal = {
   },
 };
 
-export type PG = typeof PreviewGlobal & { render: () => void };
+export type PG = typeof SSRGlobal & { render: () => void };
