@@ -18,51 +18,23 @@ export const cssBorder = (
     color: "transparent",
   });
   return cx(
-    `
-      border-left-width: ${
-        get(border, "stroke.l") ? get(border, "stroke.l") : 0
-      }px;
-    `,
-    `
-      border-right-width: ${
-        get(border, "stroke.r") ? get(border, "stroke.r") : 0
-      }px;
-    `,
-    `
-      border-bottom-width: ${
-        get(border, "stroke.b") ? get(border, "stroke.b") : 0
-      }px;
-    `,
-    `
-      border-top-width: ${
-        get(border, "stroke.t") ? get(border, "stroke.t") : 0
-      }px;
-    `,
-    `
-      border-color: ${border.color ? border.color : "transparent"};
-    `,
-    `
-      border-style: ${border.style ? border.style : "dashed"};
-    `,
-    `
-      border-top-left-radius: ${
-        get(border, "rounded.tl") ? get(border, "rounded.tl") : 0
-      }px;
-    `,
-    `
-      border-top-right-radius: ${
-        get(border, "rounded.tr") ? get(border, "rounded.tr") : 0
-      }px;
-    `,
-    `
-      border-bottom-left-radius: ${
-        get(border, "rounded.bl") ? get(border, "rounded.bl") : 0
-      }px;
-    `,
-    `
-      border-bottom-right-radius: ${
-        get(border, "rounded.br") ? get(border, "rounded.br") : 0
-      }px;
-    `
+    pick(border, "stroke.t", "border-left-width"),
+    pick(border, "stroke.r", "border-right-width"),
+    pick(border, "stroke.b", "border-bottom-width"),
+    pick(border, "stroke.t", "border-top-width"),
+    pick(border, "color", "border-color", "transparent"),
+    pick(border, "style", "border-style", "dashed"),
+    pick(border, "rounded.tl", "border-top-left-radius"),
+    pick(border, "rounded.tr", "border-top-right-radius"),
+    pick(border, "rounded.bl", "border-bottom-left-radius"),
+    pick(border, "rounded.br", "border-bottom-right-radius")
   );
+};
+
+const pick = (obj: any, key: string, attr: string, notpx?: string) => {
+  const val = get(obj, key);
+  if (notpx) {
+    if (val) return `${attr}: ${val};`;
+    else return `${attr}: ${notpx};`;
+  } else if (val) return `${attr}: ${val}px;`;
 };

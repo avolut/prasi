@@ -10,7 +10,7 @@ export const cssLayout = (
     dir: "col",
     align: "top-left",
     gap: 0,
-    wrap: "flex-wrap",
+    wrap: undefined,
   });
 
   if (layout) {
@@ -21,10 +21,11 @@ export const cssLayout = (
         result.push("flex-direction: column-reverse;");
       }
       if (!layout.wrap) {
-        result.push("flex: wrap;");
       } else {
         result.push(
-          layout.wrap === "flex-wrap" ? "flex: wrap;" : "flex: nowrap;"
+          layout.wrap === "flex-wrap"
+            ? "flex-wrap: wrap;"
+            : "flex-wrap: nowrap;"
         );
       }
       if (layout.gap === "auto") {
