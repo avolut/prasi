@@ -60,28 +60,3 @@ const loadPage = (p: PG, id: string) => {
     );
   });
 };
-
-export const extractNavigate = (str: string) => {
-  let i = 0;
-  const nstr = "navigate(";
-  const founds: string[] = [];
-  let lasti = 0;
-  while (true) {
-    const start = str.indexOf(nstr, i);
-    lasti = i;
-    if (start >= 0) {
-      const char = str[start + nstr.length];
-      if (char === '"' || char === "'") {
-        const end = str.indexOf(`${char})`, start + nstr.length + 1);
-        const text = str.substring(start + nstr.length + 1, end);
-        i = end + 3;
-        founds.push(text);
-      }
-    }
-
-    if (lasti === i) {
-      break;
-    }
-  }
-  return founds;
-};

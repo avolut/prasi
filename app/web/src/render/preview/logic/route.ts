@@ -142,7 +142,7 @@ export const extractNavigate = (str: string) => {
     lasti = i;
     if (start >= 0) {
       const char = str[start + nstr.length];
-      if (char === '"' || char === "'") {
+      if (char === '"' || char === "'" || char === "`") {
         const end = str.indexOf(`${char})`, start + nstr.length + 1);
         const text = str.substring(start + nstr.length + 1, end);
         i = end + 3;
@@ -154,5 +154,6 @@ export const extractNavigate = (str: string) => {
       break;
     }
   }
+
   return founds;
 };
