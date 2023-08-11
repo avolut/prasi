@@ -16,87 +16,97 @@ export const cssLayout = (
   if (layout) {
     if (layout.dir.startsWith("col")) {
       if (layout.dir === "col") {
-        result.push("flex-col");
+        result.push("flex-direction: column;");
       } else if (layout.dir === "col-reverse") {
-        result.push("flex-col-reverse");
+        result.push("flex-direction: column-reverse;");
       }
       if (!layout.wrap) {
-        result.push("flex-wrap");
-      } else {
-        result.push(layout.wrap);
-      }
-      if (layout.gap === "auto") {
-        if (layout.align === "left") result.push("items-start justify-between");
-        if (layout.align === "center")
-          result.push("items-center justify-between");
-        if (layout.align === "right") result.push("items-end justify-between");
+        result.push("flex: wrap;");
       } else {
         result.push(
-          css`
+          layout.wrap === "flex-wrap" ? "flex: wrap;" : "flex: nowrap;"
+        );
+      }
+      if (layout.gap === "auto") {
+        if (layout.align === "left")
+          result.push("align-items:start; justify-content: space-between;");
+        if (layout.align === "center")
+          result.push("align-items:center; justify-content: space-between;");
+        if (layout.align === "right")
+          result.push("align-items:end; justify-content: space-between;");
+      } else {
+        result.push(
+          `
             gap: ${layout.gap}px;
           `
         );
 
         if (layout.align === "top-left")
-          result.push("items-start justify-start");
+          result.push("align-items:start; justify-content: start;");
         if (layout.align === "top-center")
-          result.push("items-center justify-start");
+          result.push("align-items:center; justify-content: start;");
         if (layout.align === "top-right")
-          result.push("items-end justify-start");
+          result.push("align-items:end; justify-content: start;");
 
-        if (layout.align === "left") result.push("items-start justify-center");
+        if (layout.align === "left")
+          result.push("align-items:start; justify-content: center;");
         if (layout.align === "center")
-          result.push("items-center justify-center");
-        if (layout.align === "right") result.push("items-end justify-center");
+          result.push("align-items:center; justify-content: center;");
+        if (layout.align === "right")
+          result.push("align-items:end; justify-content: center;");
 
         if (layout.align === "bottom-left")
-          result.push("items-start justify-end");
+          result.push("align-items:start; justify-content: end;");
         if (layout.align === "bottom-center")
-          result.push("items-center justify-end");
+          result.push("align-items:center; justify-content: end;");
         if (layout.align === "bottom-right")
-          result.push("items-end justify-end");
+          result.push("align-items:end; justify-content: end;");
       }
     } else {
       if (layout.dir === "row") {
-        result.push("flex-row");
+        result.push("flex-direction: row;");
       } else if (layout.dir === "row-reverse") {
-        result.push("flex-row-reverse");
+        result.push("flex-direction: row-reverse;");
       }
 
       if (layout.gap === "auto") {
-        if (layout.align === "top") result.push("items-start justify-between");
+        if (layout.align === "top")
+          result.push("align-items:start; justify-content: space-between;");
         if (layout.align === "center")
-          result.push("items-center justify-between");
-        if (layout.align === "bottom") result.push("items-end justify-between");
+          result.push("align-items:center; justify-content: space-between;");
+        if (layout.align === "bottom")
+          result.push("align-items:end; justify-content: space-between;");
       } else {
         result.push(
-          css`
+          `
             gap: ${layout.gap}px;
           `
         );
 
         if (layout.align === "top-left")
-          result.push("items-start justify-start");
+          result.push("align-items:start; justify-content: start;");
         if (layout.align === "top-center")
-          result.push("items-start justify-center");
+          result.push("align-items:start; justify-content: center;");
         if (layout.align === "top-right")
-          result.push("items-start justify-end");
+          result.push("align-items:start; justify-content: end;");
 
-        if (layout.align === "left") result.push("items-center justify-start");
+        if (layout.align === "left")
+          result.push("align-items:center; justify-content: start;");
         if (layout.align === "center")
-          result.push("items-center justify-center");
-        if (layout.align === "right") result.push("items-center justify-end");
+          result.push("align-items:center; justify-content: center;");
+        if (layout.align === "right")
+          result.push("align-items:center; justify-content: end;");
 
         if (layout.align === "bottom-left")
-          result.push("items-end justify-start");
+          result.push("align-items:end; justify-content: start;");
         if (layout.align === "bottom-center")
-          result.push("items-end justify-center");
+          result.push("align-items:end; justify-content: center;");
         if (layout.align === "bottom-right")
-          result.push("items-end justify-end");
+          result.push("align-items:end; justify-content: end;");
       }
     }
   } else {
-    return "flex-col items-start justify-start";
+    return "flex-direction:column; align-items:start; justify-content: start;";
   }
-  return result.join(" ").trim();
+  return result.join("\n").trim();
 };

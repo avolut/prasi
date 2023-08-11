@@ -27,10 +27,11 @@ export const produceCSS = (
 
   try {
     return cx([
-      "flex relative",
       className?.trim(),
-      cssLayout(item, arg.mode),
       css`
+        display: flex;
+        position:relative;
+        ${cssLayout(item, arg.mode)}
         ${cssPadding(item, arg.mode)}
         ${cssDimension(item, arg.mode, arg?.editor)}
         ${cssBorder(item, arg.mode)}

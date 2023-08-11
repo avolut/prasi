@@ -7,7 +7,11 @@ export const SPage = () => {
 
   if (!p.page) return null;
   return (
-    <div className={cx("flex flex-col items-stretch flex-1 bg-white")}>
+    <div
+      className={cx(
+        "flex flex-col items-stretch flex-1 bg-white justify-between"
+      )}
+    >
       {p.page.content_tree.childs.map((e) => (
         <SSection key={e.id} item={e} />
       ))}

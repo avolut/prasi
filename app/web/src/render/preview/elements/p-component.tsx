@@ -7,8 +7,8 @@ import { extractNavigate, preload } from "../logic/route";
 import { PItem } from "./p-item";
 import { PRender } from "./p-render";
 import { PText } from "./p-text";
-import { createAPI, createDB } from "./script-exec";
 import { loadComponent } from "../logic/comp";
+import { createAPI, createDB } from "../../../utils/script/api";
 
 export const PComponent: FC<{
   item: IItem;

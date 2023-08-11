@@ -7,7 +7,7 @@ import { EditorGlobal, PG } from "../logic/global";
 import { EItem } from "./e-item";
 import { ERender } from "./e-render";
 import { EText } from "./e-text";
-import { createAPI, createDB } from "./script-exec";
+import { createAPI, createDB } from "../../../utils/script/api";
 
 export const EComponent: FC<{
   item: IItem;
