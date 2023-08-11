@@ -12,12 +12,21 @@ export const createDB = (url: string) => {
   return (window as any).dbClient("db", url);
 };
 
-export const initApi = async (url: string) => {
+export const initApi = async (config: any) => {
+  let url = "";
+  if (config.prasi) {
+    url = `https://${config.prasi.port}.prasi.world`;
+  } else if (config.api_url) {
+    url = config.api_url;
+  }
   if (!w.prasiApi) w.prasiApi = {};
   if (!w.prasiApi[url]) {
-    const apiEntry = await fetch(trim(url, "/") + "/_prasi/api-entry");
-    w.prasiApi[url] = {
-      apiEntry: (await apiEntry.json()).srv,
-    };
+    try {
+      const apiEntry = await fetch(trim(url, "/") + "/_prasi/api-entry");
+      const json = await apiEntry.json();
+      w.prasiApi[url] = {
+        apiEntry: json.srv,
+      };
+    } catch (e) {}
   }
 };

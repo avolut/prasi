@@ -53,7 +53,7 @@ export const initPreview = async (p: PG, domain: string) => {
       p.site.id = site.id;
       p.site.js = site.js_compiled || "";
       p.site.api_url = ((site.config || {}) as any).api_url || "";
-      await initApi(p.site.api_url);
+      await initApi(site.config);
 
       const pages = await db.page.findMany({
         where: {

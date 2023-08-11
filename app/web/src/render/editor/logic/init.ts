@@ -42,7 +42,7 @@ export const initEditor = async (p: PG, site_id: string) => {
       p.site.domain = site.domain;
       p.site.api_url = ((site.config || {}) as any).api_url || "";
 
-      await initApi(p.site.api_url);
+      await initApi(site.config);
 
       const exec = (fn: string, scopes: any) => {
         if (p) {
