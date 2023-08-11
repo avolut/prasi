@@ -12,8 +12,15 @@ const w = window as unknown as {
 };
 
 export const GlobalContext = createContext({
-  global: {} as Record<string, any>,
+  global: {},
   render: () => {},
+  ssrMapEffect: {},
+  ssrShouldRender: false,
+} as {
+  global: Record<string, any>;
+  render: () => void;
+  ssrMapEffect?: Record<string, (() => void)[]>;
+  ssrShouldRender?: boolean;
 });
 export const uState = useState;
 export const useGlobal = <T extends object>(
@@ -42,7 +49,8 @@ export const useGlobal = <T extends object>(
   if (!global[_id]) {
     global[_id] = deepClone(defaultValue);
   }
-  useEffect(() => {
+
+  const effect = () => {
     let res: any = null;
     if (typeof effectOrID === "function") {
       try {
@@ -59,11 +67,28 @@ export const useGlobal = <T extends object>(
         });
       }
     };
-  }, []);
+  };
+  if (isSSR) {
+    if (typeof effectOrID !== "string" && typeof id !== "string") {
+      console.error("useGlobal id is required when rendering in SSR");
+    } else {
+      if (!ctx.ssrMapEffect) {
+        ctx.ssrMapEffect = {};
+      }
+      if (!ctx.ssrMapEffect[_id]) ctx.ssrMapEffect[_id] = [];
+      ctx.ssrMapEffect[_id].push(effect);
+    }
+  } else {
+    useEffect(effect, []);
+  }
 
   const res = global[_id];
   res.render = () => {
-    startTransition(render);
+    if (isSSR) {
+      ctx.ssrShouldRender = true;
+    } else {
+      startTransition(render);
+    }
   };
 
   return res as any;

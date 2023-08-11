@@ -55,7 +55,7 @@ export const cssFont = (
     `,
     font.size &&
       `
-        font-size: ${font.size}px;
+        font-size: ${font.size || 15}px;
       `,
     font.height &&
       `

@@ -37157,9 +37157,7 @@ ERROR: Async operation of type "${type}" was created in "process.exit" callback.
         }
         const ctx = await (0, import_esbuild2.context)({
           bundle: true,
-          entryPoints: [
-            dir.root("app/web/src/compo/renderer/prasi/bundle/ssr/prasi.tsx")
-          ],
+          entryPoints: [dir.root("app/web/src/render/ssr/ssr.tsx")],
           outfile: dir.root(".output/app/srv/ssr/index.jsx"),
           format: "iife",
           jsx: "transform",

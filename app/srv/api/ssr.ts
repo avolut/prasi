@@ -1,74 +1,63 @@
 import { dir } from "dir";
-import { existsAsync, readAsync } from "fs-jetpack";
+import { readAsync } from "fs-jetpack";
 import { JSDOM } from "jsdom";
-import { renderToPipeableStream } from "react-dom/server";
+import get from "lodash.get";
 import React from "react";
 import ReactDOMServer from "react-dom/server";
 import JSXRuntime from "react/jsx-runtime";
 import { apiContext } from "service-srv";
 import stream from "stream";
 import vm from "vm";
-import { scanComponent } from "./comp-scan";
+
 const ssr = {
   script: "",
   vms: {} as Record<string, vm.Script>,
 };
 
 export const _ = {
-  url: "/ssr/:site_id/**",
-  async api(site_id: string) {
+  url: "/ssr/:domain/**",
+  async api(domain: string, options: { timeout?: number; waitDone?: boolean }) {
     const { req, res, mode } = apiContext(this);
 
-    return req.params;
-    // if (!ssr.vms[site_id] || mode === "dev") {
-    //   if (!ssr.script || mode === "dev") {
-    //     const script = await readAsync(dir.path("srv/ssr/index.jsx"));
-    //     if (script) {
-    //       ssr.script = script;
-    //     }
-    //   }
+    const pathname = `/${req.params._}`;
 
-    //   ssr.vms[site_id] = new vm.Script(ssr.script);
-    // }
+    if (!ssr.vms[domain] || mode === "dev") {
+      if (!ssr.script || mode === "dev") {
+        const script = await readAsync(dir.path("srv/ssr/index.jsx"));
+        if (script) {
+          ssr.script = script;
+        }
+      }
 
-    // const v = ssr.vms[site_id];
-    // const dom = new JSDOM();
-    // dom.window.prasi = {};
+      ssr.vms[domain] = new vm.Script(ssr.script);
+    }
 
-    // if (dom.window.prasi.page) {
-    //   await scanComponent(
-    //     dom.window.prasi.page.content_tree,
-    //     dom.window.prasi.comps
-    //   );
-    // }
-    // dom.window.exports = {};
-    // dom.window.npm = {};
+    const v = ssr.vms[domain];
+    const dom = new JSDOM();
+    dom.window.prasi = {
+      pathname,
+      domain,
+    };
+    dom.window.process = process;
+    dom.window.React = React;
+    dom.window.ReactDOMServer = ReactDOMServer;
+    dom.window.JSXRuntime = JSXRuntime;
+    dom.window.stream = stream;
+    dom.window.TextEncoder = TextEncoder;
+    dom.window.TextDecoder = TextDecoder;
+    const waitDone = get(options, "waitDone");
+    dom.window.ssrConfig = {
+      timeout: get(options, "timeout", 1000),
+      waitDone: typeof waitDone === "undefined" ? true : waitDone,
+    };
 
-    // const npm_site_path = dir.path(`../npm/site/${site_id}/index.js`);
-    // const npm_page_path = dir.path(`../npm/page/${page_id}/index.js`);
+    vm.createContext(dom.window);
+    try {
+      v.runInContext(dom.window);
+    } catch (e) {}
 
-    // try {
-    //   console.log(npm_site_path);
+    const result = await dom.window.ssrResult;
 
-    //   dom.window.npm.site = require(npm_site_path);
-    // } catch (e) {}
-
-    // try {
-    //   dom.window.npm.page = require(npm_page_path);
-    // } catch (e) {}
-
-    // dom.window.process = process;
-    // dom.window.React = React;
-    // dom.window.ReactDOMServer = ReactDOMServer;
-    // dom.window.JSXRuntime = JSXRuntime;
-    // dom.window.stream = stream;
-    // dom.window.TextEncoder = TextEncoder;
-    // dom.window.TextDecoder = TextDecoder;
-
-    // vm.createContext(dom.window);
-    // v.runInContext(dom.window);
-
-    // const result = await dom.window.ssrResult;
-    // return result || "";
+    return result || "";
   },
 };
