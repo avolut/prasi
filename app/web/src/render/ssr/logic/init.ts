@@ -1,17 +1,18 @@
-import { createRouter } from "web-init";
+import { ReactElement } from "react";
+import { renderToString } from "react-dom/server";
+import importModule from "../../editor/tools/dynamic-import";
 import { createAPI, createDB } from "../elements/script-exec";
 import { PG } from "./global";
-import importModule from "../../editor/tools/dynamic-import";
-import { validate } from "uuid";
 
 const w = window as unknown as {
   basepath: string;
   navigateOverride: (s: string) => string;
   isEditor: boolean;
   exports: any;
+  extractCss: any;
 };
 
-export const initPreview = async (p: PG, domain: string) => {
+export const initSSR = async (p: PG) => {
   if (p.status === "init") {
     p.status = "loading";
 
@@ -39,11 +40,7 @@ export const initPreview = async (p: PG, domain: string) => {
       return _href;
     };
 
-    const site = await db.site.findFirst({
-      where: validate(domain) ? { id: domain } : { domain },
-      select: { id: true, config: true, js_compiled: true },
-    });
-
+    const site = p.site;
     if (site) {
       w.exports = {};
       await importModule(
@@ -53,14 +50,6 @@ export const initPreview = async (p: PG, domain: string) => {
       p.site.id = site.id;
       p.site.js = site.js_compiled || "";
       p.site.api_url = ((site.config || {}) as any).api_url || "";
-      const pages = await db.page.findMany({
-        where: {
-          id_site: site.id,
-          is_deleted: false,
-        },
-        select: { id: true, url: true },
-      });
-
       const exec = (fn: string, scopes: any) => {
         if (p) {
           scopes["api"] = createAPI(p.site.api_url);
@@ -77,14 +66,7 @@ export const initPreview = async (p: PG, domain: string) => {
         load: importModule,
         render: p.render,
       };
-      exec(p.site.js, scope);
-
-      p.route = createRouter();
-      if (pages.length > 0) {
-        for (const page of pages) {
-          p.route.insert(page.url, page);
-        }
-      }
+      if (p.site.js_compiled) exec(p.site.js_compiled, scope);
       p.status = "ready";
       p.render();
     } else {
@@ -92,4 +74,9 @@ export const initPreview = async (p: PG, domain: string) => {
       p.render();
     }
   }
+};
+
+export const renderSSR = (el: ReactElement) => {
+  let res = renderToString(el);
+  return { html: res, css: w.extractCss() };
 };

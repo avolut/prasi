@@ -1,5 +1,6 @@
 import { page, site } from "dbgen";
 import { ReactElement } from "react";
+import { IRoot } from "../../../utils/types/root";
 
 export const w = window as unknown as {
   __SRV_URL__: string;
@@ -9,8 +10,8 @@ export const w = window as unknown as {
   ssrRender: ReactElement;
   ssrResult: Promise<string>;
   ssrPrasi: {
-    site: site;
-    page: page;
+    site: site & { api_url: string };
+    page: page & { content_tree: IRoot };
     mode: "mobile" | "desktop";
   };
   ssrConfig: {

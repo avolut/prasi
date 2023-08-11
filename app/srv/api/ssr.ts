@@ -35,6 +35,8 @@ export const _ = {
 
     if (!site && !page) return `NOT FOUND`;
 
+    (site as any).api_url = get(site, "config.api_url", "");
+
     if (!ssr.vms[site_id] || mode === "dev") {
       if (!ssr.script || mode === "dev") {
         const script = await readAsync(dir.path("srv/ssr/index.jsx"));

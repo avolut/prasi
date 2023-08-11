@@ -1,8 +1,9 @@
-import { ReactElement, type FC } from "react";
-import { renderToString } from "react-dom/server";
+import { type FC } from "react";
 import { defineWindow } from "web-init/src/web/define-window";
 import { GlobalContext } from "web-utils";
+import { renderSSR } from "./logic/init";
 import { w } from "./logic/window";
+import { SPage } from "./elements/s-page";
 export { useGlobal, useLocal } from "web-utils";
 
 if (typeof __SRV_URL__ === "undefined") {
@@ -33,7 +34,7 @@ const Root: FC<{
 w.ssrResult = new Promise<string>((resolve) => {
   const app = (
     <Root>
-      <style>{w.extractCss()}</style>
+      <SPage />
     </Root>
   );
   let result = renderSSR(app);
@@ -48,9 +49,32 @@ w.ssrResult = new Promise<string>((resolve) => {
   if (ssrContext.ssrShouldRender) {
     result = renderSSR(app);
   }
-  resolve(result);
+  resolve(
+    minify(`\
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" id="indexCSS" href="https://prasi.app/index.css"/>
+  <style id="_goober">
+    ${result.css}
+  </style>
+</head>
+<body class="flex-col flex-1 w-full min-h-screen flex">
+  <div id="root">
+    ${result.html}
+  </div>
+</body>
+</html>`)
+  );
 });
 
-const renderSSR = (el: ReactElement) => {
-  return renderToString(el);
-};
+function minify(s: string) {
+  return s
+    ? s
+        .replace(/\>[\r\n ]+\</g, "><") // Removes new lines and irrelevant spaces which might affect layout, and are better gone
+        .replace(/(<.*?>)|\s+/g, (m, $1) => ($1 ? $1 : " "))
+        .trim()
+    : "";
+}

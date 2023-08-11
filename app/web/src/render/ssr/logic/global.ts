@@ -1,7 +1,5 @@
 import { ReactElement } from "react";
-import { createRouter } from "web-init";
 import { CompDoc } from "../../../base/global/content-editor";
-import { MPage } from "../../../utils/types/general";
 import { IItem } from "../../../utils/types/item";
 import { w } from "./window";
 
