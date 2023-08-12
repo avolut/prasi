@@ -23,7 +23,8 @@ export const _ = {
       timeout?: number;
       waitDone?: boolean;
       mode?: "mobile" | "desktop";
-    }
+    },
+    exports: any
   ) {
     const { req, res, mode } = apiContext(this);
 
@@ -67,6 +68,7 @@ export const _ = {
       timeout: get(options, "timeout", 0),
       waitDone: typeof waitDone === "undefined" ? true : waitDone,
     };
+    dom.window.exports = { ...(exports || {}) };
 
     vm.createContext(dom.window);
     try {

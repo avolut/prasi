@@ -63,7 +63,6 @@ w.ssrResult = new Promise<string>((resolve) => {
 </head>
 <body class="flex-col flex-1 w-full min-h-screen flex">
   <div id="root">
-    
     ${result.html}
   </div>
 </body>
