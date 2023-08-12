@@ -10,8 +10,6 @@ import { produceCSS } from "../../../utils/css/gen";
 import { responsiveVal } from "../../editor/tools/responsive-val";
 import { SSRGlobal } from "../logic/global";
 
-const navExtracted = new Set<string>();
-
 export const SRender: FC<{
   item: IContent;
   children: (childs: (IItem | IText)[]) => ReactNode;
@@ -55,8 +53,7 @@ export const SRender: FC<{
   const adv = item.adv;
   if (adv) {
     const html = renderHTML(adv);
-
-    if (html) _children = html;
+    if (html) return html;
     else if (adv.jsBuilt && adv.js) {
       return (
         <>

@@ -41,16 +41,13 @@ export const initSSR = async (p: PG) => {
     };
 
     const site = p.site;
+
     if (site) {
       w.exports = {};
-      await importModule(
-        `${serverurl}/npm/site/${site.id}/index.js?` + Date.now()
-      );
 
       p.site.id = site.id;
       p.site.js = site.js_compiled || "";
-      p.site.api_url = ((site.config || {}) as any).api_url || "";
-      await initApi(site.config);
+      p.site.api_url = await initApi(site.config);
 
       const exec = (fn: string, scopes: any) => {
         if (p) {
@@ -68,7 +65,8 @@ export const initSSR = async (p: PG) => {
         load: importModule,
         render: p.render,
       };
-      if (p.site.js_compiled) exec(p.site.js_compiled, scope);
+      if (p.site.js) exec(p.site.js, scope);
+      // console.log("we", w.exports);
       p.status = "ready";
       p.render();
     } else {

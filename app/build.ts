@@ -20,7 +20,7 @@ export const build = async (mode: string) => {
     outfile: dir.root(".output/app/srv/ssr/index.jsx"),
     format: "iife",
     jsx: "transform",
-    logLevel: "silent",
+    // logLevel: "silent",
     define: {
       "process.env.NODE_ENV": `"production"`,
     },

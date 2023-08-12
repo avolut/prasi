@@ -57,7 +57,11 @@ export const _ = {
       mode: get(options, "mode", "desktop"),
     };
     dom.window.process = process;
+    dom.window.URL.createObjectURL = (url: any) => {
+      return url;
+    };
     dom.window.React = React;
+    dom.window.fetch = fetch;
     dom.window.ReactDOMServer = ReactDOMServer;
     dom.window.JSXRuntime = JSXRuntime;
     dom.window.stream = stream;

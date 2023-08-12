@@ -4,6 +4,7 @@ import { GlobalContext } from "web-utils";
 import { renderSSR } from "./logic/init";
 import { w } from "./logic/window";
 import { SPage } from "./elements/s-page";
+import { apiClient } from "web-init";
 export { useGlobal, useLocal } from "web-utils";
 
 if (typeof __SRV_URL__ === "undefined") {
@@ -11,43 +12,45 @@ if (typeof __SRV_URL__ === "undefined") {
   w.siteApiUrl = __SRV_URL__;
   w.isEditor = false;
   w.isSSR = true;
+  w.ssrGlobalFont = [];
+  w.ssrContext = {
+    global: {},
+    render() {
+      w.ssrContext.ssrShouldRender = true;
+    },
+    ssrLocalEffect: {},
+    ssrShouldRender: true,
+  };
+  w.apiClient = apiClient;
   defineWindow();
 }
-
-const ssrContext = {
-  global: {},
-  render: () => {},
-  ssrMapEffect: {} as Record<string, (() => void)[]>,
-  ssrShouldRender: false,
-};
 
 const Root: FC<{
   children: any;
 }> = ({ children }) => {
   return (
-    <GlobalContext.Provider value={ssrContext}>
+    <GlobalContext.Provider value={w.ssrContext}>
       {children}
     </GlobalContext.Provider>
   );
 };
 
-w.ssrResult = new Promise<string>((resolve) => {
-  const app = (
-    <Root>
-      <SPage />
-    </Root>
-  );
-  let result = renderSSR(app);
-  for (const effects of Object.values(ssrContext.ssrMapEffect)) {
-    while (effects.length > 0) {
-      const effect = effects.shift();
-      if (effect) {
-        effect();
+w.ssrResult = new Promise<string>(async (resolve) => {
+  let result = { html: "", css: "" };
+  while (w.ssrContext.ssrShouldRender) {
+    w.ssrContext.ssrShouldRender = false;
+    result = renderSSR(
+      <Root>
+        <SPage />
+      </Root>
+    );
+
+    for (const fx of Object.values(w.ssrContext.ssrLocalEffect)) {
+      if (!fx.done) {
+        fx.done = true;
+        await fx.fn();
       }
     }
-  }
-  if (ssrContext.ssrShouldRender) {
-    result = renderSSR(app);
   }
   resolve(
     minify(`\
@@ -60,6 +63,7 @@ w.ssrResult = new Promise<string>((resolve) => {
   <style id="_goober">
     ${result.css}
   </style>
+  ${w.ssrGlobalFont.join("\n")}
 </head>
 <body class="flex-col flex-1 w-full min-h-screen flex">
   <div id="root">
@@ -73,7 +77,7 @@ w.ssrResult = new Promise<string>((resolve) => {
 function minify(s: string) {
   return s
     ? s
-        .replace(/\>[\r\n ]+\</g, "><") // Removes new lines and irrelevant spaces which might affect layout, and are better gone
+        .replace(/\>[\r\n ]+\</g, "><")
         .replace(/(<.*?>)|\s+/g, (m, $1) => ($1 ? $1 : " "))
         .trim()
     : "";

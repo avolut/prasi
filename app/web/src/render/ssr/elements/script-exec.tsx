@@ -1,11 +1,12 @@
 import React, { ReactNode, Suspense, isValidElement, useEffect } from "react";
 import { ErrorBoundary } from "web-init/src/web/error-boundary";
 import { useLocal } from "web-utils";
-import { IContent, w } from "../../../utils/types/general";
+import { IContent } from "../../../utils/types/general";
 import { PG } from "../logic/global";
 import { SItem } from "./s-item";
 import { SText } from "./s-text";
 import { createAPI, createDB } from "../../../utils/script/api";
+import { w } from "../logic/window";
 
 type JsArg = {
   p: PG;
@@ -45,7 +46,7 @@ const produceEvalArgs = (
 
   if (!p.treeMeta[item.id]) {
     p.treeMeta[item.id] = {
-      local: createLocal({ item, render }),
+      local: createLocal({ p, item, render }),
       passchild: createPassChild({ item }),
       passprop: createPassProp(),
     };
@@ -63,6 +64,7 @@ const produceEvalArgs = (
     PassChild,
     children,
     React: React,
+    css: css,
     props: {
       className: cx(className),
     },
@@ -154,8 +156,12 @@ const thru = (prop: any, nprops: any) => {
   }
 };
 
-const createLocal = (arg: { item: IContent; render: () => void }): LocalFC => {
-  const { item, render } = arg;
+const createLocal = (arg: {
+  p: PG;
+  item: IContent;
+  render: () => void;
+}): LocalFC => {
+  const { p, item, render } = arg;
   return ({ name, value, children, effect }) => {
     if (!item.scope) {
       item.scope = { ...value, render };
@@ -165,20 +171,27 @@ const createLocal = (arg: { item: IContent; render: () => void }): LocalFC => {
     let child = children;
     thru(child, { [name]: local });
 
-    useEffect(() => {
-      if (effect) {
-        const res = effect(local);
-        if (res && res instanceof Promise) {
-          return () => {
-            res.then((e) => {
-              if (typeof e === "function") e();
+    if (effect) {
+      if (!w.ssrContext.ssrLocalEffect[item.id]) {
+        w.ssrContext.ssrLocalEffect[item.id] = {
+          done: false,
+          fn: () => {
+            return new Promise<void>(async (resolve) => {
+              const res = await effect(local);
+              if (res && res instanceof Promise) {
+                return () => {
+                  res.then((e) => {
+                    if (typeof e === "function") resolve(e());
+                  });
+                };
+              } else {
+                resolve(res as any);
+              }
             });
-          };
-        } else {
-          return res;
-        }
+          },
+        };
       }
-    }, []);
+    }
 
     return child as ReactNode;
   };

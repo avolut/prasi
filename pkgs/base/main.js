@@ -37161,7 +37161,7 @@ ERROR: Async operation of type "${type}" was created in "process.exit" callback.
           outfile: dir.root(".output/app/srv/ssr/index.jsx"),
           format: "iife",
           jsx: "transform",
-          logLevel: "silent",
+          // logLevel: "silent",
           define: {
             "process.env.NODE_ENV": `"production"`
           },

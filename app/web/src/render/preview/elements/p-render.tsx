@@ -57,7 +57,7 @@ export const PRender: FC<{
   if (adv) {
     const html = renderHTML(adv);
 
-    if (html) _children = html;
+    if (html) return html;
     else if (adv.jsBuilt && adv.js) {
       if (!navExtracted.has(item.id)) {
         navExtracted.add(item.id);

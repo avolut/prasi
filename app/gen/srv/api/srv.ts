@@ -219,6 +219,6 @@ export const ssr = {
   name: "ssr",
   url: "/ssr/:site_id/:page_id",
   path: "app/srv/api/ssr.ts",
-  args: ["site_id","page_id","options"],
+  args: ["site_id","page_id","options","exports"],
   handler: import("../../../srv/api/ssr")
 }

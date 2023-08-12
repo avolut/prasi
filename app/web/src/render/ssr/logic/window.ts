@@ -8,15 +8,24 @@ export const w = window as unknown as {
   isEditor: false;
   isSSR: true;
   ssrRender: ReactElement;
+  apiClient: any;
   ssrResult: Promise<string>;
   ssrPrasi: {
     site: site & { api_url: string };
     page: page & { content_tree: IRoot };
     mode: "mobile" | "desktop";
   };
+  ssrGlobalFont: string[];
+  ssrContext: {
+    global: any;
+    render: () => void;
+    ssrLocalEffect: Record<string, { done: boolean; fn: () => Promise<void> }>;
+    ssrShouldRender: boolean;
+  };
   ssrConfig: {
     timeout: number;
-    waitDone: false;
+    waitDone: boolean;
+    renderTwice: boolean;
   };
   extractCss: () => string;
   stream: any;

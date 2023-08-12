@@ -13,20 +13,26 @@ export const cssFont = (
 ) => {
   const font = responsiveVal<FNFont>(cur, "font", mode, {});
 
-  if (!isSSR && font.family) {
+  if (font.family) {
     if (!glbFont.loadedFonts) glbFont.loadedFonts = [];
-    if (!isSSR && glbFont.loadedFonts.indexOf(font.family) < 0) {
+    const weight = `:wght@${[300, 400, 500, 600].join(";")}`;
+    const fontName = font.family.replace(/ /g, "+");
+
+    if (glbFont.loadedFonts.indexOf(font.family) < 0) {
       glbFont.loadedFonts.push(font.family);
-      const doc = document;
-      let weight = `:wght@${[300, 400, 500, 600].join(";")}`;
-      let fontName = font.family.replace(/ /g, "+");
-      const _href = `https://fonts.googleapis.com/css2?family=${fontName}${weight}&display=block`;
-      if (!doc.querySelector(`link[href="${_href}]`)) {
-        const link = doc.createElement("link");
-        link.type = "text/css";
-        link.rel = "stylesheet";
-        link.href = _href;
-        doc.head.appendChild(link);
+      if (!isSSR) {
+        const doc = document;
+        const _href = `https://fonts.googleapis.com/css2?family=${fontName}${weight}&display=block`;
+        if (!doc.querySelector(`link[href="${_href}]`)) {
+          const link = doc.createElement("link");
+          link.type = "text/css";
+          link.rel = "stylesheet";
+          link.href = _href;
+          doc.head.appendChild(link);
+        }
+      } else {
+        const link = `<link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/css2?family=${fontName}${weight}&display=block">`;
+        (window as any).ssrGlobalFont.push(link);
       }
     }
   }

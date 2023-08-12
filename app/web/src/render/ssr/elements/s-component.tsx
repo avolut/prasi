@@ -2,7 +2,6 @@ import { FC, useState } from "react";
 import { useGlobal } from "web-utils";
 import { IItem } from "../../../utils/types/item";
 import { FNCompDef } from "../../../utils/types/meta-fn";
-import { loadComponent } from "../logic/comp";
 import { PG, SSRGlobal } from "../logic/global";
 import { SItem } from "./s-item";
 import { SRender } from "./s-render";
@@ -20,11 +19,11 @@ export const SComponent: FC<{
 
   let pcomp = p.comp.doc[compid];
   if (!pcomp) {
-    if (!p.comp.pending[compid]) {
-      loadComponent(p, compid).then(() => {
-        render({});
-      });
-    }
+    // if (!p.comp.pending[compid]) {
+    //   loadComponent(p, compid).then(() => {
+    //     render({});
+    //   });
+    // }
     return (
       <div
         className={cx(

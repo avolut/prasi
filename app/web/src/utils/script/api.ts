@@ -29,4 +29,5 @@ export const initApi = async (config: any) => {
       };
     } catch (e) {}
   }
+  return url;
 };

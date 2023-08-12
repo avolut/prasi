@@ -53,7 +53,7 @@ export const ERender: FC<{
   if (adv) {
     const html = renderHTML(adv);
 
-    if (html) _children = html;
+    if (html) return html;
     else if (adv.jsBuilt && adv.js) {
       return (
         <>

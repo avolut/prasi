@@ -3,7 +3,7 @@ import { dbClient } from "./db";
 import { css, extractCss } from "goober";
 
 export const defineWindow = async (baseurl?: URL) => {
-  const w = typeof window === "object" ? window : (globalThis as any);
+  let w = typeof window === "object" ? window : (globalThis as any);
 
   const location = (
     typeof window === "object" ? window["location"] : baseurl
