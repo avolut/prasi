@@ -25,6 +25,9 @@ export const scriptExec = (arg: JsArg, api_url?: string) => {
     let evalArgs = {} as any;
     try {
       evalArgs = produceEvalArgs({ ...arg, output }, api_url);
+      if (arg.item.nprops) {
+        arg.p.itemProps[arg.item.id] = arg.item.nprops;
+      }
       const scriptEval = new Function(...Object.keys(evalArgs), adv.jsBuilt);
       scriptEval(...Object.values(evalArgs));
     } catch (e) {

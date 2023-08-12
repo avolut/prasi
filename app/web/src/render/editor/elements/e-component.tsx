@@ -114,4 +114,8 @@ export const getRenderPropVal = (
       item.nprops[k] = v;
     }
   }
+
+  if (item.nprops && p) {
+    p.itemProps[item.id] = item.nprops;
+  }
 };

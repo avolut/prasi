@@ -63,6 +63,7 @@ export const EditorGlobal = {
 
   /** write-only */
   pageComp: {} as Record<string, IItem>,
+  itemProps: {} as Record<string, any>,
   treeMeta: {} as Record<
     string,
     { item: MContent; passprop?: any; local?: any; passchild?: any }
