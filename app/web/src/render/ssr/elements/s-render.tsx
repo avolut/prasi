@@ -83,14 +83,6 @@ export const SRender: FC<{
     const props = {
       className: className,
       href: href,
-      onClick: (e: any) => {
-        e.preventDefault();
-        if (href.startsWith("/")) {
-          navigate(href);
-        } else {
-          location.href = href;
-        }
-      },
     };
 
     if (item.type === "text" && _children) {
