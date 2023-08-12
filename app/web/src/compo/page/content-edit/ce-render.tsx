@@ -42,8 +42,8 @@ export const CERender: FC<{
   const scope = initScope(ceid, item, mitem, c, parentInstanceId);
 
   if (adv) {
-    const html = renderHTML(adv);
-    if (html) _children = html;
+    const html = renderHTML(className, adv, elementProp);
+    if (html) return html;
     else if (adv.jsBuilt && adv.js) {
       const res = execElement(
         {

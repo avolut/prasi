@@ -1,4 +1,4 @@
-import { ReactNode, Suspense, isValidElement, useEffect } from "react";
+import { ReactNode, Suspense, isValidElement, useEffect, useRef } from "react";
 import { ErrorBoundary } from "web-init/src/web/error-boundary";
 import { useLocal } from "web-utils";
 import { IContent, w } from "../../../utils/types/general";
@@ -6,6 +6,7 @@ import { PG } from "../logic/global";
 import { EItem } from "./e-item";
 import { EText } from "./e-text";
 import { createAPI, createDB } from "../../../utils/script/api";
+import { ElProp } from "./e-relprop";
 
 type JsArg = {
   p: PG;
@@ -13,6 +14,7 @@ type JsArg = {
   children: ReactNode;
   className: string;
   render: () => void;
+  elprop: ElProp;
 };
 
 export const scriptExec = (arg: JsArg, api_url?: string) => {
@@ -73,6 +75,7 @@ const produceEvalArgs = (
     children,
     props: {
       className: cx(className),
+      ...arg.elprop,
     },
     render: (jsx: ReactNode) => {
       output.jsx = (
@@ -165,7 +168,9 @@ const thru = (prop: any, nprops: any) => {
 const createLocal = (arg: { item: IContent; render: () => void }): LocalFC => {
   const { item, render } = arg;
   return ({ name, value, children, effect }) => {
+    let isFirst = false;
     if (!item.scope) {
+      isFirst = true;
       item.scope = { ...value, render };
     }
 
@@ -174,7 +179,7 @@ const createLocal = (arg: { item: IContent; render: () => void }): LocalFC => {
     thru(child, { [name]: local });
 
     useEffect(() => {
-      if (effect) {
+      if (effect && isFirst) {
         const res = effect(local);
         if (res && res instanceof Promise) {
           return () => {

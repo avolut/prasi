@@ -7,7 +7,7 @@ export const EPage = () => {
   const p = useGlobal(EditorGlobal, "EDITOR");
   const local = useLocal({});
   p.softRender.page = local.render;
-  
+
   useEffect(() => {
     if (
       p.item.active &&
@@ -44,20 +44,6 @@ export const EPage = () => {
             contain: content;
           `
         )}
-        // ref={(e) => {
-        //   if (!w.prasiEditorPage[c.id]) {
-        //     w.prasiEditorPage[c.id] = { el: null, scroll: null };
-        //   }
-        //   const p = w.prasiEditorPage[c.id];
-        //   if (p) {
-        //     p.el = e;
-        //     if (p.scroll && e) {
-        //       e.scrollTop = p.scroll.t;
-        //       e.scrollLeft = p.scroll.l;
-        //       p.scroll = null;
-        //     }
-        //   }
-        // }}
       >
         {p.page.content_tree.childs.map((e) => (
           <ESection key={e.id} item={e} />

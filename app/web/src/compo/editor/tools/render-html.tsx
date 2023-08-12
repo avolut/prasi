@@ -1,10 +1,11 @@
 import { FNAdv } from "../../types/meta-fn";
 
-export const renderHTML = (adv: FNAdv) => {
+export const renderHTML = (className: string[], adv: FNAdv, props: any) => {
   if (adv.html) {
     return (
       <div
-        className="flex-1 self-stretch justify-self-stretch p-[2px]"
+        {...props}
+        className={cx(className)}
         dangerouslySetInnerHTML={{ __html: adv.html }}
       ></div>
     );

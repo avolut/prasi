@@ -15,8 +15,8 @@ export const produceCSS = (
   item: ISection | IItem | IText,
   arg: {
     mode: "mobile" | "desktop";
-    hover?: IContent | null;
-    active?: IContent | null;
+    hover?: boolean;
+    active?: boolean;
     editor?: boolean;
   }
 ): string => {
@@ -30,7 +30,7 @@ export const produceCSS = (
       className?.trim(),
       css`
         display: flex;
-        position:relative;
+        position: relative;
         ${cssLayout(item, arg.mode)}
         ${cssPadding(item, arg.mode)}
         ${cssDimension(item, arg.mode, arg?.editor)}

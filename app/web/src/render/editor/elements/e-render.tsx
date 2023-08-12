@@ -8,6 +8,7 @@ import { IText } from "../../../utils/types/text";
 import { newPageComp } from "../logic/comp";
 import { EditorGlobal } from "../logic/global";
 import { scriptExec } from "./script-exec";
+import { ElProp, createElProp } from "./e-relprop";
 
 export const ERender: FC<{
   item: IContent;
@@ -48,10 +49,15 @@ export const ERender: FC<{
 
   let _children = children(childs);
 
-  const className = produceCSS(item, { mode: p.mode });
+  const elprop = createElProp(item, p);
+  const className = produceCSS(item, {
+    mode: p.mode,
+    hover: p.item.hover === item.id,
+    active: p.item.active === item.id,
+  });
   const adv = item.adv;
   if (adv) {
-    const html = renderHTML(adv);
+    const html = renderHTML(className, adv, elprop);
 
     if (html) return html;
     else if (adv.jsBuilt && adv.js) {
@@ -64,6 +70,7 @@ export const ERender: FC<{
               p,
               className,
               render: p.render,
+              elprop,
             },
             p.site.api_url
           )}
@@ -77,18 +84,24 @@ export const ERender: FC<{
       <div
         className={className}
         dangerouslySetInnerHTML={{ __html: _children }}
+        {...elprop}
       />
     );
 
-  return <div className={className}>{_children}</div>;
+  return (
+    <div className={className} {...elprop}>
+      {_children}
+    </div>
+  );
 };
 
-export const renderHTML = (adv: FNAdv) => {
+export const renderHTML = (className: string, adv: FNAdv, elprop: ElProp) => {
   if (adv.html) {
     return (
       <div
-        className="flex-1 self-stretch justify-self-stretch p-[2px]"
+        className={className}
         dangerouslySetInnerHTML={{ __html: adv.html }}
+        {...elprop}
       ></div>
     );
   }

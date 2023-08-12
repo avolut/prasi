@@ -6,11 +6,11 @@ export const cssEditor = ({
   active,
 }: {
   item: IContent;
-  hover?: IContent | null;
-  active?: IContent | null;
+  hover?: boolean;
+  active?: boolean;
 }) => {
   return cx(
-    item.id === hover?.id &&
+    hover &&
       css`
         & {
           box-shadow: inset 0 0 0px 3px #bae3fd;
@@ -19,7 +19,7 @@ export const cssEditor = ({
           }
         }
       `,
-    item.id === active?.id &&
+    active &&
       css`
         box-shadow: inset 0 0 0px 2px #009cff;
         > img {

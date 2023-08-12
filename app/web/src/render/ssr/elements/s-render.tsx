@@ -52,23 +52,28 @@ export const SRender: FC<{
   const className = produceCSS(item, { mode: p.mode });
   const adv = item.adv;
   if (adv) {
-    const html = renderHTML(adv);
+    const html = renderHTML(className, adv);
     if (html) return html;
     else if (adv.jsBuilt && adv.js) {
-      return (
-        <>
-          {scriptExec(
-            {
-              item,
-              children: _children,
-              p,
-              className,
-              render: p.render,
-            },
-            p.site.api_url
-          )}
-        </>
-      );
+      if (
+        adv.js.replace(/\s/g, "") !==
+        "<div {...props}>{children}</div>".replace(/\s/g, "")
+      ) {
+        return (
+          <>
+            {scriptExec(
+              {
+                item,
+                children: _children,
+                p,
+                className,
+                render: p.render,
+              },
+              p.site.api_url
+            )}
+          </>
+        );
+      }
     }
   }
 
@@ -99,11 +104,11 @@ export const SRender: FC<{
   return <div className={className}>{_children}</div>;
 };
 
-export const renderHTML = (adv: FNAdv) => {
+export const renderHTML = (className: string, adv: FNAdv) => {
   if (adv.html) {
     return (
       <div
-        className="flex-1 self-stretch justify-self-stretch p-[2px]"
+        className={className}
         dangerouslySetInnerHTML={{ __html: adv.html }}
       ></div>
     );
