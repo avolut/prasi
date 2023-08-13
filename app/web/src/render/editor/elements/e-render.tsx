@@ -127,14 +127,57 @@ export const ERender: FC<{
     }
   }
 
-  if (item.type === "text" && _children)
+  if (item.type === "text") {
     return (
       <div
-        className={className}
-        dangerouslySetInnerHTML={{ __html: _children }}
+        className={cx(
+          className,
+          css`
+            user-select: all;
+            outline: none;
+            min-width: 3px !important;
+            min-height: 10px !important;
+          `
+        )}
+        ref={(e) => {
+          setTimeout(() => {
+            if (
+              p.item.active === item.id &&
+              e &&
+              document.activeElement !== e
+            ) {
+              e.focus();
+            }
+          }, 100);
+        }}
+        dangerouslySetInnerHTML={{ __html: _children || "" }}
+        contentEditable
+        spellCheck={false}
+        onBlur={(e) => {
+          p.focused = "";
+          p.render();
+        }}
+        onInput={(e) => {
+          if (p.focused !== item.id) {
+            p.focused = item.id;
+          }
+          const mitem = p.treeMeta[item.id]?.item;
+          if (mitem) {
+            if (e.currentTarget.innerText.trim() === "") {
+              mitem.set("html", "");
+            } else {
+              mitem.set("html", e.currentTarget.innerHTML);
+            }
+
+            if (p.item.active !== item.id) {
+              p.item.active = item.id;
+            }
+          }
+        }}
         {...elprop}
       />
     );
+  }
 
   return (
     <div className={className} {...elprop}>

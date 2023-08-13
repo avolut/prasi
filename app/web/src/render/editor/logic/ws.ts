@@ -22,6 +22,9 @@ export const editorWS = async (p: PG) => {
     }
     return;
   }
+  const render = () => {
+    if (!p.focused) p.render();
+  };
 
   return new Promise<void>(async (resolve) => {
     const wsurl = new URL(serverurl);
@@ -92,7 +95,7 @@ export const editorWS = async (p: PG) => {
                   }
                   if (origin === "updated_at") {
                     p.page = doc?.getMap("map").toJSON() as any;
-                    p.render();
+                    render();
                   }
                 }
               })
@@ -107,8 +110,9 @@ export const editorWS = async (p: PG) => {
             break;
           case "svd_remote":
             svdRemote({ p, bin: extract(msg.diff_remote), msg });
+            render();
             break;
-          case "diff_local":
+          case "diff_local": {
             if (msg.mode === "page") {
               Y.applyUpdate(p.mpage as any, extract(msg.diff_local), "remote");
             }
@@ -120,6 +124,7 @@ export const editorWS = async (p: PG) => {
               );
             }
             break;
+          }
           case "set_comp":
             {
               const callback = p.comps.pending[msg.comp_id];
@@ -133,6 +138,10 @@ export const editorWS = async (p: PG) => {
                 p.comps.doc[msg.comp_id].on(
                   "update",
                   throttle((e, origin) => {
+                    if (origin === "remote") {
+                      render();
+                      return;
+                    }
                     const doc = p.comps.doc[msg.comp_id];
                     if (doc) {
                       if (!origin && origin !== "updated_at") {

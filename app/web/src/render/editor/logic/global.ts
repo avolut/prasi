@@ -10,6 +10,7 @@ export const EditorGlobal = {
   /** ui */
   mode: "" as "desktop" | "mobile",
   status: "init" as "init" | "loading" | "ready" | "not-found" | "error",
+  focused: "",
   manager: {
     page: false,
     site: false,

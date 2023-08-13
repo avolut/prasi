@@ -27,7 +27,10 @@ export const createElProp = (
 
     onPointerDown: (e: React.PointerEvent<HTMLDivElement>) => {
       e.stopPropagation();
-      e.preventDefault();
+      if (item.type !== "text") {
+        e.preventDefault();
+        (document.activeElement as any)?.blur();
+      }
 
       if (editComponentId) {
         for (const [_idx, c] of Object.entries(p.compEdits)) {

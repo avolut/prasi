@@ -13,7 +13,7 @@ export const EText: FC<{
       editComponentId={editComponentId}
       editComponentProps={editComponentProps}
     >
-      {() => item.html}
+      {() => item.html || ""}
     </ERender>
   );
 };

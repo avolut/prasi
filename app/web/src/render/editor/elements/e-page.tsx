@@ -6,7 +6,9 @@ import { useEffect } from "react";
 export const EPage = () => {
   const p = useGlobal(EditorGlobal, "EDITOR");
   const local = useLocal({});
-  p.softRender.page = local.render;
+  p.softRender.page = () => {
+    if (!p.focused) local.render();
+  };
 
   useEffect(() => {
     if (

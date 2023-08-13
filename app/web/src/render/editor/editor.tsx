@@ -5,6 +5,7 @@ import { EMainEditor } from "./panel/e-main-editor";
 import { EditorGlobal } from "./logic/global";
 import { initEditor } from "./logic/init";
 import { routeEditor } from "./logic/route";
+import { undoManager } from "./logic/undo";
 
 export const Editor: FC<{ site_id: string; page_id: string; session: any }> = ({
   session,
@@ -22,6 +23,32 @@ export const Editor: FC<{ site_id: string; page_id: string; session: any }> = ({
       ) {
         evt.preventDefault();
         evt.stopPropagation();
+      }
+
+      if (
+        (evt.key === "Y" || evt.key === "y") &&
+        (evt.ctrlKey || evt.metaKey) &&
+        !evt.shiftKey
+      ) {
+        undoManager.redo(p);
+        return;
+      }
+
+      if (
+        (evt.key === "Z" || evt.key === "z") &&
+        (evt.ctrlKey || evt.metaKey) &&
+        evt.shiftKey
+      ) {
+        undoManager.redo(p);
+        return;
+      }
+
+      if (
+        (evt.key === "Z" || evt.key === "z") &&
+        (evt.ctrlKey || evt.metaKey) &&
+        !evt.shiftKey
+      ) {
+        undoManager.undo(p);
       }
     };
     window.addEventListener("keydown", keyDown, true);
