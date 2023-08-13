@@ -19,6 +19,7 @@ export const newPageComp = (p: PG, item: IItem) => {
       const citem = fillID(comp.content_tree) as IItem;
 
       const nitem = {
+        ...item,
         ...citem,
         id: item.id,
         component: {
@@ -32,7 +33,7 @@ export const newPageComp = (p: PG, item: IItem) => {
       };
 
       return nitem as IItem;
-    } 
+    }
   }
 };
 
@@ -101,4 +102,27 @@ const loadSingleComponent = (p: PG, comp_id: string) => {
       } as WS_MSG_GET_COMP)
     );
   });
+};
+
+export const editComp = (p: PG, item: IContent) => {
+  if (item.type === "item" && item.component) {
+    const cid = item.component.id;
+    let doc = p.comps.doc[cid];
+    if (doc) {
+      const map = doc.getMap("map");
+
+      const foundIdx = p.compEdits.findIndex((c) => {
+        if (c.id === item.component?.id) return true;
+      });
+      if (foundIdx < 0) {
+        p.compEdits.push(item);
+      }
+      p.comp = {
+        id: map.get("id") || "",
+        content_tree: map.get("content_tree") as any,
+        props: map.get("props") as any,
+      };
+      p.render();
+    }
+  }
 };

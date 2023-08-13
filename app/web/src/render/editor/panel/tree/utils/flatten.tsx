@@ -1,7 +1,7 @@
 import { NodeModel } from "@minoru/react-dnd-treeview";
 import { IContent, MContent } from "../../../../../utils/types/general";
 import { MItem } from "../../../../../utils/types/item";
-import { MRoot } from "../../../../../utils/types/root";
+import { IRoot, MRoot } from "../../../../../utils/types/root";
 import { PG } from "../../../logic/global";
 
 export type NodeContent = {
@@ -10,11 +10,14 @@ export type NodeContent = {
 };
 export const flattenTree = (p: PG, content: MRoot | MItem | undefined) => {
   const result: NodeModel<NodeContent>[] = [];
-  if (content) {
+  if (content && p.page) {
     p.treeMeta = {};
 
     const walk = (mitem: MContent, parent_id: string, idx: number) => {
       const item = mitem.toJSON() as IContent;
+      if (p.treeMeta[item.id]) {
+        console.log(`warning: duplicate id: ${item.id}`);
+      }
       p.treeMeta[item.id] = {
         item: mitem,
       };
@@ -24,12 +27,15 @@ export const flattenTree = (p: PG, content: MRoot | MItem | undefined) => {
         text: item.name,
         data: { content: item, idx },
       });
+
       mitem.get("childs")?.forEach((e: MContent, idx) => walk(e, item.id, idx));
     };
 
     const type = (content as any).get("type");
     if (type === "root") {
       const root = content as MRoot;
+      p.page.content_tree = root.toJSON() as IRoot;
+
       root.get("childs")?.forEach((e: MContent) => {
         walk(e, "root", 0);
       });

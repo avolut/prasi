@@ -1,15 +1,13 @@
 import { TypedArray, TypedMap } from "yjs-types";
 import { BasicItem, MBasicItem, MetaItem } from "./meta";
 import {
-  FMComponent,
   FNAdv,
   FNComponent,
   FNLayout,
-  FNLinkTag,
+  FNLinkTag
 } from "./meta-fn";
 import { MSection } from "./section";
 import { IText, MText } from "./text";
-
 export type IItem = {
   layout?: FNLayout;
   linktag?: FNLinkTag;

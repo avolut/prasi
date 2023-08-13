@@ -14,8 +14,13 @@ export const detachComp = async (
   build: FBuild
 ) => {
   if (id) {
+    const advjs = item.get("adv")?.get("js");
+
     const js_original = trim(
-      (p.pageComp[id].adv?.js || `<div {...props}>{children}</div>`).trim(),
+      (
+        (typeof advjs === "object" ? advjs.toJSON() : advjs)?.trim() ||
+        `<div {...props}>{children}</div>`
+      ).trim(),
       ";"
     );
 

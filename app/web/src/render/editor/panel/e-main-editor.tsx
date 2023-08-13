@@ -11,8 +11,6 @@ import { ETree } from "./tree/tree";
 
 export const EMainEditor = () => {
   const p = useGlobal(EditorGlobal, "EDITOR");
-
-  console.log(p.script.active);
   return (
     <div
       className={cx("editor flex-1 flex flex-col items-stretch", editorStyle)}

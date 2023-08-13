@@ -21,7 +21,7 @@ export const cssEditor = ({
       `,
     active &&
       css`
-        box-shadow: inset 0 0 0px 2px #009cff;
+        box-shadow: inset 0 0 0px 2px #009cff !important;
         > img {
           opacity: 0.6;
         }

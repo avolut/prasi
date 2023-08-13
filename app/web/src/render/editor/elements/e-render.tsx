@@ -1,22 +1,23 @@
 import { FC, ReactNode } from "react";
 import { useGlobal } from "web-utils";
 import { produceCSS } from "../../../utils/css/gen";
-import { IContent } from "../../../utils/types/general";
+import { IContent, MContent } from "../../../utils/types/general";
 import { IItem } from "../../../utils/types/item";
 import { FNAdv } from "../../../utils/types/meta-fn";
 import { IText } from "../../../utils/types/text";
 import { newPageComp } from "../logic/comp";
 import { EditorGlobal } from "../logic/global";
+import { ComponentOver, ElProp, createElProp } from "./e-relprop";
 import { scriptExec } from "./script-exec";
-import { ElProp, createElProp } from "./e-relprop";
 
 export const ERender: FC<{
   item: IContent;
   children: (childs: (IItem | IText)[]) => ReactNode;
-}> = ({ item, children }) => {
+  editComponentId?: string;
+}> = ({ item, children, editComponentId }) => {
   const p = useGlobal(EditorGlobal, "EDITOR");
 
-  if (item.hidden === "all") {
+  if (item.hidden) {
     return null;
   }
 
@@ -27,17 +28,45 @@ export const ERender: FC<{
     })
     .map((e) => {
       if (e.type === "item" && e.component?.id) {
-        if (!p.pageComp[e.id]) {
-          const comp = newPageComp(p, e);
-          if (comp) p.pageComp[e.id] = comp;
-        }
+        let meta = p.treeMeta[e.id];
 
-        if (p.pageComp[e.id]) {
-          if (item.nprops) {
-            p.pageComp[e.id].nprops = item.nprops;
+        const mcomp = p.comps.doc[e.component.id];
+        if (mcomp) {
+          if (!meta) {
+            const mitem = mcomp.getMap("map").get("content_tree");
+            if (mitem) {
+              p.treeMeta[e.id] = {
+                item: mitem as MContent,
+              };
+              meta = p.treeMeta[e.id];
+            }
           }
 
-          return p.pageComp[e.id];
+          if (!meta) {
+            console.warn(
+              `Warning component not found: ${e.component.id} ${e.name}`
+            );
+          } else {
+            if (!meta.comp) {
+              const comp = newPageComp(p, e);
+              if (comp) {
+                if (item.nprops) {
+                  comp.nprops = item.nprops;
+                }
+                meta.comp = comp;
+                return comp;
+              }
+            } else {
+              if (item.nprops) {
+                meta.comp.nprops = item.nprops;
+              }
+              return meta.comp;
+            }
+          }
+        } else {
+          console.warn(
+            `Warning component not found: ${e.component.id} ${e.name}`
+          );
         }
       }
 
@@ -45,17 +74,33 @@ export const ERender: FC<{
         e.nprops = item.nprops;
       }
       return e;
-    });
+    })
+    .filter((e) => e);
 
   let _children = children(childs);
 
-  const elprop = createElProp(item, p);
+  const elprop = createElProp(item, p, editComponentId);
   const className = produceCSS(item, {
     mode: p.mode,
     hover: p.item.hover === item.id,
     active: p.item.active === item.id,
   });
   const adv = item.adv;
+
+  let componentOver = null;
+  if (item.type === "item" && item.component?.id) {
+    if (
+      p.comp &&
+      p.compEdits.find((e) => {
+        if (e.component?.id === item.component?.id) return true;
+      })
+    ) {
+      componentOver = null;
+    } else {
+      componentOver = <ComponentOver item={item} p={p} />;
+    }
+  }
+
   if (adv) {
     const html = renderHTML(className, adv, elprop);
 
@@ -71,6 +116,7 @@ export const ERender: FC<{
               className,
               render: p.render,
               elprop,
+              componentOver,
             },
             p.site.api_url
           )}
@@ -91,6 +137,7 @@ export const ERender: FC<{
   return (
     <div className={className} {...elprop}>
       {_children}
+      {componentOver}
     </div>
   );
 };

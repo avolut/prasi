@@ -14,7 +14,7 @@ export const EditorGlobal = {
     page: false,
     site: false,
     comp: true,
-    compCallback: (comp: IItem) => {},
+    compCallback: (comp: any) => {},
   },
   script: {
     siteActive: false,
@@ -63,13 +63,19 @@ export const EditorGlobal = {
     content_tree: IItem;
     props: Record<string, FNCompDef>;
   },
+  compEdits: [] as IItem[],
 
   /** write-only */
-  pageComp: {} as Record<string, IItem>,
   itemProps: {} as Record<string, any>,
   treeMeta: {} as Record<
     string,
-    { item: MContent; passprop?: any; local?: any; passchild?: any }
+    {
+      item: MContent;
+      comp?: IItem;
+      passprop?: any;
+      local?: any;
+      passchild?: any;
+    }
   >,
   mpage: null as null | MPage,
   mpageLoaded: null as null | ((mpage: MPage) => void),

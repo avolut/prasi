@@ -1,6 +1,6 @@
 import { FC, useState } from "react";
 import { useGlobal } from "web-utils";
-import { IItem } from "../../../utils/types/item";
+import { IItem, MItem } from "../../../utils/types/item";
 import { FNCompDef } from "../../../utils/types/meta-fn";
 import { loadComponent } from "../logic/comp";
 import { EditorGlobal, PG } from "../logic/global";
@@ -11,7 +11,8 @@ import { createAPI, createDB } from "../../../utils/script/api";
 
 export const EComponent: FC<{
   item: IItem;
-}> = ({ item }) => {
+  editComponentId?: string;
+}> = ({ item, editComponentId }) => {
   const [_, render] = useState({});
   const p = useGlobal(EditorGlobal, "EDITOR");
 
@@ -48,12 +49,35 @@ export const EComponent: FC<{
     getRenderPropVal(props, item, nprops, p);
   }
 
+  if (p.comp?.id === item.component.id) {
+    const comp = p.comps.doc[p.comp?.id || ""];
+
+    const contentTree = comp.getMap("map").get("content_tree") as MItem;
+    const cid = comp.getMap("map").get("id");
+
+    if (contentTree && cid) {
+      return (
+        <ERender item={contentTree.toJSON() as any} editComponentId={cid}>
+          {(childs) => {
+            return childs.map((e) => {
+              if (e.type === "item")
+                return <EItem item={e} key={e.id} editComponentId={cid} />;
+              else return <EText item={e} key={e.id} editComponentId={cid} />;
+            });
+          }}
+        </ERender>
+      );
+    }
+  }
+  const cid = item.component.id;
+
   return (
-    <ERender item={item}>
+    <ERender item={item} editComponentId={cid}>
       {(childs) => {
         return childs.map((e) => {
-          if (e.type === "item") return <EItem item={e} key={e.id} />;
-          else return <EText item={e} key={e.id} />;
+          if (e.type === "item")
+            return <EItem item={e} key={e.id} editComponentId={cid} />;
+          else return <EText item={e} key={e.id} editComponentId={cid} />;
         });
       }}
     </ERender>

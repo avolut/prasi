@@ -1,4 +1,11 @@
-import { ReactNode, Suspense, isValidElement, useEffect, useRef } from "react";
+import {
+  ReactElement,
+  ReactNode,
+  Suspense,
+  isValidElement,
+  useEffect,
+  useRef,
+} from "react";
 import { ErrorBoundary } from "web-init/src/web/error-boundary";
 import { useLocal } from "web-utils";
 import { IContent, w } from "../../../utils/types/general";
@@ -15,6 +22,7 @@ type JsArg = {
   className: string;
   render: () => void;
   elprop: ElProp;
+  componentOver: ReactElement | null;
 };
 
 export const scriptExec = (arg: JsArg, api_url?: string) => {
@@ -43,7 +51,7 @@ export const scriptExec = (arg: JsArg, api_url?: string) => {
   return null;
 };
 
-const tempMeta: any = {};
+export const tempMeta: any = {};
 const produceEvalArgs = (
   arg: JsArg & { output: { jsx: ReactNode } },
   api_url?: string
@@ -72,7 +80,15 @@ const produceEvalArgs = (
     PassProp,
     Local,
     PassChild,
-    children,
+    children:
+      arg.componentOver !== null ? (
+        <>
+          {children}
+          {arg.componentOver}
+        </>
+      ) : (
+        children
+      ),
     props: {
       className: cx(className),
       ...arg.elprop,

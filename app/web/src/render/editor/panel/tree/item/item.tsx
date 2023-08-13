@@ -22,6 +22,7 @@ export const ETreeItem: FC<{
   ) => void;
   isActive: boolean;
   isHover: boolean;
+  editCompId?: string;
 }> = ({
   node,
   depth,
@@ -33,6 +34,7 @@ export const ETreeItem: FC<{
   isHover,
   onRightClick,
   mode,
+  editCompId,
 }) => {
   if (!node.data) return <></>;
   const local = useLocal({ renaming: false });
@@ -45,14 +47,23 @@ export const ETreeItem: FC<{
     hasChilds = true;
   }
   let itemName = item.name;
-  const isComponent = !!(item as IItem).component?.id;
+  let isComponent = !!(item as IItem).component?.id;
+  let isRootComponent = false;
+  if (isComponent && (item as IItem).component?.id === editCompId) {
+    isRootComponent = true;
+    isComponent = false;
+  }
 
   return (
     <div
       className={treeItemStyle({ isActive, isHover, isComponent })}
       onClick={() => onClick(node)}
       onPointerOver={() => onHover(node)}
-      onContextMenu={(e) => onRightClick(node, e)}
+      onContextMenu={(e) => {
+        if (!isRootComponent) {
+          onRightClick(node, e);
+        }
+      }}
     >
       <ETreeItemIndent
         depth={depth}
@@ -77,7 +88,7 @@ export const ETreeItem: FC<{
         }}
       />
 
-      {!local.renaming && (
+      {!local.renaming && !isRootComponent && (
         <ETreeItemAction
           isComponent={isComponent}
           mode={mode}

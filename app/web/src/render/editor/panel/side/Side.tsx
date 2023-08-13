@@ -1,20 +1,20 @@
-import { FC, useCallback } from "react";
+import { useCallback } from "react";
 import { useGlobal, useLocal } from "web-utils";
 import { syncronize } from "y-pojo";
 import * as Y from "yjs";
 import { TypedMap } from "yjs-types";
+import { IItem } from "../../../../utils/types/item";
+import { EditorGlobal } from "../../logic/global";
+import { PanelAdv } from "./panel/advanced";
 import { PanelAutoLayout } from "./panel/auto-layout";
 import { PanelBackground } from "./panel/background";
+import { PanelBorder } from "./panel/border";
 import { PanelDimension } from "./panel/dimension";
 import { PanelFont } from "./panel/font";
 import { PanelLink } from "./panel/link";
+import { PanelPadding } from "./panel/padding";
 import { SideBox } from "./ui/SideBox";
 import { SideLabel } from "./ui/SideLabel";
-import { PanelBorder } from "./panel/border";
-import { EditorGlobal } from "../../logic/global";
-import { IItem, MItem } from "../../../../utils/types/item";
-import { PanelPadding } from "./panel/padding";
-import { PanelAdv } from "./panel/advanced";
 
 export const ESide = () => {
   const p = useGlobal(EditorGlobal, "EDITOR");
@@ -77,6 +77,7 @@ export const ESide = () => {
       comp.set("props", new Y.Map() as any);
     }
   }
+
   return (
     <div
       className={cx(
@@ -87,7 +88,9 @@ export const ESide = () => {
         {mitem ? (
           <>
             {compItem?.id ? (
-              <>Component</>
+              <pre className="text-[9px] whitespace-pre-wrap break-all">
+                {JSON.stringify(compItem.props, null, 2)}
+              </pre>
             ) : (
               <>
                 <SideLabel sep="bottom">

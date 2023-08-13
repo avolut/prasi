@@ -1,6 +1,6 @@
 import { TypedMap } from "yjs-types";
 import { IItem, MItem } from "./item";
-
+import * as Y from "yjs";
 export type FNLayout = {
   dir: "row" | "col" | "row-reverse" | "col-reverse";
   align: FNAlign;
@@ -11,10 +11,10 @@ export type FNLayout = {
 export type FMLayout = TypedMap<FNLayout>;
 
 export type FNAdv = {
-  js?: string;
+  js?: Y.Text | string;
   jsBuilt?: string;
-  css?: string;
-  html?: string;
+  css?: Y.Text | string;
+  html?: Y.Text | string;
 };
 
 export type FMAdv = TypedMap<FNAdv>;

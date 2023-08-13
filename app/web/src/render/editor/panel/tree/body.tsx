@@ -134,6 +134,7 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[] }> = ({ tree }) => {
                   onToggle={onToggle}
                   onHover={onHover}
                   onClick={onClick}
+                  editCompId={p.comp?.id}
                   isActive={p.item.active === node.data?.content.id}
                   isHover={p.item.hover === node.data?.content.id}
                   onRightClick={(node, event) => {

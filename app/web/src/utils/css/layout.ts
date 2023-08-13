@@ -14,19 +14,16 @@ export const cssLayout = (
   });
 
   if (layout) {
+    if (layout.wrap) {
+      result.push(
+        layout.wrap === "flex-wrap" ? "flex-wrap: wrap;" : "flex-wrap: nowrap;"
+      );
+    }
     if (layout.dir.startsWith("col")) {
       if (layout.dir === "col") {
         result.push("flex-direction: column;");
       } else if (layout.dir === "col-reverse") {
         result.push("flex-direction: column-reverse;");
-      }
-      if (!layout.wrap) {
-      } else {
-        result.push(
-          layout.wrap === "flex-wrap"
-            ? "flex-wrap: wrap;"
-            : "flex-wrap: nowrap;"
-        );
       }
       if (layout.gap === "auto") {
         if (layout.align === "left")
