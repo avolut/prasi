@@ -7,6 +7,9 @@ import { Modal } from "../../../../../utils/ui/modal";
 import { Popover } from "../../../../../utils/ui/popover";
 import { LiveDeploy } from "./deploy/LiveDeploy";
 import { AddElement } from "./AddElement";
+import { EScriptCustom } from "../../script/script-custom";
+import { customMonacoState } from "../../script/monaco/monaco-custom";
+import { execSiteJS } from "../../../logic/init";
 const ua = navigator.userAgent.toLowerCase();
 const isMac =
   ua.indexOf("mac") > -1 &&
@@ -32,18 +35,54 @@ export const ToolbarCenter = () => {
       <Modal
         open={local.siteJS.open}
         onOpenChange={(open) => {
+          if (local.siteJS.editor) {
+            const state = local.siteJS.editor.saveViewState();
+            customMonacoState["site"] = state;
+          }
           if (!open) {
-            if (local.siteJS.editor) {
-              const state = local.siteJS.editor.saveViewState();
-              // customMonacoState["site"] = state;
-            }
             local.siteJS.open = false;
             local.render();
           }
         }}
       >
         <div className="bg-white w-[80vw] h-[80vh] flex">
-          <>Cek</>
+          <EScriptCustom
+            monaco_id="site"
+            src={p.site.js}
+            onLoad={(e) => {
+              local.siteJS.editor = e;
+            }}
+            onChange={(src, built) => {
+              if (p.site) {
+                p.site.js = src;
+                p.site.js_compiled = built;
+                execSiteJS(p);
+                p.render();
+              }
+              clearTimeout(local.siteJS.timeout);
+              local.siteJS.timeout = setTimeout(() => {
+                db.site.update({
+                  where: {
+                    id: p.site?.id || "",
+                  },
+                  data: {
+                    js: src,
+                    js_compiled: built,
+                    updated_at: new Date(),
+                  },
+                  select: {
+                    id: true,
+                  },
+                });
+              }, 600);
+            }}
+            propTypes={{
+              exports: "Record<string, any>",
+              types: "Record<string, string>",
+              load: "(src: string) => Promise<any>",
+              render: "() => void",
+            }}
+          />
         </div>
       </Modal>
       <ToolbarBox
@@ -52,10 +91,6 @@ export const ToolbarCenter = () => {
             content: (
               <>
                 <JSIcon />
-                {/* <div className="flex font-mono text-[10px]">
-                  <div>Site</div>
-                  <div className="text-slate-400">JS</div>
-                </div> */}
               </>
             ),
             onClick() {

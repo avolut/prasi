@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import { useGlobal } from "web-utils";
 import { Loading } from "../../utils/ui/loading";
 import { EMainEditor } from "./panel/e-main-editor";
@@ -13,6 +13,22 @@ export const Editor: FC<{ site_id: string; page_id: string; session: any }> = ({
 }) => {
   const p = useGlobal(EditorGlobal, "EDITOR");
   p.session = session;
+
+  useEffect(() => {
+    const keyDown = async (evt: KeyboardEvent) => {
+      if (
+        (evt.key === "s" || evt.key === "s") &&
+        (evt.ctrlKey || evt.metaKey)
+      ) {
+        evt.preventDefault();
+        evt.stopPropagation();
+      }
+    };
+    window.addEventListener("keydown", keyDown, true);
+    return () => {
+      window.removeEventListener("keydown", keyDown, true);
+    };
+  }, []);
 
   if (!p.mode) {
     p.mode = (localStorage.getItem("editor-mode") || "desktop") as any;

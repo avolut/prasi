@@ -26,6 +26,7 @@ export const initEditor = async (p: PG, site_id: string) => {
         config: true,
         domain: true,
         name: true,
+        js: true,
         js_compiled: true,
       },
     });
@@ -37,28 +38,13 @@ export const initEditor = async (p: PG, site_id: string) => {
       );
 
       p.site.id = site.id;
-      p.site.js = site.js_compiled || "";
+      p.site.js = site.js || "";
+      p.site.js_compiled = site.js_compiled || "";
       p.site.name = site.name;
       p.site.domain = site.domain;
       p.site.api_url = await initApi(site.config);
 
-      const exec = (fn: string, scopes: any) => {
-        if (p) {
-          scopes["api"] = createAPI(p.site.api_url);
-          scopes["db"] = createDB(p.site.api_url);
-          const f = new Function(...Object.keys(scopes), fn);
-          const res = f(...Object.values(scopes));
-          return res;
-        }
-        return null;
-      };
-      const scope = {
-        types: {},
-        exports: w.exports,
-        load: importModule,
-        render: p.render,
-      };
-      exec(p.site.js, scope);
+      execSiteJS(p);
 
       p.status = "ready";
       p.render();
@@ -67,4 +53,23 @@ export const initEditor = async (p: PG, site_id: string) => {
       p.render();
     }
   }
+};
+
+export const execSiteJS = (p: PG) => {
+  if (p) {
+    p.script.siteTypes = {};
+    const scopes: any = {
+      types: p.script.siteTypes,
+      exports: w.exports,
+      load: importModule,
+      render: p.render,
+    };
+    const fn = p.site.js_compiled;
+    scopes["api"] = createAPI(p.site.api_url);
+    scopes["db"] = createDB(p.site.api_url);
+    const f = new Function(...Object.keys(scopes), fn);
+    const res = f(...Object.values(scopes));
+    return res;
+  }
+  return null;
 };

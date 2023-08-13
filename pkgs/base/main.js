@@ -199,6 +199,7 @@
   var import_fs2, import_path, import_process, globalize, dir;
   var init_export = __esm({
     "pkgs/base/pkgs/dir/export.ts"() {
+      "use strict";
       import_fs2 = __require("fs");
       import_path = __require("path");
       import_process = __require("process");
@@ -37732,11 +37733,11 @@ ERROR: Async operation of type "${type}" was created in "process.exit" callback.
   // node_modules/.pnpm/signal-exit@3.0.7/node_modules/signal-exit/index.js
   var require_signal_exit = __commonJS({
     "node_modules/.pnpm/signal-exit@3.0.7/node_modules/signal-exit/index.js"(exports2, module2) {
-      var process7 = global.process;
-      var processOk = function(process8) {
-        return process8 && typeof process8 === "object" && typeof process8.removeListener === "function" && typeof process8.emit === "function" && typeof process8.reallyExit === "function" && typeof process8.listeners === "function" && typeof process8.kill === "function" && typeof process8.pid === "number" && typeof process8.on === "function";
+      var process8 = global.process;
+      var processOk = function(process9) {
+        return process9 && typeof process9 === "object" && typeof process9.removeListener === "function" && typeof process9.emit === "function" && typeof process9.reallyExit === "function" && typeof process9.listeners === "function" && typeof process9.kill === "function" && typeof process9.pid === "number" && typeof process9.on === "function";
       };
-      if (!processOk(process7)) {
+      if (!processOk(process8)) {
         module2.exports = function() {
           return function() {
           };
@@ -37744,15 +37745,15 @@ ERROR: Async operation of type "${type}" was created in "process.exit" callback.
       } else {
         assert = __require("assert");
         signals = require_signals2();
-        isWin = /^win/i.test(process7.platform);
+        isWin = /^win/i.test(process8.platform);
         EE = __require("events");
         if (typeof EE !== "function") {
           EE = EE.EventEmitter;
         }
-        if (process7.__signal_exit_emitter__) {
-          emitter = process7.__signal_exit_emitter__;
+        if (process8.__signal_exit_emitter__) {
+          emitter = process8.__signal_exit_emitter__;
         } else {
-          emitter = process7.__signal_exit_emitter__ = new EE();
+          emitter = process8.__signal_exit_emitter__ = new EE();
           emitter.count = 0;
           emitter.emitted = {};
         }
@@ -37789,12 +37790,12 @@ ERROR: Async operation of type "${type}" was created in "process.exit" callback.
           loaded = false;
           signals.forEach(function(sig) {
             try {
-              process7.removeListener(sig, sigListeners[sig]);
+              process8.removeListener(sig, sigListeners[sig]);
             } catch (er) {
             }
           });
-          process7.emit = originalProcessEmit;
-          process7.reallyExit = originalProcessReallyExit;
+          process8.emit = originalProcessEmit;
+          process8.reallyExit = originalProcessReallyExit;
           emitter.count -= 1;
         };
         module2.exports.unload = unload;
@@ -37811,7 +37812,7 @@ ERROR: Async operation of type "${type}" was created in "process.exit" callback.
             if (!processOk(global.process)) {
               return;
             }
-            var listeners = process7.listeners(sig);
+            var listeners = process8.listeners(sig);
             if (listeners.length === emitter.count) {
               unload();
               emit("exit", null, sig);
@@ -37819,7 +37820,7 @@ ERROR: Async operation of type "${type}" was created in "process.exit" callback.
               if (isWin && sig === "SIGHUP") {
                 sig = "SIGINT";
               }
-              process7.kill(process7.pid, sig);
+              process8.kill(process8.pid, sig);
             }
           };
         });
@@ -37835,36 +37836,36 @@ ERROR: Async operation of type "${type}" was created in "process.exit" callback.
           emitter.count += 1;
           signals = signals.filter(function(sig) {
             try {
-              process7.on(sig, sigListeners[sig]);
+              process8.on(sig, sigListeners[sig]);
               return true;
             } catch (er) {
               return false;
             }
           });
-          process7.emit = processEmit;
-          process7.reallyExit = processReallyExit;
+          process8.emit = processEmit;
+          process8.reallyExit = processReallyExit;
         };
         module2.exports.load = load;
-        originalProcessReallyExit = process7.reallyExit;
+        originalProcessReallyExit = process8.reallyExit;
         processReallyExit = function processReallyExit2(code) {
           if (!processOk(global.process)) {
             return;
           }
-          process7.exitCode = code || /* istanbul ignore next */
+          process8.exitCode = code || /* istanbul ignore next */
           0;
-          emit("exit", process7.exitCode, null);
-          emit("afterexit", process7.exitCode, null);
-          originalProcessReallyExit.call(process7, process7.exitCode);
+          emit("exit", process8.exitCode, null);
+          emit("afterexit", process8.exitCode, null);
+          originalProcessReallyExit.call(process8, process8.exitCode);
         };
-        originalProcessEmit = process7.emit;
+        originalProcessEmit = process8.emit;
         processEmit = function processEmit2(ev, arg) {
           if (ev === "exit" && processOk(global.process)) {
             if (arg !== void 0) {
-              process7.exitCode = arg;
+              process8.exitCode = arg;
             }
             var ret = originalProcessEmit.apply(this, arguments);
-            emit("exit", process7.exitCode, null);
-            emit("afterexit", process7.exitCode, null);
+            emit("exit", process8.exitCode, null);
+            emit("afterexit", process8.exitCode, null);
             return ret;
           } else {
             return originalProcessEmit.apply(this, arguments);
@@ -42494,11 +42495,11 @@ ${src}
   init_export();
   var import_fs_jetpack20 = __toESM(require_main());
 
-  // node_modules/.pnpm/execa@7.1.1/node_modules/execa/index.js
+  // node_modules/.pnpm/execa@7.2.0/node_modules/execa/index.js
   var import_node_buffer2 = __require("node:buffer");
   var import_node_path2 = __toESM(__require("node:path"), 1);
   var import_node_child_process3 = __toESM(__require("node:child_process"), 1);
-  var import_node_process5 = __toESM(__require("node:process"), 1);
+  var import_node_process6 = __toESM(__require("node:process"), 1);
   var import_cross_spawn = __toESM(require_cross_spawn(), 1);
 
   // node_modules/.pnpm/strip-final-newline@3.0.0/node_modules/strip-final-newline/index.js
@@ -42633,6 +42634,9 @@ ${fromBody}`;
     return calledFunctions.get(function_);
   };
   var onetime_default = onetime;
+
+  // node_modules/.pnpm/execa@7.2.0/node_modules/execa/lib/error.js
+  var import_node_process4 = __toESM(__require("node:process"), 1);
 
   // node_modules/.pnpm/human-signals@4.3.1/node_modules/human-signals/build/src/main.js
   var import_node_os5 = __require("node:os");
@@ -42998,7 +43002,7 @@ ${fromBody}`;
   };
   var signalsByNumber = getSignalsByNumber();
 
-  // node_modules/.pnpm/execa@7.1.1/node_modules/execa/lib/error.js
+  // node_modules/.pnpm/execa@7.2.0/node_modules/execa/lib/error.js
   var getErrorPrefix = ({ timedOut, timeout, errorCode, signal, signalDescription, exitCode, isCanceled }) => {
     if (timedOut) {
       return `timed out after ${timeout} milliseconds`;
@@ -43029,7 +43033,7 @@ ${fromBody}`;
     timedOut,
     isCanceled,
     killed,
-    parsed: { options: { timeout } }
+    parsed: { options: { timeout, cwd: cwd2 = import_node_process4.default.cwd() } }
   }) => {
     exitCode = exitCode === null ? void 0 : exitCode;
     signal = signal === null ? void 0 : signal;
@@ -43055,6 +43059,7 @@ ${error.message}` : execaMessage;
     error.signalDescription = signalDescription;
     error.stdout = stdout;
     error.stderr = stderr;
+    error.cwd = cwd2;
     if (all !== void 0) {
       error.all = all;
     }
@@ -43068,7 +43073,7 @@ ${error.message}` : execaMessage;
     return error;
   };
 
-  // node_modules/.pnpm/execa@7.1.1/node_modules/execa/lib/stdio.js
+  // node_modules/.pnpm/execa@7.2.0/node_modules/execa/lib/stdio.js
   var aliases = ["stdin", "stdout", "stderr"];
   var hasAlias = (options) => aliases.some((alias) => options[alias] !== void 0);
   var normalizeStdio = (options) => {
@@ -43092,7 +43097,7 @@ ${error.message}` : execaMessage;
     return Array.from({ length }, (value, index) => stdio[index]);
   };
 
-  // node_modules/.pnpm/execa@7.1.1/node_modules/execa/lib/kill.js
+  // node_modules/.pnpm/execa@7.2.0/node_modules/execa/lib/kill.js
   var import_node_os6 = __toESM(__require("node:os"), 1);
   var import_signal_exit = __toESM(require_signal_exit(), 1);
   var DEFAULT_FORCE_KILL_TIMEOUT = 1e3 * 5;
@@ -43166,7 +43171,7 @@ ${error.message}` : execaMessage;
     });
   };
 
-  // node_modules/.pnpm/execa@7.1.1/node_modules/execa/lib/pipe.js
+  // node_modules/.pnpm/execa@7.2.0/node_modules/execa/lib/pipe.js
   var import_node_fs = __require("node:fs");
   var import_node_child_process = __require("node:child_process");
 
@@ -43178,7 +43183,7 @@ ${error.message}` : execaMessage;
     return isStream(stream) && stream.writable !== false && typeof stream._write === "function" && typeof stream._writableState === "object";
   }
 
-  // node_modules/.pnpm/execa@7.1.1/node_modules/execa/lib/pipe.js
+  // node_modules/.pnpm/execa@7.2.0/node_modules/execa/lib/pipe.js
   var isExecaChildProcess = (target) => target instanceof import_node_child_process.ChildProcess && typeof target.then === "function";
   var pipeToTarget = (spawned, streamName, target) => {
     if (typeof target === "string") {
@@ -43210,7 +43215,7 @@ ${error.message}` : execaMessage;
     }
   };
 
-  // node_modules/.pnpm/execa@7.1.1/node_modules/execa/lib/stream.js
+  // node_modules/.pnpm/execa@7.2.0/node_modules/execa/lib/stream.js
   var import_node_fs2 = __require("node:fs");
   var import_get_stream = __toESM(require_get_stream(), 1);
   var import_merge_stream = __toESM(require_merge_stream(), 1);
@@ -43300,7 +43305,7 @@ ${error.message}` : execaMessage;
     }
   };
 
-  // node_modules/.pnpm/execa@7.1.1/node_modules/execa/lib/promise.js
+  // node_modules/.pnpm/execa@7.2.0/node_modules/execa/lib/promise.js
   var nativePromisePrototype = (/* @__PURE__ */ (async () => {
   })()).constructor.prototype;
   var descriptors = ["then", "catch", "finally"].map((property) => [
@@ -43327,7 +43332,7 @@ ${error.message}` : execaMessage;
     }
   });
 
-  // node_modules/.pnpm/execa@7.1.1/node_modules/execa/lib/command.js
+  // node_modules/.pnpm/execa@7.2.0/node_modules/execa/lib/command.js
   var import_node_buffer = __require("node:buffer");
   var import_node_child_process2 = __require("node:child_process");
   var normalizeArgs = (file, args2 = []) => {
@@ -43399,9 +43404,9 @@ ${error.message}` : execaMessage;
     return tokens;
   };
 
-  // node_modules/.pnpm/execa@7.1.1/node_modules/execa/lib/verbose.js
+  // node_modules/.pnpm/execa@7.2.0/node_modules/execa/lib/verbose.js
   var import_node_util = __require("node:util");
-  var import_node_process4 = __toESM(__require("node:process"), 1);
+  var import_node_process5 = __toESM(__require("node:process"), 1);
   var verboseDefault = (0, import_node_util.debuglog)("execa").enabled;
   var padField = (field, padding) => String(field).padStart(padding, "0");
   var getTimestamp = () => {
@@ -43412,14 +43417,14 @@ ${error.message}` : execaMessage;
     if (!verbose) {
       return;
     }
-    import_node_process4.default.stderr.write(`[${getTimestamp()}] ${escapedCommand}
+    import_node_process5.default.stderr.write(`[${getTimestamp()}] ${escapedCommand}
 `);
   };
 
-  // node_modules/.pnpm/execa@7.1.1/node_modules/execa/index.js
+  // node_modules/.pnpm/execa@7.2.0/node_modules/execa/index.js
   var DEFAULT_MAX_BUFFER = 1e3 * 1e3 * 100;
   var getEnv = ({ env: envOption, extendEnv, preferLocal, localDir, execPath }) => {
-    const env3 = extendEnv ? { ...import_node_process5.default.env, ...envOption } : envOption;
+    const env3 = extendEnv ? { ...import_node_process6.default.env, ...envOption } : envOption;
     if (preferLocal) {
       return npmRunPathEnv({ env: env3, cwd: localDir, execPath });
     }
@@ -43436,8 +43441,8 @@ ${error.message}` : execaMessage;
       stripFinalNewline: true,
       extendEnv: true,
       preferLocal: false,
-      localDir: options.cwd || import_node_process5.default.cwd(),
-      execPath: import_node_process5.default.execPath,
+      localDir: options.cwd || import_node_process6.default.cwd(),
+      execPath: import_node_process6.default.execPath,
       encoding: "utf8",
       reject: true,
       cleanup: true,
@@ -43448,7 +43453,7 @@ ${error.message}` : execaMessage;
     };
     options.env = getEnv(options);
     options.stdio = normalizeStdio(options);
-    if (import_node_process5.default.platform === "win32" && import_node_path2.default.basename(file, ".exe") === "cmd") {
+    if (import_node_process6.default.platform === "win32" && import_node_path2.default.basename(file, ".exe") === "cmd") {
       args2.unshift("/q");
     }
     return { file, args: args2, options, parsed };

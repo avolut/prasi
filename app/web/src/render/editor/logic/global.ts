@@ -1,5 +1,5 @@
 import { ReactElement } from "react";
-import * as Y from 'yjs';
+import * as Y from "yjs";
 import { CompDoc } from "../../../base/global/content-editor";
 import { MContent, MPage } from "../../../utils/types/general";
 import { IItem } from "../../../utils/types/item";
@@ -17,6 +17,8 @@ export const EditorGlobal = {
     compCallback: (comp: IItem) => {},
   },
   script: {
+    siteActive: false,
+    siteTypes: {},
     active: false,
     type: "js" as "js" | "css" | "html",
   },
@@ -47,6 +49,7 @@ export const EditorGlobal = {
     domain: "",
     name: "",
     js: "",
+    js_compiled: "",
   },
   page: null as null | {
     id: string;

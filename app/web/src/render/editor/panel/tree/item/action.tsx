@@ -135,22 +135,8 @@ const Adv: FC<{
     const mitem = p.treeMeta[item.id]?.item;
     if (mitem) {
       p.item.active = item.id;
-      if (mode === "css") {
-        p.script = {
-          active: true,
-          type: "css",
-        };
-      } else if (mode === "js") {
-        p.script = {
-          active: true,
-          type: "js",
-        };
-      } else {
-        p.script = {
-          active: true,
-          type: "html",
-        };
-      }
+      p.script.active = true;
+      p.script.type = mode;
       p.render();
     }
   };

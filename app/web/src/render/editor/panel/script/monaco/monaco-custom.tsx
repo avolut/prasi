@@ -7,6 +7,7 @@ import type { OnMount } from "@monaco-editor/react";
 import { jsMount } from "./mount";
 import { monacoTypings } from "./typings";
 import { findScope } from "../../../../../compo/page/content-edit/render-tools/init-scope";
+import { EditorGlobal } from "../../../logic/global";
 export type MonacoEditor = Parameters<OnMount>[0];
 
 export type FBuild = (
@@ -18,8 +19,7 @@ export type FBuild = (
 export const customMonacoState: Record<string, any> = {};
 
 export const ScriptMonacoCustom: FC<{
-  ceid: string;
-  monacoid: string;
+  monaco_id: string;
   Editor: typeof MonacoEditor;
   build: FBuild;
   src: string;
@@ -30,8 +30,7 @@ export const ScriptMonacoCustom: FC<{
   props?: any;
   propTypes?: any;
 }> = ({
-  ceid,
-  monacoid,
+  monaco_id,
   Editor,
   build,
   item_id,
@@ -42,7 +41,7 @@ export const ScriptMonacoCustom: FC<{
   props,
   propTypes,
 }) => {
-  const c = useGlobal(CEGlobal, ceid);
+  const c = useGlobal(EditorGlobal);
   const local = useLocal({
     editor: null as null | MonacoEditor,
   });
@@ -79,20 +78,6 @@ export const ScriptMonacoCustom: FC<{
 
             if (onLoad) onLoad(editor, monaco);
 
-            if (c.editor.script.active?.default && !editor.getValue().trim()) {
-              editor.executeEdits(null, [
-                {
-                  range: {
-                    startLineNumber: 0,
-                    startColumn: 0,
-                    endColumn: Number.MAX_SAFE_INTEGER,
-                    endLineNumber: Number.MAX_SAFE_INTEGER,
-                  },
-                  text: c.editor.script.active?.default,
-                },
-              ]);
-            }
-
             const value = editor.getValue();
             monaco.editor.getModels().forEach((model) => {
               if (model.uri.toString().startsWith("inmemory://model")) {
@@ -107,26 +92,14 @@ export const ScriptMonacoCustom: FC<{
             );
             editor.setModel(model);
 
-            if (!customMonacoState[monacoid]) {
+            if (!customMonacoState[monaco_id]) {
               editor.trigger("fold", "editor.foldAllMarkerRegions", null);
             } else {
-              editor.restoreViewState(customMonacoState[monacoid]);
+              editor.restoreViewState(customMonacoState[monaco_id]);
             }
 
             await jsMount(editor, monaco);
-
             const propVal: any = {};
-            if (item_id) {
-              const scope = findScope(c.scope, item_id);
-              for (const [k, v] of Object.entries(scope)) {
-                propVal[k] = v;
-              }
-            }
-            if (props) {
-              for (const [k, v] of Object.entries(props)) {
-                propVal[k] = v;
-              }
-            }
 
             await monacoTypings(editor, monaco, {
               values: propVal,

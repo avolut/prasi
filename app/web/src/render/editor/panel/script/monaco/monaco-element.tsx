@@ -10,6 +10,7 @@ import { Loading } from "../../../../../utils/ui/loading";
 import { EditorGlobal } from "../../../logic/global";
 import { jsMount } from "./mount";
 import { monacoTypings } from "./typings";
+import { emmetHTML, emmetJSX } from "emmet-monaco-es";
 
 export type MonacoEditor = Parameters<OnMount>[0];
 export const DefaultScript = {
@@ -266,6 +267,13 @@ export const ScriptMonacoElement: FC<{
             tabSize: 2,
             useTabStops: true,
           }}
+          beforeMount={(monaco) => {
+            if (script.type === "js") {
+              emmetJSX(monaco, ["typescript"]);
+            } else if (script.type === "html") {
+              emmetHTML(monaco);
+            }
+          }}
           defaultValue={ytext.toJSON() || defaultSrc}
           onMount={async (editor, monaco) => {
             local.editor = editor;
@@ -291,7 +299,7 @@ export const ScriptMonacoElement: FC<{
             }
 
             const propVal: any = { ...(window.exports || {}) };
-            const propTypes: any = {};
+            const propTypes: any = p.script.siteTypes;
 
             await jsMount(editor, monaco);
             await monacoTypings(editor, monaco, {
