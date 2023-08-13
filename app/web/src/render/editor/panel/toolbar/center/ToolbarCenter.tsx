@@ -25,7 +25,6 @@ export const ToolbarCenter = () => {
   const local = useLocal({
     apiConfigOpen: false,
     siteJS: {
-      open: false,
       timeout: null as any,
       editor: null as null | MonacoEditor,
     },
@@ -33,14 +32,14 @@ export const ToolbarCenter = () => {
   return (
     <div className={cx("toolbar-mid", "flex")}>
       <Modal
-        open={local.siteJS.open}
+        open={p.script.siteActive}
         onOpenChange={(open) => {
           if (local.siteJS.editor) {
             const state = local.siteJS.editor.saveViewState();
             customMonacoState["site"] = state;
           }
           if (!open) {
-            local.siteJS.open = false;
+            p.script.siteActive = false;
             local.render();
           }
         }}
@@ -94,7 +93,7 @@ export const ToolbarCenter = () => {
               </>
             ),
             onClick() {
-              local.siteJS.open = true;
+              p.script.siteActive = true;
               local.render();
             },
           },

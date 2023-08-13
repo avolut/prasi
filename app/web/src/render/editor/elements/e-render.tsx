@@ -1,4 +1,4 @@
-import { FC, ReactNode } from "react";
+import { FC, ReactNode, useCallback } from "react";
 import { useGlobal } from "web-utils";
 import { produceCSS } from "../../../utils/css/gen";
 import { IContent, MContent } from "../../../utils/types/general";
@@ -21,6 +21,17 @@ export const ERender: FC<{
   if (item.hidden) {
     return null;
   }
+
+  const focusText = useCallback(
+    (e: any) => {
+      if (!p.script.active && !p.script.siteActive) {
+        if (p.item.active === item.id && e && document.activeElement !== e) {
+          e.focus();
+        }
+      }
+    },
+    [p.script.active, p.script.siteActive, p.item.active, item]
+  );
 
   const childs = (item.type !== "text" ? item.childs : [])
     .filter((e) => {
@@ -140,15 +151,7 @@ export const ERender: FC<{
           `
         )}
         ref={(e) => {
-          setTimeout(() => {
-            if (
-              p.item.active === item.id &&
-              e &&
-              document.activeElement !== e
-            ) {
-              e.focus();
-            }
-          }, 100);
+          focusText(e);
         }}
         dangerouslySetInnerHTML={{ __html: _children || "" }}
         contentEditable
