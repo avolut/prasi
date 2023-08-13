@@ -76,6 +76,18 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[] }> = ({ tree }) => {
     }
   }, [p.item.active]);
 
+  useEffect(() => {
+    if (p.comp && p.comp.id) {
+      const open = new Set<any>();
+      open.add(tree[0].id);
+
+      for (const item of (tree[0].data?.content as any).childs) {
+        open.add(item.id);
+      }
+      local.method?.open([...open]);
+    }
+  }, [p.comp?.id, local.method]);
+
   return (
     <div
       className={cx(

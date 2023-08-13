@@ -53,14 +53,19 @@ export const PanelPadding: FC<{
     r: 0,
   });
 
-  // useEffect(() => {
-  //   if (!local.all) {
-  //     if (padding.l !== padding.r || padding.b !== padding.t) {
-  //       local.all = true;
-  //       local.render();
-  //     }
-  //   }
-  // }, [value]);
+  useEffect(() => {
+    if (!local.all) {
+      if (padding.l !== padding.r || padding.b !== padding.t) {
+        local.all = true;
+        local.render();
+      }
+    } else if (local.all) {
+      if (padding.l === padding.r && padding.b === padding.t) {
+        local.all = false;
+        local.render();
+      }
+    }
+  }, [value]);
 
   return (
     <div className="flex flex-col space-y-2">
