@@ -128,12 +128,7 @@ export const ESide = () => {
                 <SideLabel>ADVANCED</SideLabel>
                 <SideBox>
                   <PanelLink value={active} mode={p.mode} update={update} />
-                  <PanelAdv
-                    id={p.item.active}
-                    value={active}
-                    mode={p.mode}
-                    update={update}
-                  />
+                  <PanelAdv value={active} mode={p.mode} update={update} />
                 </SideBox>
               </>
             )}

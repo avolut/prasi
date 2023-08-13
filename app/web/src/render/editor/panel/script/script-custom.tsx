@@ -1,12 +1,11 @@
 import { Monaco } from "@monaco-editor/react";
 import { FC } from "react";
 import { useGlobal } from "web-utils";
-import { CEGlobal } from "../../../../base/global/content-editor";
 import { Loading } from "../../../../utils/ui/loading";
+import { EditorGlobal } from "../../logic/global";
 import { ScriptMonacoCustom } from "./monaco/monaco-custom";
 import { MonacoEditor } from "./monaco/typings";
 import { jscript } from "./script-element";
-import { EditorGlobal } from "../../logic/global";
 
 export const EScriptCustom: FC<{
   monaco_id: string;

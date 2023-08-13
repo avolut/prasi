@@ -1,13 +1,9 @@
-import type { Monaco, Editor as MonacoEditor } from "@monaco-editor/react";
+import type { Monaco, Editor as MonacoEditor, OnMount } from "@monaco-editor/react";
 import { FC } from "react";
 import { useGlobal, useLocal } from "web-utils";
-import { CEGlobal } from "../../../../../base/global/content-editor";
-
-import type { OnMount } from "@monaco-editor/react";
+import { EditorGlobal } from "../../../logic/global";
 import { jsMount } from "./mount";
 import { monacoTypings } from "./typings";
-import { findScope } from "../../../../../compo/page/content-edit/render-tools/init-scope";
-import { EditorGlobal } from "../../../logic/global";
 export type MonacoEditor = Parameters<OnMount>[0];
 
 export type FBuild = (

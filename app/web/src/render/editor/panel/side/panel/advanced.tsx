@@ -1,12 +1,12 @@
 import { FC } from "react";
-import { Button } from "../ui/Button";
 import { useGlobal } from "web-utils";
-import { CEGlobal } from "../../../../../base/global/content-editor";
-import { getMText, getMap } from "../../../tools/yjs-tools";
+import { IItem } from "../../../../../utils/types/item";
 import { FMAdv, FNAdv } from "../../../../../utils/types/meta-fn";
 import { ISection } from "../../../../../utils/types/section";
-import { IItem } from "../../../../../utils/types/item";
 import { IText } from "../../../../../utils/types/text";
+import { EditorGlobal } from "../../../logic/global";
+import { getMText, getMap } from "../../../tools/yjs-tools";
+import { Button } from "../ui/Button";
 
 type AdvUpdate = {
   adv?: FNAdv;
@@ -15,11 +15,10 @@ type AdvUpdate = {
 export const PanelAdv: FC<{
   value: ISection | IItem | IText;
   mode: "desktop" | "mobile";
-  id: string;
   update: <T extends keyof AdvUpdate>(key: T, val: AdvUpdate[T]) => void;
-}> = ({ value, update, id }) => {
-  const c = useGlobal(CEGlobal, id);
-  const adv = c.editor.active?.get("adv")?.toJSON() || ({} as any);
+}> = ({ value, update }) => {
+  const p = useGlobal(EditorGlobal, "EDITOR");
+  const adv = p.mpage?.get("adv")?.toJSON() || ({} as any);
 
   return (
     <>
@@ -52,22 +51,9 @@ export const PanelAdv: FC<{
         >
           <Button
             onClick={() => {
-              if (c.editor.active) {
-                const map = getMap<FMAdv>(c.editor.active, "adv");
-                c.editor.script.active = {
-                  src: getMText(map, "css"),
-                  type: "css",
-                  default: `\
-& {
-  display: flex;
-  
-  &:hover {
-    display: flex;
-  }
-}`,
-                };
-                c.render();
-              }
+              p.script.active = true;
+              p.script.type = "css";
+              p.render();
             }}
             appearance="subtle"
           >
@@ -94,14 +80,9 @@ export const PanelAdv: FC<{
         >
           <Button
             onClick={() => {
-              if (c.editor.active) {
-                const map = getMap<FMAdv>(c.editor.active, "adv");
-                c.editor.script.active = {
-                  src: getMText(map, "html"),
-                  type: "html",
-                };
-                c.render();
-              }
+              p.script.active = true;
+              p.script.type = "html";
+              p.render();
             }}
             appearance="subtle"
           >
@@ -130,18 +111,9 @@ export const PanelAdv: FC<{
             appearance="subtle"
             className="js"
             onClick={() => {
-              if (c.editor.active) {
-                const map = getMap<FMAdv>(c.editor.active, "adv");
-                c.editor.script.active = {
-                  src: getMText(map, "js"),
-                  type: "js",
-                  default: `\
-<div {...props}>
-  {children}
-</div>`,
-                };
-                c.render();
-              }
+              p.script.active = true;
+              p.script.type = "js";
+              p.render();
             }}
           >
             JS

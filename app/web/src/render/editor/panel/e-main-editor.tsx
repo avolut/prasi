@@ -8,11 +8,11 @@ import { EScriptElement } from "./script/script-element";
 import { ESide } from "./side/Side";
 import { Toolbar } from "./toolbar/Toolbar";
 import { ETree } from "./tree/tree";
-import { EScriptCustom } from "./script/script-custom";
 
 export const EMainEditor = () => {
   const p = useGlobal(EditorGlobal, "EDITOR");
 
+  console.log(p.script.active);
   return (
     <div
       className={cx("editor flex-1 flex flex-col items-stretch", editorStyle)}
