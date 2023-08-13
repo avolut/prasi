@@ -1,16 +1,29 @@
-import type { Editor as MonacoEditor } from "@monaco-editor/react";
-import { FC } from "react";
-import { useGlobal, useLocal } from "web-utils";
-import { CEGlobal } from "../../../../../base/global/content-editor";
-
+import type { Editor as MonacoEditor, OnMount } from "@monaco-editor/react";
 import trim from "lodash.trim";
 import Delta from "quill-delta";
+import { FC } from "react";
 import strDelta from "textdiff-create";
-import { monacoTypings } from "./typings";
-import { jsMount } from "./mount";
-import type { OnMount } from "@monaco-editor/react";
+import { useGlobal, useLocal } from "web-utils";
+import * as Y from "yjs";
 import { Button } from "../../../../../utils/ui/form/Button";
+import { Loading } from "../../../../../utils/ui/loading";
+import { EditorGlobal } from "../../../logic/global";
+import { jsMount } from "./mount";
+import { monacoTypings } from "./typings";
+
 export type MonacoEditor = Parameters<OnMount>[0];
+export const DefaultScript = {
+  js: `<div {...props}>{children}</div>`,
+  css: `\
+& {
+  display: flex;
+  
+  &:hover {
+    display: flex;
+  }
+}`,
+  html: ``,
+};
 
 const w = window as unknown as {
   importCache: {
@@ -26,16 +39,15 @@ export type FBuild = (
 ) => Promise<string>;
 
 export const ScriptMonacoElement: FC<{
-  id: string;
   Editor: typeof MonacoEditor;
   build: FBuild;
-}> = ({ id, Editor, build }) => {
-  const c = useGlobal(CEGlobal, id);
+}> = ({ Editor, build }) => {
+  const p = useGlobal(EditorGlobal, "EDITOR");
   const local = useLocal({
     editor: null as null | MonacoEditor,
   });
 
-  const script = c.editor.script.active;
+  const script = p.script;
   if (!script) return null;
 
   const doEdit = async (newval: string, all?: boolean) => {
@@ -77,6 +89,25 @@ export const ScriptMonacoElement: FC<{
       ]);
     }
   };
+
+  const mitem = p.treeMeta[p.item.active]?.item;
+  if (!mitem) return <div>no mitem</div>;
+
+  const adv = mitem.get("adv");
+  if (!adv) return <div>no adv</div>;
+  let _ytext = adv.get(script.type) as any;
+  if (!(_ytext instanceof Y.Text)) {
+    setTimeout(() => {
+      adv.set(script.type, new Y.Text(_ytext) as any);
+      local.render();
+    });
+
+    return <Loading backdrop={false} />;
+  }
+  let ytext: Y.Text = _ytext as any;
+
+  let defaultSrc = DefaultScript[script.type] || "";
+
   return (
     <div className="flex flex-1 items-stretch flex-col">
       {script.type === "js" && (
@@ -235,27 +266,13 @@ export const ScriptMonacoElement: FC<{
             tabSize: 2,
             useTabStops: true,
           }}
-          defaultValue={script.src?.toString() || ""}
+          defaultValue={ytext.toJSON() || defaultSrc}
           onMount={async (editor, monaco) => {
             local.editor = editor;
             editor.focus();
             setTimeout(() => {
               editor.focus();
             }, 300);
-
-            if (c.editor.script.active?.default && !editor.getValue().trim()) {
-              editor.executeEdits(null, [
-                {
-                  range: {
-                    startLineNumber: 0,
-                    startColumn: 0,
-                    endColumn: Number.MAX_SAFE_INTEGER,
-                    endLineNumber: Number.MAX_SAFE_INTEGER,
-                  },
-                  text: c.editor.script.active?.default,
-                },
-              ]);
-            }
 
             const value = editor.getValue();
             if (script.type === "js") {
@@ -276,37 +293,6 @@ export const ScriptMonacoElement: FC<{
             const propVal: any = { ...(window.exports || {}) };
             const propTypes: any = {};
 
-            // if (component.edit.id) {
-            //   const doc = component.docs[component.edit.id];
-            //   if (doc) {
-            //     const comp = doc
-            //       .getMap("map")
-            //       .get("content_tree")
-            //       ?.get("component")
-            //       ?.toJSON() as FNComponent;
-
-            //     if (comp && comp.props && typeof comp.props === "object") {
-            //       for (const [k, v] of Object.entries(comp.props)) {
-            //         if (v.type) {
-            //           propTypes[k] = v.type;
-            //         } else if (v.value) {
-            //           propVal[k] = v.value;
-            //         }
-            //       }
-            //     }
-            //   }
-            // }
-
-            // const scope = findScope(c.scope, c.editor.active?.get("id") || "");
-            // for (const [k, v] of Object.entries(scope)) {
-            //   propVal[k] = v;
-            // }
-            // if (c.scope.types.root) {
-            //   for (const [k, v] of Object.entries(c.scope.types.root)) {
-            //     if (!propTypes[k]) propTypes[k] = v;
-            //   }
-            // }
-
             await jsMount(editor, monaco);
             await monacoTypings(editor, monaco, {
               values: propVal,
@@ -317,9 +303,8 @@ export const ScriptMonacoElement: FC<{
             { css: "scss", js: "typescript", html: "html" }[script.type]
           }
           onChange={(newsrc) => {
-            const ytext = script.src;
-            if (ytext && c.editor.active) {
-              c.doc.transact(async () => {
+            if (ytext && ytext.doc) {
+              ytext.doc.transact(async () => {
                 const delta = new Delta();
 
                 const sd = strDelta(ytext.toString(), newsrc || "");
@@ -336,15 +321,13 @@ export const ScriptMonacoElement: FC<{
                 }
                 ytext.applyDelta(delta.ops);
 
-                if (script.type === "js" && c.editor.active) {
-                  // const map = getMap<FMAdv>(c.editor.active, "adv");
-                  // const compiled = await build(
-                  //   "element.tsx",
-                  //   `render(${trim((newsrc || "").trim(), ";")})`
-                  // );
-                  // map.set("jsBuilt", compiled);
+                if (script.type === "js") {
+                  const compiled = await build(
+                    "element.tsx",
+                    `render(${trim((newsrc || "").trim(), ";")})`
+                  );
+                  adv.set("jsBuilt", compiled);
                 }
-                c.render();
               });
             }
           }}

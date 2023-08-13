@@ -132,24 +132,27 @@ const Adv: FC<{
   const adv = item.adv as FNAdv;
 
   const openEditor = (mode: "css" | "js" | "html") => {
-    p.item.active = item.id;
-    if (mode === "css") {
-      p.code = {
-        src: adv.css || "",
-        type: "css",
-      };
-    } else if (mode === "js") {
-      p.code = {
-        src: adv.js || "",
-        type: "js",
-      };
-    } else {
-      p.code = {
-        src: adv.html || "",
-        type: "html",
-      };
+    const mitem = p.treeMeta[item.id]?.item;
+    if (mitem) {
+      p.item.active = item.id;
+      if (mode === "css") {
+        p.script = {
+          active: true,
+          type: "css",
+        };
+      } else if (mode === "js") {
+        p.script = {
+          active: true,
+          type: "js",
+        };
+      } else {
+        p.script = {
+          active: true,
+          type: "html",
+        };
+      }
+      p.render();
     }
-    p.render();
   };
 
   return (

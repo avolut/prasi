@@ -2,11 +2,16 @@ import type { Editor as MonacoEditor } from "@monaco-editor/react";
 import type { BuildOptions } from "esbuild-wasm";
 import { FC } from "react";
 import { useGlobal } from "web-utils";
-import { CEGlobal } from "../../../../base/global/content-editor";
 import { initJS } from "./monaco/init";
-import { FBuild, ScriptMonacoElement } from "./monaco/monaco-element";
 import { Modal } from "../../../../utils/ui/modal";
 import { Loading } from "../../../../utils/ui/loading";
+import { EditorGlobal } from "../../logic/global";
+import {
+  DefaultScript,
+  FBuild,
+  ScriptMonacoElement,
+} from "./monaco/monaco-element";
+import * as Y from "yjs";
 
 export const jscript = {
   editor: null as typeof MonacoEditor | null,
@@ -39,8 +44,8 @@ export const jscript = {
   },
 };
 
-export const CEScriptElement: FC<{ id: string }> = ({ id }) => {
-  const c = useGlobal(CEGlobal, id);
+export const EScriptElement: FC<{}> = ({}) => {
+  const p = useGlobal(EditorGlobal, "EDITOR");
 
   if (!jscript.editor) {
     Promise.all([
@@ -50,19 +55,44 @@ export const CEScriptElement: FC<{ id: string }> = ({ id }) => {
       }),
       jscript.init(),
     ]).then(() => {
-      c.render();
+      p.render();
     });
   }
 
-  if (!c.editor.script.active) {
+  if (!p.script.active) {
     return null;
   }
 
   return (
     <Modal
       onOpenChange={() => {
-        c.editor.script.active = null;
-        c.render();
+        if (p.script.active) {
+          const mitem = p.treeMeta[p.item.active]?.item;
+          if (!mitem) return <div>no mitem</div>;
+
+          const adv = mitem.get("adv");
+          if (adv) {
+            const src = adv.get(p.script.type) as any;
+            if (src && src instanceof Y.Text) {
+              const txt = src.toJSON();
+              if (
+                typeof txt === "string" &&
+                txt.replace(/[\W_]+/g, "") ===
+                  DefaultScript[p.script.type].replace(/[\W_]+/g, "")
+              ) {
+                if (p.script.type === "js") {
+                  adv.delete("js");
+                  adv.delete("jsBuilt");
+                } else {
+                  adv.delete(p.script.type);
+                }
+              }
+            }
+          }
+        }
+
+        p.script.active = false;
+        p.render();
       }}
     >
       <div className="bg-white w-[80vw] h-[80vh] flex">
@@ -121,7 +151,6 @@ export const CEScriptElement: FC<{ id: string }> = ({ id }) => {
             <Loading backdrop={false} />
           ) : (
             <ScriptMonacoElement
-              id={id}
               Editor={jscript.editor}
               build={jscript.build}
             />

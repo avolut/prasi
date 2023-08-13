@@ -1,8 +1,8 @@
 import { ReactElement } from "react";
+import * as Y from 'yjs';
 import { CompDoc } from "../../../base/global/content-editor";
 import { MContent, MPage } from "../../../utils/types/general";
 import { IItem } from "../../../utils/types/item";
-import { MetaItem } from "../../../utils/types/meta";
 import { FNCompDef } from "../../../utils/types/meta-fn";
 import { IRoot } from "../../../utils/types/root";
 
@@ -16,9 +16,9 @@ export const EditorGlobal = {
     comp: true,
     compCallback: (comp: IItem) => {},
   },
-  code: {
-    src: "",
-    type: "",
+  script: {
+    active: false,
+    type: "js" as "js" | "css" | "html",
   },
   item: {
     active: localStorage.getItem("prasi-item-active-id") || "",

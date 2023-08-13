@@ -4,9 +4,9 @@ import { useGlobal, useLocal } from "web-utils";
 import { CEGlobal } from "../../../../../base/global/content-editor";
 
 import type { OnMount } from "@monaco-editor/react";
-import { findScope } from "../../../../page/content-edit/render-tools/init-scope";
 import { jsMount } from "./mount";
 import { monacoTypings } from "./typings";
+import { findScope } from "../../../../../compo/page/content-edit/render-tools/init-scope";
 export type MonacoEditor = Parameters<OnMount>[0];
 
 export type FBuild = (

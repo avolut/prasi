@@ -4,10 +4,10 @@ import { editorStyle } from "../elements/style";
 import { EditorGlobal } from "../logic/global";
 import { PageManager } from "./manager/page/PageManager";
 import { SiteManager } from "./manager/site/SiteManager";
+import { EScriptElement } from "./script/script-element";
+import { ESide } from "./side/Side";
 import { Toolbar } from "./toolbar/Toolbar";
 import { ETree } from "./tree/tree";
-import { ESide } from "./side/Side";
-import { useEffect } from "react";
 
 export const EMainEditor = () => {
   const p = useGlobal(EditorGlobal, "EDITOR");
@@ -24,6 +24,7 @@ export const EMainEditor = () => {
       </div>
       {p.manager.site && <SiteManager />}
       {p.manager.page && <PageManager />}
+      {p.script.active && <EScriptElement />}
     </div>
   );
 };
