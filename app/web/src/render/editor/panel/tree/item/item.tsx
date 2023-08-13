@@ -1,5 +1,5 @@
 import { NodeModel } from "@minoru/react-dnd-treeview";
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import { NodeContent } from "../utils/flatten";
 import { ETreeItemIndent } from "./indent";
 import { ETreeItemName } from "./name";
@@ -38,7 +38,7 @@ export const ETreeItem: FC<{
   editCompId,
 }) => {
   if (!node.data) return <></>;
-  const local = useLocal({ renaming: false });
+  const local = useLocal({ renaming: false, el: null as any });
   const item = node.data.content;
   const type = item.type;
   let childs = item.type === "text" ? [] : item.childs;
@@ -54,6 +54,12 @@ export const ETreeItem: FC<{
     isComponent = false;
   }
 
+  useEffect(() => {
+    if (isActive && local.el) {
+      local.el.scrollIntoView();
+    }
+  }, [isActive]);
+
   return (
     <div
       className={treeItemStyle({ isActive, isHover, isComponent })}
@@ -63,6 +69,9 @@ export const ETreeItem: FC<{
         if (!isRootComponent) {
           onRightClick(node, e);
         }
+      }}
+      ref={(e) => {
+        local.el = e;
       }}
     >
       <ETreeItemIndent

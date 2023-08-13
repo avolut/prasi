@@ -38,7 +38,7 @@ export const ETreeItemAction: FC<{
   }
 
   return (
-    <div className="flex action pl-3 items-center">
+    <div className="flex action pl-3 items-center w-[100px] justify-end">
       {!!link && (
         <Tooltip content="Has Link">
           <svg
