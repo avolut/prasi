@@ -18,10 +18,11 @@ export const FieldPickColor: FC<{
   });
 
   useEffect(() => {
-    const originalValue = tinycolor(value);
-    meta.originalValue = originalValue.toRgbString();
+    meta.inputValue = value || "";
+    const convertColor = tinycolor(meta.inputValue);
+    meta.rgbValue = convertColor.toRgbString();
     meta.render();
-  }, []);
+  }, [value]);
 
   const colors: { id: string; value: string }[] = [];
   const tin = tinycolor(meta.inputValue);
@@ -45,7 +46,7 @@ export const FieldPickColor: FC<{
         }}
       >
         <HexAlphaColorPicker
-          color={value}
+          color={meta.inputValue}
           onChange={(color) => {
             if (color) {
               meta.inputValue = color;

@@ -109,20 +109,27 @@ export const editComp = (p: PG, item: IContent) => {
     const cid = item.component.id;
     let doc = p.comps.doc[cid];
     if (doc) {
-      const map = doc.getMap("map");
+      const map = doc.getMap("map").get("content_tree")?.toJSON() as IItem;
+      if (map.component) {
+        map.component.props = {
+          ...map.component.props,
+          ...item.component.props,
+        };
 
-      const foundIdx = p.compEdits.findIndex((c) => {
-        if (c.id === item.component?.id) return true;
-      });
-      if (foundIdx < 0) {
-        p.compEdits.push(item);
+        const foundIdx = p.compEdits.findIndex((c) => {
+          if (c.id === item.component?.id) return true;
+        });
+
+        if (foundIdx < 0) {
+          p.compEdits.push(item);
+        }
+
+        p.comp = {
+          id: cid,
+          content_tree: map,
+        };
+        p.render();
       }
-      p.comp = {
-        id: map.get("id") || "",
-        content_tree: map.get("content_tree") as any,
-        props: map.get("props") as any,
-      };
-      p.render();
     }
   }
 };

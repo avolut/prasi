@@ -5,8 +5,9 @@ import { ETreeItemIndent } from "./indent";
 import { ETreeItemName } from "./name";
 import { treeItemStyle } from "./style";
 import { IItem } from "../../../../../utils/types/item";
-import { useLocal } from "web-utils";
+import { useGlobal, useLocal } from "web-utils";
 import { ETreeItemAction } from "./action";
+import { EditorGlobal } from "../../../logic/global";
 
 export const ETreeItem: FC<{
   node: NodeModel<NodeContent>;
@@ -38,7 +39,6 @@ export const ETreeItem: FC<{
 }) => {
   if (!node.data) return <></>;
   const local = useLocal({ renaming: false });
-
   const item = node.data.content;
   const type = item.type;
   let childs = item.type === "text" ? [] : item.childs;
@@ -88,17 +88,41 @@ export const ETreeItem: FC<{
         }}
       />
 
-      {!local.renaming && !isRootComponent && (
-        <ETreeItemAction
-          isComponent={isComponent}
-          mode={mode}
-          item={item}
-          rename={() => {
-            local.renaming = true;
-            local.render();
-          }}
-        />
-      )}
+      {!local.renaming &&
+        (!isRootComponent ? (
+          <ETreeItemAction
+            isComponent={isComponent}
+            mode={mode}
+            item={item}
+            rename={() => {
+              local.renaming = true;
+              local.render();
+            }}
+          />
+        ) : (
+          <RootComponentClose></RootComponentClose>
+        ))}
+    </div>
+  );
+};
+
+const RootComponentClose = () => {
+  const p = useGlobal(EditorGlobal, "EDITOR");
+
+  return (
+    <div
+      className="flex items-center border border-slate-500 bg-white rounded-sm text-[10px] px-[5px] m-1 opacity-50 hover:opacity-100"
+      onClick={() => {
+        const lastItemId = p.compEdits.pop();
+        if (lastItemId) {
+          p.item.active = lastItemId.id;
+        }
+        p.comp = null;
+        p.compEdits = [];
+        p.render();
+      }}
+    >
+      Close
     </div>
   );
 };

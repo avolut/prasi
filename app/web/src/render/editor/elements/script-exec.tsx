@@ -4,16 +4,15 @@ import {
   Suspense,
   isValidElement,
   useEffect,
-  useRef,
 } from "react";
 import { ErrorBoundary } from "web-init/src/web/error-boundary";
 import { useLocal } from "web-utils";
-import { IContent, w } from "../../../utils/types/general";
+import { createAPI, createDB } from "../../../utils/script/api";
+import { IContent } from "../../../utils/types/general";
 import { PG } from "../logic/global";
 import { EItem } from "./e-item";
-import { EText } from "./e-text";
-import { createAPI, createDB } from "../../../utils/script/api";
 import { ElProp } from "./e-relprop";
+import { EText } from "./e-text";
 
 type JsArg = {
   p: PG;
@@ -23,6 +22,7 @@ type JsArg = {
   render: () => void;
   elprop: ElProp;
   componentOver: ReactElement | null;
+  editComponentProps?: any;
 };
 
 export const scriptExec = (arg: JsArg, api_url?: string) => {
@@ -34,10 +34,12 @@ export const scriptExec = (arg: JsArg, api_url?: string) => {
     let error = false;
     let evalArgs = {} as any;
     try {
+      arg.p.itemProps[arg.item.id] = {
+        ...arg.item.nprops,
+        ...arg.editComponentProps,
+      };
       evalArgs = produceEvalArgs({ ...arg, output }, api_url);
-      if (arg.item.nprops) {
-        arg.p.itemProps[arg.item.id] = arg.item.nprops;
-      }
+
       const scriptEval = new Function(...Object.keys(evalArgs), adv.jsBuilt);
       scriptEval(...Object.values(evalArgs));
     } catch (e) {
@@ -74,7 +76,10 @@ const produceEvalArgs = (
   const PassProp = tm.passprop;
   const Local = tm.local;
   const PassChild = tm.passchild;
-  const scopeProps = { ...window.exports, ...arg.item.nprops };
+  const scopeProps = {
+    ...window.exports,
+    ...arg.p.itemProps[arg.item.id],
+  };
 
   const result: any = {
     PassProp,

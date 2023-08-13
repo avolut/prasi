@@ -17,25 +17,6 @@ export const ETree = () => {
   }
   return (
     <div className={cx("tree flex flex-col")}>
-      {comp && (
-        <div
-          className="border-b bg-white hover:bg-green-50"
-          onClick={() => {
-            const lastItemId = p.compEdits.pop();
-            if (lastItemId) {
-              p.item.active = lastItemId;
-            }
-            p.comp = null;
-            p.compEdits = [];
-            p.render();
-          }}
-        >
-          <div className="flex items-center cursor-pointer p-1">
-            <ChevronLeft />
-            <div className="text-xs flex items-center">Back</div>
-          </div>
-        </div>
-      )}
       <div
         className={cx(
           "relative flex-1 overflow-auto flex flex-col items-stretch bg-slate-100"

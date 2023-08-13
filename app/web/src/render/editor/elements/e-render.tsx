@@ -14,7 +14,8 @@ export const ERender: FC<{
   item: IContent;
   children: (childs: (IItem | IText)[]) => ReactNode;
   editComponentId?: string;
-}> = ({ item, children, editComponentId }) => {
+  editComponentProps?: any;
+}> = ({ item, children, editComponentId, editComponentProps }) => {
   const p = useGlobal(EditorGlobal, "EDITOR");
 
   if (item.hidden) {
@@ -117,6 +118,7 @@ export const ERender: FC<{
               render: p.render,
               elprop,
               componentOver,
+              editComponentProps,
             },
             p.site.api_url
           )}

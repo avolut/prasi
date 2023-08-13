@@ -133,7 +133,29 @@ export const editorWS = async (p: PG) => {
                 p.comps.doc[msg.comp_id].on(
                   "update",
                   throttle((e, origin) => {
-                    //TODO: write comp on update
+                    const doc = p.comps.doc[msg.comp_id];
+                    if (doc) {
+                      if (!origin && origin !== "updated_at") {
+                        const id = doc.getMap("map").get("id");
+                        if (id) {
+                          doc.transact(() => {
+                            doc
+                              .getMap("map")
+                              .set("updated_at", new Date().toISOString());
+                          }, "updated_at");
+
+                          const sendmsg: WS_MSG_SV_LOCAL = {
+                            type: "sv_local",
+                            mode: "comp",
+                            id,
+                            sv_local: compress(
+                              Y.encodeStateVector(doc as any).toString()
+                            ),
+                          };
+                          wsend(p, JSON.stringify(sendmsg));
+                        }
+                      }
+                    }
                   })
                 );
                 const comp = p.comps.doc[msg.comp_id]

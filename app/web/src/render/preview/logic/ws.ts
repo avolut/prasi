@@ -114,6 +114,7 @@ export const previewWS = async (p: PG) => {
                 p.comp.doc[msg.comp_id].on(
                   "update",
                   throttle((e, origin) => {
+                    p.pageComp = {};
                     console.log(
                       `🔥 Component updated: ${p.comp.doc[msg.comp_id]
                         .getMap("map")

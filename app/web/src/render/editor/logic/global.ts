@@ -61,7 +61,6 @@ export const EditorGlobal = {
   comp: null as null | {
     id: string;
     content_tree: IItem;
-    props: Record<string, FNCompDef>;
   },
   compEdits: [] as IItem[],
 

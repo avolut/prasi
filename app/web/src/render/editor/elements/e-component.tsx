@@ -12,7 +12,8 @@ import { createAPI, createDB } from "../../../utils/script/api";
 export const EComponent: FC<{
   item: IItem;
   editComponentId?: string;
-}> = ({ item, editComponentId }) => {
+  editComponentProps?: any;
+}> = ({ item, editComponentProps }) => {
   const [_, render] = useState({});
   const p = useGlobal(EditorGlobal, "EDITOR");
 
@@ -54,30 +55,69 @@ export const EComponent: FC<{
 
     const contentTree = comp.getMap("map").get("content_tree") as MItem;
     const cid = comp.getMap("map").get("id");
+    const props = p.itemProps[item.id];
 
-    if (contentTree && cid) {
+    const instanceId = contentTree.get("id");
+    if (contentTree && cid && instanceId) {
+      p.itemProps[instanceId] = p.itemProps[item.id];
       return (
-        <ERender item={contentTree.toJSON() as any} editComponentId={cid}>
-          {(childs) => {
-            return childs.map((e) => {
-              if (e.type === "item")
-                return <EItem item={e} key={e.id} editComponentId={cid} />;
-              else return <EText item={e} key={e.id} editComponentId={cid} />;
-            });
-          }}
-        </ERender>
+        <>
+          <ERender item={contentTree.toJSON() as any} editComponentId={cid}>
+            {(childs) => {
+              return childs.map((e) => {
+                if (e.type === "item")
+                  return (
+                    <EItem
+                      item={e}
+                      key={e.id}
+                      editComponentId={cid}
+                      editComponentProps={props}
+                    />
+                  );
+                else
+                  return (
+                    <EText
+                      item={e}
+                      key={e.id}
+                      editComponentId={cid}
+                      editComponentProps={props}
+                    />
+                  );
+              });
+            }}
+          </ERender>
+        </>
       );
     }
   }
   const cid = item.component.id;
 
   return (
-    <ERender item={item} editComponentId={cid}>
+    <ERender
+      item={item}
+      editComponentId={cid}
+      editComponentProps={editComponentProps}
+    >
       {(childs) => {
         return childs.map((e) => {
           if (e.type === "item")
-            return <EItem item={e} key={e.id} editComponentId={cid} />;
-          else return <EText item={e} key={e.id} editComponentId={cid} />;
+            return (
+              <EItem
+                item={e}
+                key={e.id}
+                editComponentId={cid}
+                editComponentProps={editComponentProps}
+              />
+            );
+          else
+            return (
+              <EText
+                item={e}
+                key={e.id}
+                editComponentId={cid}
+                editComponentProps={editComponentProps}
+              />
+            );
         });
       }}
     </ERender>
@@ -132,6 +172,7 @@ export const getRenderPropVal = (
     }
     nprops[key] = val;
   }
+
   if (!item.nprops) item.nprops = nprops;
   else {
     for (const [k, v] of Object.entries(nprops)) {

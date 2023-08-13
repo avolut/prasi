@@ -9,7 +9,7 @@ export const _ = {
   async api(arg: {
     site_id: string;
     page_id: string;
-    item_id: string;
+    item_id: string; 
     comp_id: string;
   }) {
     const { page_id, site_id, comp_id, item_id } = arg;

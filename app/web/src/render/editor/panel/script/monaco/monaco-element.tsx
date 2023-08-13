@@ -297,8 +297,23 @@ export const ScriptMonacoElement: FC<{
               );
               editor.setModel(model);
             }
+            if (!p.itemProps[p.item.active]) {
+              let item = p.treeMeta[p.item.active].item;
+              while (item.parent) {
+                const id = item.get("id");
+                if (id && p.itemProps[id]) {
+                  p.itemProps[p.item.active] = p.itemProps[id];
+                  break;
+                }
+                item = item.parent as any;
+              }
+            }
 
-            const propVal: any = { ...(window.exports || {}) };
+            const propVal: any = {
+              ...(window.exports || {}),
+              ...p.itemProps[p.item.active],
+            };
+
             const propTypes: any = p.script.siteTypes;
 
             await jsMount(editor, monaco);
