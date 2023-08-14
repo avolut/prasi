@@ -105,7 +105,20 @@ export const ERender: FC<{
     ) {
       componentOver = null;
     } else {
-      componentOver = <ComponentOver item={item} p={p} elprop={elprop} />;
+      let hasChilds = false;
+      const props = (item as IItem).component?.props;
+      if (props) {
+        if (
+          Object.values(props).filter((e) => e.meta?.type === "content-element")
+            .length > 0
+        ) {
+          hasChilds = true;
+        }
+      }
+
+      if (!hasChilds) {
+        componentOver = <ComponentOver item={item} p={p} elprop={elprop} />;
+      }
     }
   }
 

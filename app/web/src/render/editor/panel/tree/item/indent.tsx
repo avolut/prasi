@@ -17,7 +17,7 @@ export const ETreeItemIndent: FC<{
         <div className="bg-blue-500 absolute left-0 top-0 bottom-0 w-[3px]"></div>
       )}
 
-      {isComponent && (
+      {isComponent && !hasChilds && (
         <div
           className={cx(
             isActive ? "bg-purple-700" : "bg-purple-400",

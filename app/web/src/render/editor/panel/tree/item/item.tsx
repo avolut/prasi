@@ -54,6 +54,15 @@ export const ETreeItem: FC<{
     isComponent = false;
   }
 
+  if (isComponent) {
+    const props = (item as IItem).component?.props;
+    if (props) {
+      hasChilds =
+        Object.values(props).filter((e) => e.meta?.type === "content-element")
+          .length > 0;
+    }
+  }
+
   useEffect(() => {
     if (isActive && local.el) {
       local.el.scrollIntoView();

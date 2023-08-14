@@ -1,14 +1,21 @@
 import { NodeModel } from "@minoru/react-dnd-treeview";
+import * as Y from "yjs";
 import { IContent, MContent } from "../../../../../utils/types/general";
-import { MItem } from "../../../../../utils/types/item";
+import { IItem, MItem } from "../../../../../utils/types/item";
 import { IRoot, MRoot } from "../../../../../utils/types/root";
 import { PG } from "../../../logic/global";
+import { syncronize } from "y-pojo";
+import { createId } from "@paralleldrive/cuid2";
 
 export type NodeContent = {
   content: IContent;
   idx: number;
 };
-export const flattenTree = (p: PG, content: MRoot | MItem | undefined) => {
+export const flattenTree = (
+  p: PG,
+  content: MRoot | MItem | undefined,
+  shouldRender?: () => void
+) => {
   const result: NodeModel<NodeContent>[] = [];
   if (content && p.page) {
     p.treeMeta = {};
@@ -28,7 +35,75 @@ export const flattenTree = (p: PG, content: MRoot | MItem | undefined) => {
         data: { content: item, idx },
       });
 
-      mitem.get("childs")?.forEach((e: MContent, idx) => walk(e, item.id, idx));
+      if (
+        item.type === "item" &&
+        item.component?.id &&
+        item.component?.id !== p.comp?.id
+      ) {
+        const itemComp = mitem.get("component");
+        let itemProp = itemComp?.get("props");
+        if (!itemProp) {
+          itemComp?.set("props", new Y.Map() as any);
+          itemProp = itemComp?.get("props");
+        }
+        const master = p.comps.doc[item.component.id]?.getMap("map");
+        const masterComp = master.get("content_tree")?.get("component");
+
+        if (!masterComp && shouldRender) {
+          shouldRender();
+          return;
+        }
+
+        let masterProp = masterComp?.get("props");
+        if (!masterProp && masterComp) {
+          masterComp.set("props", new Y.Map() as any);
+          masterProp = masterComp.get("props");
+        }
+
+        if (masterProp) {
+          let i = 0;
+          masterProp.forEach((v, k) => {
+            if (v) {
+              const meta = v.get("meta");
+              if (meta && meta.get("type") === "content-element" && itemProp) {
+                let prop = itemProp.get(k);
+                if (!prop) {
+                  const map = new Y.Map();
+                  syncronize(map, v.toJSON());
+                  itemProp.set(k, map as any);
+                  prop = itemProp.get(k);
+                }
+
+                if (prop) {
+                  let content = prop.get("content");
+                  if (!content) {
+                    const json = {
+                      id: createId(),
+                      name: k,
+                      type: "item",
+                      dim: { w: "full", h: "full" },
+                      parentInstanceId: mitem.get("id"),
+                      childs: [],
+                    } as IItem;
+                    const map = new Y.Map();
+                    syncronize(map as any, json);
+                    prop.set("content", map as any);
+                    content = prop.get("content");
+                  }
+
+                  if (content) {
+                    walk(content, item.id, i++);
+                  }
+                }
+              }
+            }
+          });
+        }
+      } else {
+        mitem
+          .get("childs")
+          ?.forEach((e: MContent, idx) => walk(e, item.id, idx));
+      }
     };
 
     const type = (content as any).get("type");
