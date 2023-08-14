@@ -1,4 +1,4 @@
-import { useGlobal } from "web-utils";
+import { useGlobal, useLocal } from "web-utils";
 import { EditorGlobal } from "../../../logic/global";
 import { FC } from "react";
 import { MItem } from "../../../../../utils/types/item";
@@ -19,13 +19,18 @@ export const CPInstance: FC<{ mitem: MItem }> = ({ mitem }) => {
           return a[1].idx - b[1].idx;
         })
         .map(([k, v]) => {
-          return (
-            <div key={k}>
-              {v.idx}
-              {k}
-            </div>
-          );
+          return <SingleProp key={k} name={k} prop={v} />;
         })}
+    </div>
+  );
+};
+
+const SingleProp: FC<{ name: string; prop: FNCompDef }> = ({ name, prop }) => {
+  const local = useLocal({});
+  return (
+    <div>
+      {prop.idx}
+      {name}
     </div>
   );
 };

@@ -211,7 +211,6 @@ export const PanelAutoLayout: FC<{
                 </div>
               </Popover>
             </div>
-            {/* <div className="p-0.5 flex flex-row"></div> */}
             <Tooltip
               content={layout.wrap === "flex-wrap" ? "Flex Wrap" : "No Wrap"}
             >
@@ -221,7 +220,7 @@ export const PanelAutoLayout: FC<{
                   css`
                     width: 28px !important;
                     min-width: 0px !important;
-                    margin-left: 0px !important;
+                    margin-left: 3px !important;
                     padding: 0px 5px !important;
                     height: 28px !important;
                   `,

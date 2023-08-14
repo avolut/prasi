@@ -18,10 +18,6 @@ export const ERender: FC<{
 }> = ({ item, children, editComponentId, editComponentProps }) => {
   const p = useGlobal(EditorGlobal, "EDITOR");
 
-  if (item.hidden) {
-    return null;
-  }
-
   const focusText = useCallback(
     (e: any) => {
       if (!p.script.active && !p.script.siteActive) {
@@ -113,6 +109,9 @@ export const ERender: FC<{
     }
   }
 
+  if (item.hidden) {
+    return null;
+  }
   if (adv) {
     const html = renderHTML(className, adv, elprop);
 
