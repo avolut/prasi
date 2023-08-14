@@ -24,7 +24,7 @@ export const CPOption: FC<CPArgs> = ({ prop, onChange, editCode, reset }) => {
   }
 
   return (
-    <div className="flex items-center flex-wrap pt-1 space-x-1 justify-end px-2 flex-1">
+    <div className="flex items-center flex-wrap pt-1 space-x-1 justify-end px-2 flex-1 min-h-[30px]">
       {Array.isArray(metaOptions) &&
         metaOptions.map((item, idx) => {
           return (

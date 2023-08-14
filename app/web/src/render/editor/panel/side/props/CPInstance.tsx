@@ -62,7 +62,7 @@ export const CPInstance: FC<{ mitem: MItem }> = ({ mitem }) => {
         local.render();
       }
     })();
-  }, []);
+  }, [mitem]);
 
   if (!local.ready) return <Loading backdrop={false} />;
 
