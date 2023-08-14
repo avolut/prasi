@@ -10,8 +10,14 @@ export type WS_MSG =
   | WS_MSG_DIFF_LOCAL
   | WS_MSG_UNDO
   | WS_MSG_REDO
-  | WS_MSG_NEW_COMP;
+  | WS_MSG_NEW_COMP
+  | WS_MSG_SITEJS_RELOAD;
 
+export type WS_MSG_SITEJS_RELOAD = {
+  type: "sitejs_reload";
+  id: string;
+  js?: string;
+};
 export type WS_MSG_GET_COMP = {
   type: "get_comp";
   comp_id: string;

@@ -30,7 +30,7 @@ export const EPage = () => {
     >
       <div
         className={cx(
-          "absolute flex flex-col items-stretch flex-1 bg-white  overflow-auto",
+          "absolute flex flex-col items-stretch flex-1 bg-white ",
           mode === "mobile"
             ? css`
                 border-left: 1px solid #ccc;
@@ -38,9 +38,10 @@ export const EPage = () => {
                 width: 420px;
                 top: 0px;
                 overflow-x: hidden;
+                overflow-y: auto;
                 bottom: 0px;
               `
-            : "inset-0",
+            : "inset-0  overflow-auto",
 
           css`
             contain: content;

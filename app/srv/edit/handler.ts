@@ -47,6 +47,31 @@ export const collabEditHandler = (ws: Websocket) => {
         case "redo":
           redo(ws, msg);
           break;
+        case "sitejs_reload":
+          {
+            const site = await db.site.findFirst({
+              where: { id: msg.id },
+              select: { js_compiled: true },
+            });
+            if (site) {
+              for (const p of Object.values(eg.edit.page)) {
+                if (p.doc.getMap("map").get("id_site") === msg.id) {
+                  p.ws.forEach((w) => {
+                    if (w !== ws) {
+                      w.send(
+                        JSON.stringify({
+                          type: "sitejs_reload",
+                          id: msg.id,
+                          js: site.js_compiled,
+                        })
+                      );
+                    }
+                  });
+                }
+              }
+            }
+          }
+          break;
       }
     } catch (e) {
       console.log(e);

@@ -1,3 +1,5 @@
+import { WS_MSG_SITEJS_RELOAD } from "../../compo/editor/ws/msg";
+
 export type WS_MSG =
   | WS_MSG_GET_COMP
   | WS_MSG_SET_COMP
@@ -8,7 +10,8 @@ export type WS_MSG =
   | WS_MSG_DIFF_LOCAL
   | WS_MSG_UNDO
   | WS_MSG_REDO
-  | WS_MSG_NEW_COMP;
+  | WS_MSG_NEW_COMP
+  | WS_MSG_SITEJS_RELOAD;
 
 export type WS_MSG_GET_COMP = {
   type: "get_comp";

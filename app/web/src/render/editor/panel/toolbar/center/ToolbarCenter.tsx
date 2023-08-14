@@ -10,6 +10,7 @@ import { AddElement } from "./AddElement";
 import { EScriptCustom } from "../../script/script-custom";
 import { customMonacoState } from "../../script/monaco/monaco-custom";
 import { execSiteJS } from "../../../logic/init";
+import { wsend } from "../../../logic/ws";
 const ua = navigator.userAgent.toLowerCase();
 const isMac =
   ua.indexOf("mac") > -1 &&
@@ -59,8 +60,8 @@ export const ToolbarCenter = () => {
                 p.render();
               }
               clearTimeout(local.siteJS.timeout);
-              local.siteJS.timeout = setTimeout(() => {
-                db.site.update({
+              local.siteJS.timeout = setTimeout(async () => {
+                await db.site.update({
                   where: {
                     id: p.site?.id || "",
                   },
@@ -73,6 +74,10 @@ export const ToolbarCenter = () => {
                     id: true,
                   },
                 });
+                wsend(
+                  p,
+                  JSON.stringify({ type: "sitejs_reload", id: p.site?.id })
+                );
               }, 600);
             }}
             propTypes={{

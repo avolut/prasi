@@ -9,6 +9,7 @@ export const loadPage = async (page_id: string) => {
         id: true,
         js: true,
         name: true,
+        id_site: true,
         url: true,
         js_compiled: true,
         updated_at: true,

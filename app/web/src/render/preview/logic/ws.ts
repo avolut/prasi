@@ -15,6 +15,8 @@ import {
   WS_MSG_SVDIFF_REMOTE,
 } from "../../../utils/types/ws";
 import { scanComponent } from "./comp";
+import { createAPI, createDB } from "../../../utils/script/api";
+import importModule from "../../editor/tools/dynamic-import";
 
 export const previewWS = async (p: PG) => {
   if (p.ws && p.ws.readyState === p.ws.OPEN) {
@@ -61,7 +63,11 @@ export const previewWS = async (p: PG) => {
                 if (p.mpage) {
                   const page = p.mpage.getMap("map")?.toJSON() as page;
                   console.clear();
-                  console.log(`🔥 Page updated: ${page.url}`);
+                  console.log(
+                    `🔥 Page updated: ${
+                      page.url
+                    } ${new Date().toLocaleString()}`
+                  );
                   p.pageComp = {};
 
                   if (!p.pages[page.id]) {
@@ -118,7 +124,7 @@ export const previewWS = async (p: PG) => {
                     console.log(
                       `🔥 Component updated: ${p.comp.doc[msg.comp_id]
                         .getMap("map")
-                        .get("name")}`
+                        .get("name")} ${new Date().toLocaleString()}`
                     );
                     p.render();
                   })
@@ -138,6 +144,37 @@ export const previewWS = async (p: PG) => {
                 );
                 delete p.comp.pending[msg.comp_id];
               }
+            }
+            break;
+          case "sitejs_reload":
+            if (msg.js) {
+              p.site.js = msg.js;
+
+              const exec = (fn: string, scopes: any) => {
+                if (p) {
+                  scopes["api"] = createAPI(p.site.api_url);
+                  scopes["db"] = createDB(p.site.api_url);
+                  const f = new Function(...Object.keys(scopes), fn);
+                  const res = f(...Object.values(scopes));
+                  return res;
+                }
+                return null;
+              };
+              const w = window as any;
+              const scope = {
+                types: {},
+                exports: w.exports,
+                load: importModule,
+                render: p.render,
+              };
+
+              console.clear();
+              console.log(
+                `🔥 Site JS Reloaded: ${new Date().toLocaleString()}`
+              );
+              exec(p.site.js, scope);
+
+              p.render();
             }
             break;
           case "undo":
