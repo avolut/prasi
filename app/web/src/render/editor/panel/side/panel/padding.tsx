@@ -16,13 +16,14 @@ type PaddingUpdate = {
 };
 
 export const PanelPadding: FC<{
+  id: string;
   value: ISection | IItem | IText;
   mode: "desktop" | "mobile";
   update: <T extends keyof PaddingUpdate>(
     key: T,
     val: PaddingUpdate[T]
   ) => void;
-}> = ({ value, update, mode }) => {
+}> = ({ id, value, update, mode }) => {
   const detectMixed = (v: any) => {
     let data: any = v;
     let corner: any = [];
@@ -41,7 +42,7 @@ export const PanelPadding: FC<{
       value: uniqueCorner[0] + "",
     };
   };
-  const local = useLocal({ all: false }, () => {
+  const local = useLocal({ id: id, all: false }, () => {
     let mix = detectMixed(padding);
     local.all = mix.isMix;
     local.render();
@@ -54,18 +55,21 @@ export const PanelPadding: FC<{
   });
 
   useEffect(() => {
-    if (!local.all) {
-      if (padding.l !== padding.r || padding.b !== padding.t) {
-        local.all = true;
-        local.render();
-      }
-    } else if (local.all) {
-      if (padding.l === padding.r && padding.b === padding.t) {
-        local.all = false;
-        local.render();
+    if (local.id !== id) {
+      local.id = id;
+      if (!local.all) {
+        if (padding.l !== padding.r || padding.b !== padding.t) {
+          local.all = true;
+          local.render();
+        }
+      } else if (local.all) {
+        if (padding.l === padding.r && padding.b === padding.t) {
+          local.all = false;
+          local.render();
+        }
       }
     }
-  }, [value]);
+  }, [id]);
 
   return (
     <div className="flex flex-col space-y-2">

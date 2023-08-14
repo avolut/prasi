@@ -37,6 +37,7 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[] }> = ({ tree }) => {
     (node: NodeModel<NodeContent>) => {
       if (node.data) {
         p.item.active = node.data.content.id;
+        console.log(p.item.active);
         p.softRender.all();
       }
     },

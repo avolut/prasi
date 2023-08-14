@@ -5,18 +5,17 @@ import { syncronize } from "y-pojo";
 import * as Y from "yjs";
 import { TypedMap } from "yjs-types";
 import { CEGlobal, CompDoc } from "../../../../base/global/content-editor";
+import { findScope } from "../../../page/content-edit/render-tools/init-scope";
 import { FMCompDef, FNCompDef } from "../../../types/meta-fn";
-import { jscript } from "../script/script-element";
-import { AutoHeightTextarea } from "./panel/link";
 import { Menu, MenuItem } from "../../../ui/context-menu";
 import { Popover } from "../../../ui/popover";
-import { ScriptCustom } from "../script/script-custom";
-import { Modal } from "../../../ui/modal";
-import { findScope } from "../../../page/content-edit/render-tools/init-scope";
-import { typeStringify } from "../script/monaco/types/type-stringify";
-import { iftext, register } from "../script/monaco/typings";
 import { wsdoc } from "../../ws/wsdoc";
 import { baseTypings } from "../script/monaco/types/base";
+import { typeStringify } from "../script/monaco/types/type-stringify";
+import { iftext, register } from "../script/monaco/typings";
+import { ScriptCustom } from "../script/script-custom";
+import { jscript } from "../script/script-element";
+import { AutoHeightTextarea } from "./panel/link";
 
 export const CPInstance: FC<{
   ceid: string;

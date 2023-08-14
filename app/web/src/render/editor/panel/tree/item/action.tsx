@@ -99,7 +99,8 @@ export const ETreeItemAction: FC<{
           <Tooltip
             content="Edit Component"
             className="flex items-center border border-slate-500 bg-white rounded-sm text-[10px] px-[2px]"
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation();
               editComp(p, item);
             }}
           >

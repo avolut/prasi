@@ -71,11 +71,14 @@ export const ComponentOver: FC<{ item: IItem; p: PG }> = ({ item, p }) => {
       className={cx(
         "absolute inset-0 flex items-center justify-center opacity-0 transition-all",
         "bg-white bg-opacity-90",
-        css`
-          &:hover {
-            opacity: 1;
-          }
-        `
+        p.item.hover === item.id && "border-2 border-blue-100",
+        p.item.active === item.id
+          ? "border-2 border-blue-500"
+          : css`
+              &:hover {
+                opacity: 1;
+              }
+            `
       )}
     >
       <div

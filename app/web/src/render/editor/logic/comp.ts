@@ -124,6 +124,7 @@ export const editComp = (p: PG, item: IContent) => {
           p.compEdits.push(item);
         }
 
+        p.item.active = map.id;
         p.comp = {
           id: cid,
           content_tree: map,

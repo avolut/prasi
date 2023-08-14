@@ -3,7 +3,7 @@ import { useGlobal, useLocal } from "web-utils";
 import { syncronize } from "y-pojo";
 import * as Y from "yjs";
 import { TypedMap } from "yjs-types";
-import { IItem } from "../../../../utils/types/item";
+import { IItem, MItem } from "../../../../utils/types/item";
 import { EditorGlobal } from "../../logic/global";
 import { PanelAdv } from "./panel/advanced";
 import { PanelAutoLayout } from "./panel/auto-layout";
@@ -15,6 +15,7 @@ import { PanelLink } from "./panel/link";
 import { PanelPadding } from "./panel/padding";
 import { SideBox } from "./ui/SideBox";
 import { SideLabel } from "./ui/SideLabel";
+import { CPInstance } from "./props/CPInstance";
 
 export const ESide = () => {
   const p = useGlobal(EditorGlobal, "EDITOR");
@@ -88,9 +89,15 @@ export const ESide = () => {
         {mitem ? (
           <>
             {compItem?.id ? (
-              <pre className="text-[9px] whitespace-pre-wrap break-all">
-                {JSON.stringify(compItem.props, null, 2)}
-              </pre>
+              <>
+                {isComponentRoot ? (
+                  <pre className="text-[9px] whitespace-pre-wrap break-all">
+                    {JSON.stringify(compItem.props, null, 2)}
+                  </pre>
+                ) : (
+                  <CPInstance mitem={mitem as MItem} />
+                )}
+              </>
             ) : (
               <>
                 <SideLabel sep="bottom">
@@ -104,7 +111,12 @@ export const ESide = () => {
                     mode={p.mode}
                     update={update}
                   />
-                  <PanelPadding value={active} mode={p.mode} update={update} />
+                  <PanelPadding
+                    id={p.item.active}
+                    value={active}
+                    mode={p.mode}
+                    update={update}
+                  />
                   <PanelDimension
                     value={active}
                     mode={p.mode}

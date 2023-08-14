@@ -109,7 +109,7 @@ export const ETreeItem: FC<{
             }}
           />
         ) : (
-          <RootComponentClose></RootComponentClose>
+          <RootComponentClose />
         ))}
     </div>
   );
@@ -121,11 +121,9 @@ const RootComponentClose = () => {
   return (
     <div
       className="flex items-center border border-slate-500 bg-white rounded-sm text-[10px] px-[5px] m-1 opacity-50 hover:opacity-100"
-      onClick={() => {
-        const lastItemId = p.compEdits.pop();
-        if (lastItemId) {
-          p.item.active = lastItemId.id;
-        }
+      onClick={(e) => {
+        e.stopPropagation();
+        p.item.active = p.compEdits[p.compEdits.length - 1].id;
         p.comp = null;
         p.compEdits = [];
         p.render();
