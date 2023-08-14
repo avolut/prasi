@@ -9,7 +9,9 @@ export const CPText: FC<CPArgs> = ({ prop, onChange }) => {
   const value = prop.value;
 
   useEffect(() => {
-    eval(`local.value = ${prop.value}`);
+    try {
+      eval(`local.value = ${prop.value}`);
+    } catch (e) {}
     local.ready = true;
     local.render();
   }, [value]);

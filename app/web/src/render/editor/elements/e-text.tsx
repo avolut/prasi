@@ -5,14 +5,9 @@ import { ERender } from "./e-render";
 export const EText: FC<{
   item: IText;
   editComponentId?: string;
-  editComponentProps?: any;
-}> = ({ item, editComponentId, editComponentProps }) => {
+}> = ({ item, editComponentId }) => {
   return (
-    <ERender
-      item={item}
-      editComponentId={editComponentId}
-      editComponentProps={editComponentProps}
-    >
+    <ERender item={item} editComponentId={editComponentId}>
       {() => item.html || ""}
     </ERender>
   );

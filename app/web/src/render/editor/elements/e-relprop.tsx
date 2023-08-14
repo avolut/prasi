@@ -65,7 +65,11 @@ export const createElProp = (
   };
 };
 
-export const ComponentOver: FC<{ item: IItem; p: PG }> = ({ item, p }) => {
+export const ComponentOver: FC<{ item: IItem; p: PG; elprop: ElProp }> = ({
+  item,
+  p,
+  elprop,
+}) => {
   return (
     <div
       className={cx(
@@ -85,6 +89,7 @@ export const ComponentOver: FC<{ item: IItem; p: PG }> = ({ item, p }) => {
               }
             `
       )}
+      {...elprop}
     >
       <div
         className={cx(

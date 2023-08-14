@@ -12,8 +12,7 @@ import { createAPI, createDB } from "../../../utils/script/api";
 export const EComponent: FC<{
   item: IItem;
   editComponentId?: string;
-  editComponentProps?: any;
-}> = ({ item, editComponentProps }) => {
+}> = ({ item }) => {
   const [_, render] = useState({});
   const p = useGlobal(EditorGlobal, "EDITOR");
 
@@ -44,45 +43,31 @@ export const EComponent: FC<{
   }
   const comp = pcomp.getMap("map").toJSON();
   const props = comp.content_tree.component?.props || {};
-  const nprops: any = {};
-
-  if (props) {
-    getRenderPropVal(props, item, nprops, p);
-  }
 
   if (p.comp?.id === item.component.id) {
     const comp = p.comps.doc[p.comp?.id || ""];
 
     const contentTree = comp.getMap("map").get("content_tree") as MItem;
     const cid = comp.getMap("map").get("id");
-    const props = p.itemProps[item.id];
-
     const instanceId = contentTree.get("id");
+
     if (contentTree && cid && instanceId) {
-      p.itemProps[instanceId] = p.itemProps[item.id];
+      const citem = contentTree.toJSON() as IItem;
+      if (p.compProp.preview && item.component && citem.component) {
+        for (const [k, v] of Object.entries(item.component.props)) {
+          citem.component.props[k] = v;
+        }
+      }
+      getRenderPropVal(props, citem, p);
+
       return (
         <>
-          <ERender item={contentTree.toJSON() as any} editComponentId={cid}>
+          <ERender item={citem} editComponentId={cid}>
             {(childs) => {
               return childs.map((e) => {
                 if (e.type === "item")
-                  return (
-                    <EItem
-                      item={e}
-                      key={e.id}
-                      editComponentId={cid}
-                      editComponentProps={props}
-                    />
-                  );
-                else
-                  return (
-                    <EText
-                      item={e}
-                      key={e.id}
-                      editComponentId={cid}
-                      editComponentProps={props}
-                    />
-                  );
+                  return <EItem item={e} key={e.id} editComponentId={cid} />;
+                else return <EText item={e} key={e.id} editComponentId={cid} />;
               });
             }}
           </ERender>
@@ -90,34 +75,19 @@ export const EComponent: FC<{
       );
     }
   }
+
+  if (props) {
+    getRenderPropVal(props, item, p);
+  }
   const cid = item.component.id;
 
   return (
-    <ERender
-      item={item}
-      editComponentId={cid}
-      editComponentProps={editComponentProps}
-    >
+    <ERender item={item} editComponentId={cid}>
       {(childs) => {
         return childs.map((e) => {
           if (e.type === "item")
-            return (
-              <EItem
-                item={e}
-                key={e.id}
-                editComponentId={cid}
-                editComponentProps={editComponentProps}
-              />
-            );
-          else
-            return (
-              <EText
-                item={e}
-                key={e.id}
-                editComponentId={cid}
-                editComponentProps={editComponentProps}
-              />
-            );
+            return <EItem item={e} key={e.id} editComponentId={cid} />;
+          else return <EText item={e} key={e.id} editComponentId={cid} />;
         });
       }}
     </ERender>
@@ -127,26 +97,23 @@ export const EComponent: FC<{
 export const getRenderPropVal = (
   props: Record<string, FNCompDef>,
   item: IItem,
-  nprops: any,
-  p?: PG
+  p: PG
 ) => {
+  const nprops: any = {};
   const exec = (key: string, fn: string, scopes: any) => {
-    if (p) {
-      scopes["api"] = createAPI(p.site.api_url);
-      scopes["db"] = createDB(p.site.api_url);
+    scopes["api"] = createAPI(p.site.api_url);
+    scopes["db"] = createDB(p.site.api_url);
 
-      if (key.includes("url") || key.includes("href") || key.includes("link")) {
-        try {
-          let url = "";
-          eval(`url = ${fn}`);
-        } catch (e) {}
-      }
-
-      const f = new Function(...Object.keys(scopes), `return ${fn}`);
-      const res = f(...Object.values(scopes));
-      return res;
+    if (key.includes("url") || key.includes("href") || key.includes("link")) {
+      try {
+        let url = "";
+        eval(`url = ${fn}`);
+      } catch (e) {}
     }
-    return null;
+
+    const f = new Function(...Object.keys(scopes), `return ${fn}`);
+    const res = f(...Object.values(scopes));
+    return res;
   };
 
   for (const [key, _prop] of Object.entries(props)) {
@@ -180,7 +147,5 @@ export const getRenderPropVal = (
     }
   }
 
-  if (item.nprops && p) {
-    p.itemProps[item.id] = item.nprops;
-  }
+  p.itemProps[item.id] = item.nprops;
 };

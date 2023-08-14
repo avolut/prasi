@@ -16,7 +16,7 @@ import { PanelPadding } from "./panel/padding";
 import { SideBox } from "./ui/SideBox";
 import { SideLabel } from "./ui/SideLabel";
 import { CPInstance } from "./props/CPInstance";
-import { CPMaster } from "./props/CPMaster";
+import { CPMaster, PreviewItemProp } from "./props/CPMaster";
 
 export const ESide = () => {
   const p = useGlobal(EditorGlobal, "EDITOR");
@@ -103,18 +103,21 @@ export const ESide = () => {
                   <>
                     <SideLabel sep="bottom">
                       <div className="flex items-center justify-between">
-                        <div>LAYOUT</div>
-
-                        {rootComponentID && (
-                          <div
-                            className="flex mr-1 px-2 bg-white text-xs border rounded-sm cursor-pointer hover:bg-blue-50 hover:border-blue-500 text-blue-700"
-                            onClick={() => {
-                              p.compProp.edit = true;
-                              p.render();
-                            }}
-                          >
-                            Edit Master Props
-                          </div>
+                        {!rootComponentID ? (
+                          <div>LAYOUT</div>
+                        ) : (
+                          <>
+                            <div
+                              className="flex mr-1 px-2 bg-white text-xs border rounded-sm cursor-pointer hover:bg-blue-50 hover:border-blue-500 text-blue-700"
+                              onClick={() => {
+                                p.compProp.edit = true;
+                                p.render();
+                              }}
+                            >
+                              Master Props
+                            </div>
+                            <PreviewItemProp />
+                          </>
                         )}
                       </div>
                     </SideLabel>

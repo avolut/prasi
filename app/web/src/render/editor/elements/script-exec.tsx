@@ -22,7 +22,6 @@ type JsArg = {
   render: () => void;
   elprop: ElProp;
   componentOver: ReactElement | null;
-  editComponentProps?: any;
 };
 
 export const scriptExec = (arg: JsArg, api_url?: string) => {
@@ -36,7 +35,6 @@ export const scriptExec = (arg: JsArg, api_url?: string) => {
     try {
       arg.p.itemProps[arg.item.id] = {
         ...arg.item.nprops,
-        ...arg.editComponentProps,
       };
       evalArgs = produceEvalArgs({ ...arg, output }, api_url);
 

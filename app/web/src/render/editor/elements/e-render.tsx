@@ -105,7 +105,7 @@ export const ERender: FC<{
     ) {
       componentOver = null;
     } else {
-      componentOver = <ComponentOver item={item} p={p} />;
+      componentOver = <ComponentOver item={item} p={p} elprop={elprop} />;
     }
   }
 
@@ -128,7 +128,6 @@ export const ERender: FC<{
               render: p.render,
               elprop,
               componentOver,
-              editComponentProps,
             },
             p.site.api_url
           )}
