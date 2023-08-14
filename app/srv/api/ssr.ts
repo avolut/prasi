@@ -66,7 +66,7 @@ export const _ = {
     dom.window.JSXRuntime = JSXRuntime;
     dom.window.stream = stream;
     dom.window.TextEncoder = TextEncoder;
-    dom.window.TextDecoder = TextDecoder; 
+    dom.window.TextDecoder = TextDecoder;
     const waitDone = get(options, "waitDone");
     dom.window.ssrConfig = {
       timeout: get(options, "timeout", 0),

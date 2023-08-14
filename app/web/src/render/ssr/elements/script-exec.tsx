@@ -58,6 +58,7 @@ const produceEvalArgs = (
   const PassChild = meta.passchild;
   const scopeProps = { ...window.exports, ...arg.item.nprops };
 
+
   const result: any = {
     PassProp,
     Local,

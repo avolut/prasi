@@ -43,8 +43,6 @@ export const initSSR = async (p: PG) => {
     const site = p.site;
 
     if (site) {
-      w.exports = {};
-
       p.site.id = site.id;
       p.site.js = site.js_compiled || "";
       p.site.api_url = await initApi(site.config);

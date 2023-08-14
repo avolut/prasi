@@ -54,7 +54,7 @@ export const SRender: FC<{
   if (adv) {
     const html = renderHTML(className, adv);
     if (html) return html;
-    else if (adv.jsBuilt && adv.js) {
+    else if (adv.jsBuilt && typeof adv.js === "string") {
       if (
         adv.js.replace(/\s/g, "") !==
         "<div {...props}>{children}</div>".replace(/\s/g, "")

@@ -36,6 +36,7 @@ const Root: FC<{
 };
 
 w.ssrResult = new Promise<string>(async (resolve) => {
+
   let result = { html: "", css: "" };
   while (w.ssrContext.ssrShouldRender) {
     w.ssrContext.ssrShouldRender = false;
