@@ -14,8 +14,7 @@ export const ERender: FC<{
   item: IContent;
   children: (childs: (IItem | IText)[]) => ReactNode;
   editComponentId?: string;
-  editComponentProps?: any;
-}> = ({ item, children, editComponentId, editComponentProps }) => {
+}> = ({ item, children, editComponentId }) => {
   const p = useGlobal(EditorGlobal, "EDITOR");
 
   const focusText = useCallback(
