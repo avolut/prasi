@@ -18,7 +18,9 @@ export const CPCodeEdit: FC<{
         return `${src}`;
       }}
       onLoad={(editor, monaco) => {}}
-      onChange={(src) => {}}
+      onChange={(src) => {
+        onChange(src);
+      }}
     />
   );
 };

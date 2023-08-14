@@ -1,9 +1,7 @@
 import { ReactElement } from "react";
-import * as Y from "yjs";
 import { CompDoc } from "../../../base/global/content-editor";
 import { MContent, MPage } from "../../../utils/types/general";
 import { IItem } from "../../../utils/types/item";
-import { FNCompDef } from "../../../utils/types/meta-fn";
 import { IRoot } from "../../../utils/types/root";
 
 export const EditorGlobal = {
@@ -62,6 +60,10 @@ export const EditorGlobal = {
   comp: null as null | {
     id: string;
     content_tree: IItem;
+  },
+  compProp: {
+    edit: false,
+    preview: true,
   },
   compEdits: [] as IItem[],
 

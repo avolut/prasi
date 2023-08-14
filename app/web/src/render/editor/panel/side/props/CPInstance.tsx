@@ -3,7 +3,7 @@ import { useGlobal, useLocal } from "web-utils";
 import { syncronize } from "y-pojo";
 import * as Y from "yjs";
 import { TypedMap } from "yjs-types";
-import { MItem } from "../../../../../utils/types/item";
+import { IItem, MItem } from "../../../../../utils/types/item";
 import { FMCompDef, FNCompDef } from "../../../../../utils/types/meta-fn";
 import { Loading } from "../../../../../utils/ui/loading";
 import { Popover } from "../../../../../utils/ui/popover";
@@ -12,6 +12,7 @@ import { jscript } from "../../script/script-element";
 import { CPCodeEdit } from "./CPCodeEdit";
 import { CPOption } from "./CPOption";
 import { CPText } from "./CPText";
+import { editComp } from "../../../logic/comp";
 
 export const CPInstance: FC<{ mitem: MItem }> = ({ mitem }) => {
   const p = useGlobal(EditorGlobal, "EDITOR");
@@ -67,24 +68,42 @@ export const CPInstance: FC<{ mitem: MItem }> = ({ mitem }) => {
 
   return (
     <div className="flex flex-col flex-1">
-      {Object.entries(local.props)
-        .sort((a, b) => {
-          return a[1].idx - b[1].idx;
-        })
-        .map(([k, v]) => {
-          let mprop = local.mprops.get(k);
-          if (mprop && v.meta?.type !== "content-element") {
-            return (
-              <SingleProp
-                key={k}
-                name={k}
-                prop={v}
-                mprop={mprop}
-                render={p.render}
-              />
-            );
-          }
-        })}
+      <div className="border-b bg-white flex justify-between items-center">
+        <div className="text-[10px] select-none text-slate-400 pl-1 py-1">
+          PROPS
+        </div>
+        <div
+          className="flex mr-1 px-2 bg-white text-xs border rounded-sm cursor-pointer hover:bg-blue-50 hover:border-blue-500 text-blue-700"
+          onClick={() => {
+            p.compProp.edit = true;
+            editComp(p, mitem.toJSON() as IItem);
+          }}
+        >
+          Edit Master Props
+        </div>
+      </div>
+      <div className="flex-1 relative overflow-y-auto">
+        <div className="absolute flex-col inset-0">
+          {Object.entries(local.props)
+            .sort((a, b) => {
+              return a[1].idx - b[1].idx;
+            })
+            .map(([k, v]) => {
+              let mprop = local.mprops.get(k);
+              if (mprop && v.meta?.type !== "content-element") {
+                return (
+                  <SingleProp
+                    key={k}
+                    name={k}
+                    prop={mprop.toJSON() as any}
+                    mprop={mprop}
+                    render={p.render}
+                  />
+                );
+              }
+            })}
+        </div>
+      </div>
     </div>
   );
 };
@@ -182,7 +201,10 @@ const SingleProp: FC<{
                   backdrop={false}
                   content={
                     <div className="bg-white w-[55vw] h-[55vh] flex">
-                      <CPCodeEdit value={prop.value} onChange={() => {}} />
+                      <CPCodeEdit
+                        value={prop.value || ""}
+                        onChange={updateValue}
+                      />
                     </div>
                   }
                   className="bg-orange-500 text-white px-2 flex items-center absolute inset-0"
