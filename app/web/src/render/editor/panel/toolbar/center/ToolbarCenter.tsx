@@ -118,7 +118,7 @@ export const ToolbarCenter = () => {
               <Popover
                 offset={12}
                 open={local.apiConfigOpen}
-                content={<>Cek</>}
+                content={<>API</>}
                 onOpenChange={(open) => {
                   local.apiConfigOpen = open;
                   local.render();

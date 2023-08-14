@@ -19,7 +19,9 @@ import {
   onDragEnd,
   onDragStart,
   onDrop,
+  selectMultiple,
 } from "./utils/tree-utils";
+import { MContent } from "../../../../utils/types/general";
 export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[] }> = ({ tree }) => {
   const TypedTree = DNDTree<NodeContent>;
   const p = useGlobal(EditorGlobal, "EDITOR");
@@ -30,15 +32,24 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[] }> = ({ tree }) => {
       node: null as null | NodeModel<NodeContent>,
     },
     method: null as TreeMethods | null,
+    id: [] as string[],
+    key: "" as string,
   });
   p.softRender.tree = local.render;
 
   const onClick = useCallback(
     (node: NodeModel<NodeContent>) => {
       if (node.data) {
-        p.item.active = node.data.content.id;
+        if (local.key === "ctrl" || local.key === "shift") {
+          selectMultiple(p, node, local);
+        } else {
+          p.item.multiple = [];
+          p.item.active = node.data.content.id;
+          console.log([p.item.active]);
+        }
         p.softRender.all();
       }
+      local.render();
     },
     [tree]
   );
@@ -88,6 +99,40 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[] }> = ({ tree }) => {
     }
   }, [p.comp?.id, local.method]);
 
+  useEffect(() => {
+    const keyDown = async (evt: KeyboardEvent) => {
+      if (local.key !== "shift")
+        if (evt.shiftKey || evt.metaKey) {
+          local.key = "shift";
+          local.render();
+          return;
+        }
+      if (local.key !== "ctrl")
+        if (evt.ctrlKey || evt.metaKey) {
+          local.key = "ctrl";
+          local.render();
+          return;
+        }
+    };
+    const keyUp = async (evt: KeyboardEvent) => {
+      if (local.key === "ctrl")
+        if (!evt.ctrlKey) {
+          local.key = "";
+          local.render();
+        }
+      if (local.key === "shift")
+        if (!evt.shiftKey) {
+          local.key = "";
+          local.render();
+        }
+    };
+    window.addEventListener("keydown", keyDown, true);
+    window.addEventListener("keyup", keyUp, true);
+    return () => {
+      window.removeEventListener("keydown", keyDown, true);
+      window.removeEventListener("keyup", keyUp, true);
+    };
+  }, []);
   return (
     <div
       className={cx(
@@ -132,6 +177,10 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[] }> = ({ tree }) => {
               container: "flex flex-col",
               dropTarget: "drop-target",
               placeholder: "placeholder",
+              draggingSource: css`
+                opacity: 0.3;
+                cursor: not-allowed;
+              `,
             }}
             ref={(el) => {
               local.method = el;
@@ -165,11 +214,20 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[] }> = ({ tree }) => {
             sort={false}
             onDragStart={(node) => onDragStart(p, node)}
             onDragEnd={(node) => onDragEnd(p, node)}
-            canDrop={(_, args) => canDrop(p, args)}
+            canDrop={(_, args) => canDrop(p, args, local)}
             onDrop={(...args) => onDrop(p, ...args)}
           ></TypedTree>
         </div>
       </DndProvider>
     </div>
   );
+};
+
+export const walk = (item: MContent, result?: string[]) => {
+  const _result = result || [];
+  _result.push(item.get("id") || "");
+  item.get("childs")?.forEach((e) => {
+    walk(e, _result);
+  });
+  return _result;
 };

@@ -3,6 +3,7 @@ import { IContent } from "../../../../../utils/types/general";
 import { useGlobal, useLocal } from "web-utils";
 import { EditorGlobal } from "../../../logic/global";
 import { FNComponent } from "../../../../../utils/types/meta-fn";
+import find from "lodash.find";
 
 export const ETreeItemName: FC<{
   item: IContent;
@@ -23,7 +24,7 @@ export const ETreeItemName: FC<{
   }
 
   return (
-    <div className="text-sm flex-1 ">
+    <div className={cx("text-sm flex-1 ")}>
       <>{name}</>
     </div>
   );

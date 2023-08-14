@@ -2,14 +2,17 @@ export const treeItemStyle = (arg: {
   isComponent: boolean;
   isActive: boolean;
   isHover: boolean;
+  isSelect: boolean;
 }) => {
-  const { isComponent, isActive, isHover } = arg;
+  const { isComponent, isActive, isHover, isSelect } = arg;
   return cx(
     "item flex items-stretch cursor-pointer border-b relative ",
     // isParentActive && !isActive && !isHover && "bg-blue-100",
     isComponent && !isActive && !isHover && "bg-purple-50",
     isActive && (isComponent ? "bg-purple-100" : "bg-blue-100"),
     isHover && (isComponent ? "bg-purple-100" : "bg-blue-50"),
+    isSelect ? "bg-blue-100" : "",
+    isSelect ? "font-bold" : "",
     css`
       min-height: 28px;
       > div {

@@ -24,7 +24,7 @@ export const ETreeItemAction: FC<{
   } else {
     link = item.linktag?.link || "";
   }
-
+  if (!p.treeMeta[item.id]) return <></>;
   const mitem = p.treeMeta[item.id].item;
 
   let canDelete = true;
@@ -36,7 +36,6 @@ export const ETreeItemAction: FC<{
   ) {
     canDelete = false;
   }
-
   return (
     <div className="flex action pl-3 items-center w-[100px] justify-end">
       {!!link && (

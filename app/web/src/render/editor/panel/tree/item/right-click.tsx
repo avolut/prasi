@@ -13,10 +13,11 @@ import { fillID } from "../../../tools/fill-id";
 import { flatTree } from "../../../tools/flat-tree";
 import { newMap } from "../../../tools/yjs-tools";
 import { jscript } from "../../script/script-element";
-import { NodeContent } from "../utils/flatten";
+import { NodeContent, flattenTree } from "../utils/flatten";
 import { detachComp } from "./action/detach";
 import { createId } from "@paralleldrive/cuid2";
 import { IText } from "../../../../../utils/types/text";
+import { filterFlatTree } from "../utils/tree-utils";
 import * as Y from "yjs";
 
 export const ETreeRightClick: FC<{
@@ -47,6 +48,12 @@ export const ETreeRightClick: FC<{
   const mitem = p.treeMeta[item.id].item;
   const mcomp = mitem.get("component");
 
+  try {
+    navigator.clipboard.readText().then((e) => {
+      local.clipboardAllowed = e.includes("prasi") ? true : false;
+      local.render();
+    });
+  } catch (error) {}
   return (
     <Menu mouseEvent={event} onClose={onClose}>
       {comp?.id && !isActiveComponent && (
@@ -186,37 +193,34 @@ export const ETreeRightClick: FC<{
       <MenuItem
         label="Copy"
         onClick={() => {
-          let mode = p.item.copy.mode;
+          let mode = p.item.multiple;
           let clipboardText = "";
-          switch (mode) {
-            case "multiple":
-              const data = p.item.multiple.map((id) => {
-                const e = p.treeMeta[id];
-                if (e) {
-                  let jso = e.item.toJSON();
-                  if (jso.type === "section") {
-                    const newItem = {
-                      id: jso.id,
-                      name: jso.name,
-                      type: "item",
-                      dim: { w: "fit", h: "fit" },
-                      childs: jso.childs,
-                      component: get(jso, "component"),
-                      adv: jso.adv,
-                    } as IItem;
-                    return newItem;
-                  }
-                  return jso;
+          if (p.item.multiple.length) {
+            const data = p.item.multiple.map((id) => {
+              const e = p.treeMeta[id];
+              if (e) {
+                let jso = e.item.toJSON();
+                if (jso.type === "section") {
+                  const newItem = {
+                    id: jso.id,
+                    name: jso.name,
+                    type: "item",
+                    dim: { w: "fit", h: "fit" },
+                    childs: jso.childs,
+                    component: get(jso, "component"),
+                    adv: jso.adv,
+                  } as IItem;
+                  return newItem;
                 }
-              });
-              let rootContent = JSON.parse(JSON.stringify({ data }));
-              let flat = rootContent.data as Array<IContent>;
-              let res = flatTree(flat);
-              clipboardText = JSON.stringify({ data: res });
-              break;
-            default:
-              clipboardText = JSON.stringify(item);
-              break;
+                return jso;
+              }
+            });
+            let rootContent = JSON.parse(JSON.stringify({ data }));
+            let flat = rootContent.data as Array<IContent>;
+            let res = flatTree(flat);
+            clipboardText = JSON.stringify({ data: res });
+          } else {
+            clipboardText = JSON.stringify(item);
           }
           let str = clipboardText + "_prasi";
           navigator.clipboard.writeText(str);
@@ -233,53 +237,55 @@ export const ETreeRightClick: FC<{
         }
         onClick={() => {
           if (type === "item" || type === "section") {
-            if (mitem.get("childs")) {
-              let paste = "";
-
-              try {
-                navigator.clipboard.readText().then((e) => {
-                  paste = e;
-                  local.clipboardAllowed = true;
-                  local.render();
-                });
-
-                let desc = paste.replaceAll("_prasi", "");
-                let obj = {} as IContent;
-                let jso = JSON.parse(desc) as IContent;
-                const childs = get(jso, "data") as any;
-
-                //TODO: ra mudeng, tako faisol...
-                if (childs) {
-                  // let maps: any = [];
-                  // p.item.multiple = [];
-                  // let select = [] as Array<MContent>;
-                  // childs.map((e: any) => {
-                  //   const map = newMap(fillID(e)) as MContent;
-                  //   let walk = walkContent(map) as Array<MContent>;
-                  //   select = select.concat(walk);
-                  // });
-                } else {
-                  //   if (jso.type === "section") {
-                  //     const newItem = {
-                  //       id: createId(),
-                  //       name: jso.name,
-                  //       type: "item",
-                  //       dim: { w: "fit", h: "fit" },
-                  //       childs: jso.childs,
-                  //       component: get(jso, "component"),
-                  //       adv: jso.adv,
-                  //     } as IItem;
-                  //     obj = newItem;
-                  //   } else {
-                  //     obj = jso;
-                  //   }
-                  //   const map = newMap(fillID(obj)) as MContent;
-                  //   selectMultiple({ item: map, global: c });
-                  //   child.push([map]);
-                  //   c.render();
-                }
-              } catch (error) {}
-            }
+            if (mitem)
+              if (mitem.get("childs")) {
+                let paste = "";
+                try {
+                  navigator.clipboard.readText().then((e) => {
+                    paste = e;
+                    let desc = paste.replaceAll("_prasi", "");
+                    let obj = {} as IContent;
+                    let jso = JSON.parse(desc) as IContent;
+                    const childs = get(jso, "data") as any;
+                    //TODO: ra mudeng, tako faisol...
+                    const child: any = mitem.get("childs");
+                    if (childs) {
+                      p.item.multiple = [];
+                      let select = [] as Array<string>;
+                      childs.map((e: any) => {
+                        const map = newMap(fillID(e)) as MContent;
+                        let wlk = walk(map) as Array<string>;
+                        child.push([map]);
+                        select = select.concat(wlk);
+                      });
+                      console.log(select);
+                      p.item.active = "";
+                      p.item.multiple = select;
+                    } else {
+                      if (jso.type === "section") {
+                        const newItem = {
+                          id: createId(),
+                          name: jso.name,
+                          type: "item",
+                          dim: { w: "fit", h: "fit" },
+                          childs: jso.childs,
+                          component: get(jso, "component"),
+                          adv: jso.adv,
+                        } as IItem;
+                        obj = newItem;
+                      } else {
+                        obj = jso;
+                      }
+                      const map = newMap(fillID(obj)) as MContent;
+                      let walkId = walk(map);
+                      p.item.active = "";
+                      p.item.multiple = walkId;
+                      child.push([map]);
+                    }
+                    p.render();
+                  });
+                } catch (error) {}
+              }
           }
         }}
       />
@@ -330,6 +336,28 @@ export const ETreeRightClick: FC<{
           }}
         />
       )}
+
+      <MenuItem
+        label={"Delete"}
+        onClick={() => {
+          if (p.item.multiple.length) {
+            let tree: NodeModel<NodeContent>[] = [];
+            const comp: any = p.comps.doc[p.comp?.id || ""];
+            if (comp) {
+              tree = flattenTree(p, comp.getMap("map").get("content_tree"));
+            } else if (p.mpage) {
+              tree = flattenTree(p, p.mpage.getMap("map").get("content_tree"));
+            }
+            filterFlatTree(p.item.multiple, tree, p);
+          } else {
+            mitem.parent.forEach((e, idx) => {
+              if (e === item) {
+                mitem.parent.delete(idx);
+              }
+            });
+          }
+        }}
+      />
     </Menu>
   );
 };

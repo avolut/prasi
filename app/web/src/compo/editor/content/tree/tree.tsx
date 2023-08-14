@@ -30,13 +30,18 @@ import { filterFlatTree } from "../../../page/tools/filter-tree";
 
 export const CETree: FC<{ id: string }> = ({ id }) => {
   const c = useGlobal(CEGlobal, id);
-  const local = useLocal({ childs: [] as string[], treeError: false });
+  const local = useLocal({
+    childs: [] as string[],
+    select: [] as string[],
+    treeError: false,
+  });
   c.editor.tree.render = local.render;
   c.editor.tree.list = flattenTree(c.root as any);
   const TypedTree = DNDTree<NodeContent>;
 
   useEffect(() => {
     if (c.editor.active && c.editor.active.parent) {
+      // console.log("select");
       let item = c.editor.active.parent.parent as any;
       const open = new Set<string>();
       const walkParent = (item: any) => {
@@ -48,7 +53,9 @@ export const CETree: FC<{ id: string }> = ({ id }) => {
         }
       };
       walkParent(item);
+      // local.select = [...open];
       c.editor.tree.method?.open([...open]);
+      local.render();
     }
   }, [c.editor.active]);
 

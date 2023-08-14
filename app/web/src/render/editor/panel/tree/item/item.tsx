@@ -1,4 +1,4 @@
-import { NodeModel } from "@minoru/react-dnd-treeview";
+import { NodeModel, useDragOver } from "@minoru/react-dnd-treeview";
 import { FC, useEffect } from "react";
 import { NodeContent } from "../utils/flatten";
 import { ETreeItemIndent } from "./indent";
@@ -8,6 +8,7 @@ import { IItem } from "../../../../../utils/types/item";
 import { useGlobal, useLocal } from "web-utils";
 import { ETreeItemAction } from "./action";
 import { EditorGlobal } from "../../../logic/global";
+import find from "lodash.find";
 
 export const ETreeItem: FC<{
   node: NodeModel<NodeContent>;
@@ -39,6 +40,8 @@ export const ETreeItem: FC<{
 }) => {
   if (!node.data) return <></>;
   const local = useLocal({ renaming: false, el: null as any });
+  const dragOverProps = useDragOver(node.id, isOpen, onToggle);
+
   const item = node.data.content;
   const type = item.type;
   let childs = item.type === "text" ? [] : item.childs;
@@ -53,6 +56,8 @@ export const ETreeItem: FC<{
     isRootComponent = true;
     isComponent = false;
   }
+  const p = useGlobal(EditorGlobal, "EDITOR");
+  let isSelect = find(p.item.multiple, (e) => e === item.id) ? true : false;
 
   if (isComponent) {
     const props = (item as IItem).component?.props;
@@ -71,7 +76,7 @@ export const ETreeItem: FC<{
 
   return (
     <div
-      className={treeItemStyle({ isActive, isHover, isComponent })}
+      className={treeItemStyle({ isActive, isHover, isComponent, isSelect })}
       onClick={() => onClick(node)}
       onPointerOver={() => onHover(node)}
       onContextMenu={(e) => {
@@ -82,6 +87,7 @@ export const ETreeItem: FC<{
       ref={(e) => {
         local.el = e;
       }}
+      {...dragOverProps}
     >
       <ETreeItemIndent
         depth={depth}

@@ -6,10 +6,21 @@ import {
 } from "@minoru/react-dnd-treeview";
 import get from "lodash.get";
 import { FC } from "react";
-import { MContent } from "../../../../../utils/types/general";
+import { IContent, MContent } from "../../../../../utils/types/general";
 import { EditorGlobal, PG } from "../../../logic/global";
-import { NodeContent } from "./flatten";
+import { NodeContent, flattenTree } from "./flatten";
 import { useGlobal } from "web-utils";
+import find from "lodash.find";
+import { walk } from "../body";
+import { IItem, MItem } from "../../../../../utils/types/item";
+import concat from "lodash.concat";
+import findIndex from "lodash.findindex";
+import slice from "lodash.slice";
+import uniqBy from "lodash.uniqby";
+import { id } from "date-fns/locale";
+import set from "lodash.set";
+import { newMap } from "../../../tools/yjs-tools";
+import { fillID } from "../../../tools/fill-id";
 
 export const DEPTH_WIDTH = 8;
 
@@ -55,6 +66,63 @@ export const onDrop = (
   let listItem = p.item.multiple;
   if (listItem.length) {
     // Multiple drop targets
+    if (!find(listItem, (e) => e === dropTargetId)) {
+      let listContent: any = listItem.map((e) => {
+        let mitem = p.treeMeta[e];
+        if (mitem) {
+          const jso = mitem.item.toJSON();
+          if (jso.type === "section") {
+            const newItem = {
+              id: jso.id,
+              name: jso.name,
+              type: "item",
+              dim: { w: "fit", h: "fit" },
+              childs: jso.childs,
+              component: get(jso, "component"),
+              adv: jso.adv,
+            } as IItem;
+            return newItem;
+          }
+          return jso;
+        }
+        {
+          return null;
+        }
+      });
+      let res = flatTree(listContent);
+      let mitem = p.treeMeta[dropTargetId];
+      if (mitem) {
+        const child: any = mitem.item.get("childs");
+        const type = mitem.item.get("type");
+        let select = [] as Array<MContent>;
+        if (type === "text") {
+          mitem.item.parent.forEach((e: MContent, idx: any) => {
+            res.map((e: any) => {
+              const map = newMap(fillID(e)) as MContent;
+              select = select.concat(map);
+              if (map) {
+                mitem.item.parent.insert(idx, [map]);
+              }
+            });
+          });
+        } else {
+          res.map((e: any) => {
+            const map = newMap(fillID(e)) as MContent;
+            child.push([map]);
+            select = select.concat(map);
+          });
+        }
+        let tree: NodeModel<NodeContent>[] = [];
+        const comp: any = p.comps.doc[p.comp?.id || ""];
+        if (comp) {
+          tree = flattenTree(p, comp.getMap("map").get("content_tree"));
+        } else if (p.mpage) {
+          tree = flattenTree(p, p.mpage.getMap("map").get("content_tree"));
+        }
+        let iSelect = p.item.multiple;
+        filterFlatTree(iSelect, tree, p);
+      }
+    }
   } else {
     // Single drop targets
     if (
@@ -64,7 +132,7 @@ export const onDrop = (
     ) {
       let from = p.treeMeta[dragSource.id];
       let to = p.treeMeta[dropTarget.id];
-      if (from && to && p.mpage) {
+      if (from && to && p.mpage && dragSource.id !== dropTarget.id) {
         const mitem = from.item;
         const insert = mitem.clone();
         mitem.parent.forEach((e, idx) => {
@@ -95,8 +163,8 @@ export const onDrop = (
   }
 };
 
-export const canDrop = (p: PG, arg: DropOptions<NodeContent>) => {
-  const { dragSource, dropTargetId, dropTarget } = arg;
+export const canDrop = (p: PG, arg: DropOptions<NodeContent>, local: any) => {
+  const { dragSource, dragSourceId, dropTargetId, dropTarget } = arg;
   try {
     const parentSource: MContent | undefined = get(
       dragSource,
@@ -105,6 +173,7 @@ export const canDrop = (p: PG, arg: DropOptions<NodeContent>) => {
     if (parentSource && parentSource.get && parentSource.get("id") === "root") {
       return false;
     }
+
     if (dropTargetId === "root") {
       const ds = get(dragSource, "data.content");
       if (ds && ds.type === "section") {
@@ -114,6 +183,22 @@ export const canDrop = (p: PG, arg: DropOptions<NodeContent>) => {
     } else if (dragSource?.data && dropTarget?.data) {
       const from = dragSource.data.content.type;
       const to = dropTarget.data.content.type;
+      let listItem = p.item.multiple;
+      if (listItem.length) {
+        if (typeof dragSourceId === "string") {
+          if (find(p.item.multiple, (e) => e === dropTargetId)) return false;
+        }
+      } else {
+        if (typeof dragSourceId === "string") {
+          const mitem = p.treeMeta[dragSourceId];
+          if (mitem) {
+            let walkId = walk(mitem.item);
+            if (find(walkId, (e) => e === dropTargetId)) {
+              return false;
+            }
+          }
+        }
+      }
 
       if (from === "section" || to === "text") {
         return false;
@@ -139,3 +224,122 @@ export const canDrop = (p: PG, arg: DropOptions<NodeContent>) => {
 
 export const onDragEnd = (p: PG, node: NodeModel<NodeContent>) => {};
 export const onDragStart = (p: PG, node: NodeModel<NodeContent>) => {};
+
+export const selectMultiple = (
+  p: PG,
+  node: NodeModel<NodeContent>,
+  local: any
+) => {
+  console.clear();
+  // console.log("selectMultiple");
+  const comp = p.comps.doc[p.comp?.id || ""];
+  const { key } = local;
+  let root: any = null;
+  let listId = p.item.multiple || [];
+  if (!listId.length) {
+    const item = p.treeMeta[p.item.active];
+    if (item) {
+      listId = treeContent(item.item);
+    }
+  }
+  // console.log(listId);
+  if (comp) {
+    root = comp.getMap("map").get("content_tree");
+  } else if (p.mpage) {
+    root = p.mpage.getMap("map").get("content_tree");
+  }
+  let tree = walk(root);
+  const item = p.treeMeta[node.id];
+  if (item) {
+    // let idItem = treeContent()
+    const listItemId = treeContent(item.item);
+    // console.log({ listItemId });
+    switch (true) {
+      case key === "ctrl":
+        if (find(listId, (e) => e === node.id) && p.item.multiple.length) {
+          listId = listId.filter((e) => !find(listItemId, (x) => x === e));
+        } else {
+          listId = concat(listItemId, listId);
+        }
+        break;
+      case key === "shift":
+        // console.log("shift");
+        let startIdx = findIndex(tree, (e) => e === listId[0]);
+        let endIdx = findIndex(
+          tree,
+          (e) => e === listItemId[listItemId.length - 1]
+        );
+        if (startIdx >= endIdx) {
+          endIdx = startIdx;
+          startIdx = findIndex(tree, (e) => e === listItemId[0]);
+        }
+        // console.log(listId);
+        listId = slice(tree, startIdx, endIdx + 1);
+        // console.log(listId);
+        break;
+      default:
+        break;
+    }
+  }
+  listId = uniqBy(listId, (e) => e);
+  p.item.active = "";
+  p.item.multiple = listId;
+};
+
+export const flatTree = (item: Array<IContent>) => {
+  const children = item as Array<IContent>;
+  let ls = structuredClone(item);
+  let sitem: any = ls.map((v: IContent) => {
+    if (v.type !== "text") {
+      v.childs = [];
+    }
+    return { ...v };
+  });
+  let result = [] as any;
+  sitem.forEach((v: IContent) => {
+    let parent = children.filter((x: IContent) =>
+      find(get(x, "childs"), (x: IContent) => x.id === v.id)
+    );
+    if (get(parent, "length")) {
+      let s = sitem.find((e: any) => e.id === get(parent, "[0].id"));
+      let childs = s.childs || [];
+      let now = [v];
+      set(s, "childs", childs.concat(now));
+    } else {
+      result.push(v);
+    }
+  });
+  return result;
+};
+
+export const filterFlatTree = (
+  item: Array<string>,
+  root: NodeModel<NodeContent>[],
+  p: PG
+) => {
+  item.map((e) => {
+    let obj = root.find((x) => x.id === e);
+    if (obj) {
+      let mitem = p.treeMeta[e];
+      if (mitem.item) {
+        let parent = mitem.item.parent;
+        let childs = parent?.toJSON() || [];
+        let idx = findIndex(childs, (x: any) => get(x, "id") === e);
+        if (typeof idx === "number") {
+          parent?.delete(idx);
+        }
+      }
+    }
+  });
+};
+
+const treeContent = (item: MContent) => {
+  const type = item.get("type");
+  let result: Array<any> = [];
+  if (type === "text") {
+    result.push(item.get("id"));
+  } else if (type === "section" || type === "item") {
+    result = walk(item);
+  }
+  return result;
+};
