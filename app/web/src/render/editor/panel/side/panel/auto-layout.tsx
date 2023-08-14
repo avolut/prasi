@@ -219,12 +219,13 @@ export const PanelAutoLayout: FC<{
                 className={cx(
                   "flex-1",
                   css`
-                    width: 30px;
+                    width: 28px !important;
                     min-width: 0px !important;
-                    margin-left: 5px !important;
+                    margin-left: 0px !important;
                     padding: 0px 5px !important;
-                    height: 30px !important;
-                  `
+                    height: 28px !important;
+                  `,
+                  layout.dir.startsWith("col") && "rotate-90"
                 )}
                 onClick={() => {
                   update("layout", {

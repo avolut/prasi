@@ -242,43 +242,43 @@ export const ETreeRightClick: FC<{
                   local.clipboardAllowed = true;
                   local.render();
                 });
+
+                let desc = paste.replaceAll("_prasi", "");
+                let obj = {} as IContent;
+                let jso = JSON.parse(desc) as IContent;
+                const childs = get(jso, "data") as any;
+
+                //TODO: ra mudeng, tako faisol...
+                if (childs) {
+                  // let maps: any = [];
+                  // p.item.multiple = [];
+                  // let select = [] as Array<MContent>;
+                  // childs.map((e: any) => {
+                  //   const map = newMap(fillID(e)) as MContent;
+                  //   let walk = walkContent(map) as Array<MContent>;
+                  //   select = select.concat(walk);
+                  // });
+                } else {
+                  //   if (jso.type === "section") {
+                  //     const newItem = {
+                  //       id: createId(),
+                  //       name: jso.name,
+                  //       type: "item",
+                  //       dim: { w: "fit", h: "fit" },
+                  //       childs: jso.childs,
+                  //       component: get(jso, "component"),
+                  //       adv: jso.adv,
+                  //     } as IItem;
+                  //     obj = newItem;
+                  //   } else {
+                  //     obj = jso;
+                  //   }
+                  //   const map = newMap(fillID(obj)) as MContent;
+                  //   selectMultiple({ item: map, global: c });
+                  //   child.push([map]);
+                  //   c.render();
+                }
               } catch (error) {}
-
-              let desc = paste.replaceAll("_prasi", "");
-              let obj = {} as IContent;
-              let jso = JSON.parse(desc) as IContent;
-              const childs = get(jso, "data") as any;
-
-              //TODO: ra mudeng, tako faisol...
-              if (childs) {
-                // let maps: any = [];
-                // p.item.multiple = [];
-                // let select = [] as Array<MContent>;
-                // childs.map((e: any) => {
-                //   const map = newMap(fillID(e)) as MContent;
-                //   let walk = walkContent(map) as Array<MContent>;
-                //   select = select.concat(walk);
-                // });
-              } else {
-                //   if (jso.type === "section") {
-                //     const newItem = {
-                //       id: createId(),
-                //       name: jso.name,
-                //       type: "item",
-                //       dim: { w: "fit", h: "fit" },
-                //       childs: jso.childs,
-                //       component: get(jso, "component"),
-                //       adv: jso.adv,
-                //     } as IItem;
-                //     obj = newItem;
-                //   } else {
-                //     obj = jso;
-                //   }
-                //   const map = newMap(fillID(obj)) as MContent;
-                //   selectMultiple({ item: map, global: c });
-                //   child.push([map]);
-                //   c.render();
-              }
             }
           }
         }}

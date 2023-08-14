@@ -165,7 +165,7 @@ const Adv: FC<{
   item: IContent;
   p: PG;
 }> = ({ item, p }) => {
-  const adv = item.adv as FNAdv;
+  const adv = { ...item.adv } as FNAdv;
 
   const openEditor = (mode: "css" | "js" | "html") => {
     const mitem = p.treeMeta[item.id]?.item;

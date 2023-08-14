@@ -259,41 +259,43 @@ export const CETreeMenu: FC<{
               if (child) {
                 let desc = local.paste.replaceAll("_prasi", "");
                 let obj = {} as IContent;
-                let jso = JSON.parse(desc) as IContent;
-                if (get(jso, "data")) {
-                  let childs = get(jso, "data") as any;
-                  let maps: any = [];
-                  c.editor.multiple.active = [];
-                  let select = [] as Array<MContent>;
-                  childs.map((e: any) => {
-                    const map = newMap(fillID(e)) as MContent;
-                    let walk = walkContent(map) as Array<MContent>;
-                    child.push([map]);
-                    select = select.concat(walk);
-                  });
-                  c.render();
-                  c.editor.active = null;
-                  c.editor.multiple.active = select;
-                } else {
-                  if (jso.type === "section") {
-                    const newItem = {
-                      id: createId(),
-                      name: jso.name,
-                      type: "item",
-                      dim: { w: "fit", h: "fit" },
-                      childs: jso.childs,
-                      component: get(jso, "component"),
-                      adv: jso.adv,
-                    } as IItem;
-                    obj = newItem;
+                try {
+                  let jso = JSON.parse(desc) as IContent;
+                  if (get(jso, "data")) {
+                    let childs = get(jso, "data") as any;
+                    let maps: any = [];
+                    c.editor.multiple.active = [];
+                    let select = [] as Array<MContent>;
+                    childs.map((e: any) => {
+                      const map = newMap(fillID(e)) as MContent;
+                      let walk = walkContent(map) as Array<MContent>;
+                      child.push([map]);
+                      select = select.concat(walk);
+                    });
+                    c.render();
+                    c.editor.active = null;
+                    c.editor.multiple.active = select;
                   } else {
-                    obj = jso;
+                    if (jso.type === "section") {
+                      const newItem = {
+                        id: createId(),
+                        name: jso.name,
+                        type: "item",
+                        dim: { w: "fit", h: "fit" },
+                        childs: jso.childs,
+                        component: get(jso, "component"),
+                        adv: jso.adv,
+                      } as IItem;
+                      obj = newItem;
+                    } else {
+                      obj = jso;
+                    }
+                    const map = newMap(fillID(obj)) as MContent;
+                    selectMultiple({ item: map, global: c });
+                    child.push([map]);
+                    c.render();
                   }
-                  const map = newMap(fillID(obj)) as MContent;
-                  selectMultiple({ item: map, global: c });
-                  child.push([map]);
-                  c.render();
-                }
+                } catch (e) {}
               }
             }
           }}
