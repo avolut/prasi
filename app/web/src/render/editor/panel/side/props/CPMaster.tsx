@@ -8,10 +8,15 @@ import { AutoHeightTextarea } from "../panel/link";
 import { TypedMap } from "yjs-types";
 import { syncronize } from "y-pojo";
 import * as Y from "yjs";
+import { jscript } from "../../script/script-element";
+
+const popover = {
+  name: "",
+};
 
 export const CPMaster: FC<{ mitem: MItem }> = ({ mitem }) => {
   const p = useGlobal(EditorGlobal, "EDITOR");
-  const local = useLocal({ id: mitem.get("id"), ready: false });
+  const local = useLocal({ id: mitem.get("id") || "", ready: false });
 
   useEffect(() => {
     if (local.id !== mitem.get("id")) {
@@ -20,8 +25,12 @@ export const CPMaster: FC<{ mitem: MItem }> = ({ mitem }) => {
     }
   }, [mitem]);
 
-  const props = p.comp?.content_tree.component?.props || {};
-  const mprops = mitem.get("component")?.get("props");
+  const mprops = p.comps.doc[p.comp?.content_tree?.component?.id || ""]
+    .getMap("map")
+    ?.get("content_tree")
+    ?.get("component")
+    ?.get("props");
+  const props = mprops?.toJSON() as Record<string, FNCompDef>;
 
   return (
     <div className="flex flex-col flex-1">
@@ -125,7 +134,7 @@ const SingleProp: FC<{ name: string; prop: FNCompDef; mprop: FMCompDef }> = ({
   prop,
   mprop,
 }) => {
-  const local = useLocal({ open: false, name });
+  const local = useLocal({ name });
   const type = prop.meta?.type || "text";
 
   return (
@@ -135,7 +144,7 @@ const SingleProp: FC<{ name: string; prop: FNCompDef; mprop: FMCompDef }> = ({
           "border-b bg-white cursor-pointer hover:bg-orange-50 flex flex-col items-stretch"
         )}
         onClick={() => {
-          local.open = true;
+          popover.name = name;
           local.render();
         }}
       >
@@ -189,8 +198,8 @@ const SinglePopover: FC<{
   prop: FNCompDef;
   mprop: FMCompDef;
   children: any;
-  local: { open: boolean; name: string; render: () => void };
-}> = ({ prop, mprop, children, local }) => {
+  local: { name: string; render: () => void };
+}> = ({ name, prop, mprop, children, local }) => {
   const type = prop.meta?.type || "text";
   const mmeta = mprop.get("meta");
   const meta = prop.meta;
@@ -201,16 +210,16 @@ const SinglePopover: FC<{
       children={children}
       backdrop={false}
       placement="left-start"
-      open={local.open}
+      open={popover.name === name}
       popoverClassName="bg-white shadow-lg border border-slate-300"
       onOpenChange={(open) => {
         if (!open) {
           setTimeout(() => {
-            local.open = false;
+            popover.name = "";
             local.render();
           }, 100);
         } else {
-          local.open = true;
+          popover.name = name;
           local.render();
         }
       }}
@@ -261,7 +270,24 @@ const SinglePopover: FC<{
                 local.render();
               }}
               onBlur={() => {
-                // rename(local, name, props, prop, transact);
+                if (local.name !== name) {
+                  const keys = Object.keys(mprop.parent?.toJSON());
+                  if ([...keys, ...keywords].includes(local.name)) {
+                    alert(`Cannot use "${local.name}" as name`);
+                    local.name = name;
+                    local.render();
+                    return;
+                  }
+                  mprop.doc?.transact(() => {
+                    const parent = mprop.parent as TypedMap<
+                      Record<string, FMCompDef>
+                    >;
+                    parent.set(local.name, parent.get(name)?.clone() as any);
+                    parent.delete(name);
+                  });
+                  popover.name = local.name;
+                  local.render();
+                }
               }}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
@@ -291,17 +317,17 @@ const SinglePopover: FC<{
               defaultValue={prop.value}
               onChange={async (e) => {
                 prop.value = e.currentTarget.value;
-                mprop.set("value", prop.value);
-                // update("value", prop.value);
-                // if (jscript.build) {
-                //   const res = await jscript.build(
-                //     "el.tsx",
-                //     `return ${e.currentTarget.value}`
-                //   );
-                //   if (typeof res === "string") {
-                //     update("valueBuilt", res.substring(6));
-                //   }
-                // }
+
+                if (jscript.build) {
+                  const res = await jscript.build(
+                    "el.tsx",
+                    `return ${prop.value}`
+                  );
+                  mprop.doc?.transact(() => {
+                    mprop.set("value", prop.value);
+                    mprop.set("valueBuilt", res.substring(6));
+                  });
+                }
               }}
               placeholder="VALUE"
               className="p-1 outline-none font-mono text-[11px] border focus:border-blue-500"
@@ -368,82 +394,51 @@ const Trash = () => (
   </svg>
 );
 
-const rename = (
-  local: { name: string; render: () => void },
-  name: string,
-  props: TypedMap<Record<string, FMCompDef>>,
-  prop: FNCompDef,
-  transact: (fn: any) => void
-) => {
-  if (
-    [
-      "await",
-      "break",
-      "case",
-      "catch",
-      "class",
-      "const",
-      "continue",
-      "debugger",
-      "default",
-      "delete",
-      "do",
-      "else",
-      "enum",
-      "export",
-      "extends",
-      "false",
-      "finally",
-      "for",
-      "function",
-      "if",
-      "implements",
-      "import",
-      "in",
-      "instanceof",
-      "interface",
-      "let",
-      "new",
-      "null",
-      "package",
-      "private",
-      "protected",
-      "public",
-      "return",
-      "super",
-      "switch",
-      "static",
-      "this",
-      "throw",
-      "try",
-      "true",
-      "typeof",
-      "var",
-      "void",
-      "while",
-      "with",
-      "yield",
-    ].includes(local.name)
-  ) {
-    alert(`Cannot use "${local.name}" as name`);
-    local.name = "local_name";
-    local.render();
-    return;
-  }
-  if (local.name !== name && local.name) {
-    const item = props.get(name);
-    if (item) {
-      transact(() => {
-        props.set(local.name, new Y.Map() as any);
-        syncronize(props.get(local.name) as any, {
-          ...prop,
-          meta: { ...prop.meta, oldName: name },
-        });
-        props.delete(name);
-      });
-    }
-  } else {
-    local.name = name;
-    local.render();
-  }
-};
+const keywords = [
+  "await",
+  "break",
+  "case",
+  "catch",
+  "class",
+  "const",
+  "continue",
+  "debugger",
+  "default",
+  "delete",
+  "do",
+  "else",
+  "enum",
+  "export",
+  "extends",
+  "false",
+  "finally",
+  "for",
+  "function",
+  "if",
+  "implements",
+  "import",
+  "in",
+  "instanceof",
+  "interface",
+  "let",
+  "new",
+  "null",
+  "package",
+  "private",
+  "protected",
+  "public",
+  "return",
+  "super",
+  "switch",
+  "static",
+  "this",
+  "throw",
+  "try",
+  "true",
+  "typeof",
+  "var",
+  "void",
+  "while",
+  "with",
+  "yield",
+];
