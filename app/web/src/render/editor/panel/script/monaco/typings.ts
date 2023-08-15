@@ -1,9 +1,8 @@
 import type { OnMount } from "@monaco-editor/react";
+import { w } from "../../../../../utils/types/general";
+import { PG } from "../../../logic/global";
 import { baseTypings } from "./types/base";
 import { extractProp } from "./types/prop";
-import { useGlobal } from "web-utils";
-import { EditorGlobal, PG } from "../../../logic/global";
-import { w } from "../../../../../utils/types/general";
 export type MonacoEditor = Parameters<OnMount>[0];
 type Monaco = Parameters<OnMount>[1];
 

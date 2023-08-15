@@ -71,6 +71,9 @@ export const extractProp = (prop: {
 
 function recurseTypes(object: any) {
   const result: string[] = [];
+  if (Array.isArray(object)) {
+    return `any[];`;
+  }
   for (const [k, v] of Object.entries(object)) {
     result.push(`${k}: ${typeof v === "object" ? recurseTypes(v) : typeof v}`);
   }
