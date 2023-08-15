@@ -61,6 +61,7 @@ export const previewWS = async (p: PG) => {
               "update",
               throttle((e, origin) => {
                 if (p.mpage) {
+                  p.status = "init";
                   const page = p.mpage.getMap("map")?.toJSON() as page;
                   console.clear();
                   console.log(
@@ -121,6 +122,8 @@ export const previewWS = async (p: PG) => {
                   "update",
                   throttle((e, origin) => {
                     p.pageComp = {};
+                    p.status = "init";
+
                     console.log(
                       `🔥 Component updated: ${p.comp.doc[msg.comp_id]
                         .getMap("map")
@@ -168,6 +171,7 @@ export const previewWS = async (p: PG) => {
                 render: p.render,
               };
 
+              p.status = "init";
               console.clear();
               console.log(
                 `🔥 Site JS Reloaded: ${new Date().toLocaleString()}`
