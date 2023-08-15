@@ -1,8 +1,8 @@
-import { FC, useCallback, useEffect } from "react";
-import { IText } from "../../../utils/types/text";
-import { ERender } from "./e-render";
-import { PG } from "../logic/global";
+import { FC, useEffect } from "react";
 import { useLocal } from "web-utils";
+import { IText } from "../../../utils/types/text";
+import { PG } from "../logic/global";
+import { ERender } from "./e-render";
 
 export const EText: FC<{
   item: IText;
@@ -14,6 +14,9 @@ export const EText: FC<{
     </ERender>
   );
 };
+const currentFocus = {
+  id: "",
+};
 
 export const ETextInternal: FC<{
   className: any;
@@ -24,7 +27,19 @@ export const ETextInternal: FC<{
 }> = ({ p, className, item, _children, elprop }) => {
   const local = useLocal({ el: null as any });
   useEffect(() => {
-    if (local.el && p.item.active === item.id) local.el.focus();
+    if (p.item.active) {
+      if (
+        local.el &&
+        p.item.active === item.id &&
+        currentFocus.id !== item.id
+      ) {
+        currentFocus.id = item.id;
+        local.el.focus();
+        local.render();
+      }
+      if (p.item.active !== item.id) {
+      }
+    }
   }, [p.item.active]);
 
   return (

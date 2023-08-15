@@ -6,6 +6,8 @@ const w = window as unknown as {
   basepath: string;
   navigateOverride: (s: string) => string;
   isEditor: boolean;
+  isMobile: boolean;
+  isDesktop: boolean;
   exports: any;
 };
 
@@ -14,6 +16,8 @@ export const initEditor = async (p: PG, site_id: string) => {
     p.status = "loading";
 
     w.isEditor = false;
+    w.isMobile = p.mode === "mobile";
+    w.isDesktop = p.mode === "desktop";
     w.navigateOverride = (_href) => {
       if (_href.startsWith("/ed")) return _href;
       return "";

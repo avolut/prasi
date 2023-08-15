@@ -40,8 +40,16 @@ export const ed = {
 }
 export const editor = {
   name: "editor",
-  url: "/editor/:site/:page",
+  url: "/editor/:site_id/:page_id",
   path: "app/web/src/base/page/editor.tsx",
+  ssr: false,
+  layout: undefined,
+  
+}
+export const old = {
+  name: "old",
+  url: "/old/:site/:page",
+  path: "app/web/src/base/page/old.tsx",
   ssr: false,
   layout: "blank",
   

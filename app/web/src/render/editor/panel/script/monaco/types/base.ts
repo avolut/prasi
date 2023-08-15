@@ -10,6 +10,8 @@ const useEffect = React.useEffect;
 const useState = React.useState;
 
 const isEditor: boolean;
+const isMobile: boolean;
+const isDesktop: boolean;
 const navigate: (url:string) => void;
 const params: any;
 const cx = (...classNames: any[]) => string;

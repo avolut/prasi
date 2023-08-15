@@ -148,7 +148,9 @@ export const PreviewItemProp = () => {
         p.render();
       }}
     >
-      <div>Preview Prop</div>
+      <div>
+        {p.compProp.preview ? <>Prop Inherited</> : <>No Inheritance</>}
+      </div>
       <div>
         {!p.compProp.preview ? (
           <svg

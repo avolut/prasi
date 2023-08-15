@@ -1,6 +1,7 @@
 import { useGlobal } from "web-utils";
 import { ToolbarBox } from "../../../../../utils/ui/box";
 import { EditorGlobal } from "../../../logic/global";
+import { w } from "../../../../../utils/types/general";
 
 export const ResponsiveToggle = () => {
   const c = useGlobal(EditorGlobal, "EDITOR");
@@ -12,6 +13,8 @@ export const ResponsiveToggle = () => {
         {
           onClick() {
             c.mode = "mobile";
+            w.isMobile = true;
+            w.isDesktop = false;
             localStorage.setItem("editor-mode", "mobile");
             c.render();
           },
@@ -36,6 +39,8 @@ export const ResponsiveToggle = () => {
         {
           onClick() {
             c.mode = "desktop";
+            w.isMobile = false;
+            w.isDesktop = true;
             localStorage.setItem("editor-mode", "desktop");
             c.render();
           },
