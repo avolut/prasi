@@ -298,7 +298,7 @@ export const PageManager = () => {
                       if (
                         el &&
                         !local.initScrolled &&
-                        params.page === node.data?.id
+                        params.page_id === node.data?.id
                       ) {
                         local.initScrolled = true;
                         el.scrollIntoView({
