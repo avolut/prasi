@@ -11,6 +11,8 @@ import { EScriptCustom } from "../../script/script-custom";
 import { customMonacoState } from "../../script/monaco/monaco-custom";
 import { execSiteJS } from "../../../logic/init";
 import { wsend } from "../../../logic/ws";
+import { APIConfig } from "./api/APIConfig";
+import { NPMImport } from "./NPMImport";
 const ua = navigator.userAgent.toLowerCase();
 const isMac =
   ua.indexOf("mac") > -1 &&
@@ -118,13 +120,20 @@ export const ToolbarCenter = () => {
               <Popover
                 offset={12}
                 open={local.apiConfigOpen}
-                content={<>API</>}
+                content={
+                  <APIConfig
+                    close={() => {
+                      local.apiConfigOpen = false;
+                      local.render();
+                    }}
+                  />
+                }
                 onOpenChange={(open) => {
                   local.apiConfigOpen = open;
                   local.render();
                 }}
               >
-                <div className="font-mono text-[10px]">API</div>
+                <APIcon />
               </Popover>
             ),
           },
@@ -137,7 +146,7 @@ export const ToolbarCenter = () => {
             content: (
               <>
                 <Popover
-                  content={<>NPM</>}
+                  content={<NPMImport />}
                   popoverClassName={cx(
                     "bg-white shadow-2xl shadow-slate-400 outline-none border border-slate-300"
                   )}

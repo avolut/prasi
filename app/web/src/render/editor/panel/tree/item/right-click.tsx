@@ -16,8 +16,8 @@ import { flatTree } from "../../../tools/flat-tree";
 import { newMap } from "../../../tools/yjs-tools";
 import { jscript } from "../../script/script-element";
 import { NodeContent, flattenTree } from "../utils/flatten";
-import { filterFlatTree } from "../utils/tree-utils";
 import { detachComp } from "./action/detach";
+import { filterFlatTree } from "../utils/tree-utils";
 import { loadComponent } from "../../../logic/comp";
 
 export const ETreeRightClick: FC<{
@@ -171,8 +171,27 @@ export const ETreeRightClick: FC<{
         <MenuItem
           label="Hide"
           onClick={() => {
-            mitem.set("hidden", "only-editor");
-            p.render();
+            let listItem = p.item.multiple;
+            if (listItem.length) {
+              // hidden multiple
+              const listContent: any = listItem.map((e) => {
+                let item = p.treeMeta[e];
+                if (item) {
+                  return item.item.toJSON();
+                }
+              });
+              let res = flatTree(listContent);
+              res.map((e: IContent) => {
+                const item = p.treeMeta[e.id];
+                if (item) {
+                  item.item.set("hidden", "only-editor");
+                  p.render();
+                }
+              });
+            } else {
+              mitem.set("hidden", "only-editor");
+              p.render();
+            }
           }}
         />
       )}
@@ -180,8 +199,26 @@ export const ETreeRightClick: FC<{
         <MenuItem
           label="Show"
           onClick={() => {
-            mitem.set("hidden", false);
-            p.render();
+            let listItem = p.item.multiple;
+            if (listItem.length) {
+              // hidden multiple
+              const listContent: any = listItem.map((e) => {
+                let item = p.treeMeta[e];
+                if (item) {
+                  return item.item.toJSON();
+                }
+              });
+              let res = flatTree(listContent);
+              res.map((e: IContent) => {
+                const item = p.treeMeta[e.id];
+                if (item) {
+                  item.item.set("hidden", false);
+                }
+              });
+            } else {
+              mitem.set("hidden", false);
+              p.render();
+            }
           }}
         />
       )}
@@ -287,9 +324,10 @@ export const ETreeRightClick: FC<{
                       p.item.multiple = [];
                       let select = [] as Array<string>;
                       childs.map((e: any) => {
-                        const map = newMap(fillID(e)) as MContent;
+                        const nmap = fillID(e);
+                        const map = newMap(nmap) as MContent;
                         let wlk = walk(map) as Array<string>;
-                        child.push([map]);
+                        child.push([nmap.id]);
                         select = select.concat(wlk);
                       });
                       p.item.active = "";

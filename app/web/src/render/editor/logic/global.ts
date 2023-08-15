@@ -46,6 +46,10 @@ export const EditorGlobal = {
   site: {
     id: "",
     api_url: "",
+    api_prasi: {
+      port: "",
+      db: "",
+    },
     domain: "",
     name: "",
     js: "",

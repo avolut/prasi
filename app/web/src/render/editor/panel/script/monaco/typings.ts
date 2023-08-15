@@ -1,6 +1,9 @@
 import type { OnMount } from "@monaco-editor/react";
 import { baseTypings } from "./types/base";
 import { extractProp } from "./types/prop";
+import { useGlobal } from "web-utils";
+import { EditorGlobal } from "../../../logic/global";
+import { w } from "../../../../../utils/types/general";
 export type MonacoEditor = Parameters<OnMount>[0];
 type Monaco = Parameters<OnMount>[1];
 
@@ -9,6 +12,7 @@ export const monacoTypings = async (
   monaco: Monaco,
   prop: { values: Record<string, any>; types: Record<string, string> }
 ) => {
+  const p = useGlobal(EditorGlobal, "EDITOR");
   monaco.languages.typescript.typescriptDefaults.setExtraLibs([
     {
       filePath: "react.d.ts",
@@ -24,15 +28,18 @@ export const monacoTypings = async (
     },
   ]);
 
-  // for (const [k, v] of Object.entries(wsdoc.apiDef.prismaTypes)) {
-  //   register(
-  //     monaco,
-  //     `declare module '${k.replace(`\.d\.ts`, "")}' { ${v} } `,
-  //     `ts:${k}`
-  //   );
-  // }
-
-  // register(monaco, wsdoc.apiDef.apiTypes, "ts:api.d.ts");
+  if (p.site.api_prasi.db && p.site.api_prasi.port) {
+    if (w.prasiApi[p.site.api_url]) {
+      for (const [k, v] of Object.entries(w.prasiApi[p.site.api_url])) {
+        register(
+          monaco,
+          `declare module '${k.replace(`\.d\.ts`, "")}' { ${v} } `,
+          `ts:${k}`
+        );
+      }
+      register(monaco, w.prasiApi[p.site.api_url].apiTypes, "ts:api.d.ts");
+    }
+  }
 
   const propText = extractProp(prop);
 
