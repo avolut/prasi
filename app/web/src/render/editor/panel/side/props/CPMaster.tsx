@@ -296,44 +296,48 @@ const SinglePopover: FC<{
               }}
             />
           </div>
-          <div className="border-t border-slate-300 px-2 pt-2 pb-1 flex flex-col items-stretch">
-            <div className="uppercase text-xs text-slate-500">ts type</div>
-            <AutoHeightTextarea
-              defaultValue={prop.type}
-              onChange={(e) => {
-                prop.type = e.currentTarget.value as any;
+          {type !== "content-element" && (
+            <>
+              <div className="border-t border-slate-300 px-2 pt-2 pb-1 flex flex-col items-stretch">
+                <div className="uppercase text-xs text-slate-500">ts type</div>
+                <AutoHeightTextarea
+                  defaultValue={prop.type}
+                  onChange={(e) => {
+                    prop.type = e.currentTarget.value as any;
 
-                mprop.set("type", prop.type);
-                local.render();
-              }}
-              placeholder="TYPE"
-              className="p-1 outline-none font-mono text-[11px] border focus:border-blue-500"
-              spellCheck={false}
-            />
-          </div>
-          <div className="border-t border-slate-300 px-2 pt-2 pb-1 flex flex-col items-stretch">
-            <div className="uppercase text-xs text-slate-500">value</div>
-            <AutoHeightTextarea
-              defaultValue={prop.value}
-              onChange={async (e) => {
-                prop.value = e.currentTarget.value;
+                    mprop.set("type", prop.type);
+                    local.render();
+                  }}
+                  placeholder="TYPE"
+                  className="p-1 outline-none font-mono text-[11px] border focus:border-blue-500"
+                  spellCheck={false}
+                />
+              </div>
+              <div className="border-t border-slate-300 px-2 pt-2 pb-1 flex flex-col items-stretch">
+                <div className="uppercase text-xs text-slate-500">value</div>
+                <AutoHeightTextarea
+                  defaultValue={prop.value}
+                  onChange={async (e) => {
+                    prop.value = e.currentTarget.value;
 
-                if (jscript.build) {
-                  const res = await jscript.build(
-                    "el.tsx",
-                    `return ${prop.value}`
-                  );
-                  mprop.doc?.transact(() => {
-                    mprop.set("value", prop.value);
-                    mprop.set("valueBuilt", res.substring(6));
-                  });
-                }
-              }}
-              placeholder="VALUE"
-              className="p-1 outline-none font-mono text-[11px] border focus:border-blue-500"
-              spellCheck={false}
-            />
-          </div>
+                    if (jscript.build) {
+                      const res = await jscript.build(
+                        "el.tsx",
+                        `return ${prop.value}`
+                      );
+                      mprop.doc?.transact(() => {
+                        mprop.set("value", prop.value);
+                        mprop.set("valueBuilt", res.substring(6));
+                      });
+                    }
+                  }}
+                  placeholder="VALUE"
+                  className="p-1 outline-none font-mono text-[11px] border focus:border-blue-500"
+                  spellCheck={false}
+                />
+              </div>
+            </>
+          )}
 
           {type === "option" && (
             <div className="border-t border-slate-300 px-2 pt-2 pb-1 flex flex-col items-stretch">

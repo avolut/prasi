@@ -60,11 +60,23 @@ export const ETreeItem: FC<{
   let isSelect = find(p.item.multiple, (e) => e === item.id) ? true : false;
 
   if (isComponent) {
-    const props = (item as IItem).component?.props;
-    if (props) {
-      hasChilds =
-        Object.values(props).filter((e) => e.meta?.type === "content-element")
-          .length > 0;
+    const id = (item as IItem).component?.id;
+    if (id) {
+      const props = p.comps.doc[id]
+        .getMap("map")
+        .get("content_tree")
+        ?.get("component")
+        ?.get("props")
+        ?.toJSON();
+      if (props) {
+        if (
+          Object.values(props).filter(
+            (e) => e.meta?.type === "content-element"
+          ).length > 0
+        ) {
+          hasChilds = true;
+        }
+      }
     }
   }
 

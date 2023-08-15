@@ -104,16 +104,24 @@ export const ERender: FC<{
       componentOver = null;
     } else {
       let hasChilds = false;
-      const props = (item as IItem).component?.props;
-      if (props) {
-        if (
-          Object.values(props).filter((e) => e.meta?.type === "content-element")
-            .length > 0
-        ) {
-          hasChilds = true;
+      const id = (item as IItem).component?.id;
+      if (id) {
+        const props = p.comps.doc[id]
+          .getMap("map")
+          .get("content_tree")
+          ?.get("component")
+          ?.get("props")
+          ?.toJSON();
+        if (props) {
+          if (
+            Object.values(props).filter(
+              (e) => e.meta?.type === "content-element"
+            ).length > 0
+          ) {
+            hasChilds = true;
+          }
         }
       }
-
       if (!hasChilds) {
         componentOver = <ComponentOver item={item} p={p} elprop={elprop} />;
       }

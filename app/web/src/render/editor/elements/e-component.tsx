@@ -122,10 +122,13 @@ export const getRenderPropVal = (
     let shouldEval = true;
 
     if (prop.meta?.type === "content-element") {
+      shouldEval = false;
+
       if (prop.content) {
         prop.content.nprops = item.nprops;
         val = <EItem item={prop.content} />;
-        shouldEval = false;
+      } else {
+        val = <></>;
       }
     }
 
