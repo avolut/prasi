@@ -2,17 +2,17 @@ import type { OnMount } from "@monaco-editor/react";
 import { baseTypings } from "./types/base";
 import { extractProp } from "./types/prop";
 import { useGlobal } from "web-utils";
-import { EditorGlobal } from "../../../logic/global";
+import { EditorGlobal, PG } from "../../../logic/global";
 import { w } from "../../../../../utils/types/general";
 export type MonacoEditor = Parameters<OnMount>[0];
 type Monaco = Parameters<OnMount>[1];
 
 export const monacoTypings = async (
+  p: PG,
   editor: MonacoEditor,
   monaco: Monaco,
   prop: { values: Record<string, any>; types: Record<string, string> }
 ) => {
-  const p = useGlobal(EditorGlobal, "EDITOR");
   monaco.languages.typescript.typescriptDefaults.setExtraLibs([
     {
       filePath: "react.d.ts",

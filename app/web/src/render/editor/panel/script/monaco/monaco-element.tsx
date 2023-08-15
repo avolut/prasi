@@ -317,7 +317,7 @@ export const ScriptMonacoElement: FC<{
             const propTypes: any = p.script.siteTypes;
 
             await jsMount(editor, monaco);
-            await monacoTypings(editor, monaco, {
+            await monacoTypings(p, editor, monaco, {
               values: propVal,
               types: propTypes,
             });

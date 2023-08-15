@@ -65,7 +65,7 @@ const produceEvalArgs = (
   }
 
   if (typeof meta[item.id].local === "undefined") {
-    meta[item.id].local = createLocal({ item, render });
+    meta[item.id].local = createLocal({ item, render, p });
     meta[item.id].passchild = createPassChild({ item });
     meta[item.id].passprop = createPassProp();
   }
@@ -184,12 +184,14 @@ const thru = (prop: any, nprops: any) => {
   }
 };
 
-const createLocal = (arg: { item: IContent; render: () => void }): LocalFC => {
-  const { item, render } = arg;
+const createLocal = (arg: {
+  p: PG;
+  item: IContent;
+  render: () => void;
+}): LocalFC => {
+  const { item, render, p } = arg;
   return ({ name, value, children, effect }) => {
-    let isFirst = false;
     if (!item.scope) {
-      isFirst = true;
       item.scope = { ...value, render };
     }
 
@@ -198,16 +200,26 @@ const createLocal = (arg: { item: IContent; render: () => void }): LocalFC => {
     thru(child, { [name]: local });
 
     useEffect(() => {
-      if (effect && isFirst) {
-        const res = effect(local);
-        if (res && res instanceof Promise) {
-          return () => {
-            res.then((e) => {
-              if (typeof e === "function") e();
-            });
-          };
-        } else {
-          return res;
+      if (effect) {
+        if (p.page) {
+          if (!p.page.effects) {
+            p.page.effects = {};
+          }
+
+          if (!p.page.effects[item.id]) {
+            p.page.effects[item.id] = true;
+
+            const res = effect(local);
+            if (res && res instanceof Promise) {
+              return () => {
+                res.then((e) => {
+                  if (typeof e === "function") e();
+                });
+              };
+            } else {
+              return res;
+            }
+          }
         }
       }
     }, []);

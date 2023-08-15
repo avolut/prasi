@@ -61,6 +61,7 @@ export const EditorGlobal = {
     url: string;
     content_tree: IRoot;
     js: string;
+    effects?: Record<string, boolean>;
   },
   comp: null as null | {
     id: string;

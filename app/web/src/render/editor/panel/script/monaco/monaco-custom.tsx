@@ -1,4 +1,8 @@
-import type { Monaco, Editor as MonacoEditor, OnMount } from "@monaco-editor/react";
+import type {
+  Monaco,
+  Editor as MonacoEditor,
+  OnMount,
+} from "@monaco-editor/react";
 import { FC } from "react";
 import { useGlobal, useLocal } from "web-utils";
 import { EditorGlobal } from "../../../logic/global";
@@ -37,7 +41,7 @@ export const ScriptMonacoCustom: FC<{
   props,
   propTypes,
 }) => {
-  const c = useGlobal(EditorGlobal);
+  const p = useGlobal(EditorGlobal, "EDITOR");
   const local = useLocal({
     editor: null as null | MonacoEditor,
   });
@@ -97,7 +101,7 @@ export const ScriptMonacoCustom: FC<{
             await jsMount(editor, monaco);
             const propVal: any = {};
 
-            await monacoTypings(editor, monaco, {
+            await monacoTypings(p, editor, monaco, {
               values: propVal,
               types: propTypes,
             });
