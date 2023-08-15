@@ -33,33 +33,36 @@ export const ToolbarCenter = () => {
       timeout: null as any,
       editor: null as null | MonacoEditor,
     },
-    apiOnline: null as null | boolean,
+    apiStatus: "" as "" | "started" | "starting" | "stopped" | "",
   });
 
   const checkApi = async (status?: boolean) => {
     if (typeof status === "boolean") {
-      if (local.apiOnline) {
+      if (local.apiStatus) {
         await new Promise((resolve) => setTimeout(resolve, 1000));
         await reloadDBAPI(p.site.api_url);
       } else {
         delete w.prasiApi[p.site.api_url];
+
+        local.apiStatus = "stopped";
+        local.render();
       }
 
-      local.apiOnline = status;
-      local.render();
       return;
     }
 
     if (p.site.api_url) {
       try {
+        local.apiStatus = "starting";
+        local.render();
         await fetch(p.site.api_url + "/_prasi/api-types");
-        local.apiOnline = true;
-
         await reloadDBAPI(p.site.api_url);
+        local.apiStatus = "started";
+        local.render();
       } catch (e) {
-        local.apiOnline = false;
+        local.apiStatus = "stopped";
+        local.render();
       }
-      local.render();
     }
   };
   useEffect(() => {
@@ -151,10 +154,12 @@ export const ToolbarCenter = () => {
               local.render();
             },
             className:
-              typeof local.apiOnline === "boolean"
+              local.apiStatus !== ""
                 ? cx(
                     "border-b-2",
-                    !local.apiOnline ? "border-red-600" : "border-green-600"
+                    local.apiStatus === "stopped" && "border-red-600",
+                    local.apiStatus === "starting" && "border-yellow-600",
+                    local.apiStatus === "started" && "border-green-600"
                   )
                 : undefined,
             content: (
