@@ -224,7 +224,7 @@ export const ScriptMonacoElement: FC<{
               &lt;Input /&gt;
             </Button>
 
-            <Button
+            {/* <Button
               onClick={() => {
                 doEdit(
                   `<Preload {...props} url={[""]}>{children}</Preload>`,
@@ -233,7 +233,7 @@ export const ScriptMonacoElement: FC<{
               }}
             >
               &lt;Preload/&gt;
-            </Button>
+            </Button> */}
 
             <Button
               onClick={() => {
