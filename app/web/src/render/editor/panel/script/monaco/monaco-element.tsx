@@ -203,7 +203,18 @@ export const ScriptMonacoElement: FC<{
               onClick={() => {
                 doEdit(
                   `\
-<>{true ? <div {...props}>{children}</div> : <div {...props}>ELSE CONDITION</div>}</>      
+<>
+  {
+    /**if condition */
+    true ? (
+      /** then  */
+      <div {...props}>{children}</div>
+    ) : (
+      /** else  */
+      <div {...props}>ELSE CONDITION</div>
+    )
+  }
+</>
 `,
                   true
                 );
