@@ -169,7 +169,12 @@ export const ToolbarCenter = () => {
       <ToolbarBox
         items={[
           {
-            async onClick() {},
+            async onClick() {
+              if (p.page) {
+                p.page.effects = {};
+                p.render();
+              }
+            },
             tooltip: <>Reload Page ({isMac ? "⌘" : "Ctrl"} + S)</>,
             content: (
               <>
