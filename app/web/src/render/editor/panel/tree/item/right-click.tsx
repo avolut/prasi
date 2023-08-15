@@ -346,7 +346,7 @@ export const ETreeRightClick: FC<{
                     const jso = mitem.item;
                     jso.parent.forEach((e, idx) => {
                       if (e === jso) {
-                        if (!targetIdx) targetIdx = idx;
+                        targetIdx = idx;
                         jso.parent.delete(idx);
                       }
                     });

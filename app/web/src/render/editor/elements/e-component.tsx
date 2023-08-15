@@ -12,7 +12,7 @@ import { createAPI, createDB } from "../../../utils/script/api";
 export const EComponent: FC<{
   item: IItem;
   editComponentId?: string;
-}> = ({ item }) => {
+}> = ({ item, editComponentId }) => {
   const [_, render] = useState({});
   const p = useGlobal(EditorGlobal, "EDITOR");
 
@@ -44,7 +44,10 @@ export const EComponent: FC<{
   const comp = pcomp.getMap("map").toJSON();
   const props = comp.content_tree.component?.props || {};
 
-  if (p.comp?.id === item.component.id) {
+  if (
+    p.comp?.id === item.component.id &&
+    p.compEdits.find((e) => e.id === item.id)
+  ) {
     const comp = p.comps.doc[p.comp?.id || ""];
 
     const contentTree = comp.getMap("map").get("content_tree") as MItem;
@@ -53,6 +56,7 @@ export const EComponent: FC<{
 
     if (contentTree && cid && instanceId) {
       const citem = contentTree.toJSON() as IItem;
+      citem.id = item.id;
       if (p.compProp.preview && item.component && citem.component) {
         for (const [k, v] of Object.entries(item.component.props)) {
           citem.component.props[k] = v;
@@ -62,7 +66,7 @@ export const EComponent: FC<{
 
       return (
         <>
-          <ERender item={citem} editComponentId={cid}>
+          <ERender item={citem} editComponentId={editComponentId}>
             {(childs) => {
               return childs.map((e) => {
                 if (e.type === "item")
@@ -82,7 +86,7 @@ export const EComponent: FC<{
   const cid = item.component.id;
 
   return (
-    <ERender item={item} editComponentId={cid}>
+    <ERender item={item} editComponentId={editComponentId}>
       {(childs) => {
         return childs.map((e) => {
           if (e.type === "item")

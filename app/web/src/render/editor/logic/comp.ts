@@ -117,11 +117,13 @@ export const editComp = (p: PG, item: IContent) => {
         };
 
         const foundIdx = p.compEdits.findIndex((c) => {
-          if (c.id === item.component?.id) return true;
+          if (c.component?.id === item.component?.id) return true;
         });
 
         if (foundIdx < 0) {
           p.compEdits.push(item);
+        } else {
+          p.compEdits[foundIdx] = item;
         }
 
         p.item.active = map.id;

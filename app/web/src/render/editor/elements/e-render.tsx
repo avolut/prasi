@@ -95,12 +95,10 @@ export const ERender: FC<{
 
   let componentOver = null;
   if (item.type === "item" && item.component?.id) {
-    if (
-      p.comp &&
-      p.compEdits.find((e) => {
-        if (e.component?.id === item.component?.id) return true;
-      })
-    ) {
+    const compEdit = p.compEdits.find((e) => {
+      if (e.id === item.id) return true;
+    });
+    if (p.comp && compEdit) {
       componentOver = null;
     } else {
       let hasChilds = false;
@@ -112,6 +110,7 @@ export const ERender: FC<{
           ?.get("component")
           ?.get("props")
           ?.toJSON();
+
         if (props) {
           if (
             Object.values(props).filter(

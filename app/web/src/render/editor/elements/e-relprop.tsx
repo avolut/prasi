@@ -32,23 +32,6 @@ export const createElProp = (
         (document.activeElement as any)?.blur();
       }
 
-      if (editComponentId) {
-        for (const [_idx, c] of Object.entries(p.compEdits)) {
-          const idx = parseInt(_idx);
-          if (
-            c.component?.id === editComponentId &&
-            idx < p.compEdits.length - 1
-          ) {
-            p.compEdits = p.compEdits.slice(0, idx + 1);
-            const last = p.compEdits[p.compEdits.length - 1];
-            if (last) {
-              editComp(p, last);
-            }
-            break;
-          }
-        }
-      }
-
       if (p.comp?.id && !editComponentId) {
         p.comp = null;
         p.compEdits = [];
