@@ -60,6 +60,7 @@ export const _ = {
     dom.window.URL.createObjectURL = (url: any) => {
       return url;
     };
+    dom.window.params = req.params;
     dom.window.React = React;
     dom.window.fetch = fetch;
     dom.window.ReactDOMServer = ReactDOMServer;

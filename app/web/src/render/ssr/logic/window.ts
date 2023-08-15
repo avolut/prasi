@@ -34,4 +34,5 @@ export const w = window as unknown as {
     page?: string;
   };
   exports: any;
+  params: any;
 };
