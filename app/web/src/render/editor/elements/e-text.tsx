@@ -31,7 +31,9 @@ export const ETextInternal: FC<{
       if (
         local.el &&
         p.item.active === item.id &&
-        currentFocus.id !== item.id
+        currentFocus.id !== item.id &&
+        !p.script.active &&
+        !p.script.siteActive
       ) {
         currentFocus.id = item.id;
         local.el.focus();
