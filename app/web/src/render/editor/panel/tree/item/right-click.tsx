@@ -32,7 +32,6 @@ export const ETreeRightClick: FC<{
   const comp = (item as IItem).component as FNComponent | undefined;
   const rootComp = p.comp;
   const isActiveComponent = rootComp && rootComp.id === item?.id && rootComp.id;
-  const supportMultiple = p.item.multiple.length ? true : false;
   if (
     !item ||
     (comp?.id && rootComp && comp.id === rootComp.id) ||
@@ -143,7 +142,12 @@ export const ETreeRightClick: FC<{
                       page_id: rootComp ? undefined : p.page?.id,
                       comp_id: rootComp ? rootComp.id : undefined,
                     })
-                    .then((e) => {});
+                    .then(async (e) => {
+                      if (e) {
+                        await loadComponent(p, e.id);
+                        p.render();
+                      }
+                    });
                 } else {
                   alert(`This item is already a component!`);
                 }

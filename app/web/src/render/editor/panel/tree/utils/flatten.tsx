@@ -47,10 +47,14 @@ export const flattenTree = (
           itemProp = itemComp?.get("props");
         }
         const master = p.comps.doc[item.component.id]?.getMap("map");
+        if (!master) {
+          if (shouldRender) shouldRender();
+          return;
+        }
         const masterComp = master.get("content_tree")?.get("component");
 
-        if (!masterComp && shouldRender) {
-          shouldRender();
+        if (!masterComp) {
+          if (shouldRender) shouldRender();
           return;
         }
 
