@@ -55,7 +55,6 @@ export const cssFont = (
       `
         color: ${font.color};
       `,
-    font.whitespace && font.whitespace,
     `
       text-align: ${font.align ? font.align : "left"};
     `,
