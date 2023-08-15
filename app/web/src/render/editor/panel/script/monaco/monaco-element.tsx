@@ -132,20 +132,23 @@ export const ScriptMonacoElement: FC<{
               onClick={() => {
                 doEdit(
                   `\
-<Local
-  name="local"
-  value={
-    {
-      //local object
+<div {...props}>
+  <Local
+    name="local"
+    value={
+      {
+        //local object
+      }
     }
-  }
-  effect={async (local) => {
-    //local effect
-  }}
->
-  {children}
-</Local>
-                  `
+    effect={async (local) => {
+      //local effect
+    }}
+  >
+    {children}
+  </Local>
+</div>
+                  `,
+                  true
                 );
               }}
             >
@@ -153,7 +156,13 @@ export const ScriptMonacoElement: FC<{
             </Button>
             <Button
               onClick={() => {
-                doEdit(`<PassProp val={"yourval"}>{children}</PassProp>`);
+                doEdit(
+                  `\
+<div {...props}>
+  <PassProp val={"yourval"}>{children}</PassProp>
+</div>`,
+                  true
+                );
               }}
             >
               &lt;PassProp/&gt;
@@ -162,10 +171,15 @@ export const ScriptMonacoElement: FC<{
               onClick={() => {
                 doEdit(
                   `\
-{(local.list || []).map((item, idx) => (
-  <PassProp item={item} key={idx}>{children}</PassProp>
-))}      
-`
+<div {...props}>
+  {(local.list || []).map((item, idx) => (
+    <PassProp item={item} key={idx}>
+      {children}
+    </PassProp>
+  ))}
+</div>   
+`,
+                  true
                 );
               }}
             >
