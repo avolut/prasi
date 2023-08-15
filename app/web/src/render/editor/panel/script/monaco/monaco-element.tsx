@@ -254,6 +254,32 @@ export const ScriptMonacoElement: FC<{
             >
               Reset
             </Button>
+
+            <Button
+              onClick={() => {
+                doEdit(
+                  `\
+<div
+  {...props}
+  className={cx(
+    props.className,
+    css\`
+/** Custom CSS **/
+
+
+
+\`
+  )}
+>
+  {children}
+</div>
+                  `,
+                  true
+                );
+              }}
+            >
+              Custom CSS
+            </Button>
           </div>
           <div>
             <Button
