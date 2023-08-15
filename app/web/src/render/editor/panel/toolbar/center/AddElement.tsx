@@ -12,6 +12,7 @@ import { ToolbarBox } from "../../../../../utils/ui/box";
 import { EditorGlobal } from "../../../logic/global";
 import { fillID } from "../../../tools/fill-id";
 import { NodeContent, flattenTree } from "../../tree/utils/flatten";
+import { loadComponent } from "../../../logic/comp";
 
 export const AddElement: FC<{}> = ({}) => {
   const p = useGlobal(EditorGlobal, "EDITOR");
@@ -234,7 +235,65 @@ export const AddElement: FC<{}> = ({}) => {
                 ),
               },
           {
-            onClick() {},
+            onClick() {
+              p.manager.comp = true;
+              p.manager.compActionLabel = "Insert";
+              p.manager.compCallback = async (e) => {
+                if (!p.comps.doc[e.id]) {
+                  await loadComponent(p, e.id);
+                }
+
+                const comp = p.comps.doc[e.id]
+                  .getMap("map")
+                  .get("content_tree")
+                  ?.toJSON();
+
+                if (!comp) {
+                  alert("Failed to add component!");
+                  return;
+                }
+
+                const json = {
+                  ...comp,
+                  id: createId(),
+                } as IItem;
+                const item = p.item.active ? p.treeMeta[p.item.active] : null;
+                const mitem = item ? item.item : null;
+                if (p.item.active && mitem) {
+                  if (type !== "text") {
+                    const map = new Y.Map() as MContent;
+                    if (map) {
+                      syncronize(map as any, fillID(json));
+                      const childs = mitem.get("childs");
+                      if (childs) {
+                        childs.push([map]);
+                      }
+                      const item = map.toJSON();
+                      p.item.active = item.id;
+                      p.render();
+                    }
+                  } else {
+                    let done = false;
+                    mitem.parent.forEach((e, idx) => {
+                      if (done) return;
+                      if (e.get("id") === p.item.active) {
+                        const map = new Y.Map() as MContent;
+                        if (map && p.item.active) {
+                          syncronize(map as any, fillID(json));
+                          mitem.parent.insert(idx + 1, [map]);
+                          let active = mitem.parent.get(idx + 1) as any;
+                          const item = active.toJSON();
+                          p.item.active = item.id;
+                          done = true;
+                          p.render();
+                        }
+                      }
+                    });
+                  }
+                }
+              };
+              p.render();
+            },
             tooltip: "Add Component",
             content: (
               <>

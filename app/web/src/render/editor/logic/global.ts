@@ -12,7 +12,8 @@ export const EditorGlobal = {
   manager: {
     page: false,
     site: false,
-    comp: true,
+    comp: false,
+    compActionLabel: "Pick",
     compCallback: (comp: any) => {},
   },
   script: {

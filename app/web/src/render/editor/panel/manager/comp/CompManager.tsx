@@ -1,25 +1,32 @@
 import { FC, Fragment, ReactElement, useEffect } from "react";
 import { useGlobal, useLocal } from "web-utils";
-import { CEGlobal } from "../../../base/global/content-editor";
-import { getRenderPropVal } from "../../renderer/base/elements/r-component";
-import { RItem } from "../../renderer/base/elements/r-item";
-import { RendererGlobal } from "../../renderer/base/renderer-global";
-import { PRASI_COMPONENT } from "../../renderer/base/renderer-types";
-import { IItem } from "../../types/item";
-import { Dropdown } from "../../ui/dropdown";
-import { Loading } from "../../ui/loading";
-import { Modal } from "../../ui/modal";
-import { wsdoc } from "../ws/wsdoc";
-import { CompUseShared } from "./comp-use-shared";
+import { Dropdown } from "../../../../../utils/ui/dropdown";
+import { Loading } from "../../../../../utils/ui/loading";
+import { Modal } from "../../../../../utils/ui/modal";
+import { EditorGlobal } from "../../../logic/global";
+import { EItem } from "../../../elements/e-item";
+import { IItem } from "../../../../../utils/types/item";
+import { loadComponent } from "../../../logic/comp";
 
 const w = window as unknown as {
   compManagerSearch: string;
+  compGroup: Record<
+    string,
+    {
+      info: { name: string; id: string };
+      shared: boolean;
+      isOwner: boolean;
+      comps: any[];
+    }
+  >;
 };
-export const CompManager: FC<{ id: string }> = ({ id }) => {
-  const c = useGlobal(CEGlobal, id);
+export const CompManager: FC = () => {
+  const p = useGlobal(EditorGlobal, "EDITOR");
+  if (!w.compGroup) w.compGroup = {};
+
   const local = useLocal({
     loading: true,
-    group: wsdoc.compGroup,
+    group: w.compGroup,
     init: false,
     edit_id: "",
     selected_id: "",
@@ -66,9 +73,9 @@ export const CompManager: FC<{ id: string }> = ({ id }) => {
   };
 
   const reloadComps = async () => {
-    if (Object.keys(wsdoc.compGroup).length > 0) {
+    if (Object.keys(w.compGroup).length > 0) {
       local.loading = false;
-      local.group = wsdoc.compGroup;
+      local.group = w.compGroup;
 
       for (const g of Object.values(local.group)) {
         if (g.info.name === "__TRASH__") {
@@ -80,13 +87,13 @@ export const CompManager: FC<{ id: string }> = ({ id }) => {
       return;
     }
 
-    if (wsdoc.site) {
+    if (p.site.id) {
       local.loading = true;
       const group = await db.component_group.findMany({
         where: {
           component_site: {
             some: {
-              id_site: wsdoc.site.id,
+              id_site: p.site.id,
             },
           },
         },
@@ -99,7 +106,7 @@ export const CompManager: FC<{ id: string }> = ({ id }) => {
               is_owner: true,
             },
             where: {
-              id_site: wsdoc.site.id,
+              id_site: p.site.id,
             },
           },
         },
@@ -146,7 +153,7 @@ export const CompManager: FC<{ id: string }> = ({ id }) => {
       }
 
       local.loading = false;
-      wsdoc.compGroup = local.group;
+      w.compGroup = local.group;
       local.render();
     }
   };
@@ -190,9 +197,9 @@ export const CompManager: FC<{ id: string }> = ({ id }) => {
       <div
         className="fixed inset-0 bg-black bg-opacity-10 cursor-pointer"
         onClick={() => {
-          c.editor.manager.showComp = false;
-          c.editor.manager.compCallback = () => {};
-          c.render();
+          p.manager.comp = false;
+          p.manager.compCallback = () => {};
+          p.render();
         }}
       ></div>
       <div
@@ -221,7 +228,7 @@ export const CompManager: FC<{ id: string }> = ({ id }) => {
               `
             )}
           >
-            <Modal
+            {/* <Modal
               open={local.sharedPopup}
               onOpenChange={(open) => {
                 local.sharedPopup = open;
@@ -237,17 +244,17 @@ export const CompManager: FC<{ id: string }> = ({ id }) => {
                   await db.component_site.create({
                     data: {
                       id_component_group: group_id,
-                      id_site: wsdoc.site?.id || "",
+                      id_site: p.site?.id || "",
                       is_owner: false,
                     },
                   });
-                  wsdoc.compGroup = {};
+                  w.compGroup = {};
                   reloadComps();
                 }}
               />
-            </Modal>
+            </Modal> */}
             <div className="fixed top-0 right-[20px] bg-white z-10 m-[8px] flex">
-              <div
+              {/* <div
                 className="hover:bg-blue-500 hover:text-white text-xs flex items-center px-2 cursor-pointer border text-blue-500 border-blue-200 mr-1"
                 onClick={() => {
                   local.sharedPopup = true;
@@ -255,7 +262,7 @@ export const CompManager: FC<{ id: string }> = ({ id }) => {
                 }}
               >
                 Browse Shared
-              </div>
+              </div> */}
               <input
                 type="search"
                 value={w.compManagerSearch}
@@ -364,7 +371,7 @@ export const CompManager: FC<{ id: string }> = ({ id }) => {
                                       where: {
                                         id_component_group_id_site: {
                                           id_component_group: g.info.id,
-                                          id_site: wsdoc.site?.id || "",
+                                          id_site: p.site?.id || "",
                                         },
                                       },
                                     });
@@ -438,7 +445,7 @@ export const CompManager: FC<{ id: string }> = ({ id }) => {
                                     data: {
                                       component_site: {
                                         create: {
-                                          id_site: wsdoc.site?.id || "",
+                                          id_site: p.site?.id || "",
                                         },
                                       },
                                       name,
@@ -471,7 +478,7 @@ export const CompManager: FC<{ id: string }> = ({ id }) => {
                                       where: {
                                         id_component_group_id_site: {
                                           id_component_group: g.info.id,
-                                          id_site: wsdoc.site?.id || "",
+                                          id_site: p.site?.id || "",
                                         },
                                       },
                                     });
@@ -541,19 +548,18 @@ export const CompManager: FC<{ id: string }> = ({ id }) => {
                                   <div
                                     className="pick opacity-10 transition-all bg-blue-500 text-white px-2"
                                     onClick={() => {
-                                      c.editor.manager.showComp = false;
+                                      p.manager.comp = false;
                                       if (
-                                        typeof c.editor.manager.compCallback ===
+                                        typeof p.manager.compCallback ===
                                         "function"
                                       ) {
-                                        c.editor.manager.compCallback(e);
-                                        c.editor.manager.compCallback =
-                                          () => {};
-                                        c.render();
+                                        p.manager.compCallback(e);
+                                        p.manager.compCallback = () => {};
+                                        p.render();
                                       }
                                     }}
                                   >
-                                    Pick
+                                    {p.manager.compActionLabel}
                                   </div>
                                 </div>
                                 <div
@@ -628,7 +634,7 @@ export const CompManager: FC<{ id: string }> = ({ id }) => {
                             name: "__TRASH__",
                             component_site: {
                               create: {
-                                id_site: wsdoc.site?.id || "",
+                                id_site: p.site?.id || "",
                               },
                             },
                           },
@@ -647,7 +653,7 @@ export const CompManager: FC<{ id: string }> = ({ id }) => {
                           select: { id: true },
                         });
 
-                        wsdoc.compGroup = {};
+                        w.compGroup = {};
                         await reloadComps();
                       }
                     }
@@ -670,59 +676,17 @@ const CompPreview: FC<{
   opt: ReactElement;
 }> = ({ comp_id, onClose, opt }) => {
   const local = useLocal({ name: "", comp: null as null | IItem });
-  const rg = useGlobal(RendererGlobal, "PRASI_SITE");
+  const p = useGlobal(EditorGlobal, "EDITOR");
+  const comp = p.comps.doc[comp_id];
 
-  if (!rg.component.load) {
-    rg.component.load = async (ids: string[]) => {
-      const all = await db.component.findMany({
-        where: { id: { in: ids } },
-        select: {
-          id: true,
-          content_tree: true,
-          name: true,
-        },
-      });
-
-      return (all || []).map((e) => {
-        return {
-          name: e.name,
-          id: e.id,
-          content_tree: e.content_tree,
-        } as PRASI_COMPONENT;
-      });
-    };
+  if (comp) {
+    local.comp = comp.getMap("map").get("content_tree")?.toJSON() as IItem;
+    local.name = local.comp.name;
+  } else {
+    loadComponent(p, comp_id).then(() => {
+      local.render();
+    });
   }
-  
-  useEffect(() => {
-    local.comp = null;
-    local.render();
-    db.component
-      .findFirst({
-        where: { id: comp_id },
-        select: { name: true, content_tree: true },
-      })
-      .then((e) => {
-        local.comp = null;
-        if (e) {
-          local.name = e.name;
-          local.comp = e.content_tree as any;
-        }
-
-        if (local.comp && local.comp.component?.props) {
-          local.comp.nprops = {};
-
-          getRenderPropVal(
-            local.comp.component.props,
-            local.comp,
-            local.comp.nprops,
-            rg
-          );
-
-          delete local.comp.component;
-        }
-        local.render();
-      });
-  }, [comp_id]);
 
   return (
     <div className="border-l w-[35%] transition-all flex flex-col">
@@ -744,7 +708,7 @@ const CompPreview: FC<{
             "flex items-center justify-center flex-1 flex-col "
           )}
         >
-          {local.comp && <RItem item={local.comp} />}
+          {local.comp && <EItem item={local.comp} />}
         </div>
       </div>
     </div>

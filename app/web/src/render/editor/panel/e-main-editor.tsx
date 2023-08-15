@@ -8,6 +8,7 @@ import { EScriptElement } from "./script/script-element";
 import { ESide } from "./side/Side";
 import { Toolbar } from "./toolbar/Toolbar";
 import { ETree } from "./tree/tree";
+import { CompManager } from "./manager/comp/CompManager";
 
 export const EMainEditor = () => {
   const p = useGlobal(EditorGlobal, "EDITOR");
@@ -23,6 +24,7 @@ export const EMainEditor = () => {
       </div>
       {p.manager.site && <SiteManager />}
       {p.manager.page && <PageManager />}
+      {p.manager.comp && <CompManager />}
       {p.script.active && <EScriptElement />}
     </div>
   );

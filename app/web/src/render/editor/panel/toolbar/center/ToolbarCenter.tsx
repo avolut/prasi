@@ -134,6 +134,32 @@ export const ToolbarCenter = () => {
       <ToolbarBox
         items={[
           {
+            content: (
+              <>
+                <Popover
+                  content={<>NPM</>}
+                  popoverClassName={cx(
+                    "bg-white shadow-2xl shadow-slate-400 outline-none border border-slate-300"
+                  )}
+                >
+                  <NPMIcon />
+                </Popover>
+              </>
+            ),
+          },
+          // {
+          //   content: (
+          //     <>
+          //       <LiveDeploy />
+          //     </>
+          //   ),
+          // },
+        ]}
+      />
+      <div className="w-[5px] h-1"></div>
+      <ToolbarBox
+        items={[
+          {
             async onClick() {},
             tooltip: <>Reload Page ({isMac ? "⌘" : "Ctrl"} + S)</>,
             content: (
@@ -150,32 +176,6 @@ export const ToolbarCenter = () => {
                     fill="currentColor"
                   ></path>
                 </svg>
-              </>
-            ),
-          },
-        ]}
-      />
-      <div className="w-[5px] h-1"></div>
-      <ToolbarBox
-        items={[
-          {
-            content: (
-              <>
-                <Popover
-                  content={<>NPM</>}
-                  popoverClassName={cx(
-                    "bg-white shadow-2xl shadow-slate-400 outline-none border border-slate-300"
-                  )}
-                >
-                  <NPMIcon />
-                </Popover>
-              </>
-            ),
-          },
-          {
-            content: (
-              <>
-                <LiveDeploy />
               </>
             ),
           },
@@ -216,8 +216,8 @@ const APIcon = () => (
 const NPMIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
+    width="26"
+    height="26"
     viewBox="0 0 24 24"
   >
     <path
