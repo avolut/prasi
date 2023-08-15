@@ -71,17 +71,18 @@ export const CPMaster: FC<{ mitem: MItem }> = ({ mitem }) => {
             onClick={() => {
               let idx: any = "";
               let name = "prop";
-              while (mprops?.get(`prop_${idx}`)) {
+              while (mprops?.get(name)) {
                 idx = idx === "" ? 1 : idx + 1;
                 name = `prop_${idx}`;
               }
+
               mprops?.doc?.transact(() => {
                 mprops?.set(name, new Y.Map() as any);
                 const prop = mprops.get(name);
                 syncronize(
                   prop as any,
                   {
-                    idx: mprops._length,
+                    idx: Object.keys(mprops.toJSON()).length - 1,
                     name,
                     type: "string",
                     value: '"hello"',
@@ -313,7 +314,7 @@ const SinglePopover: FC<{
             })}
           </div>
           <div className="border-t border-slate-300 px-2 pt-2 pb-1 flex flex-col items-stretch">
-            <div className="uppercase text-xs text-slate-500">Label</div>
+            <div className="uppercase text-xs text-slate-500"> Name</div>
             <input
               spellCheck={false}
               type="text"
