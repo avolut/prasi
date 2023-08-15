@@ -1,14 +1,14 @@
 import { FC, useEffect } from "react";
 import { useGlobal, useLocal } from "web-utils";
+import { syncronize } from "y-pojo";
+import * as Y from "yjs";
+import { TypedMap } from "yjs-types";
 import { MItem } from "../../../../../utils/types/item";
 import { FMCompDef, FNCompDef } from "../../../../../utils/types/meta-fn";
 import { Popover } from "../../../../../utils/ui/popover";
 import { EditorGlobal } from "../../../logic/global";
-import { AutoHeightTextarea } from "../panel/link";
-import { TypedMap } from "yjs-types";
-import { syncronize } from "y-pojo";
-import * as Y from "yjs";
 import { jscript } from "../../script/script-element";
+import { AutoHeightTextarea } from "../panel/link";
 
 const popover = {
   name: "",
@@ -19,11 +19,21 @@ export const CPMaster: FC<{ mitem: MItem }> = ({ mitem }) => {
   const local = useLocal({ id: mitem.get("id") || "", ready: false });
 
   useEffect(() => {
-    if (local.id !== mitem.get("id")) {
+    if (type === "text") {
+      p.item.active = p.comp?.content_tree.id || "";
+      if (document.activeElement) {
+        (document.activeElement as HTMLInputElement).blur();
+      }
+      local.id = p.item.active;
+      p.compProp.edit = true;
+      p.render();
+    } else if (local.id !== mitem.get("id")) {
       p.compProp.edit = false;
       p.render();
     }
   }, [mitem]);
+
+  const type = mitem.get("type") as any;
 
   const mprops = p.comps.doc[p.comp?.content_tree?.component?.id || ""]
     .getMap("map")
@@ -35,26 +45,59 @@ export const CPMaster: FC<{ mitem: MItem }> = ({ mitem }) => {
   return (
     <div className="flex flex-col flex-1">
       <div className="border-b py-1 bg-white flex justify-between items-center">
-        <div
-          className="text-[11px] cursor-pointer select-none text-slate-400 pl-1 flex items-center"
-          onClick={() => {
-            p.compProp.edit = false;
-            p.render();
-          }}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="11"
-            height="11"
-            viewBox="0 0 32 32"
+        <div className="flex items-center">
+          <div
+            className="text-[11px] cursor-pointer select-none text-slate-400 pl-1 flex items-center"
+            onClick={() => {
+              p.compProp.edit = false;
+              p.render();
+            }}
           >
-            <path
-              fill="currentColor"
-              d="M10 16L20 6l1.4 1.4-8.6 8.6 8.6 8.6L20 26z"
-            ></path>
-          </svg>
-          <div>Back</div>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="11"
+              height="11"
+              viewBox="0 0 32 32"
+            >
+              <path
+                fill="currentColor"
+                d="M10 16L20 6l1.4 1.4-8.6 8.6 8.6 8.6L20 26z"
+              ></path>
+            </svg>
+            <div>Back</div>
+          </div>
+          <div
+            className="flex cursor-pointer items-center border border-slate-500 bg-white rounded-sm text-[10px] px-[5px] m-1 opacity-50 hover:opacity-100"
+            onClick={() => {
+              let idx: any = "";
+              let name = "prop";
+              while (mprops?.get(`prop_${idx}`)) {
+                idx = idx === "" ? 1 : idx + 1;
+                name = `prop_${idx}`;
+              }
+              mprops?.doc?.transact(() => {
+                mprops?.set(name, new Y.Map() as any);
+                const prop = mprops.get(name);
+                syncronize(
+                  prop as any,
+                  {
+                    idx: mprops._length,
+                    name,
+                    type: "string",
+                    value: '"hello"',
+                    valueBuilt: '"hello"',
+                    meta: {
+                      type: "text",
+                    },
+                  } as FNCompDef
+                );
+              });
+            }}
+          >
+            Add
+          </div>
         </div>
+
         <PreviewItemProp />
       </div>
       <div className="flex-1 relative overflow-y-auto">
@@ -71,7 +114,7 @@ export const CPMaster: FC<{ mitem: MItem }> = ({ mitem }) => {
                     key={name}
                     name={name}
                     prop={prop}
-                    mprop={mprop}
+                    mprop={mprop as any}
                   />
                 );
               }
@@ -143,10 +186,6 @@ const SingleProp: FC<{ name: string; prop: FNCompDef; mprop: FMCompDef }> = ({
         className={cx(
           "border-b bg-white cursor-pointer hover:bg-orange-50 flex flex-col items-stretch"
         )}
-        onClick={() => {
-          popover.name = name;
-          local.render();
-        }}
       >
         <div className="flex justify-between items-stretch flex-wrap">
           <input
@@ -163,7 +202,13 @@ const SingleProp: FC<{ name: string; prop: FNCompDef; mprop: FMCompDef }> = ({
               mprop.set("idx", parseInt(e.currentTarget.value));
             }}
           />
-          <div className="p-1 flex flex-1 border-r justify-between items-center">
+          <div
+            className="p-1 flex flex-1 border-r justify-between items-center"
+            onClick={() => {
+              popover.name = name;
+              local.render();
+            }}
+          >
             <div>{name}</div>
             <div className="text-slate-500 text-xs">
               {
@@ -179,10 +224,19 @@ const SingleProp: FC<{ name: string; prop: FNCompDef; mprop: FMCompDef }> = ({
           </div>
           <div
             className="flex p-1 hover:bg-red-500 hover:text-white items-center justify-center cursor-pointer"
-            onClick={() => {
-              // if (confirm("Are you sure ?")) {
-              //   reset();
-              // }
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (confirm("Are you sure ?")) {
+                const parent = mprop.parent as TypedMap<
+                  Record<string, FMCompDef>
+                >;
+                parent.forEach((m, idx) => {
+                  if (mprop === m) {
+                    parent.delete(idx);
+                  }
+                });
+              }
             }}
           >
             <Trash />

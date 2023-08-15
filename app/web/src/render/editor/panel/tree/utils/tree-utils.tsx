@@ -4,23 +4,21 @@ import {
   NodeModel,
   PlaceholderRender,
 } from "@minoru/react-dnd-treeview";
-import get from "lodash.get";
-import { FC } from "react";
-import { IContent, MContent } from "../../../../../utils/types/general";
-import { EditorGlobal, PG } from "../../../logic/global";
-import { NodeContent, flattenTree } from "./flatten";
-import { useGlobal } from "web-utils";
-import find from "lodash.find";
-import { walk } from "../body";
-import { IItem, MItem } from "../../../../../utils/types/item";
 import concat from "lodash.concat";
+import find from "lodash.find";
 import findIndex from "lodash.findindex";
+import get from "lodash.get";
+import set from "lodash.set";
 import slice from "lodash.slice";
 import uniqBy from "lodash.uniqby";
-import { id } from "date-fns/locale";
-import set from "lodash.set";
-import { newMap } from "../../../tools/yjs-tools";
+import { FC } from "react";
+import { IContent, MContent } from "../../../../../utils/types/general";
+import { IItem } from "../../../../../utils/types/item";
+import { PG } from "../../../logic/global";
 import { fillID } from "../../../tools/fill-id";
+import { newMap } from "../../../tools/yjs-tools";
+import { walk } from "../body";
+import { NodeContent } from "./flatten";
 
 export const DEPTH_WIDTH = 8;
 
@@ -233,12 +231,24 @@ export const canDrop = (p: PG, arg: DropOptions<NodeContent>, local: any) => {
         return false;
       } else if (from === "item") {
         if (to === "section" || to === "item") {
+          if (
+            dropTarget.data.content.type === "item" &&
+            dropTarget.data.content.component?.id
+          ) {
+            return false;
+          }
           return true;
         } else {
           return false;
         }
       } else if (from === "text") {
         if (to === "item") {
+          if (
+            dropTarget.data.content.type === "item" &&
+            dropTarget.data.content.component?.id
+          ) {
+            return false;
+          }
           return true;
         }
       }

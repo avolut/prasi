@@ -316,76 +316,79 @@ export const ETreeRightClick: FC<{
         <MenuItem
           label={`Wrap`}
           onClick={() => {
-            let listItem = p.item.multiple;
-            if (listItem.length) {
-              const listContent: any = listItem.map((e) => {
-                let item = p.treeMeta[e];
-                if (item) {
-                  if (item.item.get("type") === "section") {
-                    const json = item.item.toJSON();
-                    const newItem = {
-                      id: json.id,
-                      name: json.name,
-                      type: "item",
-                      dim: { w: "fit", h: "fit" },
-                      adv: json.adv,
-                      childs: json.childs || [],
-                      component: json.component,
-                    } as IItem;
-                    return newItem;
-                  }
-                  return item.item.toJSON();
-                }
-              });
-
-              listItem.map((e) => {
-                let mitem = p.treeMeta[e];
-                if (mitem) {
-                  const jso = mitem.item;
-                  jso.parent.forEach((e, idx) => {
-                    if (e === jso) {
-                      jso.parent.delete(idx);
+            mitem.doc?.transact(() => {
+              let listItem = p.item.multiple;
+              if (listItem.length) {
+                const listContent: any = listItem.map((e) => {
+                  let item = p.treeMeta[e];
+                  if (item) {
+                    if (item.item.get("type") === "section") {
+                      const json = item.item.toJSON();
+                      const newItem = {
+                        id: json.id,
+                        name: json.name,
+                        type: "item",
+                        dim: { w: "fit", h: "fit" },
+                        adv: json.adv,
+                        childs: json.childs || [],
+                        component: json.component,
+                      } as IItem;
+                      return newItem;
                     }
-                  });
-                }
-              });
+                    return item.item.toJSON();
+                  }
+                });
 
-              let to = p.treeMeta[node.parent];
-              if (to) {
-                const titem = to.item;
-                const childs = titem.get("childs");
-                let res = flatTree(listContent);
-                const json: IContent = {
-                  id: createId(),
-                  name: `Wrapped`,
-                  type: "item",
-                  childs: res,
-                };
-                const map = new Y.Map() as MContent;
-                if (map) {
-                  syncronize(map as any, fillID(json));
-                  // mitem.parent.delete(idx);
-                  childs?.push([map]);
-                }
-              }
-            } else {
-              mitem.parent.forEach((e: MContent, idx) => {
-                if (e === mitem) {
+                let targetIdx = -1;
+                listItem.map((e) => {
+                  let mitem = p.treeMeta[e];
+                  if (mitem) {
+                    const jso = mitem.item;
+                    jso.parent.forEach((e, idx) => {
+                      if (e === jso) {
+                        if (!targetIdx) targetIdx = idx;
+                        jso.parent.delete(idx);
+                      }
+                    });
+                  }
+                });
+
+                let to = p.treeMeta[node.parent];
+                if (to) {
+                  const titem = to.item;
+                  const childs = titem.get("childs");
+                  let res = flatTree(listContent);
                   const json: IContent = {
                     id: createId(),
                     name: `Wrapped`,
                     type: "item",
-                    childs: [e.toJSON() as IItem | IText],
+                    childs: res,
                   };
                   const map = new Y.Map() as MContent;
                   if (map) {
                     syncronize(map as any, fillID(json));
-                    mitem.parent.delete(idx);
-                    mitem.parent.insert(idx, [map]);
+                    childs?.insert(targetIdx, [map]);
                   }
                 }
-              });
-            }
+              } else {
+                mitem.parent.forEach((e: MContent, idx) => {
+                  if (e === mitem) {
+                    const json: IContent = {
+                      id: createId(),
+                      name: `Wrapped`,
+                      type: "item",
+                      childs: [e.toJSON() as IItem | IText],
+                    };
+                    const map = new Y.Map() as MContent;
+                    if (map) {
+                      syncronize(map as any, fillID(json));
+                      mitem.parent.delete(idx);
+                      mitem.parent.insert(idx, [map]);
+                    }
+                  }
+                });
+              }
+            });
           }}
         />
       )}
@@ -393,55 +396,57 @@ export const ETreeRightClick: FC<{
         <MenuItem
           label={`Unwrap`}
           onClick={() => {
-            let listItem = p.item.multiple;
-            if (listItem.length) {
-              const listContent: any = listItem.map((e) => {
-                let item = p.treeMeta[e];
-                if (item) {
-                  return item.item.toJSON();
-                }
-              });
-              let res = flatTree(listContent);
-              res.forEach((e: any) => {
-                let item = p.treeMeta[e.id];
-                if (item) {
-                  const mitem = item.item;
-                  mitem.parent.forEach((e: MContent, idx) => {
-                    if (e === mitem) {
-                      const json = e.toJSON() as IContent;
-                      if (json.type === "item") {
-                        mitem.parent.delete(idx);
-                        mitem.parent.insert(
-                          idx,
-                          json.childs.map((e) => {
-                            const map = new Y.Map() as MContent;
-                            syncronize(map as any, fillID(e));
-                            return map;
-                          })
-                        );
-                      }
-                    }
-                  });
-                }
-              });
-            } else {
-              mitem.parent.forEach((e: MContent, idx) => {
-                if (e === mitem) {
-                  const json = e.toJSON() as IContent;
-                  if (json.type === "item") {
-                    mitem.parent.delete(idx);
-                    mitem.parent.insert(
-                      idx,
-                      json.childs.map((e) => {
-                        const map = new Y.Map() as MContent;
-                        syncronize(map as any, fillID(e));
-                        return map;
-                      })
-                    );
+            mitem.doc?.transact(() => {
+              let listItem = p.item.multiple;
+              if (listItem.length) {
+                const listContent: any = listItem.map((e) => {
+                  let item = p.treeMeta[e];
+                  if (item) {
+                    return item.item.toJSON();
                   }
-                }
-              });
-            }
+                });
+                let res = flatTree(listContent);
+                res.forEach((e: any) => {
+                  let item = p.treeMeta[e.id];
+                  if (item) {
+                    const mitem = item.item;
+                    mitem.parent.forEach((e: MContent, idx) => {
+                      if (e === mitem) {
+                        const json = e.toJSON() as IContent;
+                        if (json.type === "item") {
+                          mitem.parent.delete(idx);
+                          mitem.parent.insert(
+                            idx,
+                            json.childs.map((e) => {
+                              const map = new Y.Map() as MContent;
+                              syncronize(map as any, fillID(e));
+                              return map;
+                            })
+                          );
+                        }
+                      }
+                    });
+                  }
+                });
+              } else {
+                mitem.parent.forEach((e: MContent, idx) => {
+                  if (e === mitem) {
+                    const json = e.toJSON() as IContent;
+                    if (json.type === "item") {
+                      mitem.parent.delete(idx);
+                      mitem.parent.insert(
+                        idx,
+                        json.childs.map((e) => {
+                          const map = new Y.Map() as MContent;
+                          syncronize(map as any, fillID(e));
+                          return map;
+                        })
+                      );
+                    }
+                  }
+                });
+              }
+            });
           }}
         />
       )}
@@ -449,22 +454,27 @@ export const ETreeRightClick: FC<{
       <MenuItem
         label={"Delete"}
         onClick={() => {
-          if (p.item.multiple.length) {
-            let tree: NodeModel<NodeContent>[] = [];
-            const comp: any = p.comps.doc[p.comp?.id || ""];
-            if (comp) {
-              tree = flattenTree(p, comp.getMap("map").get("content_tree"));
-            } else if (p.mpage) {
-              tree = flattenTree(p, p.mpage.getMap("map").get("content_tree"));
-            }
-            filterFlatTree(p.item.multiple, tree, p);
-          } else {
-            mitem.parent.forEach((e, idx) => {
-              if (e === item) {
-                mitem.parent.delete(idx);
+          mitem.doc?.transact(() => {
+            if (p.item.multiple.length) {
+              let tree: NodeModel<NodeContent>[] = [];
+              const comp: any = p.comps.doc[p.comp?.id || ""];
+              if (comp) {
+                tree = flattenTree(p, comp.getMap("map").get("content_tree"));
+              } else if (p.mpage) {
+                tree = flattenTree(
+                  p,
+                  p.mpage.getMap("map").get("content_tree")
+                );
               }
-            });
-          }
+              filterFlatTree(p.item.multiple, tree, p);
+            } else {
+              mitem.parent.forEach((e, idx) => {
+                if (e === item) {
+                  mitem.parent.delete(idx);
+                }
+              });
+            }
+          });
         }}
       />
     </Menu>

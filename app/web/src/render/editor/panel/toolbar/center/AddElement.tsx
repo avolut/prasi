@@ -1,23 +1,19 @@
+import { NodeModel } from "@minoru/react-dnd-treeview";
 import { createId } from "@paralleldrive/cuid2";
-import { FC, useEffect } from "react";
+import { FC } from "react";
 import { useGlobal } from "web-utils";
 import { syncronize } from "y-pojo";
 import * as Y from "yjs";
-import { EditorGlobal } from "../../../logic/global";
-import { ToolbarBox } from "../../../../../utils/ui/box";
-import { IText } from "../../../../../utils/types/text";
-import { ISection } from "../../../../../utils/types/section";
 import { MContent } from "../../../../../utils/types/general";
-import { fillID } from "../../../tools/fill-id";
 import { IItem } from "../../../../../utils/types/item";
-import { NodeModel } from "@minoru/react-dnd-treeview";
-import { NodeContent } from "../../tree/utils/flatten";
-import { flattenTree } from "../../tree/utils/flatten";
-import find from "lodash.find";
+import { ISection } from "../../../../../utils/types/section";
+import { IText } from "../../../../../utils/types/text";
+import { ToolbarBox } from "../../../../../utils/ui/box";
+import { EditorGlobal } from "../../../logic/global";
+import { fillID } from "../../../tools/fill-id";
+import { NodeContent, flattenTree } from "../../tree/utils/flatten";
 
-export const AddElement: FC<{ disableSection?: boolean }> = ({
-  disableSection,
-}) => {
+export const AddElement: FC<{}> = ({}) => {
   const p = useGlobal(EditorGlobal, "EDITOR");
   let canAdd = true;
   if (!p.item.active) {
@@ -36,6 +32,12 @@ export const AddElement: FC<{ disableSection?: boolean }> = ({
   if (p.item.active && mitem?.get("component")?.get("id")) {
     canAdd = false;
   }
+
+  let disableSection = false;
+  if (p.comp?.id) {
+    disableSection = true;
+  }
+
   if (disableSection && type !== "text") canAdd = true;
   return (
     <>
