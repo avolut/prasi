@@ -49,6 +49,13 @@ export const CPMaster: FC<{ mitem: MItem }> = ({ mitem }) => {
           <div
             className="text-[11px] cursor-pointer select-none text-slate-400 pl-1 flex items-center"
             onClick={() => {
+              if (p.compProp.backTo) {
+                p.item.active = p.compProp.backTo;
+                p.comp = p.compProp.backToComp;
+
+                p.compProp.backTo = "";
+                p.compProp.backToComp = null;
+              }
               p.compProp.edit = false;
               p.render();
             }}

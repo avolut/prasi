@@ -83,7 +83,7 @@ export const ComponentOver: FC<{ item: IItem; p: PG; elprop: ElProp }> = ({
               Open Sans, Helvetica Neue, sans-serif;
           `
         )}
-        onClick={async (e) => {
+        onPointerDown={async (e) => {
           e.stopPropagation();
           editComp(p, item);
         }}

@@ -7,12 +7,14 @@ import { IItem, MItem } from "../../../../../utils/types/item";
 import { FMCompDef, FNCompDef } from "../../../../../utils/types/meta-fn";
 import { Loading } from "../../../../../utils/ui/loading";
 import { Popover } from "../../../../../utils/ui/popover";
-import { EditorGlobal } from "../../../logic/global";
+import { EditorGlobal, PG } from "../../../logic/global";
 import { jscript } from "../../script/script-element";
 import { CPCodeEdit } from "./CPCodeEdit";
 import { CPOption } from "./CPOption";
 import { CPText } from "./CPText";
 import { editComp } from "../../../logic/comp";
+import { Menu, MenuItem } from "../../../../../utils/ui/context-menu";
+import { CompDoc } from "../../../../../base/global/content-editor";
 
 export const CPInstance: FC<{ mitem: MItem }> = ({ mitem }) => {
   const p = useGlobal(EditorGlobal, "EDITOR");
@@ -21,10 +23,10 @@ export const CPInstance: FC<{ mitem: MItem }> = ({ mitem }) => {
     mprops: null as unknown as TypedMap<Record<string, FMCompDef>>,
     props: {} as Record<string, FNCompDef>,
   });
+  const comp = p.comps.doc[mitem.get("component")?.get("id") || ""];
 
   useEffect(() => {
     (async () => {
-      const comp = p.comps.doc[mitem.get("component")?.get("id") || ""];
       if (comp) {
         const rprops = comp
           .getMap("map")
@@ -76,6 +78,8 @@ export const CPInstance: FC<{ mitem: MItem }> = ({ mitem }) => {
           className="flex mr-1 px-2 bg-white text-xs border rounded-sm cursor-pointer hover:bg-blue-50 hover:border-blue-500 text-blue-700"
           onClick={() => {
             p.compProp.edit = true;
+            p.compProp.backTo = mitem.get("id") || "";
+            p.compProp.backToComp = p.comp;
             editComp(p, mitem.toJSON() as IItem);
           }}
         >
@@ -97,6 +101,7 @@ export const CPInstance: FC<{ mitem: MItem }> = ({ mitem }) => {
                     name={k}
                     prop={mprop.toJSON() as any}
                     mprop={mprop}
+                    comp={comp}
                     render={p.render}
                   />
                 );
@@ -113,10 +118,12 @@ const SingleProp: FC<{
   prop: FNCompDef;
   mprop: FMCompDef;
   render: () => void;
-}> = ({ name, prop, mprop, render }) => {
+  comp: CompDoc;
+}> = ({ name, prop, mprop, render, comp }) => {
   const local = useLocal({
     clickEvent: null as any,
     editCode: false,
+    loading: false,
   });
   const type = prop.meta?.type || "text";
   const updateValue = async (val: string) => {
@@ -129,7 +136,32 @@ const SingleProp: FC<{
       render();
     }
   };
-  const reset = () => {};
+  const reset = () => {
+    const propVal = comp
+      .getMap("map")
+      .get("content_tree")
+      ?.get("component")
+      ?.get("props")
+      ?.get(name)
+      ?.toJSON() as FNCompDef;
+
+    if (propVal) {
+      mprop.doc?.transact(() => {
+        mprop.set("value", propVal.value);
+        mprop.set("valueBuilt", propVal.valueBuilt);
+      });
+      prop.value = propVal.value;
+      prop.valueBuilt = propVal.valueBuilt;
+
+      local.loading = true;
+      render();
+
+      setTimeout(() => {
+        local.loading = false;
+        render();
+      }, 100);
+    }
+  };
 
   return (
     <div
@@ -142,6 +174,24 @@ const SingleProp: FC<{
         "border-b bg-white hover:bg-orange-50 flex flex-col items-stretch"
       )}
     >
+      {local.clickEvent && (
+        <Menu
+          mouseEvent={local.clickEvent}
+          onClose={() => {
+            local.clickEvent = null;
+            local.render();
+          }}
+        >
+          <MenuItem label="Reset" onClick={reset} />
+          <MenuItem
+            label={"Edit Code"}
+            onClick={() => {
+              local.editCode = true;
+              local.render();
+            }}
+          />
+        </Menu>
+      )}
       <div className="flex justify-between items-stretch flex-wrap relative">
         {(() => {
           const label = (
@@ -218,30 +268,36 @@ const SingleProp: FC<{
           );
         })()}
 
-        <div className="flex items-stretch flex-1">
-          {type === "text" && (
-            <CPText
-              prop={prop}
-              onChange={updateValue}
-              editCode={() => {
-                local.editCode = true;
-                local.render();
-              }}
-              reset={reset}
-            />
-          )}
-          {type === "option" && (
-            <CPOption
-              prop={prop}
-              onChange={updateValue}
-              editCode={() => {
-                local.editCode = true;
-                local.render();
-              }}
-              reset={reset}
-            />
-          )}
-        </div>
+        {local.loading ? (
+          <div className="flex items-stretch flex-1">
+            <div className="min-h-[30px]"></div>
+          </div>
+        ) : (
+          <div className="flex items-stretch flex-1">
+            {type === "text" && (
+              <CPText
+                prop={prop}
+                onChange={updateValue}
+                editCode={() => {
+                  local.editCode = true;
+                  local.render();
+                }}
+                reset={reset}
+              />
+            )}
+            {type === "option" && (
+              <CPOption
+                prop={prop}
+                onChange={updateValue}
+                editCode={() => {
+                  local.editCode = true;
+                  local.render();
+                }}
+                reset={reset}
+              />
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

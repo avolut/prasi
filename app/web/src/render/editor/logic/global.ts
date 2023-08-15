@@ -62,6 +62,8 @@ export const EditorGlobal = {
     content_tree: IItem;
   },
   compProp: {
+    backTo: "",
+    backToComp: null as any,
     edit: false,
     preview: true,
   },
