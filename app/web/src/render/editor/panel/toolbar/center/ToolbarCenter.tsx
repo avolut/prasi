@@ -1,18 +1,20 @@
 import { useGlobal, useLocal } from "web-utils";
 import { ToolbarBox } from "../../../../../utils/ui/box";
+import { Modal } from "../../../../../utils/ui/modal";
 import { EditorGlobal } from "../../../logic/global";
 import { MonacoEditor } from "../../script/monaco/typings";
-import { Modal } from "../../../../../utils/ui/modal";
 // import { customMonacoState } from "../../script/monaco/monaco-custom";
 import { Popover } from "../../../../../utils/ui/popover";
-import { LiveDeploy } from "./deploy/LiveDeploy";
-import { AddElement } from "./AddElement";
-import { EScriptCustom } from "../../script/script-custom";
-import { customMonacoState } from "../../script/monaco/monaco-custom";
 import { execSiteJS } from "../../../logic/init";
 import { wsend } from "../../../logic/ws";
-import { APIConfig } from "./api/APIConfig";
+import { customMonacoState } from "../../script/monaco/monaco-custom";
+import { EScriptCustom } from "../../script/script-custom";
+import { AddElement } from "./AddElement";
 import { NPMImport } from "./NPMImport";
+import { APIConfig } from "./api/APIConfig";
+import { useEffect } from "react";
+import { reloadDBAPI } from "../../../../../utils/script/api";
+import { w } from "../../../../../utils/types/general";
 const ua = navigator.userAgent.toLowerCase();
 const isMac =
   ua.indexOf("mac") > -1 &&
@@ -31,7 +33,39 @@ export const ToolbarCenter = () => {
       timeout: null as any,
       editor: null as null | MonacoEditor,
     },
+    apiOnline: null as null | boolean,
   });
+
+  const checkApi = async (status?: boolean) => {
+    if (typeof status === "boolean") {
+      if (local.apiOnline) {
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+        await reloadDBAPI(p.site.api_url);
+      } else {
+        delete w.prasiApi[p.site.api_url];
+      }
+
+      local.apiOnline = status;
+      local.render();
+      return;
+    }
+
+    if (p.site.api_url) {
+      try {
+        await fetch(p.site.api_url + "/_prasi/api-types");
+        local.apiOnline = true;
+
+        await reloadDBAPI(p.site.api_url);
+      } catch (e) {
+        local.apiOnline = false;
+      }
+      local.render();
+    }
+  };
+  useEffect(() => {
+    checkApi();
+  }, []);
+
   return (
     <div className={cx("toolbar-mid", "flex")}>
       <Modal
@@ -116,12 +150,20 @@ export const ToolbarCenter = () => {
               local.apiConfigOpen = true;
               local.render();
             },
+            className:
+              typeof local.apiOnline === "boolean"
+                ? cx(
+                    "border-b-2",
+                    !local.apiOnline ? "border-red-600" : "border-green-600"
+                  )
+                : undefined,
             content: (
               <Popover
                 offset={12}
                 open={local.apiConfigOpen}
                 content={
                   <APIConfig
+                    checkApi={checkApi}
                     close={() => {
                       local.apiConfigOpen = false;
                       local.render();
@@ -130,10 +172,10 @@ export const ToolbarCenter = () => {
                 }
                 onOpenChange={(open) => {
                   local.apiConfigOpen = open;
-                  local.render();
+                  checkApi();
                 }}
               >
-                <APIcon />
+                API
               </Popover>
             ),
           },

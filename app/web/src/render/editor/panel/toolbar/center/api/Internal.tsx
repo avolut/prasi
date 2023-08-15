@@ -6,7 +6,10 @@ import { EditorGlobal } from "../../../../logic/global";
 import { Loading } from "../../../../../../utils/ui/loading";
 import { w } from "../../../../../../utils/types/general";
 
-export const InternalAPI: FC<{ close: () => void }> = ({ close }) => {
+export const InternalAPI: FC<{
+  close: () => void;
+  checkApi: (status: boolean) => void;
+}> = ({ close, checkApi }) => {
   const local = useLocal({
     status: "...",
     loading: false,
@@ -19,6 +22,8 @@ export const InternalAPI: FC<{ close: () => void }> = ({ close }) => {
     if (p.site)
       api.srvapi_check(p.site.id).then((e) => {
         local.status = e;
+        console.log(e);
+        checkApi(e === "started");
         local.render();
       });
   };

@@ -25,24 +25,7 @@ export const initApi = async (config: any) => {
   }
   if (!w.prasiApi) w.prasiApi = {};
   if (!w.prasiApi[url]) {
-    try {
-      const base = trim(url, "/");
-      const apiTypes = await fetch(base + "/_prasi/api-types");
-      const apiEntry = await fetch(base + "/_prasi/api-entry");
-      w.prasiApi[url] = {
-        apiEntry: (await apiEntry.json()).srv,
-        prismaTypes: {
-          "prisma.d.ts": await loadText(`${base}/_prasi/prisma/index.d.ts`),
-          "runtime/index.d.ts": await loadText(
-            `${base}/_prasi/prisma/runtime/index.d.ts`
-          ),
-          "runtime/library.d.ts": await loadText(
-            `${base}/_prasi/prisma/runtime/library.d.ts`
-          ),
-        },
-        apiTypes: await apiTypes.text(),
-      };
-    } catch (e) {}
+    await reloadDBAPI(url);
   }
   return url;
 };
@@ -50,4 +33,25 @@ export const initApi = async (config: any) => {
 const loadText = async (url: string) => {
   const res = await fetch(url);
   return await res.text();
+};
+
+export const reloadDBAPI = async (url: string) => {
+  try {
+    const base = trim(url, "/");
+    const apiTypes = await fetch(base + "/_prasi/api-types");
+    const apiEntry = await fetch(base + "/_prasi/api-entry");
+    w.prasiApi[url] = {
+      apiEntry: (await apiEntry.json()).srv,
+      prismaTypes: {
+        "prisma.d.ts": await loadText(`${base}/_prasi/prisma/index.d.ts`),
+        "runtime/index.d.ts": await loadText(
+          `${base}/_prasi/prisma/runtime/index.d.ts`
+        ),
+        "runtime/library.d.ts": await loadText(
+          `${base}/_prasi/prisma/runtime/library.d.ts`
+        ),
+      },
+      apiTypes: await apiTypes.text(),
+    };
+  } catch (e) {}
 };

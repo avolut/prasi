@@ -7,14 +7,15 @@ import { ExternalAPI } from "./External";
 import { InternalAPI } from "./Internal";
 import get from "lodash.get";
 
-export const APIConfig: FC<{ close: () => void }> = ({ close }) => {
+export const APIConfig: FC<{
+  close: () => void;
+  checkApi: (status: boolean) => void;
+}> = ({ close, checkApi }) => {
   const p = useGlobal(EditorGlobal, "EDITOR");
   const local = useLocal({
     mode: "" as "external" | "internal" | "",
     creating: false,
   });
-
-  //   // const config = wsdoc.site?.config;
 
   if (
     p.site.api_prasi.db === "" &&
@@ -76,7 +77,9 @@ export const APIConfig: FC<{ close: () => void }> = ({ close }) => {
         </div>
       )}
       {local.mode === "external" && <ExternalAPI />}
-      {local.mode === "internal" && <InternalAPI close={close} />}
+      {local.mode === "internal" && (
+        <InternalAPI checkApi={checkApi} close={close} />
+      )}
     </div>
   );
   return <></>;

@@ -110,6 +110,13 @@ export const user_create = {
   args: ["user"],
   handler: import("../../../srv/api/built-in/user/user-create")
 }
+export const check = {
+  name: "check",
+  url: "/check",
+  path: "app/srv/api/check.ts",
+  args: [],
+  handler: import("../../../srv/api/check")
+}
 export const comp_attach = {
   name: "comp_attach",
   url: "/comp-attach",

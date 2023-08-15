@@ -62,6 +62,10 @@ export const user_create = {
   url: "/user-create",
   args: ["user"],
 }
+export const check = {
+  url: "/check",
+  args: [],
+}
 export const comp_attach = {
   url: "/comp-attach",
   args: ["arg"],
