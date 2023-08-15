@@ -15,19 +15,39 @@ export const createDB = (url: string) => {
 export const initApi = async (config: any) => {
   let url = "";
   if (config.prasi) {
-    url = `https://${config.prasi.port}.prasi.world`;
+    if (location.hostname !== "prasi.app") {
+      url = `http://${location.hostname}:${config.prasi.port}`;
+    } else {
+      url = `https://${config.prasi.port}.prasi.world`;
+    }
   } else if (config.api_url) {
     url = config.api_url;
   }
   if (!w.prasiApi) w.prasiApi = {};
   if (!w.prasiApi[url]) {
     try {
-      const apiEntry = await fetch(trim(url, "/") + "/_prasi/api-entry");
-      const json = await apiEntry.json();
+      const base = trim(url, "/");
+      const apiTypes = await fetch(base + "/_prasi/api-types");
+      const apiEntry = await fetch(base + "/_prasi/api-entry");
       w.prasiApi[url] = {
-        apiEntry: json.srv,
+        apiEntry: (await apiEntry.json()).srv,
+        prismaTypes: {
+          "prisma.d.ts": await loadText(`${base}/_prasi/prisma/index.d.ts`),
+          "runtime/index.d.ts": await loadText(
+            `${base}/_prasi/prisma/runtime/index.d.ts`
+          ),
+          "runtime/library.d.ts": await loadText(
+            `${base}/_prasi/prisma/runtime/library.d.ts`
+          ),
+        },
+        apiTypes: await apiTypes.text(),
       };
     } catch (e) {}
   }
   return url;
+};
+
+const loadText = async (url: string) => {
+  const res = await fetch(url);
+  return await res.text();
 };

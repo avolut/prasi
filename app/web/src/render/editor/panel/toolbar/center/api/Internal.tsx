@@ -39,6 +39,14 @@ export const InternalAPI: FC<{ close: () => void }> = ({ close }) => {
       </div>
     );
 
+  let url = "";
+  const port = config?.api_prasi?.port;
+  if (location.hostname !== "prasi.app") {
+    url = `http://${location.hostname}:${port}`;
+  } else {
+    url = `https://${port}.prasi.world`;
+  }
+
   return (
     <div className="flex flex-col self-stretch flex-1 items-stretch space-y-2">
       <div className="flex justify-between items-center">
@@ -54,11 +62,11 @@ export const InternalAPI: FC<{ close: () => void }> = ({ close }) => {
           </div>
           {local.status === "started" && (
             <a
-              href={`https://${config?.api_prasi?.port}.prasi.world`}
+              href={url}
               target="_blank"
               className="text-blue-500 hover:underline border px-1"
             >
-              https://{config?.api_prasi?.port}.prasi.world
+              {url}
             </a>
           )}
         </div>

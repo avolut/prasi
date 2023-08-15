@@ -133,22 +133,22 @@ export const ScriptMonacoElement: FC<{
               onClick={() => {
                 doEdit(
                   `\
-<Local 
-  name="local" 
-  value={{
-    list: ["hello"],
-    form: {
-      hello: "yo"
-    },
-  }}
-  effect={
-    async (local) => {
-      local.list.push("world!");
-      local.form.hello = "world!";
-      local.render();
+<div {...props}>
+  <Local
+    name="local"
+    value={
+      {
+        //local object
+      }
     }
-  }
->{children}</Local>`
+    effect={async (local) => {
+      //local effect
+    }}
+  >
+    {children}
+  </Local>
+</div>
+                  `
                 );
               }}
             >

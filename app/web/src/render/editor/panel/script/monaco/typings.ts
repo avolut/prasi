@@ -28,17 +28,18 @@ export const monacoTypings = async (
     },
   ]);
 
-  if (p.site.api_prasi.db && p.site.api_prasi.port) {
-    if (w.prasiApi[p.site.api_url]) {
-      for (const [k, v] of Object.entries(w.prasiApi[p.site.api_url])) {
-        register(
-          monaco,
-          `declare module '${k.replace(`\.d\.ts`, "")}' { ${v} } `,
-          `ts:${k}`
-        );
-      }
-      register(monaco, w.prasiApi[p.site.api_url].apiTypes, "ts:api.d.ts");
+  if (w.prasiApi[p.site.api_url]) {
+    console.log(w.prasiApi[p.site.api_url]);
+    for (const [k, v] of Object.entries(
+      w.prasiApi[p.site.api_url].prismaTypes
+    )) {
+      register(
+        monaco,
+        `declare module '${k.replace(`\.d\.ts`, "")}' { ${v} } `,
+        `ts:${k}`
+      );
     }
+    register(monaco, w.prasiApi[p.site.api_url].apiTypes, "ts:api.d.ts");
   }
 
   const propText = extractProp(prop);
