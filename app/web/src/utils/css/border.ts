@@ -18,7 +18,7 @@ export const cssBorder = (
     color: "transparent",
   });
   return cx(
-    pick(border, "stroke.t", "border-left-width"),
+    pick(border, "stroke.l", "border-left-width"),
     pick(border, "stroke.r", "border-right-width"),
     pick(border, "stroke.b", "border-bottom-width"),
     pick(border, "stroke.t", "border-top-width"),
