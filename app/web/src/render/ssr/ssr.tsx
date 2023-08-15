@@ -36,7 +36,6 @@ const Root: FC<{
 };
 
 w.ssrResult = new Promise<string>(async (resolve) => {
-
   let result = { html: "", css: "" };
   while (w.ssrContext.ssrShouldRender) {
     w.ssrContext.ssrShouldRender = false;
@@ -70,6 +69,16 @@ w.ssrResult = new Promise<string>(async (resolve) => {
   <div id="root">
     ${result.html}
   </div>
+  <script>
+  window.addEventListener("resize", () => {
+    const mode = window.innerWidth <= 600 ? "mobile" : "desktop";
+    document.querySelectorAll(".cel").forEach((e) => {
+      e.classList.remove("mobile");
+      e.classList.remove("desktop");
+      e.classList.add(mode);
+    });
+  });
+  </script>
 </body>
 </html>`)
   );

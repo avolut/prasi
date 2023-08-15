@@ -1,4 +1,3 @@
-import { IContent } from "../types/general";
 import { IItem } from "../types/item";
 import { ISection } from "../types/section";
 import { IText } from "../types/text";
@@ -20,14 +19,8 @@ export const produceCSS = (
     editor?: boolean;
   }
 ): string => {
-  let className = item.linktag?.class;
-  if (arg.mode === "mobile" && item.mobile?.linktag?.class) {
-    className = item.mobile?.linktag?.class;
-  }
-
   try {
     return cx([
-      className?.trim(),
       css`
         display: flex;
         position: relative;

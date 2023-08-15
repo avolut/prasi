@@ -18,10 +18,10 @@ export const DefaultScript = {
   css: `\
 & {
   display: flex;
-  
-  &:hover {
-    display: flex;
-  }
+
+  // &.mobile {}
+  // &.desktop {}
+  // &:hover {}
 }`,
   html: ``,
 };
@@ -219,6 +219,28 @@ export const ScriptMonacoElement: FC<{
               }}
             >
               &lt;Preload/&gt;
+            </Button>
+
+            <Button
+              onClick={() => {
+                doEdit(
+                  `<>{isMobile && <div {...props}>{children}</div>}</>`,
+                  true
+                );
+              }}
+            >
+              &lt;isMobile/&gt;
+            </Button>
+
+            <Button
+              onClick={() => {
+                doEdit(
+                  `<>{isDesktop && <div {...props}>{children}</div>}</>`,
+                  true
+                );
+              }}
+            >
+              &lt;isDesktop/&gt;
             </Button>
 
             <Button
