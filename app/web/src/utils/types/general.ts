@@ -28,6 +28,7 @@ export const w = window as unknown as {
   prasiApi: Record<string, PrasiAPI>;
   loadedFonts: string[];
   prasiApiDbPull: boolean;
+  params: any;
 };
 
 export type Page = {

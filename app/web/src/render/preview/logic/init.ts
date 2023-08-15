@@ -11,6 +11,7 @@ const w = window as unknown as {
   isMobile: boolean;
   isDesktop: boolean;
   exports: any;
+  params: any;
 };
 
 export const initPreview = async (p: PG, domain: string) => {
@@ -70,6 +71,7 @@ export const initPreview = async (p: PG, domain: string) => {
         if (p) {
           scopes["api"] = createAPI(p.site.api_url);
           scopes["db"] = createDB(p.site.api_url);
+          scopes.params = w.params;
           const f = new Function(...Object.keys(scopes), fn);
           const res = f(...Object.values(scopes));
           return res;

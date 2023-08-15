@@ -61,7 +61,7 @@ export const PRender: FC<{
     else if (adv.jsBuilt && adv.js) {
       if (!navExtracted.has(item.id)) {
         navExtracted.add(item.id);
-        const navs = extractNavigate(adv.js);
+        const navs = extractNavigate(adv.js as string);
         navs.forEach((n) => {
           preload(p, n);
         });

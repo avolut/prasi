@@ -95,7 +95,10 @@ export const ScriptMonacoElement: FC<{
   if (!mitem) return <div>no mitem</div>;
 
   const adv = mitem.get("adv");
-  if (!adv) return <div>no adv</div>;
+  if (!adv) {
+    mitem.set("adv", new Y.Map() as any);
+    return <Loading />;
+  }
   let _ytext = adv.get(script.type) as any;
   if (!(_ytext instanceof Y.Text)) {
     setTimeout(() => {
