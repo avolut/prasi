@@ -42,13 +42,11 @@ export const monacoTypings = async (
   }
 
   const propText = extractProp(prop);
-
   register(
     monaco,
     `\
 import React from 'react';
 import prisma from 'prisma';
-
 
 declare global {
   const db: prisma.PrismaClient; 

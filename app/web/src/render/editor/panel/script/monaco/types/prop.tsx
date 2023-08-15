@@ -1,5 +1,4 @@
 import { forwardRef, isValidElement } from "react";
-import { typeStringify } from "./type-stringify";
 
 const A = forwardRef((prop: { a: "string" }, ref) => {
   return <div></div>;
@@ -60,9 +59,7 @@ export const extractProp = (prop: {
             val = { ...v.val, render: () => {} };
           }
           propTypes.push(
-            `const ${k} = ${JSON.stringify(val, typeStringify)
-              .replaceAll('"___FFF||', "")
-              .replaceAll('||FFF___"', "")};`
+            `const ${k} = null as unknown as ${recurseTypes(v.val)};`
           );
         } catch (e) {}
       }
@@ -71,6 +68,17 @@ export const extractProp = (prop: {
 
   return propTypes;
 };
+
+function recurseTypes(object: any) {
+  const result: string[] = [];
+  for (const [k, v] of Object.entries(object)) {
+    result.push(`${k}: ${typeof v === "object" ? recurseTypes(v) : typeof v}`);
+  }
+
+  return `{
+  ${result.join(";\n  ")}
+}`;
+}
 
 function isFunctionalComponent(Component: any) {
   return (

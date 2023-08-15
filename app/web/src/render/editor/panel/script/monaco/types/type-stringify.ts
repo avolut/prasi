@@ -1,6 +1,6 @@
 export const typeStringify = function (this: any, key: string, value: any) {
   if (typeof value === "function") {
-    return `___FFF||${value.toString()}||FFF___`;
+    return `___FFF||any||FFF___`;
   }
   return value;
 };
