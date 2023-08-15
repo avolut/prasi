@@ -10,6 +10,7 @@ const w = window as unknown as {
   isEditor: boolean;
   exports: any;
   extractCss: any;
+  params: any;
 };
 
 export const initSSR = async (p: PG) => {
@@ -51,6 +52,7 @@ export const initSSR = async (p: PG) => {
         if (p) {
           scopes["api"] = createAPI(p.site.api_url);
           scopes["db"] = createDB(p.site.api_url);
+          scopes.params = w.params;
           const f = new Function(...Object.keys(scopes), fn);
           const res = f(...Object.values(scopes));
           return res;
@@ -64,7 +66,6 @@ export const initSSR = async (p: PG) => {
         render: p.render,
       };
       if (p.site.js) exec(p.site.js, scope);
-      // console.log("we", w.exports);
       p.status = "ready";
       p.render();
     } else {

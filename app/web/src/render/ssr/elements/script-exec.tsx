@@ -69,6 +69,7 @@ const produceEvalArgs = (
     children,
     React: React,
     css: css,
+    cx: cx,
     props: {
       className: cx(className),
     },
