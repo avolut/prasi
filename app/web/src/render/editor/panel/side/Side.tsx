@@ -26,7 +26,7 @@ export const ESide = () => {
   const update = useCallback(
     (key: string, value: any) => {
       if (p.item.active) {
-        let act = p.treeMeta[p.item.active].item as TypedMap<any>;
+        let act = p.treeMeta[p.item.active].mitem as TypedMap<any>;
         if (p.mode === "mobile") {
           let mobile = act.get("mobile");
           if (!mobile) {
@@ -59,7 +59,7 @@ export const ESide = () => {
     [p.item.active]
   );
   const item = p.item.active ? p.treeMeta[p.item.active] : null;
-  const mitem = item ? item.item : null;
+  const mitem = item ? item.mitem : null;
   const active: any = mitem ? mitem.toJSON() : null;
 
   const rootComponentID = p.comp?.id;

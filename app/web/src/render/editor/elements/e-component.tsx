@@ -154,5 +154,4 @@ export const getRenderPropVal = (
     }
   }
 
-  p.itemProps[item.id] = item.nprops;
 };

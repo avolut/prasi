@@ -67,7 +67,7 @@ export const EScriptElement: FC<{}> = ({}) => {
     <Modal
       onOpenChange={() => {
         if (p.script.active) {
-          const mitem = p.treeMeta[p.item.active]?.item;
+          const mitem = p.treeMeta[p.item.active]?.mitem;
           if (!mitem) return <div>no mitem</div>;
 
           const adv = mitem.get("adv");

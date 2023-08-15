@@ -76,8 +76,8 @@ export const onDrop = (
           const listContent: any = listItem.map((e) => {
             let item = p.treeMeta[e];
             if (item) {
-              if (item.item.get("type") === "section") {
-                const json = item.item.toJSON();
+              if (item.mitem.get("type") === "section") {
+                const json = item.mitem.toJSON();
                 const newItem = {
                   id: json.id,
                   name: json.name,
@@ -89,13 +89,13 @@ export const onDrop = (
                 } as IItem;
                 return newItem;
               }
-              return item.item.toJSON();
+              return item.mitem.toJSON();
             }
           });
           listItem.map((e) => {
             let mitem = p.treeMeta[e];
             if (mitem) {
-              const jso = mitem.item;
+              const jso = mitem.mitem;
               jso.parent.forEach((e, idx) => {
                 if (e === jso) {
                   jso.parent.delete(idx);
@@ -106,7 +106,7 @@ export const onDrop = (
           let res = flatTree(listContent);
           let listMap = res.map((e: IContent) => newMap(fillID(e)));
           listMap.map((e: MContent) => {
-            const titem = to.item;
+            const titem = to.mitem;
             const childs = titem.get("childs");
             if (childs && childs.length - 1 >= (relativeIndex || 0)) {
               childs?.insert(relativeIndex || 0, [e]);
@@ -160,7 +160,7 @@ export const onDrop = (
       let from = p.treeMeta[dragSource.id];
       let to = p.treeMeta[dropTarget.id];
       if (from && to && p.mpage && dragSource.id !== dropTarget.id) {
-        const mitem = from.item;
+        const mitem = from.mitem;
         const insert = mitem.clone();
         mitem.parent.forEach((e, idx) => {
           if (e === mitem) {
@@ -168,7 +168,7 @@ export const onDrop = (
           }
         });
         if (dropTargetId !== "root") {
-          const titem = to.item;
+          const titem = to.mitem;
           if (titem) {
             const childs = titem.get("childs");
             if (childs && childs.length - 1 >= (relativeIndex || 0)) {
@@ -219,7 +219,7 @@ export const canDrop = (p: PG, arg: DropOptions<NodeContent>, local: any) => {
         if (typeof dragSourceId === "string") {
           const mitem = p.treeMeta[dragSourceId];
           if (mitem) {
-            let walkId = walk(mitem.item);
+            let walkId = walk(mitem.mitem);
             if (find(walkId, (e) => e === dropTargetId)) {
               return false;
             }
@@ -278,7 +278,7 @@ export const selectMultiple = (
   if (!listId.length) {
     const item = p.treeMeta[p.item.active];
     if (item) {
-      listId = treeContent(item.item);
+      listId = treeContent(item.mitem);
     }
   }
   // console.log(listId);
@@ -291,7 +291,7 @@ export const selectMultiple = (
   const item = p.treeMeta[node.id];
   if (item) {
     // let idItem = treeContent()
-    const listItemId = treeContent(item.item);
+    const listItemId = treeContent(item.mitem);
     // console.log({ listItemId });
     switch (true) {
       case key === "ctrl":
@@ -365,8 +365,8 @@ export const filterFlatTree = (
     let obj = root.find((x) => x.id === e);
     if (obj) {
       let mitem = p.treeMeta[e];
-      if (mitem.item) {
-        let parent = mitem.item.parent;
+      if (mitem.mitem) {
+        let parent = mitem.mitem.parent;
         let childs = parent?.toJSON() || [];
         let idx = findIndex(childs, (x: any) => get(x, "id") === e);
         if (typeof idx === "number") {

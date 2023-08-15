@@ -38,7 +38,7 @@ const Renaming: FC<{
 }> = ({ name, doneRenaming, isComponent, id }) => {
   const local = useLocal({ newname: name });
   const p = useGlobal(EditorGlobal, "EDITOR");
-  const item = p.treeMeta[id].item;
+  const item = p.treeMeta[id].mitem;
   if (!item) return null;
 
   const rootComponentID = p.comp?.id;

@@ -28,7 +28,7 @@ export const AddElement: FC<{}> = ({}) => {
     tree = flattenTree(p, p.mpage.getMap("map").get("content_tree"));
   }
   const item = p.treeMeta[p.item.active];
-  let mitem = item ? item.item : null;
+  let mitem = item ? item.mitem : null;
   const type = mitem?.get("type");
   if (p.item.active && mitem?.get("component")?.get("id")) {
     canAdd = false;
@@ -64,7 +64,7 @@ export const AddElement: FC<{}> = ({}) => {
                 },
               } as IText;
               const item = p.item.active ? p.treeMeta[p.item.active] : null;
-              const mitem = item ? item.item : null;
+              const mitem = item ? item.mitem : null;
               const type = mitem?.get("type");
               if (p.item.active && mitem) {
                 if (type === "item") {
@@ -132,7 +132,7 @@ export const AddElement: FC<{}> = ({}) => {
                 },
               } as IItem;
               const item = p.item.active ? p.treeMeta[p.item.active] : null;
-              const mitem = item ? item.item : null;
+              const mitem = item ? item.mitem : null;
               if (p.item.active && mitem) {
                 if (type !== "text") {
                   const map = new Y.Map() as MContent;
@@ -258,7 +258,7 @@ export const AddElement: FC<{}> = ({}) => {
                   id: createId(),
                 } as IItem;
                 const item = p.item.active ? p.treeMeta[p.item.active] : null;
-                const mitem = item ? item.item : null;
+                const mitem = item ? item.mitem : null;
                 if (p.item.active && mitem) {
                   if (type !== "text") {
                     const map = new Y.Map() as MContent;

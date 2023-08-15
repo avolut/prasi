@@ -1,6 +1,6 @@
 import { ReactElement } from "react";
 import { CompDoc } from "../../../base/global/content-editor";
-import { MContent, MPage } from "../../../utils/types/general";
+import { IContent, MContent, MPage } from "../../../utils/types/general";
 import { IItem } from "../../../utils/types/item";
 import { IRoot } from "../../../utils/types/root";
 
@@ -76,11 +76,11 @@ export const EditorGlobal = {
   compEdits: [] as IItem[],
 
   /** write-only */
-  itemProps: {} as Record<string, any>,
   treeMeta: {} as Record<
     string,
     {
-      item: MContent;
+      mitem: MContent;
+      item: IContent;
       comp?: IItem;
       passprop?: any;
       local?: any;

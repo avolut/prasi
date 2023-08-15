@@ -26,7 +26,8 @@ export const flattenTree = (
         console.log(`warning: duplicate id: ${item.id}`);
       }
       p.treeMeta[item.id] = {
-        item: mitem,
+        mitem: mitem,
+        item,
       };
       result.push({
         id: item.id,

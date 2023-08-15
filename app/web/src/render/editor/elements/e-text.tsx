@@ -71,7 +71,7 @@ export const ETextInternal: FC<{
         if (p.focused !== item.id) {
           p.focused = item.id;
         }
-        const mitem = p.treeMeta[item.id]?.item;
+        const mitem = p.treeMeta[item.id]?.mitem;
         if (mitem) {
           if (e.currentTarget.innerText.trim() === "") {
             mitem.set("html", "");

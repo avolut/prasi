@@ -25,7 +25,7 @@ export const ETreeItemAction: FC<{
     link = item.linktag?.link || "";
   }
   if (!p.treeMeta[item.id]) return <></>;
-  const mitem = p.treeMeta[item.id].item;
+  const mitem = p.treeMeta[item.id].mitem;
 
   let canDelete = true;
   const rootComponentID = p.comp?.id;
@@ -68,8 +68,8 @@ export const ETreeItemAction: FC<{
             onClick={(e) => {
               e.stopPropagation();
               const mitem = p.treeMeta[item.id];
-              if (mitem && mitem.item) {
-                mitem.item.set("hidden", false);
+              if (mitem && mitem.mitem) {
+                mitem.mitem.set("hidden", false);
               }
             }}
           >
@@ -84,8 +84,8 @@ export const ETreeItemAction: FC<{
             onClick={(e) => {
               e.stopPropagation();
               const mitem = p.treeMeta[item.id];
-              if (mitem && mitem.item) {
-                mitem.item.set("hidden", "all");
+              if (mitem && mitem.mitem) {
+                mitem.mitem.set("hidden", "all");
               }
             }}
           >
@@ -167,7 +167,7 @@ const Adv: FC<{
   const adv = { ...item.adv } as FNAdv;
 
   const openEditor = (mode: "css" | "js" | "html") => {
-    const mitem = p.treeMeta[item.id]?.item;
+    const mitem = p.treeMeta[item.id]?.mitem;
     if (mitem) {
       p.item.active = item.id;
       p.script.active = true;

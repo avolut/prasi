@@ -11,6 +11,12 @@ import { EditorGlobal } from "../../../logic/global";
 import { jsMount } from "./mount";
 import { monacoTypings } from "./typings";
 import { emmetHTML, emmetJSX } from "emmet-monaco-es";
+import { IItem } from "../../../../../utils/types/item";
+import {
+  createLocal,
+  createPassChild,
+  createPassProp,
+} from "../../../elements/script-exec";
 
 export type MonacoEditor = Parameters<OnMount>[0];
 export const DefaultScript = {
@@ -91,7 +97,7 @@ export const ScriptMonacoElement: FC<{
     }
   };
 
-  const mitem = p.treeMeta[p.item.active]?.item;
+  const mitem = p.treeMeta[p.item.active]?.mitem;
   if (!mitem) return <div>no mitem</div>;
 
   const adv = mitem.get("adv");
@@ -370,21 +376,10 @@ export const ScriptMonacoElement: FC<{
               );
               editor.setModel(model);
             }
-            if (!p.itemProps[p.item.active]) {
-              let item = p.treeMeta[p.item.active].item;
-              while (item.parent) {
-                const id = item.get("id");
-                if (id && p.itemProps[id]) {
-                  p.itemProps[p.item.active] = p.itemProps[id];
-                  break;
-                }
-                item = item.parent as any;
-              }
-            }
 
             const propVal: any = {
               ...(window.exports || {}),
-              ...p.itemProps[p.item.active],
+              ...p.treeMeta[p.item.active].item.nprops,
             };
 
             const propTypes: any = p.script.siteTypes;

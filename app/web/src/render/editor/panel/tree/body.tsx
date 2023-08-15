@@ -66,8 +66,8 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[] }> = ({ tree }) => {
     if (p.item.active) {
       let m = p.treeMeta[p.item.active];
       if (m)
-        if (m.item) {
-          let mitem = m.item;
+        if (m.mitem) {
+          let mitem = m.mitem;
           if (mitem.parent) {
             let item = mitem.parent.parent as any;
             const open = new Set<string>();

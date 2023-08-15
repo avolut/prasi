@@ -33,9 +33,6 @@ export const scriptExec = (arg: JsArg, api_url?: string) => {
     let error = false;
     let evalArgs = {} as any;
     try {
-      arg.p.itemProps[arg.item.id] = {
-        ...arg.item.nprops,
-      };
       evalArgs = produceEvalArgs({ ...arg, output }, api_url);
 
       const scriptEval = new Function(...Object.keys(evalArgs), adv.jsBuilt);
@@ -76,7 +73,7 @@ const produceEvalArgs = (
   const PassChild = tm.passchild;
   const scopeProps = {
     ...window.exports,
-    ...arg.p.itemProps[arg.item.id],
+    ...item.nprops,
   };
 
   const result: any = {
@@ -122,7 +119,7 @@ const produceEvalArgs = (
   return result;
 };
 
-const createPassChild =
+export const createPassChild =
   (arg: { item: IContent }) =>
   ({ name }: { name: string }) => {
     const local = useLocal({ child: null as any });
@@ -143,7 +140,7 @@ const createPassChild =
     }
   };
 
-const createPassProp = () => {
+export const createPassProp = () => {
   return (prop: any) => {
     const nprops = { ...prop };
     delete nprops.children;
@@ -184,7 +181,7 @@ const thru = (prop: any, nprops: any) => {
   }
 };
 
-const createLocal = (arg: {
+export const createLocal = (arg: {
   p: PG;
   item: IContent;
   render: () => void;

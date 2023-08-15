@@ -24,16 +24,20 @@ export const ERender: FC<{
       return true;
     })
     .map((e) => {
-      if (e.type === "item" && e.component?.id) {
-        let meta = p.treeMeta[e.id];
+      let meta = p.treeMeta[e.id];
+      if (meta) {
+        meta.item = e;
+      }
 
+      if (e.type === "item" && e.component?.id) {
         const mcomp = p.comps.doc[e.component.id];
         if (mcomp) {
           if (!meta) {
             const mitem = mcomp.getMap("map").get("content_tree");
             if (mitem) {
               p.treeMeta[e.id] = {
-                item: mitem as MContent,
+                mitem: mitem as MContent,
+                item,
               };
               meta = p.treeMeta[e.id];
             }

@@ -141,9 +141,6 @@ export const PreviewItemProp = () => {
     <div
       className="flex text-xs space-x-1 mr-1 cursor-pointer hover:text-blue-500 items-center"
       onClick={() => {
-        for (const k of Object.keys(p.itemProps)) {
-          delete p.itemProps[k];
-        }
         p.compProp.preview = !p.compProp.preview;
         p.render();
       }}
