@@ -34,6 +34,8 @@ export const PanelDimension: FC<{
     dim: responsiveVal<FNDimension>(value, "dim", mode, {
       w: "fit",
       h: "fit",
+      wUnit: "px",
+      hUnit: "px",
     }),
   });
 
@@ -46,6 +48,8 @@ export const PanelDimension: FC<{
     local.dim = responsiveVal<FNDimension>(value, "dim", mode, {
       w: "fit",
       h: "fit",
+      wUnit: "px",
+      hUnit: "px",
     });
     local.render();
   }, [value]);
@@ -118,8 +122,8 @@ export const PanelDimension: FC<{
             }
             enableWhenDrag
             disabled={dim.w === "fit" || dim.w === "full" ? dim.w : false}
-            value={dim.w + "px"}
-            unit="px"
+            value={dim.w + (dim.wUnit || "px")}
+            unit={dim.wUnit || "px"}
             update={(val, setVal) => {
               let _val = val;
               if (typeof dim.w !== "number" && setVal) {
@@ -203,23 +207,28 @@ export const PanelDimension: FC<{
               }}
             />
             <MenuItem
-              label="Custom"
+              label="Pixel"
               onClick={() => {
                 local.dim.w = local.activeWidth || 0;
-                if (false) {
-                  local.dim.h = local.activeWidth || 0;
-                  update("dim", {
-                    ...dim,
-                    w: local.activeWidth || 0,
-                    h: local.activeWidth || 0,
-                  });
-                } else {
-                  update("dim", {
-                    ...dim,
-                    w: local.dim.w,
-                    h: local.dim.h,
-                  });
-                }
+                local.dim.wUnit = "px";
+                update("dim", {
+                  ...dim,
+                  w: local.dim.w,
+                  h: local.dim.h,
+                });
+              }}
+            />
+            <MenuItem
+              label="Percent"
+              onClick={() => {
+                local.dim.w = local.activeWidth || 0;
+                local.dim.wUnit = "%";
+
+                update("dim", {
+                  ...dim,
+                  w: local.dim.w,
+                  h: local.dim.h,
+                });
               }}
             />
           </Menu>
@@ -271,7 +280,7 @@ export const PanelDimension: FC<{
 
           {dim.w !== "fit" && dim.w !== "full" && (
             <div className="w-[16px] h-[16px] flex items-center justify-center">
-              px
+              {dim.wUnit || "px"}
             </div>
           )}
         </Button>
@@ -304,8 +313,8 @@ export const PanelDimension: FC<{
             }
             disabled={dim.h === "fit" || dim.h === "full" ? dim.h : false}
             enableWhenDrag
-            value={dim.h + "px"}
-            unit="px"
+            value={dim.h + (dim.hUnit || "px")}
+            unit={dim.hUnit || "px"}
             update={(val, setVal) => {
               let _val = val;
               if (typeof dim.h !== "number" && setVal) {
@@ -352,60 +361,46 @@ export const PanelDimension: FC<{
               label="Fit"
               onClick={() => {
                 local.dim.h = "fit";
-                if (false) {
-                  local.dim.w = "fit";
-                  update("dim", {
-                    ...dim,
-                    w: "fit",
-                    h: "fit",
-                  });
-                } else {
-                  update("dim", {
-                    ...dim,
-                    w: local.dim.w,
-                    h: local.dim.h,
-                  });
-                }
+                update("dim", {
+                  ...dim,
+                  w: local.dim.w,
+                  h: local.dim.h,
+                });
               }}
             />
             <MenuItem
               label="Full"
               onClick={() => {
                 local.dim.h = "full";
-                if (false) {
-                  local.dim.w = "full";
-                  update("dim", {
-                    ...dim,
-                    w: "full",
-                    h: "full",
-                  });
-                } else {
-                  update("dim", {
-                    ...dim,
-                    w: local.dim.w,
-                    h: local.dim.h,
-                  });
-                }
+                update("dim", {
+                  ...dim,
+                  w: local.dim.w,
+                  h: local.dim.h,
+                });
               }}
             />
             <MenuItem
-              label="Custom"
+              label="Pixel"
               onClick={() => {
                 local.dim.h = local.activeHeight || 0;
-                if (false) {
-                  local.dim.w = local.activeHeight || 0;
-                  update("dim", {
-                    ...dim,
-                    h: local.activeHeight || 0,
-                    w: local.activeHeight || 0,
-                  });
-                } else {
-                  update("dim", {
-                    ...dim,
-                    w: local.dim.w,
-                    h: local.dim.h,
-                  });
-                }
+                local.dim.hUnit = "px";
+                update("dim", {
+                  ...dim,
+                  w: local.dim.w,
+                  h: local.dim.h,
+                });
+              }}
+            />
+            <MenuItem
+              label="Percent"
+              onClick={() => {
+                local.dim.h = local.activeHeight || 0;
+                local.dim.hUnit = "%";
+                update("dim", {
+                  ...dim,
+                  w: local.dim.w,
+                  h: local.dim.h,
+                });
               }}
             />
           </Menu>
@@ -466,7 +461,7 @@ export const PanelDimension: FC<{
 
           {dim.h !== "fit" && dim.h !== "full" && (
             <div className="w-[16px] h-[16px] flex items-center justify-center">
-              px
+              {dim.hUnit || "px"}
             </div>
           )}
         </Button>

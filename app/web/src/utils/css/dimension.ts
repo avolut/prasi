@@ -27,7 +27,7 @@ export const cssDimension = (
       typeof dim.w === "number" &&
       dim.w >= 0 &&
       `
-        width: ${dim.w}px;
+        width: ${dim.w}${dim.wUnit || "px"};
         overflow-x: clip;
       `,
     dim.h === "full" &&
@@ -45,7 +45,7 @@ export const cssDimension = (
       typeof dim.h === "number" &&
       dim.h >= 0 &&
       `
-        height: ${dim.h}px;
+        height: ${dim.h}${dim.hUnit || "px"};
         overflow-y: clip;
       `
   );
