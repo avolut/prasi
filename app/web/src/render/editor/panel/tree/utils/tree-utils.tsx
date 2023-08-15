@@ -66,62 +66,91 @@ export const onDrop = (
   let listItem = p.item.multiple;
   if (listItem.length) {
     // Multiple drop targets
-    if (!find(listItem, (e) => e === dropTargetId)) {
-      let listContent: any = listItem.map((e) => {
-        let mitem = p.treeMeta[e];
-        if (mitem) {
-          const jso = mitem.item.toJSON();
-          if (jso.type === "section") {
-            const newItem = {
-              id: jso.id,
-              name: jso.name,
-              type: "item",
-              dim: { w: "fit", h: "fit" },
-              childs: jso.childs,
-              component: get(jso, "component"),
-              adv: jso.adv,
-            } as IItem;
-            return newItem;
-          }
-          return jso;
-        }
-        {
-          return null;
-        }
-      });
-      let res = flatTree(listContent);
-      let mitem = p.treeMeta[dropTargetId];
-      if (mitem) {
-        const child: any = mitem.item.get("childs");
-        const type = mitem.item.get("type");
-        let select = [] as Array<MContent>;
-        if (type === "text") {
-          mitem.item.parent.forEach((e: MContent, idx: any) => {
-            res.map((e: any) => {
-              const map = newMap(fillID(e)) as MContent;
-              select = select.concat(map);
-              if (map) {
-                mitem.item.parent.insert(idx, [map]);
+    if (
+      dragSource?.data &&
+      (dropTarget?.data || dropTargetId === "root") &&
+      dropTarget
+    ) {
+      let from = p.treeMeta[dragSource.id];
+      let to = p.treeMeta[dropTarget.id];
+      if (from && to && p.mpage && dragSource.id !== dropTarget.id)
+        if (!find(listItem, (e) => e === dropTargetId)) {
+          const listContent: any = listItem.map((e) => {
+            let item = p.treeMeta[e];
+            if (item) {
+              if (item.item.get("type") === "section") {
+                const json = item.item.toJSON();
+                const newItem = {
+                  id: json.id,
+                  name: json.name,
+                  type: "item",
+                  dim: { w: "fit", h: "fit" },
+                  adv: json.adv,
+                  childs: json.childs || [],
+                  component: json.component,
+                } as IItem;
+                return newItem;
               }
-            });
+              return item.item.toJSON();
+            }
           });
-        } else {
-          res.map((e: any) => {
-            const map = newMap(fillID(e)) as MContent;
-            child.push([map]);
-            select = select.concat(map);
+          listItem.map((e) => {
+            let mitem = p.treeMeta[e];
+            if (mitem) {
+              const jso = mitem.item;
+              jso.parent.forEach((e, idx) => {
+                if (e === jso) {
+                  jso.parent.delete(idx);
+                }
+              });
+            }
           });
+          let res = flatTree(listContent);
+          let listMap = res.map((e: IContent) => newMap(fillID(e)));
+          listMap.map((e: MContent) => {
+            const titem = to.item;
+            const childs = titem.get("childs");
+            if (childs && childs.length - 1 >= (relativeIndex || 0)) {
+              childs?.insert(relativeIndex || 0, [e]);
+            } else {
+              childs?.push([e]);
+            }
+          });
+
+          // console.log(listInsert);
+          // if (jso.get("type") === "section") {
+          //   const json = jso.toJSON();
+          //   const newItem = {
+          //     id: json.id,
+          //     name: json.name,
+          //     type: "item",
+          //     dim: { w: "fit", h: "fit" },
+          //     adv: json.adv,
+          //     childs: json.childs || [],
+          //     component: json.component,
+          //   } as IItem;
+          //   insert = newMap(fillID(newItem)) as MContent;
+          // }
+          // if (dropTargetId !== "root") {
+          //   const titem = to.item;
+          //   if (titem) {
+          //     const childs = titem.get("childs");
+          //     if (childs && childs.length - 1 >= (relativeIndex || 0)) {
+          //       childs?.insert(relativeIndex || 0, [insert]);
+          //     } else {
+          //       childs?.push([insert]);
+          //     }
+          //   }
+          // } else {
+          //   if (p.mpage) {
+          //     const childs = p.mpage
+          //       .getMap("map")
+          //       .get("content_tree")
+          //       ?.get("childs");
+          //     childs?.insert(relativeIndex || 0, [insert]);
+          //   }
+          // }
         }
-        let tree: NodeModel<NodeContent>[] = [];
-        const comp: any = p.comps.doc[p.comp?.id || ""];
-        if (comp) {
-          tree = flattenTree(p, comp.getMap("map").get("content_tree"));
-        } else if (p.mpage) {
-          tree = flattenTree(p, p.mpage.getMap("map").get("content_tree"));
-        }
-        let iSelect = p.item.multiple;
-        filterFlatTree(iSelect, tree, p);
-      }
     }
   } else {
     // Single drop targets
@@ -264,17 +293,22 @@ export const selectMultiple = (
         break;
       case key === "shift":
         // console.log("shift");
-        let startIdx = findIndex(tree, (e) => e === listId[0]);
-        let endIdx = findIndex(
-          tree,
-          (e) => e === listItemId[listItemId.length - 1]
-        );
-        if (startIdx >= endIdx) {
-          endIdx = startIdx;
-          startIdx = findIndex(tree, (e) => e === listItemId[0]);
-        }
+        // let startIdx = findIndex(tree, (e) => e === listId[0]);
+        // let endIdx = findIndex(
+        //   tree,
+        //   (e) => e === listItemId[listItemId.length - 1]
+        // );
+        let listIdx: Array<any> = concat(listId, listItemId);
+        listIdx = listIdx.map((x) => {
+          return findIndex(tree, (e) => e === x);
+        });
+        // console.log(startIdx, endIdx);
+        // if (startIdx >= endIdx) {
+        //   endIdx = startIdx;
+        //   startIdx = findIndex(tree, (e) => e === listItemId[0]);
+        // }
         // console.log(listId);
-        listId = slice(tree, startIdx, endIdx + 1);
+        listId = slice(tree, Math.min(...listIdx), Math.max(...listIdx) + 1);
         // console.log(listId);
         break;
       default:

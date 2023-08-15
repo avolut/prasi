@@ -27,7 +27,6 @@ export const ERender: FC<{
     },
     [p.script.active, p.script.siteActive, p.item.active, item]
   );
-
   const childs = (item.type !== "text" ? item.childs : [])
     .filter((e) => {
       if (e.hidden === "all") return false;
