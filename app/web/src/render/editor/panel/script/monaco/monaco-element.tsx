@@ -127,27 +127,24 @@ export const ScriptMonacoElement: FC<{
             `
           )}
         >
-          <div className="flex items-center space-x-1">
-            <div className="pl-2">Wrap:</div>
+          <div className="flex items-center space-x-1 pl-1">
             <Button
               onClick={() => {
                 doEdit(
                   `\
-<div {...props}>
-  <Local
-    name="local"
-    value={
-      {
-        //local object
-      }
+<Local
+  name="local"
+  value={
+    {
+      //local object
     }
-    effect={async (local) => {
-      //local effect
-    }}
-  >
-    {children}
-  </Local>
-</div>
+  }
+  effect={async (local) => {
+    //local effect
+  }}
+>
+  {children}
+</Local>
                   `
                 );
               }}
