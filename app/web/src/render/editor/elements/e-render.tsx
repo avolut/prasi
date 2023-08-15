@@ -9,6 +9,7 @@ import { newPageComp } from "../logic/comp";
 import { EditorGlobal } from "../logic/global";
 import { ComponentOver, ElProp, createElProp } from "./e-relprop";
 import { scriptExec } from "./script-exec";
+import { ETextInternal } from "./e-text";
 
 export const ERender: FC<{
   item: IContent;
@@ -17,16 +18,6 @@ export const ERender: FC<{
 }> = ({ item, children, editComponentId }) => {
   const p = useGlobal(EditorGlobal, "EDITOR");
 
-  const focusText = useCallback(
-    (e: any) => {
-      if (!p.script.active && !p.script.siteActive) {
-        if (p.item.active === item.id && e && document.activeElement !== e) {
-          e.focus();
-        }
-      }
-    },
-    [p.script.active, p.script.siteActive, p.item.active, item]
-  );
   const childs = (item.type !== "text" ? item.childs : [])
     .filter((e) => {
       if (e.hidden === "all") return false;
@@ -156,44 +147,12 @@ export const ERender: FC<{
 
   if (item.type === "text") {
     return (
-      <div
-        className={cx(
-          className,
-          css`
-            user-select: all;
-            outline: none;
-            min-width: 3px !important;
-            min-height: 10px !important;
-          `
-        )}
-        ref={(e) => {
-          focusText(e);
-        }}
-        dangerouslySetInnerHTML={{ __html: _children || "" }}
-        contentEditable
-        spellCheck={false}
-        onBlur={(e) => {
-          p.focused = "";
-          p.render();
-        }}
-        onInput={(e) => {
-          if (p.focused !== item.id) {
-            p.focused = item.id;
-          }
-          const mitem = p.treeMeta[item.id]?.item;
-          if (mitem) {
-            if (e.currentTarget.innerText.trim() === "") {
-              mitem.set("html", "");
-            } else {
-              mitem.set("html", e.currentTarget.innerHTML);
-            }
-
-            if (p.item.active !== item.id) {
-              p.item.active = item.id;
-            }
-          }
-        }}
-        {...elprop}
+      <ETextInternal
+        className={className}
+        elprop={elprop}
+        item={item}
+        p={p}
+        _children={_children}
       />
     );
   }
