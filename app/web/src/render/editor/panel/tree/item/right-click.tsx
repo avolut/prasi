@@ -1,24 +1,24 @@
 import { NodeModel } from "@minoru/react-dnd-treeview";
+import { createId } from "@paralleldrive/cuid2";
 import get from "lodash.get";
 import { FC } from "react";
 import { useGlobal, useLocal } from "web-utils";
 import { syncronize } from "y-pojo";
+import * as Y from "yjs";
 import { IContent, MContent } from "../../../../../utils/types/general";
 import { IItem, MItem } from "../../../../../utils/types/item";
 import { FNComponent } from "../../../../../utils/types/meta-fn";
+import { IText } from "../../../../../utils/types/text";
 import { Menu, MenuItem } from "../../../../../utils/ui/context-menu";
-import { loadComponent } from "../../../logic/comp";
 import { EditorGlobal } from "../../../logic/global";
 import { fillID } from "../../../tools/fill-id";
 import { flatTree } from "../../../tools/flat-tree";
 import { newMap } from "../../../tools/yjs-tools";
 import { jscript } from "../../script/script-element";
 import { NodeContent, flattenTree } from "../utils/flatten";
-import { detachComp } from "./action/detach";
-import { createId } from "@paralleldrive/cuid2";
-import { IText } from "../../../../../utils/types/text";
 import { filterFlatTree } from "../utils/tree-utils";
-import * as Y from "yjs";
+import { detachComp } from "./action/detach";
+import { loadComponent } from "../../../logic/comp";
 
 export const ETreeRightClick: FC<{
   node: NodeModel<NodeContent>;
@@ -55,6 +55,60 @@ export const ETreeRightClick: FC<{
   } catch (error) {}
   return (
     <Menu mouseEvent={event} onClose={onClose}>
+      {type === "item" && (
+        <MenuItem
+          label="Attach Component"
+          onClick={() => {
+            const ccid = rootComp?.id;
+
+            const pick = () => {
+              p.manager.comp = true;
+              p.manager.compActionLabel = "Attach";
+              p.manager.compCallback = async (comp) => {
+                if (ccid && comp?.id === ccid) {
+                  alert(
+                    "WARNING: Failed to add self, preventing recursive component!"
+                  );
+                  setTimeout(() => {
+                    pick();
+                  }, 100);
+                  return;
+                }
+                if (mitem.doc) {
+                  let compitem = p.comps.doc[comp.id];
+
+                  if (!compitem) {
+                    await loadComponent(p, comp.id);
+                    compitem = p.comps.doc[comp.id];
+                  }
+                  mitem.doc.transact(() => {
+                    const citem = compitem
+                      .getMap("map")
+                      .get("content_tree")
+                      ?.toJSON() as IItem;
+
+                    if (citem) {
+                      syncronize(mitem as any, {
+                        id: citem.id,
+                        name: citem.name,
+                        childs: [],
+                        component: {
+                          id: citem.component?.id,
+                          props: {},
+                        },
+                        type: "item",
+                      });
+                    }
+                  });
+                  p.render();
+                }
+              };
+              p.render();
+            };
+            pick();
+          }}
+        />
+      )}
       {comp?.id && !isActiveComponent && (
         <MenuItem
           label="Detach"
@@ -70,54 +124,6 @@ export const ETreeRightClick: FC<{
                 jscript.build
               );
             }
-          }}
-        />
-      )}
-
-      {!comp?.id && type === "item" && (
-        <MenuItem
-          label="Replace with Component"
-          onClick={() => {
-            const ccid = rootComp?.id;
-
-            const pick = () => {
-              p.manager.comp = true;
-              p.manager.compCallback = (comp) => {
-                if (ccid && comp?.id === ccid) {
-                  alert(
-                    "WARNING: Failed to add self, preventing recursive component!"
-                  );
-                  setTimeout(() => {
-                    pick();
-                  }, 100);
-                  return;
-                }
-                if (p.mpage) {
-                  p.mpage.transact(async () => {
-                    if (comp) {
-                      let compitem = p.comps.doc[comp.id];
-                      if (!compitem) {
-                        await loadComponent(p, comp.id);
-                        compitem = p.comps.doc[comp.id];
-                      }
-
-                      syncronize(item as any, {
-                        id: comp.id,
-                        name: comp.name,
-                        childs: [],
-                        component: {
-                          id: comp.id,
-                          props: {},
-                        },
-                        type: type,
-                      });
-                    }
-                  });
-                }
-              };
-              p.render();
-            };
-            pick();
           }}
         />
       )}
