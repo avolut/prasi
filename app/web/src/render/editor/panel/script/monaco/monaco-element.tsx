@@ -306,7 +306,7 @@ export const ScriptMonacoElement: FC<{
               Custom CSS
             </Button>
           </div>
-          <div>
+          {/* <div>
             <Button
               onClick={() => {
                 // reloadCE(c);
@@ -316,7 +316,7 @@ export const ScriptMonacoElement: FC<{
               {navigator.userAgent.indexOf("Mac OS X") != -1 ? "⌘" : "Ctrl"} +
               S)
             </Button>
-          </div>
+          </div> */}
         </div>
       )}
 

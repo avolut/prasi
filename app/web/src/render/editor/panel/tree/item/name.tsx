@@ -74,6 +74,7 @@ const Renaming: FC<{
 
         if (
           !isComponent &&
+          itemComponent &&
           rootComponentID === itemComponent.id &&
           rootComponentID
         ) {

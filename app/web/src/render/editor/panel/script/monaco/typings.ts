@@ -29,7 +29,6 @@ export const monacoTypings = async (
   ]);
 
   if (w.prasiApi[p.site.api_url]) {
-    console.log(w.prasiApi[p.site.api_url]);
     for (const [k, v] of Object.entries(
       w.prasiApi[p.site.api_url].prismaTypes
     )) {

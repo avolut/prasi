@@ -55,8 +55,12 @@ export const extractProp = (prop: {
         propTypes.push(`const ${k}: ReactElement;`);
       } else {
         try {
+          let val = v.val;
+          if (typeof v.val === "object" && typeof v.val.render === "function") {
+            val = { ...v.val, render: () => {} };
+          }
           propTypes.push(
-            `const ${k} = ${JSON.stringify(v.val, typeStringify)
+            `const ${k} = ${JSON.stringify(val, typeStringify)
               .replaceAll('"___FFF||', "")
               .replaceAll('||FFF___"', "")};`
           );
