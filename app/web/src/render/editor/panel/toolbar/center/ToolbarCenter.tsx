@@ -114,6 +114,7 @@ export const ToolbarCenter = () => {
                   },
                 });
                 p.site_dts = (await api.site_dts(p.site.id)) || "";
+                p.render();
                 wsend(
                   p,
                   JSON.stringify({ type: "sitejs_reload", id: p.site?.id })
