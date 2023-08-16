@@ -20,8 +20,10 @@ export const routePreview = (p: PG, pathname: string) => {
         p.status = "not-found";
       } else {
         page_id = found.id;
-        for (const [k, v] of Object.entries(found)) {
-          w.params[k] = v;
+        if (found.params) {
+          for (const [k, v] of Object.entries(found.params)) {
+            w.params[k] = v;
+          }
         }
       }
     }
