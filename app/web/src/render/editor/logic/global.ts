@@ -55,6 +55,7 @@ export const EditorGlobal = {
     js: "",
     js_compiled: "",
   },
+  site_dts: "",
   page: null as null | {
     id: string;
     name: string;

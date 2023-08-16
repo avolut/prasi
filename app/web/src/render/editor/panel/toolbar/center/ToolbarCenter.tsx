@@ -113,11 +113,12 @@ export const ToolbarCenter = () => {
                     id: true,
                   },
                 });
+                p.site_dts = (await api.site_dts(p.site.id)) || "";
                 wsend(
                   p,
                   JSON.stringify({ type: "sitejs_reload", id: p.site?.id })
                 );
-              }, 600);
+              }, 1000);
             }}
             propTypes={{
               exports: "Record<string, any>",
@@ -218,7 +219,7 @@ export const ToolbarCenter = () => {
           {
             async onClick() {
               if (p.page) {
-                p.page.effects = {};
+                p.status = "init";
                 p.render();
               }
             },

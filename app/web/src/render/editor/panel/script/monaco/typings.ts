@@ -47,10 +47,7 @@ export const monacoTypings = async (
     },
     {
       filePath: "site.d.ts",
-      content: ((await api.site_dts(p.site.id)) || "").replaceAll(
-        "export declare const",
-        "declare const"
-      ),
+      content: p.site_dts.replaceAll("export declare const", "declare const"),
     },
   ]);
 

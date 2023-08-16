@@ -48,6 +48,7 @@ export const initEditor = async (p: PG, site_id: string) => {
       p.site.name = site.name;
       p.site.domain = site.domain;
       p.site.api_url = await initApi(site.config);
+      p.site_dts = (await api.site_dts(p.site.id)) || "";
       const configLocal: any = get(site, "config.prasi");
       if (configLocal) {
         p.site.api_prasi.db = configLocal.dburl ? configLocal.dburl : "";
