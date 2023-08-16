@@ -3,7 +3,7 @@ import { FC } from "react";
 export const SPA: FC<{}> = () => {
   return (
     <div>
-      <>Hello SPA</>
+      <>Hello mnasif ini gila</>
     </div>
   );
 };

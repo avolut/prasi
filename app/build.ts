@@ -30,7 +30,11 @@ const buildSPA = async (mode: string) => {
     },
     external: ["react", "react/jsx-runtime"],
     banner: {
-      js: `if (typeof isSSR === 'undefined') window.isSSR = false;`,
+      js: `\
+if (typeof isSSR === 'undefined') {
+  if (typeof window !== 'undefined') window.isSSR = false;
+  else if (typeof globalThis !== 'undefined') globalThis.isSSR = false;
+}`,
     },
   });
   if (mode === "dev") {
