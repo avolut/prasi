@@ -187,6 +187,13 @@ export const site_load = {
   args: ["name","_page"],
   handler: import("../../../srv/api/site-load")
 }
+export const spa = {
+  name: "spa",
+  url: "/spa",
+  path: "app/srv/api/spa.ts",
+  args: [],
+  handler: import("../../../srv/api/spa")
+}
 export const srv_image_gallery = {
   name: "srv_image_gallery",
   url: "/get-gallery/:site_id",

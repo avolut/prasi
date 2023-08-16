@@ -37138,7 +37138,7 @@ ERROR: Async operation of type "${type}" was created in "process.exit" callback.
   __export(build_exports, {
     build: () => build
   });
-  var import_esbuild2, import_fs_jetpack17, build;
+  var import_esbuild2, import_fs_jetpack17, build, buildSPA, buildSSR;
   var init_build = __esm({
     "app/build.ts"() {
       "use strict";
@@ -37156,6 +37156,32 @@ ERROR: Async operation of type "${type}" was created in "process.exit" callback.
             }
           );
         }
+        await buildSPA(mode);
+        await buildSSR(mode);
+      };
+      buildSPA = async (mode) => {
+        const ctx = await (0, import_esbuild2.context)({
+          bundle: true,
+          entryPoints: [dir.root("app/web/src/render/spa/spa.tsx")],
+          outfile: dir.root(".output/app/srv/spa/index.jsx"),
+          format: "esm",
+          jsx: "transform",
+          logLevel: "silent",
+          define: {
+            "process.env.NODE_ENV": `"production"`
+          },
+          external: ["react", "react/jsx-runtime"],
+          banner: {
+            js: `if (typeof isSSR === 'undefined') window.isSSR = false;`
+          }
+        });
+        if (mode === "dev") {
+          await ctx.watch({});
+        } else {
+          await ctx.rebuild();
+        }
+      };
+      buildSSR = async (mode) => {
         const ctx = await (0, import_esbuild2.context)({
           bundle: true,
           entryPoints: [dir.root("app/web/src/render/ssr/ssr.tsx")],

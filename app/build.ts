@@ -13,7 +13,34 @@ export const build = async (mode: string) => {
       }
     );
   }
+  await buildSPA(mode);
+  await buildSSR(mode);
+};
 
+const buildSPA = async (mode: string) => {
+  const ctx = await context({
+    bundle: true,
+    entryPoints: [dir.root("app/web/src/render/spa/spa.tsx")],
+    outfile: dir.root(".output/app/srv/spa/index.jsx"),
+    format: "esm",
+    jsx: "transform",
+    logLevel: "silent",
+    define: {
+      "process.env.NODE_ENV": `"production"`,
+    },
+    external: ["react", "react/jsx-runtime"],
+    banner: {
+      js: `if (typeof isSSR === 'undefined') window.isSSR = false;`,
+    },
+  });
+  if (mode === "dev") {
+    await ctx.watch({});
+  } else {
+    await ctx.rebuild();
+  }
+};
+
+const buildSSR = async (mode: string) => {
   const ctx = await context({
     bundle: true,
     entryPoints: [dir.root("app/web/src/render/ssr/ssr.tsx")],
