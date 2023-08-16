@@ -32,7 +32,7 @@ export const Preview: FC<{
       if (newmode !== p.mode) {
         p.status = "init";
         p.mode = newmode;
-        p.render();
+        p.render(true);
       }
     });
   }, []);

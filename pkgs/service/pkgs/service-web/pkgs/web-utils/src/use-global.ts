@@ -18,7 +18,7 @@ export const GlobalContext = createContext({
   ssrShouldRender: false,
 } as {
   global: Record<string, any>;
-  render: () => void;
+  render: (reset?: boolean) => void;
 });
 export const uState = useState;
 export const useGlobal = <T extends object>(
@@ -27,7 +27,7 @@ export const useGlobal = <T extends object>(
     | (() => Promise<void | (() => void)> | void | (() => void))
     | string,
   id?: string
-): T & { render: () => void } => {
+): T & { render: (reset?: boolean) => void } => {
   if (!w.globalValueID) w.globalValueID = new WeakMap();
 
   let _id = (typeof effectOrID === "string" ? effectOrID : id) as string;
@@ -68,7 +68,10 @@ export const useGlobal = <T extends object>(
   }, []);
 
   const res = global[_id];
-  res.render = () => {
+  res.render = (reset?: boolean) => {
+    if (reset) {
+      global[_id] = undefined;
+    }
     if (isSSR) {
       render();
     } else {
