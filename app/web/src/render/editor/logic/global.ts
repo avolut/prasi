@@ -72,7 +72,7 @@ export const EditorGlobal = {
     backTo: "",
     backToComp: null as any,
     edit: false,
-    preview: true,
+    inherit: true,
   },
   compEdits: [] as IItem[],
 

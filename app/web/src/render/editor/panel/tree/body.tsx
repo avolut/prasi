@@ -76,7 +76,6 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[] }> = ({ tree }) => {
               const id = item.get("id");
               if (id) {
                 if (id !== "root") open.add(id);
-                console.log(id);
               }
               if (item.parent && item.parent.parent) {
                 walkParent(item.parent.parent);

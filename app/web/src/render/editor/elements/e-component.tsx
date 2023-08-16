@@ -57,12 +57,13 @@ export const EComponent: FC<{
     if (contentTree && cid && instanceId) {
       const citem = contentTree.toJSON() as IItem;
       citem.id = item.id;
-      if (p.compProp.preview && item.component && citem.component) {
+      if (p.compProp.inherit && item.component && citem.component) {
         for (const [k, v] of Object.entries(item.component.props)) {
           citem.component.props[k] = v;
         }
+        citem.nprops = item.nprops;
       }
-      getRenderPropVal(props, citem, p); 
+      getRenderPropVal(props, citem, p);
 
       return (
         <>

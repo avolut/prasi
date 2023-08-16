@@ -141,15 +141,15 @@ export const PreviewItemProp = () => {
     <div
       className="flex text-xs space-x-1 mr-1 cursor-pointer hover:text-blue-500 items-center"
       onClick={() => {
-        p.compProp.preview = !p.compProp.preview;
+        p.compProp.inherit = !p.compProp.inherit;
         p.render();
       }}
     >
       <div>
-        {p.compProp.preview ? <>Prop Inherited</> : <>No Inheritance</>}
+        {p.compProp.inherit ? <>Prop Inherited</> : <>No Inheritance</>}
       </div>
       <div>
-        {!p.compProp.preview ? (
+        {!p.compProp.inherit ? (
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="20"
