@@ -5,6 +5,7 @@ import { previewWS, wsend } from "./ws";
 import importModule from "../../editor/tools/dynamic-import";
 import { WS_MSG_GET_PAGE } from "../../../utils/types/ws";
 import { validate } from "uuid";
+import { w } from "../../../utils/types/general";
 
 export const pageNpmStatus: Record<string, "loaded" | "loading"> = {};
 
@@ -19,6 +20,9 @@ export const routePreview = (p: PG, pathname: string) => {
         p.status = "not-found";
       } else {
         page_id = found.id;
+        for (const [k, v] of Object.entries(found)) {
+          w.params[k] = v;
+        }
       }
     }
 
