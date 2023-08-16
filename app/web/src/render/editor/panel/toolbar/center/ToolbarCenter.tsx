@@ -176,9 +176,10 @@ export const ToolbarCenter = () => {
                       local.render();
                     }}
                   />
-                }
+                } 
                 onOpenChange={(open) => {
                   local.apiConfigOpen = open;
+                  local.render();
                   checkApi();
                 }}
               >
