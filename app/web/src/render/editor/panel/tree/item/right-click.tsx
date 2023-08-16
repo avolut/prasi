@@ -60,6 +60,7 @@ export const ETreeRightClick: FC<{
           label="Attach Component"
           onClick={() => {
             const ccid = rootComp?.id;
+            p.item.active = item.id;
 
             const pick = () => {
               p.manager.comp = true;
