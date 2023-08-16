@@ -54,6 +54,7 @@ export const ERender: FC<{
                 if (item.nprops) {
                   comp.nprops = item.nprops;
                 }
+
                 meta.comp = comp;
                 return comp;
               }

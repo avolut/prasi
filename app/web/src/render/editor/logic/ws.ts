@@ -140,6 +140,15 @@ export const editorWS = async (p: PG) => {
                   "update",
                   throttle((e, origin) => {
                     if (origin === "remote") {
+                      for (const meta of Object.values(p.treeMeta)) {
+                        if (
+                          meta.item.type === "item" &&
+                          meta.item.component?.id === msg.comp_id
+                        ) {
+                          delete meta.comp;
+                        }
+                      }
+
                       render();
                       return;
                     }

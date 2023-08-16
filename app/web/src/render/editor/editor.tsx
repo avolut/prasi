@@ -57,6 +57,11 @@ export const Editor: FC<{ site_id: string; page_id: string; session: any }> = ({
     };
   }, []);
 
+  useEffect(() => {
+    p.treeMeta = {};
+    p.render();
+  }, [page_id]);
+
   if (!p.mode) {
     p.mode = (localStorage.getItem("editor-mode") || "desktop") as any;
   }

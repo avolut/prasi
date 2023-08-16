@@ -74,7 +74,10 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[] }> = ({ tree }) => {
             const walkParent = (item: any) => {
               if (!item) return;
               const id = item.get("id");
-              if (id !== "root") open.add(id);
+              if (id) {
+                if (id !== "root") open.add(id);
+                console.log(id);
+              }
               if (item.parent && item.parent.parent) {
                 walkParent(item.parent.parent);
               }
@@ -90,10 +93,6 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[] }> = ({ tree }) => {
     if (p.comp && p.comp.id) {
       const open = new Set<any>();
       open.add(tree[0].id);
-
-      for (const item of (tree[0].data?.content as any).childs) {
-        open.add(item.id);
-      }
       local.method?.open([...open]);
     }
   }, [p.comp?.id, local.method]);

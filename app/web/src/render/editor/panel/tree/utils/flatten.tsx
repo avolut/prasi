@@ -18,17 +18,14 @@ export const flattenTree = (
 ) => {
   const result: NodeModel<NodeContent>[] = [];
   if (content && p.page) {
-    p.treeMeta = {};
-
     const walk = (mitem: MContent, parent_id: string, idx: number) => {
       const item = mitem.toJSON() as IContent;
-      if (p.treeMeta[item.id]) {
-        console.log(`warning: duplicate id: ${item.id}`);
+      if (!p.treeMeta[item.id]) {
+        p.treeMeta[item.id] = {
+          mitem: mitem,
+          item,
+        };
       }
-      p.treeMeta[item.id] = {
-        mitem: mitem,
-        item,
-      };
       result.push({
         id: item.id,
         parent: parent_id,

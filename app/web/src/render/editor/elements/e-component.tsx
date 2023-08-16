@@ -62,7 +62,7 @@ export const EComponent: FC<{
           citem.component.props[k] = v;
         }
       }
-      getRenderPropVal(props, citem, p);
+      getRenderPropVal(props, citem, p); 
 
       return (
         <>
@@ -153,5 +153,4 @@ export const getRenderPropVal = (
       item.nprops[k] = v;
     }
   }
-
 };
