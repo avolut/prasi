@@ -180,8 +180,11 @@ export const previewWS = async (p: PG) => {
                 `🔥 Site JS Reloaded: ${new Date().toLocaleString()}`
               );
               exec(p.site.js, scope);
-              for (const [k, v] of Object.entries(scope.module.exports)) {
-                w.exports[k] = v;
+
+              if (scope.module.exports) {
+                for (const [k, v] of Object.entries(scope.module.exports)) {
+                  w.exports[k] = v;
+                }
               }
 
               p.render();

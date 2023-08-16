@@ -90,8 +90,10 @@ export const initPreview = async (p: PG, domain: string) => {
       };
       exec(p.site.js, scope);
 
-      for (const [k, v] of Object.entries(scope.module.exports)) {
-        w.exports[k] = v;
+      if (scope.module.exports) {
+        for (const [k, v] of Object.entries(scope.module.exports)) {
+          w.exports[k] = v;
+        }
       }
 
       p.route = createRouter();
