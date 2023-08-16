@@ -139,19 +139,19 @@ export const editorWS = async (p: PG) => {
                 p.comps.doc[msg.comp_id].on(
                   "update",
                   throttle((e, origin) => {
-                    if (origin === "remote") {
-                      for (const meta of Object.values(p.treeMeta)) {
-                        if (
-                          meta.item.type === "item" &&
-                          meta.item.component?.id === msg.comp_id
-                        ) {
-                          delete meta.comp;
-                        }
+                    for (const meta of Object.values(p.treeMeta)) {
+                      if (
+                        meta.item.type === "item" &&
+                        meta.item.component?.id === msg.comp_id
+                      ) {
+                        delete meta.comp;
                       }
-
-                      render();
+                    }
+                    render();
+                    if (origin === "remote") {
                       return;
                     }
+
                     const doc = p.comps.doc[msg.comp_id];
                     if (doc) {
                       if (!origin && origin !== "updated_at") {
