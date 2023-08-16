@@ -15,6 +15,7 @@ import {
 } from "../../../utils/types/ws";
 import { PRASI_COMPONENT } from "../../../utils/types/render";
 import { MPage } from "../../../utils/types/general";
+import { execSiteJS } from "./init";
 
 export const editorWS = async (p: PG) => {
   if (p.ws && p.ws.readyState === p.ws.OPEN) {
@@ -183,6 +184,13 @@ export const editorWS = async (p: PG) => {
                 delete p.comps.pending[msg.comp_id];
               }
             }
+            break;
+          case "sitejs_reload":
+            p.site_dts = (await api.site_dts(p.site.id)) || "";
+            p.site.js = msg.js || "";
+            execSiteJS(p);
+            console.log(`🔥 Site JS Reloaded: ${new Date().toLocaleString()}`);
+            p.render();
             break;
           case "undo":
           case "redo":
