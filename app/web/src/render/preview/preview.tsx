@@ -30,6 +30,7 @@ export const Preview: FC<{
       else newmode = "desktop";
 
       if (newmode !== p.mode) {
+        p.status = "init";
         p.mode = newmode;
         p.render();
       }
