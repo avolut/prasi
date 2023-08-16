@@ -15,7 +15,7 @@ import {
   WS_MSG_SVDIFF_REMOTE,
 } from "../../../utils/types/ws";
 import { scanComponent } from "./comp";
-import { createAPI, createDB } from "../../../utils/script/api";
+import { createAPI, createDB } from "../../../utils/script/init-api";
 import importModule from "../../editor/tools/dynamic-import";
 
 export const previewWS = async (p: PG) => {
@@ -169,6 +169,9 @@ export const previewWS = async (p: PG) => {
                 exports: w.exports,
                 load: importModule,
                 render: p.render,
+                module: {
+                  exports: {} as any,
+                },
               };
 
               p.status = "init";
@@ -177,6 +180,9 @@ export const previewWS = async (p: PG) => {
                 `🔥 Site JS Reloaded: ${new Date().toLocaleString()}`
               );
               exec(p.site.js, scope);
+              for (const [k, v] of Object.entries(scope.module.exports)) {
+                w.exports[k] = v;
+              }
 
               p.render();
             }

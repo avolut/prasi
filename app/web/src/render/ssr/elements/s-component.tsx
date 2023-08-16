@@ -6,7 +6,7 @@ import { PG, SSRGlobal } from "../logic/global";
 import { SItem } from "./s-item";
 import { SRender } from "./s-render";
 import { SText } from "./s-text";
-import { createAPI, createDB } from "../../../utils/script/api";
+import { createAPI, createDB } from "../../../utils/script/init-api";
 
 export const SComponent: FC<{
   item: IItem;

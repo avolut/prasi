@@ -13,7 +13,7 @@ import { AddElement } from "./AddElement";
 import { NPMImport } from "./NPMImport";
 import { APIConfig } from "./api/APIConfig";
 import { useEffect } from "react";
-import { reloadDBAPI } from "../../../../../utils/script/api";
+import { reloadDBAPI } from "../../../../../utils/script/init-api";
 import { w } from "../../../../../utils/types/general";
 const ua = navigator.userAgent.toLowerCase();
 const isMac =

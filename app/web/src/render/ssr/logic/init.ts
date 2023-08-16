@@ -1,6 +1,6 @@
 import { ReactElement } from "react";
 import { renderToString } from "react-dom/server";
-import { createAPI, createDB, initApi } from "../../../utils/script/api";
+import { createAPI, createDB, initApi } from "../../../utils/script/init-api";
 import importModule from "../../editor/tools/dynamic-import";
 import { PG } from "./global";
 
@@ -64,8 +64,15 @@ export const initSSR = async (p: PG) => {
         exports: w.exports,
         load: importModule,
         render: p.render,
+        module: {
+          exports: {} as any,
+        },
       };
       if (p.site.js) exec(p.site.js, scope);
+      for (const [k, v] of Object.entries(scope.module.exports)) {
+        w.exports[k] = v;
+      }
+
       p.status = "ready";
       p.render();
     } else {

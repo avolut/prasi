@@ -1,5 +1,5 @@
 import get from "lodash.get";
-import { createAPI, createDB, initApi } from "../../../utils/script/api";
+import { createAPI, createDB, initApi } from "../../../utils/script/init-api";
 import importModule from "../tools/dynamic-import";
 import { PG } from "./global";
 
@@ -67,17 +67,26 @@ export const initEditor = async (p: PG, site_id: string) => {
 export const execSiteJS = (p: PG) => {
   if (p) {
     p.script.siteTypes = {};
-    const scopes: any = {
+    const scope: any = {
       types: p.script.siteTypes,
       exports: w.exports,
       load: importModule,
       render: p.render,
+      module: {
+        exports: {} as any,
+      },
     };
+
     const fn = p.site.js_compiled;
-    scopes["api"] = createAPI(p.site.api_url);
-    scopes["db"] = createDB(p.site.api_url);
-    const f = new Function(...Object.keys(scopes), fn);
-    const res = f(...Object.values(scopes));
+    scope["api"] = createAPI(p.site.api_url);
+    scope["db"] = createDB(p.site.api_url);
+    const f = new Function(...Object.keys(scope), fn);
+    const res = f(...Object.values(scope));
+
+    for (const [k, v] of Object.entries(scope.module.exports)) {
+      w.exports[k] = v;
+    }
+
     return res;
   }
   return null;

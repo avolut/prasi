@@ -26,12 +26,12 @@ export const _img = {
   args: [],
   handler: import("../../../srv/api/built-in/_img")
 }
-export const _parsejs = {
-  name: "_parsejs",
-  url: "/_parsejs",
-  path: "app/srv/api/built-in/_parsejs.ts",
+export const _parse_db = {
+  name: "_parse_db",
+  url: "/_parse/db",
+  path: "app/srv/api/built-in/_parse-db.ts",
   args: ["js"],
-  handler: import("../../../srv/api/built-in/_parsejs")
+  handler: import("../../../srv/api/built-in/_parse-db")
 }
 export const _upload = {
   name: "_upload",
@@ -172,6 +172,13 @@ export const npm = {
   path: "app/srv/api/npm.ts",
   args: ["mode","id"],
   handler: import("../../../srv/api/npm")
+}
+export const site_dts = {
+  name: "site_dts",
+  url: "/site-dts/:site_id",
+  path: "app/srv/api/site-dts.ts",
+  args: ["site_id"],
+  handler: import("../../../srv/api/site-dts")
 }
 export const site_load = {
   name: "site_load",

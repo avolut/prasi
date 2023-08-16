@@ -5,7 +5,7 @@ import { IContent } from "../../../utils/types/general";
 import { PG } from "../logic/global";
 import { SItem } from "./s-item";
 import { SText } from "./s-text";
-import { createAPI, createDB } from "../../../utils/script/api";
+import { createAPI, createDB } from "../../../utils/script/init-api";
 import { w } from "../logic/window";
 
 type JsArg = {

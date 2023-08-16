@@ -5,7 +5,7 @@ import { IContent, w } from "../../../utils/types/general";
 import { PG } from "../logic/global";
 import { PItem } from "./p-item";
 import { PText } from "./p-text";
-import { createAPI, createDB } from "../../../utils/script/api";
+import { createAPI, createDB } from "../../../utils/script/init-api";
 
 type JsArg = {
   p: PG;

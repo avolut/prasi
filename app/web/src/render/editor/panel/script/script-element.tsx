@@ -2,16 +2,16 @@ import type { Editor as MonacoEditor } from "@monaco-editor/react";
 import type { BuildOptions } from "esbuild-wasm";
 import { FC } from "react";
 import { useGlobal } from "web-utils";
-import { initJS } from "./monaco/init";
-import { Modal } from "../../../../utils/ui/modal";
+import * as Y from "yjs";
 import { Loading } from "../../../../utils/ui/loading";
+import { Modal } from "../../../../utils/ui/modal";
 import { EditorGlobal } from "../../logic/global";
+import { initJS } from "./monaco/init";
 import {
   DefaultScript,
   FBuild,
   ScriptMonacoElement,
 } from "./monaco/monaco-element";
-import * as Y from "yjs";
 
 export const jscript = {
   editor: null as typeof MonacoEditor | null,
@@ -22,6 +22,7 @@ export const jscript = {
       this._init = true;
       const { sendIPC } = await import("./esbuild/ipc");
       await initJS();
+
       this.build = async (entry, src, files) => {
         const options: BuildOptions = {
           entryPoints: [entry],

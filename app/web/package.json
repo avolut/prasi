@@ -11,7 +11,7 @@
     "@minoru/react-dnd-treeview": "^3.4.4",
     "@monaco-editor/react": "^4.5.1",
     "@paralleldrive/cuid2": "2.2.1",
-    "@swc/core": "^1.3.62",
+    "@swc/wasm-web": "^1.3.76",
     "@tuplo/use-calendar": "^1.6.3",
     "@types/lodash.concat": "^4.5.7",
     "@types/lodash.find": "^4.6.7",

@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { useGlobal, useLocal } from "web-utils";
 import { EditorGlobal } from "../../../../logic/global";
-import { initApi } from "../../../../../../utils/script/api";
+import { initApi } from "../../../../../../utils/script/init-api";
 import { Loading } from "../../../../../../utils/ui/loading";
 import { ExternalAPI } from "./External";
 import { InternalAPI } from "./Internal";

@@ -378,14 +378,13 @@ export const ScriptMonacoElement: FC<{
             }
 
             const propVal: any = {
-              ...(window.exports || {}),
               ...p.treeMeta[p.item.active].item.nprops,
             };
 
             const propTypes: any = p.script.siteTypes;
 
             await jsMount(editor, monaco);
-            await monacoTypings(p, editor, monaco, {
+            await monacoTypings(p, monaco, {
               values: propVal,
               types: propTypes,
             });

@@ -7,7 +7,7 @@ import {
 } from "react";
 import { ErrorBoundary } from "web-init/src/web/error-boundary";
 import { useLocal } from "web-utils";
-import { createAPI, createDB } from "../../../utils/script/api";
+import { createAPI, createDB } from "../../../utils/script/init-api";
 import { IContent } from "../../../utils/types/general";
 import { PG } from "../logic/global";
 import { EItem } from "./e-item";

@@ -14,8 +14,8 @@ export const _img = {
   url: "/_img/**",
   args: [],
 }
-export const _parsejs = {
-  url: "/_parsejs",
+export const _parse_db = {
+  url: "/_parse/db",
   args: ["js"],
 }
 export const _upload = {
@@ -97,6 +97,10 @@ export const npm_size = {
 export const npm = {
   url: "/npm/:mode/:id/*",
   args: ["mode","id"],
+}
+export const site_dts = {
+  url: "/site-dts/:site_id",
+  args: ["site_id"],
 }
 export const site_load = {
   url: "/site-load",

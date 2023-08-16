@@ -15,7 +15,7 @@ export type ParsedQuery = {
 };
 
 export const _ = {
-  url: "/_parsejs",
+  url: "/_parse/db",
   async api(js: string) {
     const { req, res } = apiContext(this);
 

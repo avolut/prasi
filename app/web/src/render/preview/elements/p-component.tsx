@@ -8,7 +8,7 @@ import { PItem } from "./p-item";
 import { PRender } from "./p-render";
 import { PText } from "./p-text";
 import { loadComponent } from "../logic/comp";
-import { createAPI, createDB } from "../../../utils/script/api";
+import { createAPI, createDB } from "../../../utils/script/init-api";
 
 export const PComponent: FC<{
   item: IItem;

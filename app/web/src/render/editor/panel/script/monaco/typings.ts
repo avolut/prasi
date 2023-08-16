@@ -6,26 +6,18 @@ import { extractProp } from "./types/prop";
 export type MonacoEditor = Parameters<OnMount>[0];
 type Monaco = Parameters<OnMount>[1];
 
+const map = new WeakMap<any>();
+
 export const monacoTypings = async (
   p: PG,
-  editor: MonacoEditor,
   monaco: Monaco,
   prop: { values: Record<string, any>; types: Record<string, string> }
 ) => {
-  monaco.languages.typescript.typescriptDefaults.setExtraLibs([
-    {
-      filePath: "react.d.ts",
-      content: await loadText(
-        "https://cdn.jsdelivr.net/npm/@types/react@18.2.0/index.d.ts"
-      ),
-    },
-    {
-      filePath: "jsx-runtime.d.ts",
-      content: await loadText(
-        "https://cdn.jsdelivr.net/npm/@types/react@18.2.0/jsx-runtime.d.ts"
-      ),
-    },
-  ]);
+  if (!map.has(prop.values)) {
+    map.set(prop.values, true);
+  } else {
+    return;
+  }
 
   if (w.prasiApi[p.site.api_url]) {
     for (const [k, v] of Object.entries(
@@ -39,6 +31,28 @@ export const monacoTypings = async (
     }
     register(monaco, w.prasiApi[p.site.api_url].apiTypes, "ts:api.d.ts");
   }
+
+  monaco.languages.typescript.typescriptDefaults.setExtraLibs([
+    {
+      filePath: "react.d.ts",
+      content: await loadText(
+        "https://cdn.jsdelivr.net/npm/@types/react@18.2.0/index.d.ts"
+      ),
+    },
+    {
+      filePath: "jsx-runtime.d.ts",
+      content: await loadText(
+        "https://cdn.jsdelivr.net/npm/@types/react@18.2.0/jsx-runtime.d.ts"
+      ),
+    },
+    {
+      filePath: "site.d.ts",
+      content: ((await api.site_dts(p.site.id)) || "").replaceAll(
+        "export declare const",
+        "declare const"
+      ),
+    },
+  ]);
 
   const propText = extractProp(prop);
   register(
@@ -61,8 +75,12 @@ declare global {
 };
 
 const loadText = async (url: string) => {
-  const res = await fetch(url);
-  return await res.text();
+  try {
+    const res = await fetch(url);
+    return await res.text();
+  } catch (e) {
+    return "";
+  }
 };
 
 export const iftext = (condition: any, text: string) => {

@@ -1,6 +1,6 @@
 import { validate } from "uuid";
 import { createRouter } from "web-init";
-import { createAPI, createDB, initApi } from "../../../utils/script/api";
+import { createAPI, createDB, initApi } from "../../../utils/script/init-api";
 import importModule from "../../editor/tools/dynamic-import";
 import { PG } from "./global";
 
@@ -72,6 +72,7 @@ export const initPreview = async (p: PG, domain: string) => {
           scopes["api"] = createAPI(p.site.api_url);
           scopes["db"] = createDB(p.site.api_url);
           scopes.params = w.params;
+          scopes.module = {};
           const f = new Function(...Object.keys(scopes), fn);
           const res = f(...Object.values(scopes));
           return res;
@@ -83,8 +84,15 @@ export const initPreview = async (p: PG, domain: string) => {
         exports: w.exports,
         load: importModule,
         render: p.render,
+        module: {
+          exports: {} as any,
+        },
       };
       exec(p.site.js, scope);
+
+      for (const [k, v] of Object.entries(scope.module.exports)) {
+        w.exports[k] = v;
+      }
 
       p.route = createRouter();
       if (pages.length > 0) {
