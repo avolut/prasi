@@ -55,12 +55,18 @@ export const extractProp = (prop: {
       } else {
         try {
           let val = v.val;
-          if (typeof v.val === "object" && typeof v.val.render === "function") {
-            val = { ...v.val, render: () => {} };
+
+          if (typeof val === "object") {
+            if (typeof val.render === "function") {
+              val = { ...val, render: () => {} };
+            }
+
+            propTypes.push(
+              `const ${k} = null as unknown as ${recurseTypes(val)};`
+            );
+          } else {
+            propTypes.push(`const ${k} = null as unknown as string;`);
           }
-          propTypes.push(
-            `const ${k} = null as unknown as ${recurseTypes(v.val)};`
-          );
         } catch (e) {}
       }
     }
@@ -72,12 +78,14 @@ export const extractProp = (prop: {
 function recurseTypes(object: any) {
   const result: string[] = [];
   if (typeof object === "object") {
+    if (object === null) return "null";
     if (Array.isArray(object)) {
       return `any[];`;
     }
+
     for (const [k, v] of Object.entries(object)) {
       result.push(
-        `${k}: ${typeof v === "object" ? recurseTypes(v) : typeof v}`
+        `${k}: ${typeof v === "object" && v ? recurseTypes(v) : typeof v}`
       );
     }
 

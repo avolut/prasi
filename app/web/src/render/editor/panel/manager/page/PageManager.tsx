@@ -498,9 +498,12 @@ export const PageManager = () => {
                                   await db.page.create({
                                     data: page,
                                   });
+
+                                  local.page.data = null;
+                                  data.all = [];
+                                  local.loading = false;
                                   await reloadPages();
                                   local.init = false;
-                                  local.loading = false;
                                   local.render();
                                 }
                               }}
@@ -540,10 +543,12 @@ export const PageManager = () => {
                                         is_deleted: true,
                                       },
                                     });
-                                    await reloadPages();
 
-                                    local.init = false;
+                                    local.page.data = null;
+                                    data.all = [];
                                     local.loading = false;
+                                    await reloadPages();
+                                    local.init = false;
                                     local.render();
                                   }
                                 }
