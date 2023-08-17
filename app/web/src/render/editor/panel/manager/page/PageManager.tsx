@@ -330,7 +330,7 @@ export const PageManager = () => {
                         const page = node.data;
                         if (page && page.id) {
                           p.manager.page = false;
-                          navigate(`/ed/${page.id_site}/${page.id}`);
+                          navigate(`/editor/${page.id_site}/${page.id}`);
                         }
                       }
                     }}

@@ -118,7 +118,7 @@ export const SiteManager = () => {
                               `
                             )}
                             onClick={() => {
-                              location.href = `/ed/${e.id}`;
+                              location.href = `/editor/${e.id}`;
                             }}
                           >
                             <div>{e.name}</div>

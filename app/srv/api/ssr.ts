@@ -26,7 +26,7 @@ export const _ = {
     },
     exports: any
   ) {
-    const { req, res, mode } = apiContext(this);
+    const { req, mode } = apiContext(this);
 
     if (!site_id && !page_id) {
       return `NOT FOUND`;

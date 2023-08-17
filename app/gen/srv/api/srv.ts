@@ -173,6 +173,13 @@ export const npm = {
   args: ["mode","id"],
   handler: import("../../../srv/api/npm")
 }
+export const site_bundle = {
+  name: "site_bundle",
+  url: "/site-bundle",
+  path: "app/srv/api/site-bundle.ts",
+  args: [],
+  handler: import("../../../srv/api/site-bundle")
+}
 export const site_dts = {
   name: "site_dts",
   url: "/site-dts/:site_id",

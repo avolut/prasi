@@ -98,6 +98,10 @@ export const npm = {
   url: "/npm/:mode/:id/*",
   args: ["mode","id"],
 }
+export const site_bundle = {
+  url: "/site-bundle",
+  args: [],
+}
 export const site_dts = {
   url: "/site-dts/:site_id",
   args: ["site_id"],

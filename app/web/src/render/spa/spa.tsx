@@ -3,7 +3,7 @@ import { FC } from "react";
 export const SPA: FC<{}> = () => {
   return (
     <div>
-      <>Hello mnasif ini gila</>
+      <>Hello ini bisa menjadi konten generator yang baik dan bagus </>
     </div>
   );
 };
