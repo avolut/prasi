@@ -379,16 +379,10 @@ export const ScriptMonacoElement: FC<{
 
             let propVal: any = {};
 
-            if (p.site_dts.trim() === "export declare const ______: string;") {
-              propVal = {
-                ...window.exports,
-                ...p.treeMeta[p.item.active].item.nprops,
-              };
-            } else {
-              propVal = {
-                ...p.treeMeta[p.item.active].item.nprops,
-              };
-            }
+            propVal = {
+              ...(window.exports || {}),
+              ...p.treeMeta[p.item.active].item.nprops,
+            };
 
             const propTypes: any = p.script.siteTypes;
 
