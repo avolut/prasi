@@ -2,8 +2,9 @@ import { format } from "date-fns";
 import get from "lodash.get";
 import { FC, useTransition } from "react";
 import { fetchSendApi } from "web-init/src/web/iframe-cors";
-import { useLocal } from "web-utils";
+import { useGlobal, useLocal } from "web-utils";
 import { Loading } from "../../../../../utils/ui/loading";
+import { EditorGlobal } from "../../../logic/global";
 export const Gallery: FC<{
   value?: string;
   update: (src: string) => void;
@@ -19,6 +20,7 @@ export const Gallery: FC<{
   accept = "video/mp4, image/jpeg, image/png, image/jpg, image/x-icon, image/vnd.microsoft.icon",
   type = "image",
 }) => {
+  const p = useGlobal(EditorGlobal, "EDITOR");
   const local = useLocal(
     {
       value: value || "",
@@ -41,11 +43,13 @@ export const Gallery: FC<{
       local.isPreview = false;
       local.ready = false;
       local.render();
-      let res = (await fetchSendApi(
-        `${siteApiUrl}/get-gallery/${params.site}`,
-        {}
-      )) as any;
-      local.list = res.data;
+      if (p.page) {
+        let res = (await fetchSendApi(
+          `${siteApiUrl}/get-gallery/${p.page.id}`,
+          {}
+        )) as any;
+        local.list = res.data;
+      }
       local.ready = true;
       local.render();
     }

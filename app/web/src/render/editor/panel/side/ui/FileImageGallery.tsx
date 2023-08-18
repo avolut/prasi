@@ -1,9 +1,10 @@
 import { FC } from "react";
 import { fetchSendApi } from "web-init/src/web/iframe-cors";
-import { useLocal } from "web-utils";
+import { useGlobal, useLocal } from "web-utils";
 import { Gallery } from "./Gallery";
 import { Loading } from "../../../../../utils/ui/loading";
 import { ToolbarBox } from "../../../../../utils/ui/box";
+import { EditorGlobal } from "../../../logic/global";
 export const FileImageGallery: FC<{
   value?: string;
   update: (src: string) => void;
@@ -19,6 +20,7 @@ export const FileImageGallery: FC<{
   accept = "video/mp4, image/jpeg, image/png, image/jpg, image/x-icon, image/vnd.microsoft.icon",
   type = "image",
 }) => {
+  const p = useGlobal(EditorGlobal, "EDITOR");
   const local = useLocal(
     {
       value: value || "",
@@ -43,9 +45,9 @@ export const FileImageGallery: FC<{
     local.isUpload = true;
     local.render();
     const files = e.currentTarget.files;
-    if (files) {
+    if (files && p.page) {
       const res: string[] = await fetchSendApi(
-        `${siteApiUrl}/_upload/${params.site}`,
+        `${siteApiUrl}/_upload/${p.page.id}`,
         files[0]
       );
       local.previewUrl = res[0];
