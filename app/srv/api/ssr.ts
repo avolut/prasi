@@ -73,7 +73,15 @@ export const _ = {
       timeout: get(options, "timeout", 0),
       waitDone: typeof waitDone === "undefined" ? true : waitDone,
     };
-    dom.window.exports = { ...(exports || {}) };
+    const isMobile = dom.window.ssrPrasi.mode === "mobile";
+    const isDesktop = dom.window.ssrPrasi.mode === "desktop";
+    dom.window.exports = {
+      ...(exports || {}),
+      isSSR: true,
+      isEditor: false,
+      isMobile,
+      isDesktop,
+    };
 
     vm.createContext(dom.window);
     try {

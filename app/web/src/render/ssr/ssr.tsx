@@ -10,7 +10,6 @@ export { useGlobal, useLocal } from "web-utils";
 if (typeof __SRV_URL__ === "undefined") {
   w.__SRV_URL__ = "https://api.prasi.app/";
   w.siteApiUrl = __SRV_URL__;
-  w.isEditor = false;
   w.isSSR = true;
   w.ssrGlobalFont = [];
   w.ssrContext = {

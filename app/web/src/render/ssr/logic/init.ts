@@ -17,7 +17,6 @@ export const initSSR = async (p: PG) => {
   if (p.status === "init") {
     p.status = "loading";
 
-    w.isEditor = false;
     w.navigateOverride = (_href) => {
       if (_href.startsWith("/")) {
         if (w.basepath.length > 1) {
@@ -62,9 +61,6 @@ export const initSSR = async (p: PG) => {
       const scope = {
         types: {},
         exports: w.exports,
-        isEditor: false,
-        isMobile: false,
-        isDesktop: true,
         load: importModule,
         render: p.render,
         module: {
