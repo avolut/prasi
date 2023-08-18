@@ -98,7 +98,11 @@ export const ScriptMonacoElement: FC<{
   };
 
   const mitem = p.treeMeta[p.item.active]?.mitem;
-  if (!mitem) return <div>no mitem</div>;
+  if (!mitem) {
+    p.script.active = false;
+    p.render();
+    return <div>no mitem</div>;
+  }
 
   const adv = mitem.get("adv");
   if (!adv) {
