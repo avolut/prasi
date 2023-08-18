@@ -16,7 +16,7 @@ export const initEditor = async (p: PG, site_id: string) => {
   if (p.status === "init") {
     p.status = "loading";
 
-    w.isEditor = false;
+    w.isEditor = true;
     w.isMobile = p.mode === "mobile";
     w.isDesktop = p.mode === "desktop";
     w.navigateOverride = (_href) => {
