@@ -37,7 +37,13 @@ export const ETree = () => {
   }
 
   return (
-    <div className={cx("tree flex flex-col")}>
+    <div
+      className={cx("tree flex flex-col")}
+      onMouseLeave={() => {
+        p.item.multiple = [];
+        p.render();
+      }}
+    >
       {local.ready ? (
         <div
           className={cx(
