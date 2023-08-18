@@ -2,7 +2,7 @@ import { FC, ReactNode, useCallback } from "react";
 import { useGlobal } from "web-utils";
 import { produceCSS } from "../../../utils/css/gen";
 import { IContent, MContent } from "../../../utils/types/general";
-import { IItem } from "../../../utils/types/item";
+import { IItem, MItem } from "../../../utils/types/item";
 import { FNAdv } from "../../../utils/types/meta-fn";
 import { IText } from "../../../utils/types/text";
 import { newPageComp } from "../logic/comp";
@@ -18,8 +18,9 @@ export const ERender: FC<{
 }> = ({ item, children, editComponentId }) => {
   const p = useGlobal(EditorGlobal, "EDITOR");
 
-  const childs = (item.type !== "text" ? item.childs : [])
+  const childs = (item.type !== "text" ? item.childs || [] : [])
     .filter((e) => {
+      if (typeof e !== "object") return false;
       if (e.hidden === "all") return false;
       return true;
     })
@@ -36,7 +37,7 @@ export const ERender: FC<{
 
           if (mitem && meta) {
             if (p.comp?.id === e.component.id && !meta.pmitem) {
-              meta.pmitem = mitem;
+              meta.pmitem = meta.mitem as MItem;
               meta.mitem = mitem as MContent;
             } else if (meta.pmitem) {
               meta.mitem = meta.pmitem;
@@ -154,6 +155,7 @@ export const ERender: FC<{
   if (item.type === "text") {
     return (
       <ETextInternal
+        key={item.id}
         className={className}
         elprop={elprop}
         item={item}

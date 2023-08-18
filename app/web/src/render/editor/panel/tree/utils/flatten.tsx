@@ -19,6 +19,9 @@ export const flattenTree = (
   const result: NodeModel<NodeContent>[] = [];
   if (content && p.page) {
     const walk = (mitem: MContent, parent_id: string, idx: number) => {
+      if (!mitem || !mitem.toJSON) {
+        return;
+      }
       const item = mitem.toJSON() as IContent;
       if (!p.treeMeta[item.id]) {
         p.treeMeta[item.id] = {

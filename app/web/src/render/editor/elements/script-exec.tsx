@@ -134,9 +134,13 @@ export const createPassChild =
     }
     if (local.child) {
       if (local.child.type === "item")
-        return <EItem item={{ ...local.child, hidden: false }} />;
+        return (
+          <EItem key={arg.item.id} item={{ ...local.child, hidden: false }} />
+        );
       else if (local.child.type === "text")
-        return <EText item={{ ...local.child, hidden: false }} />;
+        return (
+          <EText key={arg.item.id} item={{ ...local.child, hidden: false }} />
+        );
     }
   };
 
