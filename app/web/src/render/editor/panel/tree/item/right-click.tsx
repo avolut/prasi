@@ -268,7 +268,7 @@ export const ETreeRightClick: FC<{
           let mode = p.item.multiple;
           let clipboardText = "";
           if (p.item.multiple.length) {
-            const data = p.item.multiple.map((id) => {
+            let data = p.item.multiple.map((id) => {
               const e = p.treeMeta[id];
               if (e) {
                 let jso = e.mitem.toJSON();
@@ -287,6 +287,7 @@ export const ETreeRightClick: FC<{
                 return jso;
               }
             });
+            data = data.filter((x) => typeof x !== "string");
             let rootContent = JSON.parse(JSON.stringify({ data }));
             let flat = rootContent.data as Array<IContent>;
             let res = flatTree(flat);
