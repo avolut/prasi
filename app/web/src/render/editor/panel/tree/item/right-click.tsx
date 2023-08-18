@@ -322,16 +322,26 @@ export const ETreeRightClick: FC<{
                     const childs = get(jso, "data") as any;
                     //TODO: ra mudeng, tako faisol...
                     const child: any = mitem.get("childs");
+                    // console.log(jso);
                     if (childs) {
                       p.item.multiple = [];
                       let select = [] as Array<string>;
                       childs.map((e: any) => {
                         const nmap = fillID(e);
-                        const map = newMap(nmap) as MContent;
-                        let wlk = walk(map) as Array<string>;
-                        child.push([nmap.id]);
-                        select = select.concat(wlk);
+                        const map = new Y.Map() as MContent;
+                        syncronize(map as any, nmap);
+                        if (map) {
+                          const childs = mitem.get("childs");
+                          if (childs) {
+                            // console.log("push", map);
+                            childs.push([map]);
+                          }
+                          const item = map.toJSON();
+                          select.push(item.id);
+                          p.render();
+                        }
                       });
+
                       p.item.active = "";
                       p.item.multiple = select;
                     } else {
@@ -349,11 +359,22 @@ export const ETreeRightClick: FC<{
                       } else {
                         obj = jso;
                       }
-                      const map = newMap(fillID(obj)) as MContent;
-                      let walkId = walk(map);
+                      let walkId: any = [];
+                      const nmap = fillID(obj);
+                      const map = new Y.Map() as MContent;
+                      syncronize(map as any, nmap);
+                      if (map) {
+                        const childs = mitem.get("childs");
+                        if (childs) {
+                          // console.log("push", map);
+                          childs.push([map]);
+                        }
+                        const item = map.toJSON();
+                        walkId.push(item.id);
+                        p.render();
+                      }
                       p.item.active = "";
                       p.item.multiple = walkId;
-                      child.push([map]);
                     }
                     p.render();
                   });

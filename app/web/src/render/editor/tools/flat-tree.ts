@@ -19,7 +19,8 @@ export const flatTree = (item: Array<IContent>) => {
     );
     if (get(parent, "length")) {
       let s = sitem.find((e: any) => e.id === get(parent, "[0].id"));
-      let childs = s.childs || [];
+      let childs: any = s.childs || [];
+      childs = childs.filter((e: any) => get(e, "id")) || [];
       let now = [v];
       set(s, "childs", childs.concat(now));
     } else {
