@@ -57,9 +57,11 @@ export const ComponentOver: FC<{ item: IItem; p: PG; elprop: ElProp }> = ({
     <div
       className={cx(
         "absolute inset-0 flex items-center justify-center transition-all",
-        "bg-white bg-opacity-90 opacity-0",
-        p.item.hover === item.id && "border-2 border-blue-100",
-        p.item.active === item.id
+        "bg-white bg-opacity-90 opacity-0 transition-all",
+        !p.item.sideHover &&
+          p.item.hover === item.id &&
+          "border-2 border-blue-100",
+        !p.item.sideHover && p.item.active === item.id
           ? cx(
               "border-2 border-blue-500",
               css`

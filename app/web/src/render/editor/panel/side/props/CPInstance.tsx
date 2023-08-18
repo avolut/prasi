@@ -3,18 +3,18 @@ import { useGlobal, useLocal } from "web-utils";
 import { syncronize } from "y-pojo";
 import * as Y from "yjs";
 import { TypedMap } from "yjs-types";
+import { CompDoc } from "../../../../../base/global/content-editor";
 import { IItem, MItem } from "../../../../../utils/types/item";
 import { FMCompDef, FNCompDef } from "../../../../../utils/types/meta-fn";
+import { Menu, MenuItem } from "../../../../../utils/ui/context-menu";
 import { Loading } from "../../../../../utils/ui/loading";
 import { Popover } from "../../../../../utils/ui/popover";
+import { editComp } from "../../../logic/comp";
 import { EditorGlobal, PG } from "../../../logic/global";
 import { jscript } from "../../script/script-element";
 import { CPCodeEdit } from "./CPCodeEdit";
 import { CPOption } from "./CPOption";
 import { CPText } from "./CPText";
-import { editComp } from "../../../logic/comp";
-import { Menu, MenuItem } from "../../../../../utils/ui/context-menu";
-import { CompDoc } from "../../../../../base/global/content-editor";
 
 export const CPInstance: FC<{ mitem: MItem }> = ({ mitem }) => {
   const p = useGlobal(EditorGlobal, "EDITOR");
@@ -103,6 +103,7 @@ export const CPInstance: FC<{ mitem: MItem }> = ({ mitem }) => {
                     mprop={mprop}
                     comp={comp}
                     render={p.render}
+                    p={p}
                   />
                 );
               }
@@ -119,7 +120,8 @@ const SingleProp: FC<{
   mprop: FMCompDef;
   render: () => void;
   comp: CompDoc;
-}> = ({ name, prop, mprop, render, comp }) => {
+  p: PG;
+}> = ({ name, prop, mprop, render, comp, p }) => {
   const local = useLocal({
     clickEvent: null as any,
     editCode: false,
@@ -133,6 +135,10 @@ const SingleProp: FC<{
         mprop.set("value", val);
         mprop.set("valueBuilt", res.substring(6));
       });
+      const meta = p.treeMeta[p.item.active];
+      if (meta) {
+        delete meta.comp;
+      }
       render();
     }
   };

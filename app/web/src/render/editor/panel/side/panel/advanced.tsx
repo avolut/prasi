@@ -1,11 +1,10 @@
 import { FC } from "react";
 import { useGlobal } from "web-utils";
 import { IItem } from "../../../../../utils/types/item";
-import { FMAdv, FNAdv } from "../../../../../utils/types/meta-fn";
+import { FNAdv } from "../../../../../utils/types/meta-fn";
 import { ISection } from "../../../../../utils/types/section";
 import { IText } from "../../../../../utils/types/text";
 import { EditorGlobal } from "../../../logic/global";
-import { getMText, getMap } from "../../../tools/yjs-tools";
 import { Button } from "../ui/Button";
 
 type AdvUpdate = {

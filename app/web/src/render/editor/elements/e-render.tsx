@@ -84,8 +84,8 @@ export const ERender: FC<{
   const elprop = createElProp(item, p, editComponentId);
   const className = produceCSS(item, {
     mode: p.mode,
-    hover: p.item.hover === item.id,
-    active: p.item.active === item.id,
+    hover: p.item.sideHover ? false : p.item.hover === item.id,
+    active: p.item.sideHover ? false : p.item.active === item.id,
   });
   const adv = item.adv;
 

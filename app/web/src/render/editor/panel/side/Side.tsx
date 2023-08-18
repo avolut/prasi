@@ -85,6 +85,14 @@ export const ESide = () => {
       className={cx(
         "side flex select-none relative overflow-x-hidden overflow-y-auto"
       )}
+      onPointerEnter={() => {
+        p.item.sideHover = true;
+        p.render();
+      }}
+      onPointerLeave={() => {
+        p.item.sideHover = false;
+        p.render();
+      }}
     >
       <div className="absolute inset-0 flex flex-col items-stretch justify-start text-[13px]">
         {mitem ? (
