@@ -1,12 +1,12 @@
-import React, { ReactNode, Suspense, isValidElement, useEffect } from "react";
+import React, { ReactNode, Suspense, isValidElement } from "react";
 import { ErrorBoundary } from "web-init/src/web/error-boundary";
 import { useLocal } from "web-utils";
+import { createAPI, createDB } from "../../../utils/script/init-api";
 import { IContent } from "../../../utils/types/general";
 import { PG } from "../logic/global";
+import { w } from "../logic/window";
 import { SItem } from "./s-item";
 import { SText } from "./s-text";
-import { createAPI, createDB } from "../../../utils/script/init-api";
-import { w } from "../logic/window";
 
 type JsArg = {
   p: PG;

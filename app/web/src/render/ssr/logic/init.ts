@@ -66,6 +66,7 @@ export const initSSR = async (p: PG) => {
         module: {
           exports: {} as any,
         },
+        ...w.exports,
       };
       if (p.site.js) exec(p.site.js, scope);
       for (const [k, v] of Object.entries(scope.module.exports)) {
