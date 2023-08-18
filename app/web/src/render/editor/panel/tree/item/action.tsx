@@ -160,7 +160,7 @@ export const ETreeItemAction: FC<{
   );
 };
 
-const Adv: FC<{
+export const Adv: FC<{
   item: IContent;
   p: PG;
 }> = ({ item, p }) => {

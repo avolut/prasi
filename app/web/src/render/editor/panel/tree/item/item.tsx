@@ -6,7 +6,7 @@ import { ETreeItemName } from "./name";
 import { treeItemStyle } from "./style";
 import { IItem } from "../../../../../utils/types/item";
 import { useGlobal, useLocal } from "web-utils";
-import { ETreeItemAction } from "./action";
+import { Adv, ETreeItemAction } from "./action";
 import { EditorGlobal } from "../../../logic/global";
 import find from "lodash.find";
 
@@ -70,9 +70,8 @@ export const ETreeItem: FC<{
         ?.toJSON();
       if (props) {
         if (
-          Object.values(props).filter(
-            (e) => e.meta?.type === "content-element"
-          ).length > 0
+          Object.values(props).filter((e) => e.meta?.type === "content-element")
+            .length > 0
         ) {
           hasChilds = true;
         }
@@ -136,7 +135,10 @@ export const ETreeItem: FC<{
             }}
           />
         ) : (
-          <RootComponentClose />
+          <>
+            <Adv p={p} item={item} />
+            <RootComponentClose />
+          </>
         ))}
     </div>
   );

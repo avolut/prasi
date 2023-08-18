@@ -1,7 +1,7 @@
 import { ReactElement } from "react";
 import { CompDoc } from "../../../base/global/content-editor";
 import { IContent, MContent, MPage } from "../../../utils/types/general";
-import { IItem } from "../../../utils/types/item";
+import { IItem, MItem } from "../../../utils/types/item";
 import { IRoot } from "../../../utils/types/root";
 
 export const EditorGlobal = {
@@ -82,6 +82,7 @@ export const EditorGlobal = {
     string,
     {
       mitem: MContent;
+      pmitem?: MItem;
       item: IContent;
       comp?: IItem;
       passprop?: any;

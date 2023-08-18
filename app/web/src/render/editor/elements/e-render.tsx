@@ -32,14 +32,15 @@ export const ERender: FC<{
       if (e.type === "item" && e.component?.id) {
         const mcomp = p.comps.doc[e.component.id];
         if (mcomp) {
-          if (!meta) {
-            const mitem = mcomp.getMap("map").get("content_tree");
-            if (mitem) {
-              p.treeMeta[e.id] = {
-                mitem: mitem as MContent,
-                item,
-              };
-              meta = p.treeMeta[e.id];
+          let mitem = mcomp.getMap("map").get("content_tree");
+
+          if (mitem && meta) {
+            if (p.comp?.id === e.component.id && !meta.pmitem) {
+              meta.pmitem = mitem;
+              meta.mitem = mitem as MContent;
+            } else if (meta.pmitem) {
+              meta.mitem = meta.pmitem;
+              delete meta.pmitem;
             }
           }
 
@@ -164,6 +165,7 @@ export const ERender: FC<{
 
   return (
     <div className={className} {...elprop}>
+      {/* <pre className={"text-[9px] font-mono"}>{item.id}</pre> */}
       {_children}
       {componentOver}
     </div>

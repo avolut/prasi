@@ -130,6 +130,7 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[] }> = ({ tree }) => {
       window.removeEventListener("keyup", keyUp, true);
     };
   }, []);
+  
   return (
     <div
       className={cx(
