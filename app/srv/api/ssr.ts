@@ -75,13 +75,22 @@ export const _ = {
     };
     const isMobile = dom.window.ssrPrasi.mode === "mobile";
     const isDesktop = dom.window.ssrPrasi.mode === "desktop";
+
     dom.window.exports = {
       ...(exports || {}),
+    };
+
+    const defaults = {
       isSSR: true,
       isEditor: false,
       isMobile,
       isDesktop,
     };
+
+    for (const [k, v] of Object.entries(defaults)) {
+      dom.window[k] = v;
+      dom.window.exports[k] = v;
+    }
 
     vm.createContext(dom.window);
     try {
