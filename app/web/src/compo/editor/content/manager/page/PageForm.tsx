@@ -1,17 +1,15 @@
 import { page } from "dbgen";
 import { FC } from "react";
-import { useGlobal, useLocal } from "web-utils";
-import { CEGlobal } from "../../../../../base/global/content-editor";
-import { wsdoc } from "../../../ws/wsdoc";
+import { useLocal } from "web-utils";
 import { formStyle } from "../../../../form.style";
 import { Input } from "../../../../ui/form/input";
+import { wsdoc } from "../../../ws/wsdoc";
 
 export const PageForm: FC<{
   page: Partial<page>;
   onClose: () => void;
   onSave: (res: any, isNew: boolean) => void;
 }> = ({ page, onClose, onSave }) => {
-  const c = useGlobal(CEGlobal, "PAGE");
   const local = useLocal({ init: false, saving: false, fillUrl: false });
   const form = useLocal({} as Partial<page>);
 

@@ -2,13 +2,13 @@ import { site } from "dbgen";
 import { FC, useEffect } from "react";
 import { useGlobal, useLocal } from "web-utils";
 import { CEGlobal } from "../../base/global/content-editor";
+import importModule from "../page/tools/dynamic-import";
 import { MPage, w } from "../types/general";
 import { PageEditor } from "./page";
 import { editorStyle } from "./style";
+import { reloadCE } from "./tools/reload-ce";
 import { connectWS } from "./ws/ws";
 import { SiteConfig, wsdoc } from "./ws/wsdoc";
-import { reloadCE } from "./tools/reload-ce";
-import importModule from "../page/tools/dynamic-import";
 
 export const SiteEditor: FC<{
   site: site;

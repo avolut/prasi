@@ -17,6 +17,7 @@ export default page({
 
     if (!local.init) {
       api.session().then(async (e) => {
+        local.init = true;
         if (!e) {
           navigate("/login");
           return;
@@ -51,18 +52,30 @@ export default page({
             local.render();
           }
         } else if (!page_id) {
-          const res = await db.page.findFirst({
+          let res = await db.page.findFirst({
             where: { id_site: site_id },
             select: {
               id: true,
             },
           });
+
+          if (!res) {
+            res = await db.page.create({
+              data: {
+                content_tree: {
+                  childs: [],
+                  id: "root",
+                  type: "root",
+                },
+                name: "home",
+                url: "/",
+                id_site: site_id,
+              },
+            });
+          }
+
           if (res) {
             navigate(`/ed/${site_id}/${res.id}`);
-          } else {
-            local.loading = false;
-            local.notfound = true;
-            local.render();
           }
         } else {
           local.init = true;

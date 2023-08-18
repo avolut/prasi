@@ -1,9 +1,4 @@
 import { page } from "web-init";
-import { Button } from "../../compo/editor/content/side/ui/Button";
-import { Tooltip } from "../../compo/ui/tooltip";
-import { FieldNumUnit } from "../../compo/editor/content/side/ui/FieldNumUnit";
-import { editorStyle } from "../../compo/editor/style";
-import { Icon } from "@iconify/react";
 import { useLocal } from "web-utils";
 
 export default page({
