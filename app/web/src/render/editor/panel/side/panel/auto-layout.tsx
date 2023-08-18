@@ -1,19 +1,18 @@
 import { FC } from "react";
 import { useLocal } from "web-utils";
+import { IItem } from "../../../../../utils/types/item";
+import { FNLayout } from "../../../../../utils/types/meta-fn";
+import { ISection } from "../../../../../utils/types/section";
+import { IText } from "../../../../../utils/types/text";
+import { Popover } from "../../../../../utils/ui/popover";
+import { Tooltip } from "../../../../../utils/ui/tooltip";
+import { responsiveVal } from "../../../tools/responsive-val";
 import { BoxSep } from "../ui/BoxSep";
 import { Button } from "../ui/Button";
 import { FieldBtnRadio } from "../ui/FieldBtnRadio";
 import { FieldNumUnit } from "../ui/FieldNumUnit";
 import { LayoutPacked } from "../ui/LayoutPacked";
 import { LayoutSpaced } from "../ui/LayoutSpaced";
-import { FNLayout } from "../../../../../utils/types/meta-fn";
-import { IItem } from "../../../../../utils/types/item";
-import { ISection } from "../../../../../utils/types/section";
-import { IText } from "../../../../../utils/types/text";
-import { Tooltip } from "../../../../../utils/ui/tooltip";
-import { responsiveVal } from "../../../tools/responsive-val";
-import { Popover } from "../../../../../utils/ui/popover";
-import { SideLabel } from "../ui/SideLabel";
 
 type AutoLayoutUpdate = {
   layout: FNLayout;
@@ -33,7 +32,7 @@ export const PanelAutoLayout: FC<{
     dir: "col",
     align: "top-left",
     gap: 0,
-    wrap: "flex-wrap",
+    wrap: "flex-nowrap",
   });
 
   return (

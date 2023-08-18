@@ -3,9 +3,10 @@ import { useGlobal } from "web-utils";
 import { Loading } from "../../utils/ui/loading";
 import { EMainEditor } from "./panel/e-main-editor";
 import { EditorGlobal } from "./logic/global";
-import { initEditor } from "./logic/init";
+import { execSiteJS, initEditor } from "./logic/init";
 import { routeEditor } from "./logic/route";
 import { undoManager } from "./logic/undo";
+import { w } from "../../utils/types/general";
 
 export const Editor: FC<{ site_id: string; page_id: string; session: any }> = ({
   session,
@@ -58,8 +59,10 @@ export const Editor: FC<{ site_id: string; page_id: string; session: any }> = ({
   }, []);
 
   useEffect(() => {
-    p.treeMeta = {};
-    p.render();
+    if (p.status !== "init" && w.prasiApi) {
+      execSiteJS(p);
+      p.render();
+    }
   }, [page_id]);
 
   if (!p.mode) {

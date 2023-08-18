@@ -80,7 +80,7 @@ export const ToolbarCenter = () => {
           }
           if (!open) {
             p.script.siteActive = false;
-            local.render();
+            p.render();
           }
         }}
       >
@@ -176,7 +176,7 @@ export const ToolbarCenter = () => {
                       local.render();
                     }}
                   />
-                } 
+                }
                 onOpenChange={(open) => {
                   local.apiConfigOpen = open;
                   local.render();
