@@ -86,7 +86,8 @@ export const PRender: FC<{
 
   const linktag = responsiveVal<FNLinkTag>(item, "linktag", p.mode, {});
 
-  if (linktag && linktag.link) {
+  const isComponent = item.type === "item" && item.component?.id;
+  if (linktag && linktag.link && !isComponent) {
     let href = linktag.link || "";
     if (href.startsWith("/")) {
       preload(p, href);

@@ -99,7 +99,7 @@ export const ScriptMonacoCustom: FC<{
             }
 
             await jsMount(editor, monaco);
-            const propVal: any = {};
+            const propVal: any = props;
 
             await monacoTypings(p, monaco, {
               values: propVal,

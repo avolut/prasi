@@ -13,10 +13,10 @@ import { PanelDimension } from "./panel/dimension";
 import { PanelFont } from "./panel/font";
 import { PanelLink } from "./panel/link";
 import { PanelPadding } from "./panel/padding";
-import { SideBox } from "./ui/SideBox";
-import { SideLabel } from "./ui/SideLabel";
 import { CPInstance } from "./props/CPInstance";
 import { CPMaster, PreviewItemProp } from "./props/CPMaster";
+import { SideBox } from "./ui/SideBox";
+import { SideLabel } from "./ui/SideLabel";
 
 export const ESide = () => {
   const p = useGlobal(EditorGlobal, "EDITOR");

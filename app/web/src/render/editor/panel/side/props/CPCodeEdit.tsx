@@ -7,8 +7,11 @@ export const CPCodeEdit: FC<{
   value: string;
   onChange: (v: string) => void;
 }> = ({ value, onChange }) => {
-  const local = useLocal({ value, timer: null as any });
-  const c = useGlobal(EditorGlobal);
+  const p = useGlobal(EditorGlobal, "EDITOR");
+  const local = useLocal({ item: p.treeMeta[p.item.active].comp });
+
+  const item = local.item;
+  if (!item) return <>ERROR: Item is not an instance of component</>;
 
   return (
     <EScriptCustom
@@ -17,9 +20,12 @@ export const CPCodeEdit: FC<{
       wrap={(src) => {
         return `${src}`;
       }}
-      onLoad={(editor, monaco) => {}}
       onChange={(src) => {
         onChange(src);
+      }}
+      props={{
+        ...window.exports,
+        ...item.nprops,
       }}
     />
   );

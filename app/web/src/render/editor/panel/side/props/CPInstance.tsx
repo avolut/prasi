@@ -125,6 +125,7 @@ const SingleProp: FC<{
   const local = useLocal({
     clickEvent: null as any,
     editCode: false,
+    editCodeOnClose: () => {},
     loading: false,
   });
   const type = prop.meta?.type || "text";
@@ -249,7 +250,9 @@ const SingleProp: FC<{
                   onOpenChange={(open) => {
                     if (!open) {
                       local.editCode = false;
+                      local.editCodeOnClose();
                       local.render();
+                      local.editCodeOnClose = () => {};
                     }
                   }}
                   placement="left-start"
@@ -283,9 +286,11 @@ const SingleProp: FC<{
             {type === "text" && (
               <CPText
                 prop={prop}
+                name={name}
                 onChange={updateValue}
-                editCode={() => {
+                editCode={(onClose) => {
                   local.editCode = true;
+                  local.editCodeOnClose = onClose;
                   local.render();
                 }}
                 reset={reset}
@@ -293,10 +298,12 @@ const SingleProp: FC<{
             )}
             {type === "option" && (
               <CPOption
+                name={name}
                 prop={prop}
                 onChange={updateValue}
-                editCode={() => {
+                editCode={(onClose) => {
                   local.editCode = true;
+                  local.editCodeOnClose = onClose;
                   local.render();
                 }}
                 reset={reset}

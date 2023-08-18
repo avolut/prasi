@@ -46,9 +46,12 @@ export const ERender: FC<{
           }
 
           if (!meta) {
-            console.warn(
-              `Warning component not found: ${e.component.id} ${e.name}`
-            );
+            // TODO: fix bug when meta comp not found
+            // if (p.comp?.id !== e.component.id) {
+            //   console.warn(
+            //     `Warning component meta not found: ${e.component.id} ${e.name} with id ${e.id}`
+            //   );
+            // }
           } else {
             if (!meta.comp) {
               const comp = newPageComp(p, e);
@@ -167,7 +170,7 @@ export const ERender: FC<{
 
   return (
     <div className={className} {...elprop}>
-      {/* <pre className={"text-[9px] font-mono"}>{item.id}</pre> */}
+      {/* <pre className={"text-[9px] font-mono text-black"}>{item.id}</pre> */}
       {_children}
       {componentOver}
     </div>
