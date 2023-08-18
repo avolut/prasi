@@ -62,6 +62,9 @@ export const initSSR = async (p: PG) => {
       const scope = {
         types: {},
         exports: w.exports,
+        isEditor: false,
+        isMobile: false,
+        isDesktop: true,
         load: importModule,
         render: p.render,
         module: {
