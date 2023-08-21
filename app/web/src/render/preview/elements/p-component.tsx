@@ -50,14 +50,16 @@ export const PComponent: FC<{
   }
 
   return (
-    <PRender item={item}>
-      {(childs) =>
-        childs.map((e) => {
-          if (e.type === "item") return <PItem item={e} key={e.id} />;
-          else return <PText item={e} key={e.id} />;
-        })
-      }
-    </PRender>
+    <>
+      <PRender item={item}>
+        {(childs) =>
+          childs.map((e) => {
+            if (e.type === "item") return <PItem item={e} key={e.id} />;
+            else return <PText item={e} key={e.id} />;
+          })
+        }
+      </PRender>
+    </>
   );
 };
 

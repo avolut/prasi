@@ -140,6 +140,7 @@ const thru = (prop: any, nprops: any) => {
       const cprops: any = c.props;
       if (cprops && cprops.item) {
         if (!cprops.item.nprops) cprops.item.nprops = {};
+
         for (const [k, v] of Object.entries(nprops)) {
           cprops.item.nprops[k] = v;
         }
@@ -160,12 +161,22 @@ const thru = (prop: any, nprops: any) => {
 const createLocal = (arg: { item: IContent; render: () => void }): LocalFC => {
   const { item, render } = arg;
   return ({ name, value, children, effect }) => {
+    const scope = { _id: item.id, ...value, render };
+
     if (!item.scope) {
-      item.scope = { ...value, render };
+      item.scope = scope;
+    } else {
+      if (item.scope._id !== scope._id) {
+        for (const [k, v] of Object.entries(scope)) {
+          if (k !== "render") item.scope[k] = v;
+        }
+      }
     }
+    item.scope.render = render;
 
     const local = item.scope;
     let child = children;
+
     thru(child, { [name]: local });
 
     useEffect(() => {

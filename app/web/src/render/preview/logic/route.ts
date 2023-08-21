@@ -9,6 +9,8 @@ import { w } from "../../../utils/types/general";
 
 export const pageNpmStatus: Record<string, "loaded" | "loading"> = {};
 
+const cacheMeta = {} as Record<string, any>;
+
 export const routePreview = (p: PG, pathname: string) => {
   if (p.status !== "loading") {
     let page_id = "";
@@ -19,6 +21,18 @@ export const routePreview = (p: PG, pathname: string) => {
       if (!found) {
         p.status = "not-found";
       } else {
+        const id = p.page?.id;
+        if (id && id !== found.id) {
+          if (!cacheMeta[id]) {
+            cacheMeta[id] = p.treeMeta;
+          }
+
+          if (cacheMeta[found.id]) {
+            p.treeMeta = cacheMeta[found.id];
+          } else {
+            p.treeMeta = {};
+          }
+        }
         page_id = found.id;
         if (found.params) {
           for (const [k, v] of Object.entries(found.params)) {
