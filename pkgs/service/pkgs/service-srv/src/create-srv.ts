@@ -14,12 +14,14 @@ export const createAPIServer = async ({
   serverURL,
   cookieKey,
   ws,
+  init,
 }: {
   name: SERVICE_NAME;
   port: number;
   serverURL?: (mode: "dev" | "prod" | "staging") => string;
   cookieKey: string;
   ws?: Record<string, WSRouteHandler>;
+  init?: () => void | Promise<void>;
 }) => {
   return await createService({
     name,
@@ -60,6 +62,10 @@ export const createAPIServer = async ({
             `${padEnd(srv.name, 12, " ")}`
           )} http://localhost:${srv.port}`
         );
+      }
+
+      if (init) {
+        init();
       }
       return srvAction;
     },

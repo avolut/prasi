@@ -21,7 +21,9 @@ export type RPCActionItem = (
   ...arg: any[]
 ) => Promise<Serializable> | Serializable;
 
-export type PromisedRPCActionItemFn<T extends RPCActionItemFn> = (
+
+
+export type PromisedRPCActionItem<T extends RPCActionItem> = (
   ...args: Parameters<T>
 ) => ReturnType<T> extends Promise<Primitive>
   ? ReturnType<T>
@@ -43,8 +45,8 @@ export type RPCActionResult<T extends RPCAction> = {
     RPCActionItem | Record<string, RPCActionItem>
   >
     ? RPCActionResult<T[K]>
-    : T[K] extends RPCActionItemFn
-    ? PromisedRPCActionItemFn<T[K]>
+    : T[K] extends RPCActionItem
+    ? PromisedRPCActionItem<T[K]>
     : Promise<T[K]>;
 };
 
