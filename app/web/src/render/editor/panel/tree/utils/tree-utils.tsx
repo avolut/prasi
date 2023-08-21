@@ -19,7 +19,8 @@ import { fillID } from "../../../tools/fill-id";
 import { newMap } from "../../../tools/yjs-tools";
 import { walk } from "../body";
 import { NodeContent } from "./flatten";
-
+import { syncronize } from "y-pojo";
+import * as Y from "yjs";
 export const DEPTH_WIDTH = 8;
 
 export const Placeholder: FC<{
@@ -58,7 +59,8 @@ export const DragPreview: DragPreviewRender<NodeContent> = (props) => {
 export const onDrop = (
   p: PG,
   tree: NodeModel<NodeContent>[],
-  options: DropOptions<NodeContent>
+  options: DropOptions<NodeContent>,
+  local: any
 ) => {
   const { dragSource, dropTargetId, dropTarget, relativeIndex } = options;
   let listItem = p.item.multiple;
@@ -73,6 +75,9 @@ export const onDrop = (
       let to = p.treeMeta[dropTarget.id];
       if (from && to && p.mpage && dragSource.id !== dropTarget.id)
         if (!find(listItem, (e) => e === dropTargetId)) {
+          const open = new Set<string>();
+          p.item.multiple = [];
+          let multiple: any = [];
           const listContent: any = listItem.map((e) => {
             let item = p.treeMeta[e];
             if (item) {
@@ -104,50 +109,24 @@ export const onDrop = (
             }
           });
           let res = flatTree(listContent);
-          let listMap = res.map((e: IContent) => newMap(fillID(e)));
-          listMap.map((e: MContent) => {
+          let listMap = res.map((e: IContent) => fillID(e));
+          listMap.map((e: IContent) => {
+            const map = new Y.Map() as MContent;
+            syncronize(map as any, e);
             const titem = to.mitem;
             const childs = titem.get("childs");
             if (childs && childs.length - 1 >= (relativeIndex || 0)) {
-              childs?.insert(relativeIndex || 0, [e]);
+              childs?.insert(relativeIndex || 0, [map]);
             } else {
-              childs?.push([e]);
+              childs?.push([map]);
             }
+            let id = walk(map);
+            multiple = multiple.concat(id);
+            if (typeof dropTargetId === "string") open.add(dropTargetId);
           });
-
-          // console.log(listInsert);
-          // if (jso.get("type") === "section") {
-          //   const json = jso.toJSON();
-          //   const newItem = {
-          //     id: json.id,
-          //     name: json.name,
-          //     type: "item",
-          //     dim: { w: "fit", h: "fit" },
-          //     adv: json.adv,
-          //     childs: json.childs || [],
-          //     component: json.component,
-          //   } as IItem;
-          //   insert = newMap(fillID(newItem)) as MContent;
-          // }
-          // if (dropTargetId !== "root") {
-          //   const titem = to.item;
-          //   if (titem) {
-          //     const childs = titem.get("childs");
-          //     if (childs && childs.length - 1 >= (relativeIndex || 0)) {
-          //       childs?.insert(relativeIndex || 0, [insert]);
-          //     } else {
-          //       childs?.push([insert]);
-          //     }
-          //   }
-          // } else {
-          //   if (p.mpage) {
-          //     const childs = p.mpage
-          //       .getMap("map")
-          //       .get("content_tree")
-          //       ?.get("childs");
-          //     childs?.insert(relativeIndex || 0, [insert]);
-          //   }
-          // }
+          p.render();
+          p.item.multiple = multiple;
+          if (local.method) local.method?.open([...open]);
         }
     }
   } else {
@@ -161,7 +140,11 @@ export const onDrop = (
       let to = p.treeMeta[dropTarget.id];
       if (from && to && p.mpage && dragSource.id !== dropTarget.id) {
         const mitem = from.mitem;
-        const insert = mitem.clone();
+        const json = mitem.toJSON() as IContent;
+
+        const nmap = fillID(json);
+        const map = new Y.Map() as MContent;
+        syncronize(map as any, nmap);
         mitem.parent.forEach((e, idx) => {
           if (e === mitem) {
             mitem.parent.delete(idx);
@@ -172,9 +155,9 @@ export const onDrop = (
           if (titem) {
             const childs = titem.get("childs");
             if (childs && childs.length - 1 >= (relativeIndex || 0)) {
-              childs?.insert(relativeIndex || 0, [insert]);
+              childs?.insert(relativeIndex || 0, [map]);
             } else {
-              childs?.push([insert]);
+              childs?.push([map]);
             }
           }
         } else {
@@ -182,9 +165,13 @@ export const onDrop = (
             .getMap("map")
             .get("content_tree")
             ?.get("childs");
-          childs?.insert(relativeIndex || 0, [insert]);
+          childs?.insert(relativeIndex || 0, [map]);
         }
         p.render();
+        const item = map.toJSON();
+        if (item) {
+          p.item.active = item.id;
+        }
       }
     }
   }
@@ -302,24 +289,11 @@ export const selectMultiple = (
         }
         break;
       case key === "shift":
-        // console.log("shift");
-        // let startIdx = findIndex(tree, (e) => e === listId[0]);
-        // let endIdx = findIndex(
-        //   tree,
-        //   (e) => e === listItemId[listItemId.length - 1]
-        // );
         let listIdx: Array<any> = concat(listId, listItemId);
         listIdx = listIdx.map((x) => {
           return findIndex(tree, (e) => e === x);
         });
-        // console.log(startIdx, endIdx);
-        // if (startIdx >= endIdx) {
-        //   endIdx = startIdx;
-        //   startIdx = findIndex(tree, (e) => e === listItemId[0]);
-        // }
-        // console.log(listId);
         listId = slice(tree, Math.min(...listIdx), Math.max(...listIdx) + 1);
-        // console.log(listId);
         break;
       default:
         break;

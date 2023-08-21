@@ -130,7 +130,7 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[] }> = ({ tree }) => {
       window.removeEventListener("keyup", keyUp, true);
     };
   }, []);
-  
+
   return (
     <div
       className={cx(
@@ -213,7 +213,7 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[] }> = ({ tree }) => {
             onDragStart={(node) => onDragStart(p, node)}
             onDragEnd={(node) => onDragEnd(p, node)}
             canDrop={(_, args) => canDrop(p, args, local)}
-            onDrop={(...args) => onDrop(p, ...args)}
+            onDrop={(...args) => onDrop(p, ...args, local)}
           ></TypedTree>
         </div>
       </DndProvider>
