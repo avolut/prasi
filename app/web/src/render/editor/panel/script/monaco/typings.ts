@@ -52,6 +52,7 @@ export const monacoTypings = async (
   ]);
 
   const propText = extractProp(prop);
+  console.log(propText);
   register(
     monaco,
     `\
@@ -63,6 +64,7 @@ declare global {
   
   ${baseTypings}
 
+  const moko: {nama: string};
   ${propText.join("\n")}
 }
 

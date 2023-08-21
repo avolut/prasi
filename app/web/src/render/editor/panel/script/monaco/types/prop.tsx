@@ -1,3 +1,4 @@
+import trim from "lodash.trim";
 import { forwardRef, isValidElement } from "react";
 
 const A = forwardRef((prop: { a: "string" }, ref) => {
@@ -48,7 +49,7 @@ export const extractProp = (prop: {
 
   for (const [k, v] of Object.entries(props)) {
     if (v.type) {
-      propTypes.push(`const ${k} = null as unknown as ${v.type};`);
+      propTypes.push(`const ${k}: ${trim(v.type, "; \n")};`);
     } else if (v.val) {
       if (typeof v.val === "object" && isValidElement(v.val)) {
         propTypes.push(`const ${k}: ReactElement;`);
@@ -61,11 +62,9 @@ export const extractProp = (prop: {
               val = { ...val, render: () => {} };
             }
 
-            propTypes.push(
-              `const ${k} = null as unknown as ${recurseTypes(val)};`
-            );
+            propTypes.push(`const ${k}: ${recurseTypes(val)};`);
           } else {
-            propTypes.push(`const ${k} = null as unknown as string;`);
+            propTypes.push(`const ${k}: string;`);
           }
         } catch (e) {}
       }
@@ -80,7 +79,7 @@ function recurseTypes(object: any) {
   if (typeof object === "object") {
     if (object === null) return "null";
     if (Array.isArray(object)) {
-      return `any[];`;
+      return `any[]`;
     }
 
     for (const [k, v] of Object.entries(object)) {
