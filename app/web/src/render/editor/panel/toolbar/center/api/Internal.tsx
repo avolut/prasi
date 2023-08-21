@@ -40,7 +40,7 @@ export const InternalAPI: FC<{
   if (local.loading || local.status === "installing")
     return (
       <div className="flex flex-1 self-stretch">
-        <Loading backdrop={false} />
+        <Loading note="internal" backdrop={false} />
       </div>
     );
 

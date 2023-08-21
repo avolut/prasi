@@ -1,10 +1,6 @@
 import trim from "lodash.trim";
 import { forwardRef, isValidElement } from "react";
 
-const A = forwardRef((prop: { a: "string" }, ref) => {
-  return <div></div>;
-});
-
 export const extractProp = (prop: {
   values: Record<string, any>;
   types: Record<string, string>;

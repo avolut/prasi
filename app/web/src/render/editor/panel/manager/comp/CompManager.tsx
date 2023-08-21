@@ -211,7 +211,7 @@ export const CompManager: FC = () => {
       >
         {local.loading ? (
           <div className="flex w-full h-full items-center justify-center">
-            <Loading backdrop={false} />
+            <Loading note="comp-mgr" backdrop={false} />
           </div>
         ) : (
           <div
@@ -698,7 +698,7 @@ const CompPreview: FC<{
         <div>{opt}</div>
       </div>
       <div className={cx("flex flex-1 flex-col relative overflow-auto")}>
-        {!local.comp && <Loading backdrop={false} />}
+        {!local.comp && <Loading note="comp-mgr-2" backdrop={false} />}
         <div
           className={cx(
             css`

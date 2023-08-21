@@ -66,7 +66,7 @@ export const CPInstance: FC<{ mitem: MItem }> = ({ mitem }) => {
     })();
   }, [mitem]);
 
-  if (!local.ready) return <Loading backdrop={false} />;
+  if (!local.ready) return <Loading note="cp-instance" backdrop={false} />;
 
   return (
     <div className="flex flex-col flex-1">

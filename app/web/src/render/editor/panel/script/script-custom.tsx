@@ -93,7 +93,7 @@ export const EScriptCustom: FC<{
       )}
     >
       {!jscript.editor || !jscript.build ? (
-        <Loading backdrop={false} />
+        <Loading note="script-cst" backdrop={false} />
       ) : (
         <ScriptMonacoCustom
           monaco_id={monaco_id}

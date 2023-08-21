@@ -85,7 +85,7 @@ export default page({
       });
     }
 
-    if (local.loading) return <Loading />;
+    if (local.loading) return <Loading note="base-page" />;
 
     return (
       <Editor session={local.session} site_id={site_id} page_id={page_id} />

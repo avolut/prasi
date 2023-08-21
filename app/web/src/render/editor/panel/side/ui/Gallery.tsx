@@ -259,7 +259,7 @@ export const Gallery: FC<{
       ) : (
         <>
           <div className="flex w-full h-full items-center justify-center">
-            <Loading backdrop={false} />
+            <Loading note="gallery" backdrop={false} />
           </div>
         </>
       )}

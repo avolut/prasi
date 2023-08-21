@@ -8,7 +8,8 @@ export const Loading: FC<{
   className?: string;
   show?: boolean;
   backdrop?: boolean;
-}> = ({ children, className, show, backdrop }) => {
+  note?: string;
+}> = ({ children, className, show, backdrop, note }) => {
   const local = useLocal(
     {
       icon: <div className="px-4 py-1">Loading...</div>,
@@ -94,7 +95,7 @@ export const Loading: FC<{
         >
           <div
             className={cx(
-              "w-1/6",
+              "w-1/6 flex flex-col items-center justify-center",
               css`
                 .pr-outer {
                   background: rgba(0, 0, 0, 0.1) !important;
@@ -102,6 +103,8 @@ export const Loading: FC<{
               `
             )}
           >
+            <div>{note}</div>
+
             <div className="pr-outer w-full h-[3px] flex items-stretch rounded-sm overflow-hidden">
               <div
                 className={cx(

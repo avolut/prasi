@@ -149,7 +149,7 @@ export const EScriptElement: FC<{}> = ({}) => {
           )}
         >
           {!jscript.editor || !jscript.build ? (
-            <Loading backdrop={false} />
+            <Loading note="script-el" backdrop={false} />
           ) : (
             <ScriptMonacoElement
               Editor={jscript.editor}

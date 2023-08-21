@@ -194,7 +194,7 @@ export const PageManager = () => {
       <div className="fixed inset-[50px] bg-white shadow-2xl">
         {local.loading ? (
           <div className="flex w-full h-full items-center justify-center">
-            <Loading backdrop={false} />
+            <Loading note="page-mgr" backdrop={false} />
           </div>
         ) : (
           <div

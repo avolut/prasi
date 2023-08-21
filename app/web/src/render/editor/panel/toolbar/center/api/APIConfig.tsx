@@ -73,7 +73,7 @@ export const APIConfig: FC<{
       )}
       {local.creating && (
         <div className="flex flex-1 self-stretch">
-          <Loading backdrop={false} />
+          <Loading note="api-conf" backdrop={false} />
         </div>
       )}
       {local.mode === "external" && <ExternalAPI />}

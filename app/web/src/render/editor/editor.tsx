@@ -70,8 +70,8 @@ export const Editor: FC<{ site_id: string; page_id: string; session: any }> = ({
   }
 
   if (p.status === "init") {
-    p.ui.loading = <Loading />;
-    p.ui.preload = <Loading backdrop={false} />;
+    p.ui.loading = <Loading note="editor-root" />;
+    p.ui.preload = <Loading note="editor-root" backdrop={false} />;
     p.ui.notfound = (
       <div className="flex-1 flex items-center justify-center">NOT FOUND</div>
     );

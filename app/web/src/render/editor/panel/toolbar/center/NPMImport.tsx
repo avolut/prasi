@@ -74,7 +74,7 @@ export const NPMImport = () => {
           },
         })
         .then((e) => {
-          w.npmImport.page[p.page.id] = e;
+          if (p.page) w.npmImport.page[p.page.id] = e;
         }),
     ]);
   }
@@ -91,7 +91,7 @@ export const NPMImport = () => {
       className={cx("text-sm w-[700px] h-[400px] relative flex items-stretch")}
     >
       {w.npmImport.loading ? (
-        <Loading backdrop={false} />
+        <Loading note="npm-import" backdrop={false} />
       ) : (
         <>
           <NPMModule
@@ -196,7 +196,7 @@ const NPMModule: FC<{
   }
 
   if (local.loading) {
-    return <Loading backdrop={false} />;
+    return <Loading note="npm-import2" backdrop={false} />;
   }
 
   return (
@@ -220,7 +220,7 @@ const NPMModule: FC<{
         </div>
         {local.bundling ? (
           <div className="flex relative flex-1">
-            <Loading backdrop={false} />
+            <Loading note="npm-import3" backdrop={false} />
             Bundling...
           </div>
         ) : (

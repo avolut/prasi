@@ -69,7 +69,7 @@ export const FileImageGallery: FC<{
       <div className="fixed inset-[50px] bg-white shadow-2xl  z-50	">
         {false ? (
           <div className="flex w-full h-full items-center justify-center">
-            <Loading backdrop={false} />
+            <Loading note="img-gallery" backdrop={false} />
           </div>
         ) : (
           <div

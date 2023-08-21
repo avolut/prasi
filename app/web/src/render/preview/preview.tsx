@@ -40,8 +40,8 @@ export const Preview: FC<{
   }, []);
 
   if (p.status === "init") {
-    p.ui.loading = <Loading />;
-    p.ui.preload = <Loading backdrop={false} />;
+    p.ui.loading = <Loading note="preview" />;
+    p.ui.preload = <Loading note="preload" backdrop={false} />;
     p.ui.notfound = (
       <div className="flex-1 flex items-center justify-center">NOT FOUND</div>
     );
