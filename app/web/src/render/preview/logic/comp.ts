@@ -42,6 +42,8 @@ export const scanComponent = (
 ) => {
   const ids = componentIDS || new Set();
 
+  if (!item) return ids;
+
   if (item.type === "item" && item.component?.id) {
     ids.add(item.component.id);
 
