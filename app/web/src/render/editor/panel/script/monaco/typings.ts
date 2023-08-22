@@ -52,12 +52,26 @@ export const monacoTypings = async (
   ]);
 
   const propText = extractProp(prop);
-  console.log(propText);
+
+  const apiTypes = w.prasiApi[p.site.api_url].apiTypes;
+
+  let apiPath = "app/gen/srv/api/srv";
+  if (apiTypes.includes(`export * as srv from "gen/srv/api/srv"`)) {
+    apiPath = "gen/srv/api/srv";
+  }
+
   register(
     monaco,
     `\
 import React from 'react';
 import prisma from 'prisma';
+
+${iftext(
+  apiTypes,
+  `\
+import "./api"
+import type * as SRVAPI from "${apiPath}";`
+)}
 
 declare global {
   const db: prisma.PrismaClient; 
@@ -66,6 +80,15 @@ declare global {
 
   const moko: {nama: string};
   ${propText.join("\n")}
+
+  ${iftext(
+    apiTypes,
+    `
+  type Api = typeof SRVAPI;
+  type ApiName = keyof Api;
+  const api: { [k in ApiName]: Awaited<Api[k]["handler"]>["_"]["api"] };
+  `
+  )}
 }
 
   `,

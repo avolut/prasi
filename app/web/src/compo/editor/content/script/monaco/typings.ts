@@ -35,6 +35,13 @@ export const monacoTypings = async (
 
   register(monaco, wsdoc.apiDef.apiTypes, "ts:api.d.ts");
 
+  let apiPath = "app/gen/srv/api/srv";
+  if (
+    wsdoc.apiDef.apiTypes.includes(`export * as srv from "gen/srv/api/srv"`)
+  ) {
+    apiPath = "gen/srv/api/srv";
+  }
+
   const propText = extractProp(prop);
 
   register(
@@ -47,7 +54,7 @@ ${iftext(
   wsdoc.apiDef.apiTypes,
   `\
 import "./api"
-import type * as SRVAPI from "app/gen/srv/api/srv";`
+import type * as SRVAPI from "${apiPath}";`
 )}
 
 
