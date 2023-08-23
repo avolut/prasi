@@ -6,13 +6,17 @@ import { readAsync } from "fs-jetpack";
 export const _ = {
   url: "/npm/:mode/:id/*",
   async api(mode: "site" | "page", id: string) {
-    const { req, res } = apiContext(this);
+    const { req, res, mode: _mode } = apiContext(this);
     const path = dir.path(`../npm/${mode}/${id}/${req.params._}`);
 
     res.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT");
     res.setHeader("Access-Control-Allow-Headers", "content-type rid");
     res.setHeader("Access-Control-Allow-Credentials", "true");
-    res.setHeader("Access-Control-Allow-Origin", "prasi.app");
+
+    res.setHeader(
+      "Access-Control-Allow-Origin",
+      _mode === "dev" ? "http://localhost:4550" : "https://prasi.app"
+    );
 
     const contentType = mime.lookup(path);
     if (contentType) res.setHeader("content-type", contentType);
