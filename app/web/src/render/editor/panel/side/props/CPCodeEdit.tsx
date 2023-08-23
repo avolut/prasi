@@ -11,7 +11,9 @@ export const CPCodeEdit: FC<{
   const local = useLocal({ item: p.treeMeta[p.item.active].comp });
 
   const item = local.item;
-  if (!item) return <>ERROR: Item is not an instance of component</>;
+  if (!item) {
+    return <>ERROR: Item is not an instance of component</>;
+  }
 
   return (
     <EScriptCustom

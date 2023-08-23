@@ -12,7 +12,7 @@ export const _ = {
     res.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT");
     res.setHeader("Access-Control-Allow-Headers", "content-type rid");
     res.setHeader("Access-Control-Allow-Credentials", "true");
-    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Origin", "prasi.app");
 
     const contentType = mime.lookup(path);
     if (contentType) res.setHeader("content-type", contentType);
