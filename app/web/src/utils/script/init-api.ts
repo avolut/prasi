@@ -2,6 +2,7 @@ import trim from "lodash.trim";
 
 const w = window as unknown as {
   prasiApi: Record<string, any>;
+  apiHeaders: any;
 };
 
 export const createAPI = (url: string) => {

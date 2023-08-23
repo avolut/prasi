@@ -9,6 +9,7 @@ const w = window as unknown as {
   navigateOverride: (s: string) => string;
   isEditor: boolean;
   isMobile: boolean;
+  apiHeaders: any;
   isDesktop: boolean;
   exports: any;
   params: any;
@@ -21,6 +22,8 @@ export const initPreview = async (p: PG, domain: string) => {
     w.isEditor = false;
     w.isMobile = p.mode === "mobile";
     w.isDesktop = p.mode === "desktop";
+    w.apiHeaders = {};
+
     w.navigateOverride = (_href) => {
       if (_href.startsWith("/")) {
         if (w.basepath.length > 1) {
