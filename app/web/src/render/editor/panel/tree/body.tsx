@@ -40,15 +40,10 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[] }> = ({ tree }) => {
   const onClick = useCallback(
     (node: NodeModel<NodeContent>) => {
       if (node.data) {
-        if (local.key === "ctrl" || local.key === "shift") {
-          selectMultiple(p, node, local);
-        } else {
-          p.item.multiple = [];
-          p.item.active = node.data.content.id;
-        }
+        p.item.multiple = [];
+        p.item.active = node.data.content.id;
         p.softRender.all();
       }
-      local.render();
     },
     [tree]
   );
@@ -95,41 +90,6 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[] }> = ({ tree }) => {
       local.method?.open([...open]);
     }
   }, [p.comp?.id, local.method]);
-
-  useEffect(() => {
-    const keyDown = async (evt: KeyboardEvent) => {
-      if (local.key !== "shift")
-        if (evt.shiftKey || evt.metaKey) {
-          local.key = "shift";
-          local.render();
-          return;
-        }
-      if (local.key !== "ctrl")
-        if (evt.ctrlKey || evt.metaKey) {
-          local.key = "ctrl";
-          local.render();
-          return;
-        }
-    };
-    const keyUp = async (evt: KeyboardEvent) => {
-      if (local.key === "ctrl")
-        if (!evt.ctrlKey) {
-          local.key = "";
-          local.render();
-        }
-      if (local.key === "shift")
-        if (!evt.shiftKey) {
-          local.key = "";
-          local.render();
-        }
-    };
-    window.addEventListener("keydown", keyDown, true);
-    window.addEventListener("keyup", keyUp, true);
-    return () => {
-      window.removeEventListener("keydown", keyDown, true);
-      window.removeEventListener("keyup", keyUp, true);
-    };
-  }, []);
 
   return (
     <div
