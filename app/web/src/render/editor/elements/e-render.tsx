@@ -1,4 +1,4 @@
-import { FC, ReactNode, useCallback } from "react";
+import { FC, ReactNode } from "react";
 import { useGlobal } from "web-utils";
 import { produceCSS } from "../../../utils/css/gen";
 import { IContent, MContent } from "../../../utils/types/general";
@@ -8,8 +8,8 @@ import { IText } from "../../../utils/types/text";
 import { newPageComp } from "../logic/comp";
 import { EditorGlobal } from "../logic/global";
 import { ComponentOver, ElProp, createElProp } from "./e-relprop";
-import { scriptExec } from "./script-exec";
 import { ETextInternal } from "./e-text";
+import { scriptExec } from "./script-exec";
 
 export const ERender: FC<{
   item: IContent;

@@ -53,7 +53,9 @@ export const monacoTypings = async (
 
   const propText = extractProp(prop);
 
-  const apiTypes = w.prasiApi[p.site.api_url].apiTypes;
+  const apiTypes = w.prasiApi[p.site.api_url]
+    ? w.prasiApi[p.site.api_url].apiTypes
+    : '';
 
   let apiPath = "app/gen/srv/api/srv";
   if (apiTypes.includes(`export * as srv from "gen/srv/api/srv"`)) {
