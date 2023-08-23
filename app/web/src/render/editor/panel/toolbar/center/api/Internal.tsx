@@ -46,7 +46,7 @@ export const InternalAPI: FC<{
 
   let url = "";
   const port = config?.api_prasi?.port;
-  if (location.hostname !== "prasi.app") {
+  if (location.hostname !== "prasi.app" && location.hostname !== "localhost") {
     url = `http://${location.hostname}:${port}`;
   } else {
     url = `https://${port}.prasi.world`;

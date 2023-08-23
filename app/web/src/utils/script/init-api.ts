@@ -16,7 +16,10 @@ export const createDB = (url: string) => {
 export const initApi = async (config: any) => {
   let url = "";
   if (config.prasi) {
-    if (location.hostname !== "prasi.app") {
+    if (
+      location.hostname !== "prasi.app" &&
+      location.hostname !== "localhost"
+    ) {
       url = `http://${location.hostname}:${config.prasi.port}`;
     } else {
       url = `https://${config.prasi.port}.prasi.world`;
@@ -41,13 +44,13 @@ export const reloadDBAPI = async (url: string) => {
     const base = trim(url, "/");
     const apiTypes = await fetch(base + "/_prasi/api-types");
     const apiEntry = await fetch(base + "/_prasi/api-entry");
+    console.log(`${base}/_prasi/prisma/index.d.ts`);
     w.prasiApi[url] = {
       apiEntry: (await apiEntry.json()).srv,
       prismaTypes: {
-        "prisma.d.ts": await loadText(`${base}/_prasi/prisma/index.d.ts`),
-        "runtime/index.d.ts": await loadText(
-          `${base}/_prasi/prisma/runtime/index.d.ts`
-        ),
+        "prisma.d.ts": (
+          await loadText(`${base}/_prasi/prisma/index.d.ts`)
+        ).replace(`'./runtime/library';`, `'ts:runtime/library';`),
         "runtime/library.d.ts": await loadText(
           `${base}/_prasi/prisma/runtime/library.d.ts`
         ),

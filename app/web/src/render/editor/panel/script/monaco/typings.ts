@@ -25,7 +25,10 @@ export const monacoTypings = async (
     )) {
       register(
         monaco,
-        `declare module '${k.replace(`\.d\.ts`, "")}' { ${v} } `,
+        `declare module '${k === "prisma.d.ts" ? "" : "ts:"}${k.replace(
+          `\.d\.ts`,
+          ""
+        )}' { ${v} } `,
         `ts:${k}`
       );
     }
@@ -55,7 +58,7 @@ export const monacoTypings = async (
 
   const apiTypes = w.prasiApi[p.site.api_url]
     ? w.prasiApi[p.site.api_url].apiTypes
-    : '';
+    : "";
 
   let apiPath = "app/gen/srv/api/srv";
   if (apiTypes.includes(`export * as srv from "gen/srv/api/srv"`)) {
