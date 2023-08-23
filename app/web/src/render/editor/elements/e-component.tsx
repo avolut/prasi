@@ -42,6 +42,7 @@ export const EComponent: FC<{
     );
   }
   const comp = pcomp.getMap("map").toJSON();
+  if (!comp.content_tree) return <>Component Missing</>;
   const props = comp.content_tree.component?.props || {};
 
   if (
