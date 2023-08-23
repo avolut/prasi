@@ -263,7 +263,6 @@ export const CETreeMenu: FC<{
                   let jso = JSON.parse(desc) as IContent;
                   if (get(jso, "data")) {
                     let childs = get(jso, "data") as any;
-                    let maps: any = [];
                     c.editor.multiple.active = [];
                     let select = [] as Array<MContent>;
                     childs.map((e: any) => {
