@@ -8,6 +8,7 @@ import { EItem } from "./e-item";
 import { ERender } from "./e-render";
 import { EText } from "./e-text";
 import { createAPI, createDB } from "../../../utils/script/init-api";
+import { Loading } from "../../../utils/ui/loading";
 
 export const EComponent: FC<{
   item: IItem;
@@ -42,7 +43,10 @@ export const EComponent: FC<{
     );
   }
   const comp = pcomp.getMap("map").toJSON();
-  if (!comp.content_tree) return <>Component Missing</>;
+
+  if (!comp.content_tree) {
+    return <Loading backdrop={false} />;
+  }
   const props = comp.content_tree.component?.props || {};
 
   if (
