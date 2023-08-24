@@ -44,7 +44,6 @@ export const reloadDBAPI = async (url: string) => {
     const base = trim(url, "/");
     const apiTypes = await fetch(base + "/_prasi/api-types");
     const apiEntry = await fetch(base + "/_prasi/api-entry");
-    console.log(`${base}/_prasi/prisma/index.d.ts`);
     w.prasiApi[url] = {
       apiEntry: (await apiEntry.json()).srv,
       prismaTypes: {
