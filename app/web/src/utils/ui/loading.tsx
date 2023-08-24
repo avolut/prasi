@@ -103,7 +103,7 @@ export const Loading: FC<{
               `
             )}
           >
-            <div>{note}</div>
+            {/* <div>{note}</div> */}
 
             <div className="pr-outer w-full h-[3px] flex items-stretch rounded-sm overflow-hidden">
               <div
