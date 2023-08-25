@@ -6,7 +6,6 @@ import { useLocal } from "web-utils";
 export const CPOption: FC<CPArgs> = ({ prop, onChange, editCode, reset }) => {
   const local = useLocal({ codeEditing: false });
   let metaOptions: { label: string; value: any }[] = [];
-  console.log(prop);
   if (prop.meta?.options) {
     try {
       eval(`metaOptions = ${prop.meta.options}`);
