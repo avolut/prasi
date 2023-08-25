@@ -99,7 +99,7 @@ export const EScriptElement: FC<{}> = ({}) => {
       <div className="bg-white w-[80vw] h-[80vh] flex">
         <div
           className={cx(
-            "flex flex-1",
+            "flex flex-1 relative",
             css`
               .monaco-editor {
                 .mtk9 {
@@ -148,9 +148,15 @@ export const EScriptElement: FC<{}> = ({}) => {
             `
           )}
         >
-          {!jscript.editor || !jscript.build ? (
-            <Loading note="script-el" backdrop={false} />
-          ) : (
+          {(!jscript.editor || !jscript.build) && (
+            <>
+              {!jscript.editor && (
+                <Loading note={"js-editor"} backdrop={false} />
+              )}
+              {!jscript.build && <Loading note={"js-build"} backdrop={false} />}
+            </>
+          )}
+          {jscript.editor && jscript.build && (
             <ScriptMonacoElement
               Editor={jscript.editor}
               build={jscript.build}

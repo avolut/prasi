@@ -31,6 +31,8 @@ export const createElProp = (
         hoverCounts[item.id].count > 1 &&
         Date.now() - hoverCounts[item.id].ts < 1000
       ) {
+        e.stopPropagation();
+        e.preventDefault();
         return;
       }
 
