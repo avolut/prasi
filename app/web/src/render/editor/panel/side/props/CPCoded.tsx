@@ -8,7 +8,7 @@ export const CPCoded: FC<{
     <div className="flex flex-1 items-stretch justify-end pr-2">
       <div
         className="m-1 px-1 bg-white cursor-pointer hover:bg-blue-500 hover:text-white hover:border-blue-500 font-mono border border-slate-300 text-[11px]"
-        onClick={editCode}
+        onClick={() => editCode()}
       >
         EDIT CODE
       </div>

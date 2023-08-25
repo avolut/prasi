@@ -103,7 +103,9 @@ export const Loading: FC<{
               `
             )}
           >
-            <div className="text-[10px] text-slate-400">{note}</div>
+            <div className="text-[10px] text-slate-400 whitespace-nowrap">
+              {note}
+            </div>
 
             <div className="pr-outer w-full h-[3px] flex items-stretch rounded-sm overflow-hidden">
               <div

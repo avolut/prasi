@@ -121,14 +121,14 @@ const SingleProp: FC<{
   render: () => void;
   comp: CompDoc;
   p: PG;
-}> = ({ name, prop, mprop, render, comp, p }) => {
+}> = ({ name, prop: _prop, mprop, render, comp, p }) => {
   const local = useLocal({
     clickEvent: null as any,
     editCode: false,
     editCodeOnClose: () => {},
     loading: false,
   });
-  const type = prop.meta?.type || "text";
+  const type = _prop.meta?.type || "text";
   const updateValue = async (val: string) => {
     if (jscript.build) {
       const res = await jscript.build("el.tsx", `return ${val}`);
@@ -157,8 +157,8 @@ const SingleProp: FC<{
         mprop.set("value", propVal.value);
         mprop.set("valueBuilt", propVal.valueBuilt);
       });
-      prop.value = propVal.value;
-      prop.valueBuilt = propVal.valueBuilt;
+      _prop.value = propVal.value;
+      _prop.valueBuilt = propVal.valueBuilt;
 
       local.loading = true;
       render();
@@ -169,6 +169,19 @@ const SingleProp: FC<{
       }, 100);
     }
   };
+
+  const prop = comp
+    .getMap("map")
+    .get("content_tree")
+    ?.get("component")
+    ?.get("props")
+    ?.get(name)
+    ?.toJSON() as FNCompDef;
+
+  if (!prop) return <>Missing Prop</>;
+
+  prop.value = _prop.value;
+  prop.valueBuilt = _prop.valueBuilt;
 
   return (
     <div
@@ -248,7 +261,7 @@ const SingleProp: FC<{
                 <Popover
                   open={true}
                   onOpenChange={(open) => {
-                    if (!open) {
+                    if (!open && local.editCodeOnClose) {
                       local.editCode = false;
                       local.editCodeOnClose();
                       local.render();

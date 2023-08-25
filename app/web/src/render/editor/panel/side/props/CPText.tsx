@@ -12,7 +12,6 @@ export const CPText: FC<CPArgs> = ({
   reset,
 }) => {
   const local = useLocal({ value: "", codeEditing: false });
-  const value = prop.value;
 
   if (prop.value) {
     try {

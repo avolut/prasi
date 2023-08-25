@@ -1,9 +1,12 @@
 import { FC } from "react";
 import { CPArgs } from "./types";
 import { CPCoded } from "./CPCoded";
+import { useLocal } from "web-utils";
 
 export const CPOption: FC<CPArgs> = ({ prop, onChange, editCode, reset }) => {
+  const local = useLocal({ codeEditing: false });
   let metaOptions: { label: string; value: any }[] = [];
+  console.log(prop);
   if (prop.meta?.options) {
     try {
       eval(`metaOptions = ${prop.meta.options}`);
@@ -16,11 +19,24 @@ export const CPOption: FC<CPArgs> = ({ prop, onChange, editCode, reset }) => {
   } catch (e) {}
 
   if (
+    local.codeEditing ||
     !metaOptions.find((e) => {
       return e.value === evalue;
     })
   ) {
-    return <CPCoded editCode={editCode} reset={reset} />;
+    return (
+      <CPCoded
+        editCode={() => {
+          local.codeEditing = true;
+          local.render();
+          editCode(() => {
+            local.codeEditing = false;
+            local.render();
+          });
+        }}
+        reset={reset}
+      />
+    );
   }
 
   return (
