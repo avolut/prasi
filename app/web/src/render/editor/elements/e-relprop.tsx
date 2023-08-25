@@ -3,6 +3,7 @@ import { IContent } from "../../../utils/types/general";
 import { IItem } from "../../../utils/types/item";
 import { editComp } from "../logic/comp";
 import { PG } from "../logic/global";
+const hoverAttempt: { id: string; ts: number }[] = [];
 
 export type ElProp = ReturnType<typeof createElProp>;
 export const createElProp = (
@@ -12,8 +13,26 @@ export const createElProp = (
 ) => {
   return {
     onPointerEnter: (e: React.PointerEvent<HTMLDivElement>) => {
-      e.stopPropagation();
-      e.preventDefault();
+      hoverAttempt.unshift({ id: item.id, ts: Date.now() });
+      if (hoverAttempt.length > 6) {
+        hoverAttempt.pop();
+      }
+
+      const hoverCounts: Record<string, { count: number; ts: number }> = {};
+      for (const a of hoverAttempt) {
+        if (!hoverCounts[a.id]) {
+          hoverCounts[a.id] = { count: 1, ts: a.ts };
+        } else {
+          hoverCounts[a.id].count++;
+        }
+      }
+
+      if (
+        hoverCounts[item.id].count > 1 &&
+        Date.now() - hoverCounts[item.id].ts < 1000
+      ) {
+        return;
+      }
 
       if (p.comp?.id && !editComponentId) {
         p.item.hover = item.id;
@@ -21,6 +40,8 @@ export const createElProp = (
         return;
       }
       if (p.item.hover !== item.id) {
+        e.stopPropagation();
+        e.preventDefault();
         p.item.hover = item.id;
         p.softRender.all();
       }
