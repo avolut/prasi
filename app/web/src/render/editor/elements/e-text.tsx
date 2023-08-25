@@ -46,6 +46,7 @@ export const ETextInternal: FC<{
 
   return (
     <div
+      id={`text-${item.id}`}
       className={cx(
         className,
         css`

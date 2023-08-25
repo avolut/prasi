@@ -132,7 +132,7 @@ export const ERender: FC<{
     return null;
   }
   if (adv) {
-    const html = renderHTML(className, adv, elprop);
+    const html = renderHTML(item.id, className, adv, elprop);
 
     if (html) return html;
     else if (adv.jsBuilt && adv.js) {
@@ -177,7 +177,12 @@ export const ERender: FC<{
   );
 };
 
-export const renderHTML = (className: string, adv: FNAdv, elprop: ElProp) => {
+export const renderHTML = (
+  id: string,
+  className: string,
+  adv: FNAdv,
+  elprop: ElProp
+) => {
   if (adv.html) {
     return (
       <div

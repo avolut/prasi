@@ -8,6 +8,7 @@ import {
 } from "@minoru/react-dnd-treeview";
 import { FC, useCallback, useEffect } from "react";
 import { useGlobal, useLocal } from "web-utils";
+import { MContent } from "../../../../utils/types/general";
 import { EditorGlobal } from "../../logic/global";
 import { ETreeItem } from "./item/item";
 import { ETreeRightClick } from "./item/right-click";
@@ -19,9 +20,7 @@ import {
   onDragEnd,
   onDragStart,
   onDrop,
-  selectMultiple,
 } from "./utils/tree-utils";
-import { MContent } from "../../../../utils/types/general";
 export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[] }> = ({ tree }) => {
   const TypedTree = DNDTree<NodeContent>;
   const p = useGlobal(EditorGlobal, "EDITOR");
@@ -42,6 +41,15 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[] }> = ({ tree }) => {
       if (node.data) {
         p.item.multiple = [];
         p.item.active = node.data.content.id;
+        if (p.treeMeta[p.item.active].item.type === "text") {
+          setTimeout(() => {
+            const text = document.getElementById(
+              `text-${p.item.active}`
+            ) as HTMLInputElement;
+            text.focus();
+          }, 100);
+        }
+
         p.softRender.all();
       }
     },
