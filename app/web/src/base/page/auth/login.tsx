@@ -1,8 +1,8 @@
 import { page } from "web-init";
-import { formStyle } from "../../../compo/form.style";
 import { useLocal } from "web-utils";
-import { Loading } from "../../../compo/ui/loading";
-import { Input } from "../../../compo/ui/form/input";
+import { Loading } from "../../../utils/ui/loading";
+import { formStyle } from "../../../utils/ui/form.style";
+import { Input } from "../../../utils/ui/form/input";
 
 export default page({
   url: "/login",

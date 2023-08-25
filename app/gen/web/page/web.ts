@@ -46,14 +46,6 @@ export const editor = {
   layout: undefined,
   component: () => import("../../../web/src/base/page/editor")
 }
-export const old = {
-  name: "old",
-  url: "/old/:site/:page",
-  path: "app/web/src/base/page/old.tsx",
-  ssr: false,
-  layout: "blank",
-  component: () => import("../../../web/src/base/page/old")
-}
 export const preview = {
   name: "preview",
   url: "/preview/:domain/**",
@@ -61,12 +53,4 @@ export const preview = {
   ssr: false,
   layout: undefined,
   component: () => import("../../../web/src/base/page/preview")
-}
-export const site = {
-  name: "site",
-  url: "/site/:name/**",
-  path: "app/web/src/base/page/site.tsx",
-  ssr: false,
-  layout: undefined,
-  component: () => import("../../../web/src/base/page/site")
 }

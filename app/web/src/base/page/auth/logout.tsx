@@ -1,5 +1,5 @@
 import { page } from "web-init";
-import { Loading } from "../../../compo/ui/loading";
+import { Loading } from "../../../utils/ui/loading";
 
 export default page({
   url: "/logout",

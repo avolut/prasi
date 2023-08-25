@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { SSR } from "service-web/pkgs/web-types";
 import { Root, ServerScript, setupEnv } from "web-init";
-import { Loading } from "./compo/ui/loading";
+import { Loading } from "./utils/ui/loading";
 
 setupEnv();
 

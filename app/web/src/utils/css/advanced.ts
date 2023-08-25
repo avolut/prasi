@@ -1,4 +1,4 @@
-import { responsiveVal } from "../../compo/page/tools/responsive-val";
+import { responsiveVal } from "../../render/editor/tools/responsive-val";
 import { MetaItem } from "../types/meta";
 import { FNAdv } from "../types/meta-fn";
 
