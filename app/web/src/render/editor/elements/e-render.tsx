@@ -3,7 +3,7 @@ import { useGlobal } from "web-utils";
 import { produceCSS } from "../../../utils/css/gen";
 import { IContent, MContent } from "../../../utils/types/general";
 import { IItem, MItem } from "../../../utils/types/item";
-import { FNAdv } from "../../../utils/types/meta-fn";
+import { FNAdv, FNCompDef } from "../../../utils/types/meta-fn";
 import { IText } from "../../../utils/types/text";
 import { newPageComp } from "../logic/comp";
 import { EditorGlobal } from "../logic/global";
@@ -110,7 +110,7 @@ export const ERender: FC<{
           .get("content_tree")
           ?.get("component")
           ?.get("props")
-          ?.toJSON();
+          ?.toJSON() as Record<string, FNCompDef>;
 
         if (props) {
           if (

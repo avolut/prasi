@@ -1,5 +1,4 @@
 import { useGlobal } from "web-utils";
-import { CEGlobal } from "../../../../../base/global/content-editor";
 import { ToolbarBox } from "../../../../../utils/ui/box";
 import { EditorGlobal } from "../../../logic/global";
 

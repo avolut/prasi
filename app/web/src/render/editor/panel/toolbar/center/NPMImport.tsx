@@ -1,14 +1,3 @@
-// import algoliasearch from "algoliasearch";
-// import { npm_page, npm_site } from "dbgen";
-// import { FC, useCallback, useEffect } from "react";
-// import { useGlobal, useLocal } from "web-utils";
-// import { Loading } from "../../../../ui/loading";
-// import { Popover } from "../../../../ui/popover";
-// import { wsdoc } from "../../../ws/wsdoc";
-// import { Tooltip } from "../../../../ui/tooltip";
-// import { NPMImportAs } from "./api/npm-type";
-// import { CEGlobal } from "../../../../../base/global/content-editor";
-
 import algoliasearch from "algoliasearch";
 import { npm_page, npm_site } from "dbgen";
 import { useGlobal, useLocal } from "web-utils";

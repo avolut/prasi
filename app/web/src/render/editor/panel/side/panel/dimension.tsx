@@ -2,7 +2,6 @@ import { FC, useEffect } from "react";
 import { FieldNumUnit } from "../ui/FieldNumUnit";
 import { Button } from "../ui/Button";
 import { useGlobal, useLocal } from "web-utils";
-import { CEGlobal } from "../../../../../base/global/content-editor";
 import { FNDimension } from "../../../../../utils/types/meta-fn";
 import { ISection } from "../../../../../utils/types/section";
 import { IItem } from "../../../../../utils/types/item";
@@ -23,8 +22,6 @@ export const PanelDimension: FC<{
     val: DimensionUpdate[T]
   ) => void;
 }> = ({ value, update, mode, id }) => {
-  const c = useGlobal(CEGlobal, id);
-  const activeEl = c.editor.activeEl;
   const local = useLocal({
     menuWidth: null as any,
     menuHeight: null as any,
@@ -38,11 +35,6 @@ export const PanelDimension: FC<{
       hUnit: "px",
     }),
   });
-
-  if (activeEl) {
-    local.activeWidth = activeEl.offsetWidth;
-    local.activeHeight = activeEl.offsetHeight;
-  }
 
   useEffect(() => {
     local.dim = responsiveVal<FNDimension>(value, "dim", mode, {

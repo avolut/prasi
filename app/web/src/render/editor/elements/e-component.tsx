@@ -42,8 +42,8 @@ export const EComponent: FC<{
       </div>
     );
   }
-  const comp = pcomp.getMap("map").toJSON();
 
+  const comp = pcomp.getMap("map").toJSON();
   if (!comp.content_tree) {
     return <Loading backdrop={false} />;
   }
@@ -96,8 +96,21 @@ export const EComponent: FC<{
       {(childs) => {
         return childs.map((e) => {
           if (e.type === "item")
-            return <EItem item={e} key={e.id} editComponentId={cid} />;
-          else return <EText item={e} key={e.id} editComponentId={cid} />;
+            return (
+              <EItem
+                item={e}
+                key={e.id}
+                editComponentId={editComponentId ? cid : undefined}
+              />
+            );
+          else
+            return (
+              <EText
+                item={e}
+                key={e.id}
+                editComponentId={editComponentId ? cid : undefined}
+              />
+            );
         });
       }}
     </ERender>
@@ -110,6 +123,11 @@ export const getRenderPropVal = (
   p: PG
 ) => {
   const nprops: any = {};
+
+  const meta = p.treeMeta[item.id];
+  if (!meta) return;
+  const mitem = meta.mitem as MItem;
+
   const exec = (key: string, fn: string, scopes: any) => {
     scopes["api"] = createAPI(p.site.api_url);
     scopes["db"] = createDB(p.site.api_url);
@@ -128,15 +146,24 @@ export const getRenderPropVal = (
 
   for (const [key, _prop] of Object.entries(props)) {
     const prop = item.component?.props[key] || _prop;
+    const mprop = mitem.get("component")?.get("props")?.get(key);
+
     let val: any = null;
     let shouldEval = true;
 
     if (prop.meta?.type === "content-element") {
-      shouldEval = false;
+      if (mprop) {
+        shouldEval = false;
 
-      if (prop.content) {
-        prop.content.nprops = item.nprops;
-        val = <EItem item={prop.content} />;
+        const mcontent = mprop.get("content");
+
+        if (mcontent) {
+          const content = mcontent.toJSON() as IItem;
+          content.nprops = item.nprops;
+          val = <EItem item={content} />;
+        } else {
+          val = <></>;
+        }
       } else {
         val = <></>;
       }

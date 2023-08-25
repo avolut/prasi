@@ -68,16 +68,21 @@ export const useGlobal = <T extends object>(
   }, []);
 
   const res = global[_id];
-  res.render = (reset?: boolean) => {
-    if (reset) {
-      global[_id] = undefined;
-    }
-    if (isSSR) {
-      render();
-    } else {
-      startTransition(render);
-    }
-  };
+
+  if (res) {
+    res.render = (reset?: boolean) => {
+      if (reset) {
+        global[_id] = undefined;
+      }
+      if (isSSR) {
+        render();
+      } else {
+        startTransition(render);
+      }
+    };
+  } else {
+    console.log(defaultValue, _id);
+  }
 
   return res as any;
 };
