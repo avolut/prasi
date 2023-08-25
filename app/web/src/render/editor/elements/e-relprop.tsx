@@ -5,7 +5,6 @@ import { editComp } from "../logic/comp";
 import { PG } from "../logic/global";
 
 export type ElProp = ReturnType<typeof createElProp>;
-const hoverAttempt: { id: string; ts: number }[] = [];
 export const createElProp = (
   item: IContent,
   p: PG,
@@ -13,26 +12,8 @@ export const createElProp = (
 ) => {
   return {
     onPointerEnter: (e: React.PointerEvent<HTMLDivElement>) => {
-      hoverAttempt.unshift({ id: item.id, ts: Date.now() });
-      if (hoverAttempt.length > 6) {
-        hoverAttempt.pop();
-      }
-
-      const hoverCounts: Record<string, { count: number; ts: number }> = {};
-      for (const a of hoverAttempt) {
-        if (!hoverCounts[a.id]) {
-          hoverCounts[a.id] = { count: 1, ts: hoverCounts[a.id].ts };
-        } else {
-          hoverCounts[a.id].count++;
-        }
-      }
-
-      if (
-        hoverCounts[item.id].count > 2 &&
-        Date.now() - hoverCounts[item.id].ts < 1000
-      ) {
-        return;
-      }
+      e.stopPropagation();
+      e.preventDefault();
 
       if (p.comp?.id && !editComponentId) {
         p.item.hover = item.id;
@@ -40,8 +21,6 @@ export const createElProp = (
         return;
       }
       if (p.item.hover !== item.id) {
-        e.stopPropagation();
-        e.preventDefault();
         p.item.hover = item.id;
         p.softRender.all();
       }
