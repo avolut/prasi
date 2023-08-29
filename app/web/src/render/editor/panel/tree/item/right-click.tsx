@@ -250,12 +250,14 @@ export const ETreeRightClick: FC<{
               }
             });
           } else {
-            mitem.parent.forEach((e: MContent, idx) => {
-              if (e === mitem) {
-                const json = e.toJSON() as IContent;
-                const map = newMap(fillID(json)) as MContent;
-                mitem.parent.insert(idx, [map]);
-              }
+            mitem.doc?.transact(() => {
+              mitem.parent.forEach((e: MContent, idx) => {
+                if (e === mitem) {
+                  const json = e.toJSON() as IContent;
+                  const map = newMap(fillID(json)) as MContent;
+                  mitem.parent.insert(idx, [map]);
+                }
+              });
             });
           }
           p.render();
@@ -326,8 +328,45 @@ export const ETreeRightClick: FC<{
                     if (childs) {
                       p.item.multiple = [];
                       let select = [] as Array<string>;
-                      childs.map((e: any) => {
-                        const nmap = fillID(e);
+
+                      mitem.doc?.transact(() => {
+                        childs.map((e: any) => {
+                          const nmap = fillID(e);
+                          const map = new Y.Map() as MContent;
+                          syncronize(map as any, nmap);
+                          if (map) {
+                            const childs = mitem.get("childs");
+                            if (childs) {
+                              // console.log("push", map);
+                              childs.push([map]);
+                            }
+                            const item = map.toJSON();
+                            select.push(item.id);
+                            p.render();
+                          }
+                        });
+                      });
+
+                      p.item.active = "";
+                      p.item.multiple = select;
+                    } else {
+                      mitem.doc?.transact(() => {
+                        if (jso.type === "section") {
+                          const newItem = {
+                            id: createId(),
+                            name: jso.name,
+                            type: "item",
+                            dim: { w: "fit", h: "fit" },
+                            childs: jso.childs,
+                            component: get(jso, "component"),
+                            adv: jso.adv,
+                          } as IItem;
+                          obj = newItem;
+                        } else {
+                          obj = jso;
+                        }
+                        let walkId: any = [];
+                        const nmap = fillID(obj);
                         const map = new Y.Map() as MContent;
                         syncronize(map as any, nmap);
                         if (map) {
@@ -337,44 +376,12 @@ export const ETreeRightClick: FC<{
                             childs.push([map]);
                           }
                           const item = map.toJSON();
-                          select.push(item.id);
+                          walkId.push(item.id);
                           p.render();
                         }
+                        p.item.active = "";
+                        p.item.multiple = walkId;
                       });
-
-                      p.item.active = "";
-                      p.item.multiple = select;
-                    } else {
-                      if (jso.type === "section") {
-                        const newItem = {
-                          id: createId(),
-                          name: jso.name,
-                          type: "item",
-                          dim: { w: "fit", h: "fit" },
-                          childs: jso.childs,
-                          component: get(jso, "component"),
-                          adv: jso.adv,
-                        } as IItem;
-                        obj = newItem;
-                      } else {
-                        obj = jso;
-                      }
-                      let walkId: any = [];
-                      const nmap = fillID(obj);
-                      const map = new Y.Map() as MContent;
-                      syncronize(map as any, nmap);
-                      if (map) {
-                        const childs = mitem.get("childs");
-                        if (childs) {
-                          // console.log("push", map);
-                          childs.push([map]);
-                        }
-                        const item = map.toJSON();
-                        walkId.push(item.id);
-                        p.render();
-                      }
-                      p.item.active = "";
-                      p.item.multiple = walkId;
                     }
                     p.render();
                   });

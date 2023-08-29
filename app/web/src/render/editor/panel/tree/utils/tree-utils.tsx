@@ -63,6 +63,7 @@ export const onDrop = (
   local: any
 ) => {
   const { dragSource, dropTargetId, dropTarget, relativeIndex } = options;
+
   let listItem = p.item.multiple;
   if (listItem.length) {
     // Multiple drop targets
@@ -75,58 +76,60 @@ export const onDrop = (
       let to = p.treeMeta[dropTarget.id];
       if (from && to && p.mpage && dragSource.id !== dropTarget.id)
         if (!find(listItem, (e) => e === dropTargetId)) {
-          const open = new Set<string>();
-          p.item.multiple = [];
-          let multiple: any = [];
-          const listContent: any = listItem.map((e) => {
-            let item = p.treeMeta[e];
-            if (item) {
-              if (item.mitem.get("type") === "section") {
-                const json = item.mitem.toJSON();
-                const newItem = {
-                  id: json.id,
-                  name: json.name,
-                  type: "item",
-                  dim: { w: "fit", h: "fit" },
-                  adv: json.adv,
-                  childs: json.childs || [],
-                  component: json.component,
-                } as IItem;
-                return newItem;
-              }
-              return item.mitem.toJSON();
-            }
-          });
-          listItem.map((e) => {
-            let mitem = p.treeMeta[e];
-            if (mitem) {
-              const jso = mitem.mitem;
-              jso.parent.forEach((e, idx) => {
-                if (e === jso) {
-                  jso.parent.delete(idx);
+          to.mitem.doc?.transact(() => {
+            const open = new Set<string>();
+            p.item.multiple = [];
+            let multiple: any = [];
+            const listContent: any = listItem.map((e) => {
+              let item = p.treeMeta[e];
+              if (item) {
+                if (item.mitem.get("type") === "section") {
+                  const json = item.mitem.toJSON();
+                  const newItem = {
+                    id: json.id,
+                    name: json.name,
+                    type: "item",
+                    dim: { w: "fit", h: "fit" },
+                    adv: json.adv,
+                    childs: json.childs || [],
+                    component: json.component,
+                  } as IItem;
+                  return newItem;
                 }
-              });
-            }
+                return item.mitem.toJSON();
+              }
+            });
+            listItem.map((e) => {
+              let mitem = p.treeMeta[e];
+              if (mitem) {
+                const jso = mitem.mitem;
+                jso.parent.forEach((e, idx) => {
+                  if (e === jso) {
+                    jso.parent.delete(idx);
+                  }
+                });
+              }
+            });
+            let res = flatTree(listContent);
+            let listMap = res.map((e: IContent) => fillID(e));
+            listMap.map((e: IContent) => {
+              const map = new Y.Map() as MContent;
+              syncronize(map as any, e);
+              const titem = to.mitem;
+              const childs = titem.get("childs");
+              if (childs && childs.length - 1 >= (relativeIndex || 0)) {
+                childs?.insert(relativeIndex || 0, [map]);
+              } else {
+                childs?.push([map]);
+              }
+              let id = walk(map);
+              multiple = multiple.concat(id);
+              if (typeof dropTargetId === "string") open.add(dropTargetId);
+            });
+            p.render();
+            p.item.multiple = multiple;
+            if (local.method) local.method?.open([...open]);
           });
-          let res = flatTree(listContent);
-          let listMap = res.map((e: IContent) => fillID(e));
-          listMap.map((e: IContent) => {
-            const map = new Y.Map() as MContent;
-            syncronize(map as any, e);
-            const titem = to.mitem;
-            const childs = titem.get("childs");
-            if (childs && childs.length - 1 >= (relativeIndex || 0)) {
-              childs?.insert(relativeIndex || 0, [map]);
-            } else {
-              childs?.push([map]);
-            }
-            let id = walk(map);
-            multiple = multiple.concat(id);
-            if (typeof dropTargetId === "string") open.add(dropTargetId);
-          });
-          p.render();
-          p.item.multiple = multiple;
-          if (local.method) local.method?.open([...open]);
         }
     }
   } else {
@@ -138,40 +141,44 @@ export const onDrop = (
     ) {
       let from = p.treeMeta[dragSource.id];
       let to = p.treeMeta[dropTarget.id];
-      if (from && to && p.mpage && dragSource.id !== dropTarget.id) {
-        const mitem = from.mitem;
-        const json = mitem.toJSON() as IContent;
+      if (from && to && p.mpage && dragSource.id !== dropTarget.id && p) {
+        to.mitem.doc?.transact(() => {
+          const mitem = from.mitem;
+          const json = mitem.toJSON() as IContent;
 
-        const nmap = fillID(json);
-        const map = new Y.Map() as MContent;
-        syncronize(map as any, nmap);
-        mitem.parent.forEach((e, idx) => {
-          if (e === mitem) {
-            mitem.parent.delete(idx);
-          }
-        });
-        if (dropTargetId !== "root") {
-          const titem = to.mitem;
-          if (titem) {
-            const childs = titem.get("childs");
-            if (childs && childs.length - 1 >= (relativeIndex || 0)) {
+          const nmap = fillID(json);
+          const map = new Y.Map() as MContent;
+          syncronize(map as any, nmap);
+          mitem.parent.forEach((e, idx) => {
+            if (e === mitem) {
+              mitem.parent.delete(idx);
+            }
+          });
+          if (dropTargetId !== "root") {
+            const titem = to.mitem;
+            if (titem) {
+              const childs = titem.get("childs");
+              if (childs && childs.length - 1 >= (relativeIndex || 0)) {
+                childs?.insert(relativeIndex || 0, [map]);
+              } else {
+                childs?.push([map]);
+              }
+            }
+          } else {
+            if (p.mpage) {
+              const childs = p.mpage
+                .getMap("map")
+                .get("content_tree")
+                ?.get("childs");
               childs?.insert(relativeIndex || 0, [map]);
-            } else {
-              childs?.push([map]);
             }
           }
-        } else {
-          const childs = p.mpage
-            .getMap("map")
-            .get("content_tree")
-            ?.get("childs");
-          childs?.insert(relativeIndex || 0, [map]);
-        }
-        p.render();
-        const item = map.toJSON();
-        if (item) {
-          p.item.active = item.id;
-        }
+          p.render();
+          const item = map.toJSON();
+          if (item) {
+            p.item.active = item.id;
+          }
+        });
       }
     }
   }
