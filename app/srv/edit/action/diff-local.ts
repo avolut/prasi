@@ -37,7 +37,7 @@ export const diffLocal = (ws: Websocket, msg: any) => {
             const page = eg.edit.page[msg.id].doc.getMap("map").toJSON();
             try {
               await db.page.update({
-                where: { id: msg.id },
+                where: { id: page.id },
                 data: {
                   ...page,
                   updated_at: new Date(),

@@ -59,7 +59,7 @@ export const Editor: FC<{ site_id: string; page_id: string; session: any }> = ({
   }, []);
 
   useEffect(() => {
-    if (p.status !== "init" && w.prasiApi) {
+    if (p.status !== "init" && w.prasiApi ) {
       execSiteJS(p);
       p.render();
     }
