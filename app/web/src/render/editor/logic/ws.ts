@@ -58,11 +58,18 @@ export const editorWS = async (p: PG) => {
           }, 2000);
         }
       };
-      ws.addEventListener("error", retry);
-      ws.addEventListener("close", retry);
+      ws.addEventListener("error", (e) => {
+        console.log("error", e);
+        retry(e);
+      });
+      ws.addEventListener("close", (e) => {
+        console.log("close", e);
+        retry(e);
+      });
       ws.addEventListener("open", () => resolve());
       ws.addEventListener("message", async (e) => {
         const msg = JSON.parse(e.data) as WS_MSG;
+        // console.log("<", msg.type);
 
         switch (msg.type) {
           case "get_page":
@@ -74,15 +81,9 @@ export const editorWS = async (p: PG) => {
               throttle((e, origin) => {
                 const doc = p.mpage;
                 if (doc) {
-                  if (!origin && origin !== "updated_at") {
+                  if (!origin) {
                     const id = doc.getMap("map").get("id");
                     if (id) {
-                      doc.transact(() => {
-                        doc
-                          .getMap("map")
-                          .set("updated_at", new Date().toISOString());
-                      }, "updated_at");
-
                       const sendmsg: WS_MSG_SV_LOCAL = {
                         type: "sv_local",
                         mode: "page",
@@ -93,8 +94,7 @@ export const editorWS = async (p: PG) => {
                       };
                       wsend(p, JSON.stringify(sendmsg));
                     }
-                  }
-                  if (origin === "updated_at") {
+                  } else if (origin === "updated_at") {
                     p.page = doc?.getMap("map").toJSON() as any;
                     render();
                   }
@@ -293,6 +293,7 @@ const svdRemote = async (arg: {
 export const wsend = async (local: PG, payload: string) => {
   const ws = local.ws;
   if (ws) {
+    // console.log(">", JSON.parse(payload).type);
     if (ws.readyState !== ws.OPEN) {
       await new Promise<void>((resolve) => {
         const ival = setInterval(() => {

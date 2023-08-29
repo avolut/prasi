@@ -3,9 +3,9 @@ import { Websocket } from "hyper-express";
 import { RadixRouter } from "service/pkgs/service-web/pkgs/web-init";
 import { UndoManager } from "yjs";
 import { TypedArray, TypedDoc, TypedMap } from "yjs-types";
-import { MPage, Site } from "../../web/src/compo/types/general";
-import { IItem } from "../../web/src/compo/types/item";
-import { IRoot } from "../../web/src/compo/types/root";
+import { MPage, Site } from "../../web/src/utils/types/general";
+import { IItem } from "../../web/src/utils/types/item";
+import { IRoot } from "../../web/src/utils/types/root";
 
 type ArrayElement<ArrayType extends readonly unknown[]> =
   ArrayType extends readonly (infer ElementType)[] ? ElementType : never;

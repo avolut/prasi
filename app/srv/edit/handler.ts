@@ -1,6 +1,6 @@
 import { createId } from "@paralleldrive/cuid2";
 import { Websocket } from "hyper-express";
-import { WS_MSG } from "../../web/src/compo/editor/ws/msg";
+import { WS_MSG } from "../../web/src/utils/types/ws";
 import { diffLocal } from "./action/diff-local";
 import { getComp } from "./action/get-comp";
 import { getPage } from "./action/get-page";
@@ -15,8 +15,8 @@ eg.edit = {
   page: {},
   ws: new WeakMap(),
 };
-
 export const collabEditHandler = (ws: Websocket) => {
+  
   eg.edit.ws.set(ws, {
     clientID: createId(),
   });

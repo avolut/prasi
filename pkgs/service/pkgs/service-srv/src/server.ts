@@ -31,7 +31,7 @@ export const server = async ({
 
   if (ws) {
     for (const [k, v] of Object.entries(ws)) {
-      server.ws(k, v);
+      server.ws(k, { max_payload_length: 9999999999 }, v);
     }
   }
 
