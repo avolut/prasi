@@ -322,9 +322,6 @@ export const ETreeRightClick: FC<{
                     let obj = {} as IContent;
                     let jso = JSON.parse(desc) as IContent;
                     const childs = get(jso, "data") as any;
-                    //TODO: ra mudeng, tako faisol...
-                    const child: any = mitem.get("childs");
-                    // console.log(jso);
                     if (childs) {
                       p.item.multiple = [];
                       let select = [] as Array<string>;

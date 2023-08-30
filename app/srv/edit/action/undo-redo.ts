@@ -1,7 +1,7 @@
 import { Websocket } from "hyper-express";
 import { eg } from "../edit-global";
 import { UndoManager } from "yjs";
-import { WS_MSG_REDO, WS_MSG_UNDO } from "../../../web/src/compo/editor/ws/msg";
+import { WS_MSG_REDO, WS_MSG_UNDO } from "../../../web/src/utils/types/ws";
 
 export const undo = (ws: Websocket, msg: WS_MSG_UNDO) => {
   const um = getUndoManager(msg);

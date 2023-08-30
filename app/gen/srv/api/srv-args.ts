@@ -98,6 +98,10 @@ export const npm = {
   url: "/npm/:mode/:id/*",
   args: ["mode","id"],
 }
+export const page_reload = {
+  url: "/page-reload/:page_id",
+  args: ["page_id"],
+}
 export const site_bundle = {
   url: "/site-bundle",
   args: [],

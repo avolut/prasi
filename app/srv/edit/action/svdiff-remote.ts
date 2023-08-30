@@ -4,7 +4,7 @@ import * as Y from "yjs";
 import {
   WS_MSG_DIFF_LOCAL,
   WS_MSG_SVDIFF_REMOTE,
-} from "../../../web/src/compo/editor/ws/msg";
+} from "../../../web/src/utils/types/ws";
 import { eg } from "../edit-global";
 
 export const svdiffRemote = async (

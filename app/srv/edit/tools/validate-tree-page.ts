@@ -1,10 +1,10 @@
 import { Websocket } from "hyper-express";
 import { syncronize } from "y-pojo";
 import * as Y from "yjs";
-import { fillID } from "../../../web/src/compo/page/tools/fill-id";
-import { IContent, MContent } from "../../../web/src/compo/types/general";
-import { IItem } from "../../../web/src/compo/types/item";
-import { IRoot } from "../../../web/src/compo/types/root";
+import { fillID } from "../../../web/src/utils/page/tools/fill-id";
+import { IContent, MContent } from "../../../web/src/utils/types/general";
+import { IItem } from "../../../web/src/utils/types/item";
+import { IRoot } from "../../../web/src/utils/types/root";
 import { getComp } from "../action/get-comp";
 import { eg } from "../edit-global";
 

@@ -6,7 +6,7 @@ import {
   WS_MSG_GET_COMP,
   WS_MSG_SET_COMP,
   WS_MSG_SV_LOCAL,
-} from "../../../web/src/compo/editor/ws/msg";
+} from "../../../web/src/utils/types/ws";
 import { SingleComp, eg } from "../edit-global";
 
 export const getComp = async (ws: Websocket, msg: WS_MSG_GET_COMP) => {

@@ -1,5 +1,5 @@
 import { validate } from "uuid";
-import { Page } from "../../../web/src/compo/types/general";
+import { Page } from "../../../web/src/utils/types/general";
 
 export const loadPage = async (page_id: string) => {
   if (page_id && validate(page_id)) {

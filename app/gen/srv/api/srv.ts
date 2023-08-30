@@ -173,6 +173,13 @@ export const npm = {
   args: ["mode","id"],
   handler: import("../../../srv/api/npm")
 }
+export const page_reload = {
+  name: "page_reload",
+  url: "/page-reload/:page_id",
+  path: "app/srv/api/page-reload.ts",
+  args: ["page_id"],
+  handler: import("../../../srv/api/page-reload")
+}
 export const site_bundle = {
   name: "site_bundle",
   url: "/site-bundle",

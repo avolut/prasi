@@ -4,7 +4,7 @@ import * as Y from "yjs";
 import {
   WS_MSG_SVDIFF_REMOTE,
   WS_MSG_SV_LOCAL,
-} from "../../../web/src/compo/editor/ws/msg";
+} from "../../../web/src/utils/types/ws";
 import { eg } from "../edit-global";
 import { getComp } from "./get-comp";
 import { getPage } from "./get-page";

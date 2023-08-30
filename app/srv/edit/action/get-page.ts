@@ -6,8 +6,8 @@ import {
   WS_MSG_GET_PAGE,
   WS_MSG_SET_PAGE,
   WS_MSG_SV_LOCAL,
-} from "../../../web/src/compo/editor/ws/msg";
-import { MPage } from "../../../web/src/compo/types/general";
+} from "../../../web/src/utils/types/ws";
+import { MPage } from "../../../web/src/utils/types/general";
 import { eg } from "../edit-global";
 import { loadPage } from "../tools/load-page";
 import { validate } from "uuid";
