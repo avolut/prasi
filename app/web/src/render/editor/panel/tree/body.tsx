@@ -46,7 +46,9 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[] }> = ({ tree }) => {
             const text = document.getElementById(
               `text-${p.item.active}`
             ) as HTMLInputElement;
-            text.focus();
+            if (text && text.focus) {
+              text.focus();
+            }
           }, 100);
         }
 

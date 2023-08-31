@@ -100,7 +100,6 @@ export const ScriptMonacoElement: FC<{
   const mitem = p.treeMeta[p.item.active]?.mitem;
   if (!mitem) {
     p.script.active = false;
-    p.render();
     return <div>no mitem</div>;
   }
 

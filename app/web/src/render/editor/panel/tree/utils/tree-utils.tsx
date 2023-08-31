@@ -229,7 +229,10 @@ export const canDrop = (p: PG, arg: DropOptions<NodeContent>, local: any) => {
             dropTarget.data.content.type === "item" &&
             dropTarget.data.content.component?.id
           ) {
-            return false;
+            const compid = dropTarget.data.content.component?.id || "";
+            if (!p.compEdits.find((e) => e.id === compid)) {
+              return false;
+            }
           }
           return true;
         } else {

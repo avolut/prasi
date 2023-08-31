@@ -24,7 +24,7 @@ export const _ = {
           );
           const broadcast: WS_MSG_SV_LOCAL = {
             type: "sv_local",
-            sv_local,
+            sv_local, 
             mode: "page",
             id: page_id,
           };
