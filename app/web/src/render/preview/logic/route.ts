@@ -22,7 +22,18 @@ export const routePreview = (p: PG, pathname: string) => {
         p.status = "not-found";
       } else {
         const id = p.page?.id;
-        if (id && id !== found.id) {
+        let paramsChanged = false;
+
+        if (found.params) {
+          for (const [k, v] of Object.entries(found.params)) {
+            if (w.params[k] !== v) {
+              paramsChanged = true;
+            }
+            w.params[k] = v;
+          }
+        }
+        
+        if (id && (id !== found.id || paramsChanged)) {
           if (!cacheMeta[id]) {
             cacheMeta[id] = p.treeMeta;
           }
@@ -34,11 +45,6 @@ export const routePreview = (p: PG, pathname: string) => {
           }
         }
         page_id = found.id;
-        if (found.params) {
-          for (const [k, v] of Object.entries(found.params)) {
-            w.params[k] = v;
-          }
-        }
       }
     }
 
