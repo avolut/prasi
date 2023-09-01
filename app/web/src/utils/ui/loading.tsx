@@ -1,4 +1,4 @@
-import { FC, ReactNode, useEffect } from "react";
+import { FC, ReactElement, ReactNode, useEffect } from "react";
 import { useLocal } from "web-utils";
 
 const w = (!isSSR ? window : {}) as unknown as { loadingIcon: string };
@@ -9,7 +9,8 @@ export const Loading: FC<{
   show?: boolean;
   backdrop?: boolean;
   note?: string;
-}> = ({ children, className, show, backdrop, note }) => {
+  alt?: ReactElement;
+}> = ({ children, className, show, backdrop, note, alt }) => {
   const local = useLocal(
     {
       icon: <div className="px-4 py-1">Loading...</div>,
@@ -117,6 +118,7 @@ export const Loading: FC<{
                 )}
               ></div>
             </div>
+            {alt}
           </div>
         </div>
       )}
