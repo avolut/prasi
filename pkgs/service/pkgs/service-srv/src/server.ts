@@ -157,7 +157,7 @@ export const server = async ({
               try {
                 result = await im(...passedParams);
               } catch (e) {
-                console.error(`APIError ${url}:\n ${e}`);
+                console.error(`APIError ${url}\n ${e}`);
               }
             }
 

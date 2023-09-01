@@ -76,9 +76,13 @@ export const _ = {
     const isMobile = dom.window.ssrPrasi.mode === "mobile";
     const isDesktop = dom.window.ssrPrasi.mode === "desktop";
 
-    dom.window.exports = {
-      ...(exports || {}),
-    };
+    if (typeof exports === "object" && exports && !Array.isArray(exports)) {
+      dom.window.exports = {
+        ...(exports || {}),
+      };
+    } else {
+      dom.window.exports = {};
+    }
 
     const defaults = {
       isSSR: true,
