@@ -1,9 +1,10 @@
 import { dir } from "dir";
 import { apiContext } from "service-srv";
+import { matchRoute } from "../edit/spa/match-route";
+import { serveSPA } from "../edit/spa/serve-spa";
 export const _ = {
-  url: "/spa/:site_id/:page_id",
+  url: "/spa/**",
   async api() {
-    const { req, res } = apiContext(this);
-    res.sendFile(dir.path("srv/spa/index.jsx"));
+    serveSPA({ mode: "spa", ctx: apiContext(this) });
   },
 };

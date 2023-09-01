@@ -1,9 +1,5 @@
-import { FC } from "react";
+import { w } from "./logic/window";
+import { PrasiOpt } from "./spa-raw";
 
-export const SPA: FC<{}> = () => {
-  return (
-    <div>
-      <>Hello ini bisa menjadi konten generator yang baik dan bagus </>
-    </div>
-  );
-};
+export const renderPrasi = (el: HTMLElement, opt?: PrasiOpt) => {};
+w.renderPrasi = renderPrasi;

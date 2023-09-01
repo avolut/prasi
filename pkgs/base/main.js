@@ -451,7 +451,7 @@
           maxRetries: 3
         });
       };
-      var removeAsync11 = (path4) => {
+      var removeAsync12 = (path4) => {
         return fs2.rm(path4, {
           recursive: true,
           force: true,
@@ -460,7 +460,7 @@
       };
       exports2.validateInput = validateInput;
       exports2.sync = removeSync;
-      exports2.async = removeAsync11;
+      exports2.async = removeAsync12;
     }
   });
 
@@ -37161,10 +37161,12 @@ ERROR: Async operation of type "${type}" was created in "process.exit" callback.
         await buildSSR(mode);
       };
       buildSPARaw = async (mode) => {
+        await (0, import_fs_jetpack17.removeAsync)(dir.root(".output/app/srv/spa-raw"));
         const ctx = await (0, import_esbuild2.context)({
           bundle: true,
-          entryPoints: [dir.root("app/web/src/render/spa/spa.tsx")],
-          outfile: dir.root(".output/app/srv/spa-raw/index.jsx"),
+          entryPoints: [dir.root("app/web/src/render/spa/spa-raw.tsx")],
+          outdir: dir.root(".output/app/srv/spa-raw"),
+          splitting: true,
           format: "esm",
           jsx: "transform",
           minify: true,
@@ -37188,10 +37190,12 @@ ERROR: Async operation of type "${type}" was created in "process.exit" callback.
         }
       };
       buildSPA = async (mode) => {
+        await (0, import_fs_jetpack17.removeAsync)(dir.root(".output/app/srv/spa"));
         const ctx = await (0, import_esbuild2.context)({
           bundle: true,
           entryPoints: [dir.root("app/web/src/render/spa/spa.tsx")],
-          outfile: dir.root(".output/app/srv/spa/index.jsx"),
+          outdir: dir.root(".output/app/srv/spa"),
+          splitting: true,
           format: "esm",
           jsx: "transform",
           minify: true,

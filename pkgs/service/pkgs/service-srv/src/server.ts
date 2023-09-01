@@ -44,7 +44,7 @@ export const server = async ({
   const api = (apiEntry as any)[name];
 
   if (api) {
-    const router = createRouter({});
+    const router = createRouter({ strictTrailingSlash: false });
     const pushed = new Set<string>();
 
     await Promise.all(

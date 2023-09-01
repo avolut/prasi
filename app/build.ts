@@ -1,7 +1,7 @@
 import globalExternals from "@fal-works/esbuild-plugin-global-externals";
 import { dir } from "dir";
 import { context } from "esbuild";
-import { copyAsync, existsAsync } from "fs-jetpack";
+import { copyAsync, existsAsync, removeAsync } from "fs-jetpack";
 
 export const build = async (mode: string) => {
   if (!(await existsAsync(dir.root(".output/app/prasi-api")))) {
@@ -19,10 +19,12 @@ export const build = async (mode: string) => {
 };
 
 const buildSPARaw = async (mode: string) => {
+  await removeAsync(dir.root(".output/app/srv/spa-raw"));
   const ctx = await context({
     bundle: true,
-    entryPoints: [dir.root("app/web/src/render/spa/spa.tsx")],
-    outfile: dir.root(".output/app/srv/spa-raw/index.jsx"),
+    entryPoints: [dir.root("app/web/src/render/spa/spa-raw.tsx")],
+    outdir: dir.root(".output/app/srv/spa-raw"),
+    splitting: true,
     format: "esm",
     jsx: "transform",
     minify: true,
@@ -48,10 +50,12 @@ if (typeof isSSR === 'undefined') {
 };
 
 const buildSPA = async (mode: string) => {
+  await removeAsync(dir.root(".output/app/srv/spa"));
   const ctx = await context({
     bundle: true,
     entryPoints: [dir.root("app/web/src/render/spa/spa.tsx")],
-    outfile: dir.root(".output/app/srv/spa/index.jsx"),
+    outdir: dir.root(".output/app/srv/spa"),
+    splitting: true,
     format: "esm",
     jsx: "transform",
     minify: true,

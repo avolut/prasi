@@ -115,11 +115,11 @@ export const site_load = {
   args: ["name","_page"],
 }
 export const spa_raw = {
-  url: "/spa-raw/:site_id/:page_id",
+  url: "/spa-raw/**",
   args: [],
 }
 export const spa = {
-  url: "/spa/:site_id/:page_id",
+  url: "/spa/**",
   args: [],
 }
 export const srv_image_gallery = {

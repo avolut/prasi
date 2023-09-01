@@ -99,7 +99,7 @@ export const initPreview = async (p: PG, domain: string) => {
         }
       }
 
-      p.route = createRouter();
+      p.route = createRouter({ strictTrailingSlash: false });
       if (pages.length > 0) {
         for (const page of pages) {
           p.route.insert(page.url, page);
