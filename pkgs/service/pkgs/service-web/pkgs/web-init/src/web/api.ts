@@ -2,14 +2,19 @@ import { fetchSendApi } from "./iframe-cors";
 
 export const apiClient = (
   api: Record<string, { url: string; args: any[] }>,
-  apiURL?: string
+  apiUrl?: string
 ) => {
   return new Proxy(
     {},
     {
       get: (_, actionName: string) => {
-        return (...rest: any) => {
+        return function (this: { apiUrl: string } | undefined, ...rest: any) {
           return new Promise<any>(async (resolve) => {
+            let _apiURL = apiUrl;
+            if (this?.apiUrl) {
+              _apiURL = this.apiUrl;
+            }
+
             if (!api || !api[actionName]) {
               resolve(null);
               console.error(`API ${actionName.toString()} not found;`);
@@ -34,7 +39,7 @@ export const apiClient = (
 
               let basePath = basepath === "/" ? "" : basepath;
 
-              const url = `${apiURL || basePath}${actionUrl}`;
+              const url = `${_apiURL || basePath}${actionUrl}`;
               const result = await fetchSendApi(url, rest);
               resolve(result);
             } else {

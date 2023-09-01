@@ -320,7 +320,7 @@ const SinglePopover: FC<{
             })}
           </div>
           <div className="border-t border-slate-300 px-2 pt-2 pb-1 flex flex-col items-stretch">
-            <div className="uppercase text-xs text-slate-500"> Name</div>
+            <div className="uppercase text-xs text-slate-500">Name</div>
             <input
               spellCheck={false}
               type="text"
