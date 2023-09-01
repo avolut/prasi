@@ -11,9 +11,9 @@ export const apiClient = (
         return function (this: { apiUrl: string } | undefined, ...rest: any) {
           return new Promise<any>(async (resolve) => {
             let _apiURL = apiUrl;
-            // if (this?.apiUrl) {
-            //   _apiURL = this.apiUrl;
-            // }
+            if (typeof this?.apiUrl === "string") {
+              _apiURL = this.apiUrl;
+            }
 
             if (!api || !api[actionName]) {
               resolve(null);
