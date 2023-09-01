@@ -1,6 +1,5 @@
 import { apiContext } from "service-srv";
 import ts from "typescript";
-import { traverse } from "../../../pkgs/base/src/scaffold/parser/traverse";
 
 export const _ = {
   url: "/site-dts/:site_id",

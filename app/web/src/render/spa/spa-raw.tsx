@@ -6,13 +6,13 @@ export type PrasiOpt = {
   showLoading?: boolean;
   exports?: any;
 };
-export const Prasi: FC<{ exports?: any }> = () => {
+export const Prasi: FC<PrasiOpt> = () => {
   const [_, render] = useState({});
   w.ssrContext.render = () => render({});
 
   return (
     <GlobalContext.Provider value={w.ssrContext}>
-      <>Hello ini bisa menjadi konten generator yang baik dan bagus </>
+      <>Hello ini bisa gitu</>
     </GlobalContext.Provider>
   );
 };

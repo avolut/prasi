@@ -110,9 +110,9 @@ export const site_dts = {
   url: "/site-dts/:site_id",
   args: ["site_id"],
 }
-export const site_load = {
-  url: "/site-load",
-  args: ["name","_page"],
+export const site = {
+  url: "/site/**",
+  args: [],
 }
 export const spa_raw = {
   url: "/spa-raw/**",

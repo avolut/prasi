@@ -1,7 +1,7 @@
 import { syncronize } from "y-pojo";
 import { TypedMap } from "yjs-types";
-import { IContent } from "../../web/src/compo/types/general";
-import { IItem } from "../../web/src/compo/types/item";
+import { IContent } from "../../web/src/utils/types/general";
+import { IItem } from "../../web/src/utils/types/item";
 import { eg } from "../edit/edit-global";
 
 export const _ = {

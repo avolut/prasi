@@ -194,12 +194,12 @@ export const site_dts = {
   args: ["site_id"],
   handler: import("../../../srv/api/site-dts")
 }
-export const site_load = {
-  name: "site_load",
-  url: "/site-load",
-  path: "app/srv/api/site-load.ts",
-  args: ["name","_page"],
-  handler: import("../../../srv/api/site-load")
+export const site = {
+  name: "site",
+  url: "/site/**",
+  path: "app/srv/api/site.ts",
+  args: [],
+  handler: import("../../../srv/api/site")
 }
 export const spa_raw = {
   name: "spa_raw",

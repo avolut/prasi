@@ -1,4 +1,4 @@
-import { IContent } from "../../web/src/compo/types/general";
+import { IContent } from "../../web/src/utils/types/general";
 export const _ = {
   url: "/comp-scan/:page_id",
   async api(page_id: string) {
