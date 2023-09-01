@@ -201,9 +201,16 @@ export const site_load = {
   args: ["name","_page"],
   handler: import("../../../srv/api/site-load")
 }
+export const spa_raw = {
+  name: "spa_raw",
+  url: "/spa-raw/:site_id/:page_id",
+  path: "app/srv/api/spa-raw.ts",
+  args: [],
+  handler: import("../../../srv/api/spa-raw")
+}
 export const spa = {
   name: "spa",
-  url: "/spa",
+  url: "/spa/:site_id/:page_id",
   path: "app/srv/api/spa.ts",
   args: [],
   handler: import("../../../srv/api/spa")

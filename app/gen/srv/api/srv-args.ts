@@ -114,8 +114,12 @@ export const site_load = {
   url: "/site-load",
   args: ["name","_page"],
 }
+export const spa_raw = {
+  url: "/spa-raw/:site_id/:page_id",
+  args: [],
+}
 export const spa = {
-  url: "/spa",
+  url: "/spa/:site_id/:page_id",
   args: [],
 }
 export const srv_image_gallery = {

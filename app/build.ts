@@ -14,7 +14,37 @@ export const build = async (mode: string) => {
     );
   }
   await buildSPA(mode);
+  await buildSPARaw(mode);
   await buildSSR(mode);
+};
+
+const buildSPARaw = async (mode: string) => {
+  const ctx = await context({
+    bundle: true,
+    entryPoints: [dir.root("app/web/src/render/spa/spa.tsx")],
+    outfile: dir.root(".output/app/srv/spa-raw/index.jsx"),
+    format: "esm",
+    jsx: "transform",
+    minify: true,
+    sourcemap: true,
+    logLevel: "silent",
+    define: {
+      "process.env.NODE_ENV": `"production"`,
+    },
+    external: ["react", "react/jsx-runtime"],
+    banner: {
+      js: `\
+if (typeof isSSR === 'undefined') {
+  if (typeof window !== 'undefined') window.isSSR = false;
+  else if (typeof globalThis !== 'undefined') globalThis.isSSR = false;
+}`,
+    },
+  });
+  if (mode === "dev") {
+    await ctx.watch({});
+  } else {
+    await ctx.rebuild();
+  }
 };
 
 const buildSPA = async (mode: string) => {
@@ -24,11 +54,12 @@ const buildSPA = async (mode: string) => {
     outfile: dir.root(".output/app/srv/spa/index.jsx"),
     format: "esm",
     jsx: "transform",
+    minify: true,
+    sourcemap: true,
     logLevel: "silent",
     define: {
       "process.env.NODE_ENV": `"production"`,
     },
-    external: ["react", "react/jsx-runtime"],
     banner: {
       js: `\
 if (typeof isSSR === 'undefined') {
