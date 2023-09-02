@@ -10,10 +10,13 @@ const w = window as unknown as {
   isDesktop: boolean;
   exports: any;
   params: any;
+  site: any;
 };
 
 export const initSPA = (p: PG, opt: PrasiOpt) => {
   document.body.style.opacity = "1";
+  p.site = w.site;
+  console.log(p);
   p.baseUrl = trim(opt.baseUrl || location.href, "/ ");
 
   w.navigateOverride = (_href) => {

@@ -7,7 +7,7 @@ export const SPrasi: FC<PrasiOpt> = (opt) => {
   const p = useGlobal(SPAGlobal, "SPA");
   if (!p.baseUrl) {
     initSPA(p, opt);
-  }
+  } 
 
-  return <>Hello World</>;
+  return <>Hello fsa</>;
 };

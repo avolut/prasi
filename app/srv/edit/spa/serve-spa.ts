@@ -12,7 +12,7 @@ const dirs = {
 };
 const etag = {} as Record<string, string>;
 const cache = {} as Record<string, any>;
-const site = {} as Record<string, { raw: string; etag: string }>;
+const site = {} as Record<string, { raw: string; etag: string; ts: number }>;
 
 export const serveSPA = async ({
   mode,
@@ -50,10 +50,26 @@ export const serveSPA = async ({
     res.send(cache[path]);
   };
 
-  if (!site[site_id]) {
-    const raw = await readAsync(`srv/${mode}/${mode}.js`);
-    if (raw) {
+  if (!site[site_id] || runMode === "dev") {
+    const index = `srv/${mode}/${mode}.js`;
+    if (!cache[index] || runMode === "dev") {
+      cache[index] = await readAsync(index);
+    }
+
+    if (
+      !site[site_id] ||
+      (site[site_id] && Date.now() - site[site_id].ts > 1000)
+    ) {
+      const raw =
+        `window.site=${JSON.stringify(
+          await db.site.findFirst({
+            where: { id: site_id },
+            select: { id: true, name: true, js_compiled: true },
+          })
+        )};\n` + cache[index];
+
       site[site_id] = {
+        ts: Date.now(),
         raw,
         etag: crypto.createHash("md5").update(raw).digest("hex"),
       };
@@ -62,7 +78,7 @@ export const serveSPA = async ({
 
   if (dirs[mode].includes(pathname)) {
     sendFile(`srv/${mode}/${pathname}`);
-  } else if (dirs.web.includes(pathname) && pathname !== 'index.js') {
+  } else if (dirs.web.includes(pathname) && pathname !== "index.js") {
     sendFile(`web/public/${pathname}`);
   } else {
     res.setHeader("content-type", "text/javascript");
