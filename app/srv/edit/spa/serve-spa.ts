@@ -8,11 +8,13 @@ import { matchRoute } from "./match-route";
 const dirs = {
   spa: list(`srv/spa`) || [],
   "spa-raw": list(`srv/spa-raw`) || [],
+  web: list(`web/public`) || [],
 };
 const etag = {} as Record<string, string>;
 const cache = {} as Record<string, any>;
+const site = {} as Record<string, { raw: string; etag: string }>;
 
-export const serveSPA = ({
+export const serveSPA = async ({
   mode,
   ctx,
 }: {
@@ -47,9 +49,24 @@ export const serveSPA = ({
     }
     res.send(cache[path]);
   };
+
+  if (!site[site_id]) {
+    const raw = await readAsync(`srv/${mode}/${mode}.js`);
+    if (raw) {
+      site[site_id] = {
+        raw,
+        etag: crypto.createHash("md5").update(raw).digest("hex"),
+      };
+    }
+  }
+
   if (dirs[mode].includes(pathname)) {
     sendFile(`srv/${mode}/${pathname}`);
+  } else if (dirs.web.includes(pathname) && pathname !== 'index.js') {
+    sendFile(`web/public/${pathname}`);
   } else {
-    sendFile(`srv/${mode}/${mode}.js`);
+    res.setHeader("content-type", "text/javascript");
+    res.setHeader("ETag", site[site_id].etag);
+    res.send(site[site_id].raw);
   }
 };

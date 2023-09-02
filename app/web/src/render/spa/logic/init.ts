@@ -1,5 +1,5 @@
-import { PG } from "./global";
-import { PrasiLoader } from "./loader";
+import trim from "lodash.trim";
+import { PG, PrasiOpt } from "./global";
 
 const w = window as unknown as {
   basepath: string;
@@ -12,8 +12,9 @@ const w = window as unknown as {
   params: any;
 };
 
-export const initSPA = (p: PG) => {
-  p.basePath = location.href;
+export const initSPA = (p: PG, opt: PrasiOpt) => {
+  document.body.style.opacity = "1";
+  p.baseUrl = trim(opt.baseUrl || location.href, "/ ");
 
   w.navigateOverride = (_href) => {
     if (_href.startsWith("/")) {

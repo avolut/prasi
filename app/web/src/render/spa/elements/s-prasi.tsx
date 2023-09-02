@@ -1,11 +1,13 @@
 import { useGlobal } from "web-utils";
-import { SPAGlobal } from "../logic/global";
+import { PrasiOpt, SPAGlobal } from "../logic/global";
+import { initSPA } from "../logic/init";
+import { FC } from "react";
 
-export const SPrasi = () => {
+export const SPrasi: FC<PrasiOpt> = (opt) => {
   const p = useGlobal(SPAGlobal, "SPA");
-  if (!p.basePath) {
-    
+  if (!p.baseUrl) {
+    initSPA(p, opt);
   }
 
-  return <></>;
+  return <>Hello World</>;
 };

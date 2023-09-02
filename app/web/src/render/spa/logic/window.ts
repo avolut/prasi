@@ -1,4 +1,4 @@
-import { PrasiOpt } from "../spa-raw";
+import { PrasiOpt } from "./global";
 
 export const w = window as unknown as {
   renderPrasi: (el: HTMLElement, opt?: PrasiOpt) => void;
@@ -6,6 +6,7 @@ export const w = window as unknown as {
     global: any;
     render: () => void;
   };
+  site: { id: string; js: string; npm: string };
 };
 
 w.ssrContext = {

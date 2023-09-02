@@ -2,6 +2,11 @@ import { createRouter } from "web-init";
 import { IItem } from "../../../utils/types/item";
 import { IRoot } from "../../../utils/types/root";
 
+export type PrasiOpt = {
+  showLoading?: boolean;
+  exports?: any;
+  baseUrl?: string;
+};
 export type SPAPage = {
   id: string;
   url: string;
@@ -11,8 +16,7 @@ export type SPAPage = {
 export type PG = typeof SPAGlobal & { render: () => void };
 export const SPAGlobal = {
   mode: "mobile" as "mobile" | "desktop",
-  basePath: "",
-  site: { id: "", js: "", npm: "" },
+  baseUrl: "",
   current: {
     pathname: "",
     page: null as null | SPAPage,

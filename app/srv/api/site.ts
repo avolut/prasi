@@ -22,8 +22,9 @@ export const _ = {
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/spa/${site_id}/index.css">
 </head>
-<body>
+<body class="flex-col flex-1 w-full min-h-screen flex opacity-0">
   <div id="root"></div>
   <script type="module">
     import { renderPrasi } from "/spa/${site_id}/index.js";
