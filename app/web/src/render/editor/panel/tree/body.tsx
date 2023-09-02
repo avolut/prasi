@@ -52,6 +52,10 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[] }> = ({ tree }) => {
           }, 100);
         }
 
+        if (p.compProp.edit) {
+          p.compProp.edit = false;
+        }
+
         p.softRender.all();
       }
     },

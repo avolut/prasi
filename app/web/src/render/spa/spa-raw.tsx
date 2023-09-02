@@ -1,5 +1,6 @@
 import { FC, useState } from "react";
-import { GlobalContext, useLocal } from "web-utils";
+import { GlobalContext } from "web-utils";
+import { SPrasi } from "./elements/s-prasi";
 import { w } from "./logic/window";
 
 export type PrasiOpt = {
@@ -12,7 +13,7 @@ export const Prasi: FC<PrasiOpt> = () => {
 
   return (
     <GlobalContext.Provider value={w.ssrContext}>
-      <>Hello ini bisa gitu</>
+      <SPrasi />
     </GlobalContext.Provider>
   );
 };

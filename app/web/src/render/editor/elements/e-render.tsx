@@ -32,10 +32,16 @@ export const ERender: FC<{
 
       if (e.type === "item" && e.component?.id) {
         const mcomp = p.comps.doc[e.component.id];
+
         if (mcomp) {
           let mitem = mcomp.getMap("map").get("content_tree");
 
-          if (mitem && meta) {
+          if (mitem) {
+            if (!meta) {
+              p.treeMeta[e.id] = { item: e, mitem: mitem };
+              meta = p.treeMeta[e.id];
+            }
+
             if (p.comp?.id === e.component.id && !meta.pmitem) {
               meta.pmitem = meta.mitem as MItem;
               meta.mitem = mitem as MContent;
@@ -45,30 +51,21 @@ export const ERender: FC<{
             }
           }
 
-          if (!meta) {
-            // TODO: fix bug when meta comp not found
-            // if (p.comp?.id !== e.component.id) {
-            //   console.warn(
-            //     `Warning component meta not found: ${e.component.id} ${e.name} with id ${e.id}`
-            //   );
-            // }
-          } else {
-            if (!meta.comp) {
-              const comp = newPageComp(p, e);
-              if (comp) {
-                if (item.nprops) {
-                  comp.nprops = item.nprops;
-                }
-
-                meta.comp = comp;
-                return comp;
-              }
-            } else {
+          if (!meta.comp) {
+            const comp = newPageComp(p, e);
+            if (comp) {
               if (item.nprops) {
-                meta.comp.nprops = item.nprops;
+                comp.nprops = item.nprops;
               }
-              return meta.comp;
+
+              meta.comp = comp;
+              return comp;
             }
+          } else {
+            if (item.nprops) {
+              meta.comp.nprops = item.nprops;
+            }
+            return meta.comp;
           }
         } else {
           console.warn(

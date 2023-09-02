@@ -11,6 +11,7 @@ export type SPAPage = {
 export type PG = typeof SPAGlobal & { render: () => void };
 export const SPAGlobal = {
   mode: "mobile" as "mobile" | "desktop",
+  basePath: "",
   site: { id: "", js: "", npm: "" },
   current: {
     pathname: "",

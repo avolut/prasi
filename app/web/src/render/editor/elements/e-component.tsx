@@ -92,7 +92,7 @@ export const EComponent: FC<{
   const cid = item.component.id;
 
   return (
-    <ERender item={item} editComponentId={editComponentId}>
+    <ERender item={item} editComponentId={cid}>
       {(childs) => {
         return childs.map((e) => {
           if (e.type === "item")
@@ -100,7 +100,7 @@ export const EComponent: FC<{
               <EItem
                 item={e}
                 key={e.id}
-                editComponentId={editComponentId ? cid : undefined}
+                editComponentId={cid}
               />
             );
           else
@@ -108,7 +108,7 @@ export const EComponent: FC<{
               <EText
                 item={e}
                 key={e.id}
-                editComponentId={editComponentId ? cid : undefined}
+                editComponentId={cid}
               />
             );
         });

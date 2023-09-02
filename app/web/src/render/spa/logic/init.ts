@@ -12,6 +12,29 @@ const w = window as unknown as {
   params: any;
 };
 
-export const initSPA = (p: PG, loader?: PrasiLoader) => {
-  console.log(p, loader);
+export const initSPA = (p: PG) => {
+  p.basePath = location.href;
+
+  w.navigateOverride = (_href) => {
+    if (_href.startsWith("/")) {
+      if (w.basepath.length > 1) {
+        _href = `${w.basepath}${_href}`;
+      }
+      if (
+        location.hostname === "prasi.app" ||
+        location.hostname === "localhost" ||
+        location.hostname === "127.0.0.1" ||
+        location.hostname === "10.0.2.2" // android localhost
+      ) {
+        if (
+          location.pathname.startsWith("/preview") &&
+          !_href.startsWith("/preview")
+        ) {
+          const patharr = location.pathname.split("/");
+          _href = `/preview/${patharr[2]}${_href}`;
+        }
+      }
+    }
+    return _href;
+  };
 };

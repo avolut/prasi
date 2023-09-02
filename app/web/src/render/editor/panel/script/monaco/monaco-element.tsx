@@ -104,9 +104,13 @@ export const ScriptMonacoElement: FC<{
   }
 
   const adv = mitem.get("adv");
+
   if (!adv) {
-    mitem.set("adv", new Y.Map() as any);
-    return <Loading note="monaco-el" />;
+    setTimeout(() => {
+      mitem.set("adv", new Y.Map() as any);
+      p.render();
+    }, 100);
+    return <Loading note="monaco-el" backdrop={false} />;
   }
   let _ytext = adv.get(script.type) as any;
   if (!(_ytext instanceof Y.Text)) {
