@@ -23,7 +23,7 @@ export const CPText: FC<CPArgs> = ({
 
   if (
     local.codeEditing ||
-    typeof local.value === "object" ||
+    typeof local.value !== "string" ||
     (typeof local.value === "string" && !local.value.trim().startsWith('"'))
   ) {
     return (
