@@ -58,15 +58,28 @@ export const serveSPA = async ({
 
     if (
       !site[site_id] ||
-      (site[site_id] && Date.now() - site[site_id].ts > 1000)
+      (site[site_id] && Date.now() - site[site_id].ts > 60 * 1000) ||
+      typeof req.query_parameters["nocache"] === "string"
     ) {
+      const baseUrl =
+        runMode === "dev"
+          ? "http://localhost:12300/"
+          : "https://api.prasi.app/";
+
+      const pages = await db.page.findMany({
+        where: {
+          id_site: site_id,
+          is_deleted: false,
+        },
+        select: {
+          id: true,
+          url: true,
+        },
+      });
       const raw =
         `\
-window.__SRV_URL__ = "${
-          runMode === "dev"
-            ? "http://localhost:12300/"
-            : "https://api.prasi.app/"
-        }";
+window.__SRV_URL__ = "${baseUrl}";
+window.prasi_pages = ${JSON.stringify(pages)};
 window.site=${JSON.stringify(
           await db.site.findFirst({
             where: { id: site_id },
