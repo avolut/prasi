@@ -96,21 +96,8 @@ export const EComponent: FC<{
       {(childs) => {
         return childs.map((e) => {
           if (e.type === "item")
-            return (
-              <EItem
-                item={e}
-                key={e.id}
-                editComponentId={cid}
-              />
-            );
-          else
-            return (
-              <EText
-                item={e}
-                key={e.id}
-                editComponentId={cid}
-              />
-            );
+            return <EItem item={e} key={e.id} editComponentId={cid} />;
+          else return <EText item={e} key={e.id} editComponentId={cid} />;
         });
       }}
     </ERender>

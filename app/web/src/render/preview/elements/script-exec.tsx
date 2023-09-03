@@ -55,9 +55,19 @@ const produceEvalArgs = (
   const PassProp = meta.passprop;
   const Local = meta.local;
   const PassChild = meta.passchild;
+
+  for (const [_, v] of Object.entries(item.nprops)) {
+    if (isValidElement(v) && v.props) {
+      const props = v.props as any;
+      if (props.item) {
+        props.item.nprops = item.nprops;
+      }
+    }
+  }
+
   const scopeProps = {
     ...window.exports,
-    ...arg.item.nprops,
+    ...item.nprops,
     params: w.params,
   };
 

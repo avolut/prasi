@@ -71,6 +71,16 @@ const produceEvalArgs = (
   const PassProp = tm.passprop;
   const Local = tm.local;
   const PassChild = tm.passchild;
+
+  for (const [_, v] of Object.entries(item.nprops)) {
+    if (isValidElement(v) && v.props) {
+      const props = v.props as any;
+      if (props.item) {
+        props.item.nprops = item.nprops;
+      }
+    }
+  }
+
   const scopeProps = {
     ...window.exports,
     ...item.nprops,
