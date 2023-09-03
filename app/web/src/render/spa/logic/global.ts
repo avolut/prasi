@@ -11,30 +11,25 @@ export type SPAPage = {
   id: string;
   url: string;
   content_tree: IRoot;
-  npm: string;
+  js: string;
 };
 export type PG = typeof SPAGlobal & { render: () => void };
 export const SPAGlobal = {
-  status: "init" as "init" | "ready" | "loading",
+  status: "init" as "init" | "ready" | "loading" | "not-found",
   mode: "mobile" as "mobile" | "desktop",
-  baseUrl: "",
+  baseUrl: new URL(location.href),
   site: { id: "", js: "", npm: "" },
-  current: {
-    pathname: "",
-    page: null as null | SPAPage,
-    params: {} as any,
-    treeMeta: {} as Record<
-      string,
-      {
-        item: IItem;
-        comp?: IItem;
-        passprop?: any;
-        local?: any;
-        passchild?: any;
-      }
-    >,
-  },
+  treeMeta: {} as Record<
+    string,
+    {
+      passprop?: any;
+      local?: any;
+      passchild?: any;
+    }
+  >,
   pages: {} as Record<string, SPAPage>,
+  page: null as null | SPAPage,
+  pagePreload: {} as Record<string, true>,
   comps: {} as Record<string, { id: string; content_tree: IItem }>,
   route: createRouter<{
     id: string;

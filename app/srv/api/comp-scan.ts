@@ -1,8 +1,10 @@
+import { component } from "dbgen";
 import { IContent } from "../../web/src/utils/types/general";
+import { IItem } from "../../web/src/utils/types/item";
 export const _ = {
   url: "/comp-scan/:page_id",
   async api(page_id: string) {
-    const comps = {};
+    const comps = {} as Record<string, { id: string; content_tree: IItem }>;
 
     if (page_id) {
       const res = await db.page.findFirst({
@@ -28,6 +30,10 @@ export const scanComponent = async (
     if (!comps[item.component.id]) {
       const res = await db.component.findFirst({
         where: { id: item.component.id },
+        select: {
+          id: true,
+          content_tree: true,
+        },
       });
 
       if (res) {

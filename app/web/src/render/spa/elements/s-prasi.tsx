@@ -4,6 +4,7 @@ import { initSPA } from "../logic/init";
 import { FC, useEffect } from "react";
 import parseUA from "ua-parser-js";
 import { Loading } from "../../../utils/ui/loading";
+import { routeSPA } from "../logic/route";
 
 export const SPrasi: FC<PrasiOpt> = (opt) => {
   const p = useGlobal(SPAGlobal, "SPA");
@@ -33,6 +34,14 @@ export const SPrasi: FC<PrasiOpt> = (opt) => {
     initSPA(p, opt);
   }
 
+  routeSPA(p, pathname.substring(p.baseUrl.pathname.length));
+
+  if (p.status === "not-found")
+    return (
+      <div className="flex-1 flex items-center justify-center">
+        404 Not Found
+      </div>
+    );
   if (p.status !== "ready") return <Loading />;
 
   return <>Hello fsa</>;

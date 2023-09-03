@@ -4,6 +4,9 @@ import { list, readAsync } from "fs-jetpack";
 import mime from "mime-types";
 import { APIContext } from "service-srv";
 import { matchRoute } from "./match-route";
+import { createRouter } from "service/pkgs/service-web/pkgs/web-init";
+import { loadPage } from "../tools/load-page";
+import { scanComponent } from "../../api/comp-scan";
 
 const dirs = {
   spa: list(`srv/spa`) || [],
@@ -22,7 +25,11 @@ export const serveSPA = async ({
   ctx: APIContext;
 }) => {
   const { res, req, mode: runMode } = ctx;
-  const { pathname, site_id } = matchRoute(req.params._);
+  let { pathname, site_id } = matchRoute(req.params._);
+
+  if (req.query_parameters["pathname"]) {
+    pathname = req.query_parameters["pathname"];
+  }
 
   const sendFile = async (path: string) => {
     if (runMode === "dev") {
@@ -59,7 +66,7 @@ export const serveSPA = async ({
     if (
       !site[site_id] ||
       (site[site_id] && Date.now() - site[site_id].ts > 60 * 1000) ||
-      typeof req.query_parameters["nocache"] === "string"
+      typeof req.query_parameters["reset"] === "string"
     ) {
       const baseUrl =
         runMode === "dev"
@@ -76,16 +83,40 @@ export const serveSPA = async ({
           url: true,
         },
       });
+
+      const router = createRouter<{ id: string; url: string }>({
+        strictTrailingSlash: false,
+      });
+      for (const page of pages) {
+        router.insert(page.url, page);
+      }
+
+      const found = router.lookup(`/${pathname}`);
+      let page: any = null;
+      let comps: any = {};
+      if (found) {
+        page = await loadPage(found.id);
+        const ppage = pages.find((e) => e.id === found.id);
+        if (ppage) {
+          for (const [k, v] of Object.entries(page)) {
+            (ppage as any)[k] = v;
+          }
+        }
+        await scanComponent(page.content_tree, comps);
+      }
       const raw =
-        `\
+        cache[index] +
+        `\n
 window.__SRV_URL__ = "${baseUrl}";
 window.prasi_pages = ${JSON.stringify(pages)};
+window.prasi_page = ${JSON.stringify(page)};
+window.prasi_comps = ${JSON.stringify(comps)};
 window.site=${JSON.stringify(
           await db.site.findFirst({
             where: { id: site_id },
             select: { id: true, name: true, js_compiled: true },
           })
-        )};\n` + cache[index];
+        )};\n`;
 
       site[site_id] = {
         ts: Date.now(),

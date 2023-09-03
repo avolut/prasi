@@ -1,7 +1,5 @@
 import { apiContext } from "service-srv";
 import { matchRoute } from "../edit/spa/match-route";
-import { readAsync } from "fs-jetpack";
-import { dir } from "dir";
 const cache = {
   md5: "",
 };
@@ -17,7 +15,7 @@ export const _ = {
     }
     const serverurl =
       mode === "dev" ? "http://localhost:12300" : `https://api.prasi.app`;
-
+    const reset = typeof req.query_parameters["reset"] === "string";
     return `\
 <!DOCTYPE html>
 <html lang="en">
@@ -29,8 +27,12 @@ export const _ = {
 <body class="flex-col flex-1 w-full min-h-screen flex opacity-0">
   <div id="root"></div>
   <script type="module">
-    import { renderPrasi } from "${serverurl}/spa/${site_id}/index.js";
-    renderPrasi(document.getElementById("root"))
+    import { renderPrasi } from "${serverurl}/spa/${site_id}/index.js?pathname=${pathname}${
+      reset ? "&reset" : ""
+    }";
+    renderPrasi(document.getElementById("root"), { 
+      baseUrl: "${serverurl}/site/${site_id}"
+    })
   </script>
 </body>
 </html>`;
