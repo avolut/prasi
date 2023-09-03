@@ -212,16 +212,16 @@ const SingleProp: FC<{
           />
         </Menu>
       )}
-      <div className="flex justify-between items-stretch flex-wrap relative">
+      <div className="flex justify-between items-stretch relative">
         {(() => {
           const label = (
             <div
               className={cx(
-                "border-l-2 border-transparent cursor-pointer pr-3 flex items-center w-[50px] overflow-hidden relative",
+                "border-l-2 border-transparent cursor-pointer pr-3 flex items-center w-[60px] overflow-hidden relative min-h-[25px]",
                 local.clickEvent ? "bg-orange-500 text-white" : " ",
                 css`
                   .absolute {
-                    max-width: 45px;
+                    max-width: 55px;
                     overflow: hidden;
                   }
                   &:hover {
