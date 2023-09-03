@@ -1,5 +1,6 @@
 import trim from "lodash.trim";
 import { PG, PrasiOpt } from "./global";
+import { defineWindow } from "web-init/src/web/define-window";
 
 const w = window as unknown as {
   basepath: string;
@@ -16,9 +17,14 @@ const w = window as unknown as {
 export const initSPA = (p: PG, opt: PrasiOpt) => {
   document.body.style.opacity = "1";
   p.site = w.site;
-  console.log(p);
   p.baseUrl = trim(opt.baseUrl || location.href, "/ ");
+  p.status = "loading";
 
+  w.isEditor = false;
+  w.isMobile = p.mode === "mobile";
+  w.isDesktop = p.mode === "desktop";
+  defineWindow();
+ 
   w.navigateOverride = (_href) => {
     if (_href.startsWith("/")) {
       if (w.basepath.length > 1) {

@@ -61,7 +61,13 @@ export const serveSPA = async ({
       (site[site_id] && Date.now() - site[site_id].ts > 1000)
     ) {
       const raw =
-        `window.site=${JSON.stringify(
+        `\
+window.__SRV_URL__ = "${
+          runMode === "dev"
+            ? "http://localhost:12300/"
+            : "https://api.prasi.app/"
+        }";
+window.site=${JSON.stringify(
           await db.site.findFirst({
             where: { id: site_id },
             select: { id: true, name: true, js_compiled: true },
