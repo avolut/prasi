@@ -143,6 +143,7 @@ export const onDrop = (
       let to = p.treeMeta[dropTarget.id];
       if (from && to && p.mpage && dragSource.id !== dropTarget.id && p) {
         to.mitem.doc?.transact(() => {
+          console.log(to.mitem);
           const mitem = from.mitem;
           const json = mitem.toJSON() as IContent;
 
