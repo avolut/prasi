@@ -12,15 +12,15 @@ import set from "lodash.set";
 import slice from "lodash.slice";
 import uniqBy from "lodash.uniqby";
 import { FC } from "react";
-import { IContent, MContent } from "../../../../../utils/types/general";
-import { IItem } from "../../../../../utils/types/item";
-import { PG } from "../../../logic/global";
-import { fillID } from "../../../tools/fill-id";
-import { newMap } from "../../../tools/yjs-tools";
-import { walk } from "../body";
-import { NodeContent } from "./flatten";
 import { syncronize } from "y-pojo";
 import * as Y from "yjs";
+import { IContent, MContent } from "../../../../../utils/types/general";
+import { IItem, MItem } from "../../../../../utils/types/item";
+import { PG } from "../../../logic/global";
+import { fillID } from "../../../tools/fill-id";
+import { walk } from "../body";
+import { NodeContent } from "./flatten";
+import { newMap } from "../../../tools/yjs-tools";
 export const DEPTH_WIDTH = 8;
 
 export const Placeholder: FC<{
@@ -142,21 +142,53 @@ export const onDrop = (
       let from = p.treeMeta[dragSource.id];
       let to = p.treeMeta[dropTarget.id];
       if (from && to && p.mpage && dragSource.id !== dropTarget.id && p) {
-        to.mitem.doc?.transact(() => {
-          console.log(to.mitem);
-          const mitem = from.mitem;
+        let toitem = to.mitem;
+        let mitem = from.mitem;
+
+        let iscomp = false;
+        const tojson = toitem.toJSON();
+
+        if (
+          p.comp &&
+          tojson.type === "item" &&
+          tojson.component?.id === p.comp.id &&
+          tojson.id === dropTarget.id
+        ) {
+          iscomp = true;
+          const comp = p.comps.doc[p.comp.id];
+          toitem = comp.getMap("map").get("content_tree") as MItem;
+
+          const findId = (e: MItem, id: string) => {
+            let res = null;
+            e.get("childs")?.forEach((child) => {
+              if (child.get("id") === id) {
+                res = child;
+              } else {
+                const found = findId(child, id);
+                if (found) {
+                  res = found;
+                }
+              }
+            });
+            return res;
+          };
+
+          mitem = findId(toitem, mitem.get("id") || "") as any;
+        }
+
+        let map = null as any;
+        toitem.doc?.transact(() => {
           const json = mitem.toJSON() as IContent;
 
           const nmap = fillID(json);
-          const map = new Y.Map() as MContent;
-          syncronize(map as any, nmap);
+          map = newMap(nmap);
           mitem.parent.forEach((e, idx) => {
             if (e === mitem) {
               mitem.parent.delete(idx);
             }
           });
-          if (dropTargetId !== "root") {
-            const titem = to.mitem;
+          if (dropTargetId !== "root" || iscomp) {
+            const titem = toitem;
             if (titem) {
               const childs = titem.get("childs");
               if (childs && childs.length - 1 >= (relativeIndex || 0)) {
@@ -174,12 +206,19 @@ export const onDrop = (
               childs?.insert(relativeIndex || 0, [map]);
             }
           }
-          p.render();
+        });
+
+        console.log(iscomp, p.comp);
+        if (iscomp && p.comp) {
+          p.comp.content_tree = (toitem as any).toJSON();
+        }
+        if (map) {
           const item = map.toJSON();
           if (item) {
             p.item.active = item.id;
           }
-        });
+        }
+        p.render();
       }
     }
   }
