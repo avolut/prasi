@@ -85,13 +85,17 @@ export const execSiteJS = (p: PG) => {
     scope["api"] = createAPI(p.site.api_url);
     scope["db"] = createDB(p.site.api_url);
     const f = new Function(...Object.keys(scope), fn);
-    const res = f(...Object.values(scope));
+    try {
+      const res = f(...Object.values(scope));
 
-    for (const [k, v] of Object.entries(scope.module.exports)) {
-      w.exports[k] = v;
+      for (const [k, v] of Object.entries(scope.module.exports)) {
+        w.exports[k] = v;
+      }
+
+      return res;
+    } catch (e) {
+      console.warn(e);
     }
-
-    return res;
   }
   return null;
 };
