@@ -208,7 +208,6 @@ export const onDrop = (
           }
         });
 
-        console.log(iscomp, p.comp);
         if (iscomp && p.comp) {
           p.comp.content_tree = (toitem as any).toJSON();
         }
