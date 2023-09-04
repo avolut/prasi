@@ -68,7 +68,6 @@ export const ETreeRightClick: FC<{
               .get("content_tree") as any;
           }
 
-          
           if (_mitem)
             if (_mitem.get("childs")) {
               let paste = "";
@@ -364,11 +363,52 @@ export const ETreeRightClick: FC<{
           p.render();
         }}
       />
+      <MenuItem
+        label="Cut"
+        onClick={() => {
+          let mode = p.item.multiple;
+          let clipboardText = "";
+          if (p.item.multiple.length) {
+            let data = p.item.multiple.map((id) => {
+              const e = p.treeMeta[id];
+              if (e) {
+                let jso = e.mitem.toJSON();
+                if (jso.type === "section") {
+                  const newItem = {
+                    id: jso.id,
+                    name: jso.name,
+                    type: "item",
+                    dim: { w: "fit", h: "fit" },
+                    childs: jso.childs,
+                    component: get(jso, "component"),
+                    adv: jso.adv,
+                  } as IItem;
+                  return newItem;
+                }
+                return jso;
+              }
+            });
+            data = data.filter((x) => typeof x !== "string");
+            let rootContent = JSON.parse(JSON.stringify({ data }));
+            let flat = rootContent.data as Array<IContent>;
+            let res = flatTree(flat);
+            clipboardText = JSON.stringify({ data: res });
+          } else {
+            clipboardText = JSON.stringify(item);
+          }
+          let str = clipboardText + "_prasi";
+          navigator.clipboard.writeText(str);
 
+          mitem.parent.forEach((e: MContent, idx) => {
+            if (e === mitem) {
+              mitem.parent.delete(idx);
+            }
+          });
+        }}
+      />
       <MenuItem
         label="Copy"
         onClick={() => {
-          let mode = p.item.multiple;
           let clipboardText = "";
           if (p.item.multiple.length) {
             let data = p.item.multiple.map((id) => {
