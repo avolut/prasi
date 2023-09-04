@@ -44,5 +44,5 @@ export const SPrasi: FC<PrasiOpt> = (opt) => {
     );
   if (p.status !== "ready") return <Loading />;
 
-  return <>Hello fsa</>;
+  return <>Hello</>;
 };

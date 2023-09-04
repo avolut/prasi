@@ -19,6 +19,13 @@ const w = window as unknown as {
 };
 
 export const jsMount = async (editor: MonacoEditor, monaco: Monaco) => {
+  const m = monaco as any;
+  if (!m.customJSMounted) {
+    m.customJSMounted = true;
+  } else {
+    return;
+  }
+
   const compilerOptions: CompilerOptions = {
     jsx: monaco.languages.typescript.JsxEmit.React,
     jsxFactory: "React.createElement",
