@@ -39,7 +39,7 @@ export const diffLocal = (ws: Websocket, msg: any) => {
               await db.page.update({
                 where: { id: page.id },
                 data: {
-                  ...page,
+                  content_tree: page.content_tree,
                   updated_at: new Date(),
                 },
               });
