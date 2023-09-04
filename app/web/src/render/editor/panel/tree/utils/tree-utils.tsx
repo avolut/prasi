@@ -229,10 +229,12 @@ export const canDrop = (p: PG, arg: DropOptions<NodeContent>, local: any) => {
             dropTarget.data.content.type === "item" &&
             dropTarget.data.content.component?.id
           ) {
-            const compid = dropTarget.data.content.component?.id || "";
-            if (!p.compEdits.find((e) => e.id === compid)) {
-              return false;
+            if (p.comp) {
+              if (p.comp.content_tree.id === dropTarget.data.content.id) {
+                return true;
+              }
             }
+            return false;
           }
           return true;
         } else {
@@ -244,6 +246,11 @@ export const canDrop = (p: PG, arg: DropOptions<NodeContent>, local: any) => {
             dropTarget.data.content.type === "item" &&
             dropTarget.data.content.component?.id
           ) {
+            if (p.comp) {
+              if (p.comp.content_tree.id === dropTarget.data.content.id) {
+                return true;
+              }
+            }
             return false;
           }
           return true;

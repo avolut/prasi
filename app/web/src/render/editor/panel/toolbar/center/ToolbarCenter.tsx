@@ -215,8 +215,8 @@ export const ToolbarCenter = () => {
           // },
         ]}
       />
-      <div className="w-[5px] h-1"></div>
-      <ToolbarBox
+      {/* <div className="w-[5px] h-1"></div> */}
+      {/* <ToolbarBox
         items={[
           {
             async onClick() {
@@ -244,7 +244,7 @@ export const ToolbarCenter = () => {
             ),
           },
         ]}
-      />
+      /> */}
     </div>
   );
 };

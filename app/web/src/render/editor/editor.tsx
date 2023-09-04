@@ -70,22 +70,7 @@ export const Editor: FC<{ site_id: string; page_id: string; session: any }> = ({
   }
 
   if (p.status === "init") {
-    p.ui.loading = (
-      <Loading
-        note="editor-root"
-        alt={
-          <div
-            className="bg-gray-200 cursor-pointer pointer-events-auto transition-all hover:bg-gray-500 text-white m-1 text-xs px-2 py-[1px] rounded"
-            onClick={async () => {
-              await api.page_reload(page_id);
-              location.reload();
-            }}
-          >
-            Force Reload
-          </div>
-        }
-      />
-    );
+    p.ui.loading = <Loading note="editor-root" />;
     p.ui.preload = <Loading note="preload-root" backdrop={false} />;
     p.ui.notfound = (
       <div className="flex-1 flex items-center justify-center">NOT FOUND</div>

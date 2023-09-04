@@ -7,6 +7,7 @@ import importModule from "../tools/dynamic-import";
 import { WS_MSG_GET_PAGE } from "../../../utils/types/ws";
 
 export const pageNpmStatus: Record<string, "loaded" | "loading"> = {};
+const loadingCounter = {} as Record<string, number>;
 
 export const routeEditor = (p: PG, page_id: string) => {
   if (p.status !== "loading") {
@@ -16,6 +17,19 @@ export const routeEditor = (p: PG, page_id: string) => {
         await loadNpmPage(page_id);
         p.status = "ready";
         p.render();
+
+        if (!p.mpage || p.mpage.getMap("map").get("id") !== page_id) {
+          if (!loadingCounter[page_id]) {
+            loadingCounter[page_id] = 1;
+          } else {
+            loadingCounter[page_id]++;
+          }
+
+          if (loadingCounter[page_id] > 2) {
+            await api.page_reload(page_id);
+            location.reload();
+          }
+        }
       });
     }
   }
