@@ -32,14 +32,11 @@ export const ETreeRightClick: FC<{
   const comp = (item as IItem).component as FNComponent | undefined;
   const rootComp = p.comp;
   const isActiveComponent = rootComp && rootComp.id === item?.id && rootComp.id;
-  if (
-    !item ||
-    (comp?.id && rootComp && comp.id === rootComp.id) ||
-    item.isPropContent
-  ) {
+
+  if (!item) {
     return (
       <Menu mouseEvent={event} onClose={onClose}>
-        <div className="text-sm text-slate-500 px-3">Unavailable</div>
+        <MenuItem label={<div className="text-gray-400">Unavailable</div>} />
       </Menu>
     );
   }
@@ -53,6 +50,110 @@ export const ETreeRightClick: FC<{
       local.render();
     });
   } catch (error) {}
+  const paste = (
+    <MenuItem
+      label={
+        local.clipboardAllowed && (type === "item" || type === "section") ? (
+          "Paste"
+        ) : (
+          <div className="text-gray-400">Paste</div>
+        )
+      }
+      onClick={() => {
+        if (type === "item" || type === "section") {
+          let _mitem = mitem;
+          if (comp?.id && rootComp && comp.id === rootComp.id) {
+            _mitem = p.comps.doc[comp.id]
+              .getMap("map")
+              .get("content_tree") as any;
+          }
+
+          
+          if (_mitem)
+            if (_mitem.get("childs")) {
+              let paste = "";
+              try {
+                navigator.clipboard.readText().then((e) => {
+                  paste = e;
+                  let desc = paste.replaceAll("_prasi", "");
+                  let obj = {} as IContent;
+                  let jso = JSON.parse(desc) as IContent;
+                  const childs = get(jso, "data") as any;
+                  if (childs) {
+                    p.item.multiple = [];
+                    let select = [] as Array<string>;
+
+                    _mitem.doc?.transact(() => {
+                      childs.map((e: any) => {
+                        const nmap = fillID(e);
+                        const map = new Y.Map() as MContent;
+                        syncronize(map as any, nmap);
+                        if (map) {
+                          const childs = _mitem.get("childs");
+                          if (childs) {
+                            // console.log("push", map);
+                            childs.push([map]);
+                          }
+                          const item = map.toJSON();
+                          select.push(item.id);
+                          p.render();
+                        }
+                      });
+                    });
+
+                    p.item.active = "";
+                    p.item.multiple = select;
+                  } else {
+                    _mitem.doc?.transact(() => {
+                      if (jso.type === "section") {
+                        const newItem = {
+                          id: createId(),
+                          name: jso.name,
+                          type: "item",
+                          dim: { w: "fit", h: "fit" },
+                          childs: jso.childs,
+                          component: get(jso, "component"),
+                          adv: jso.adv,
+                        } as IItem;
+                        obj = newItem;
+                      } else {
+                        obj = jso;
+                      }
+                      let walkId: any = [];
+                      const nmap = fillID(obj);
+                      const map = new Y.Map() as MContent;
+                      syncronize(map as any, nmap);
+                      if (map) {
+                        const childs = _mitem.get("childs");
+                        if (childs) {
+                          // console.log("push", map);
+                          childs.push([map]);
+                        }
+                        const item = map.toJSON();
+                        walkId.push(item.id);
+                        p.render();
+                      }
+                      p.item.active = "";
+                      p.item.multiple = walkId;
+                    });
+                  }
+                  p.render();
+                });
+              } catch (error) {}
+            }
+        }
+      }}
+    />
+  );
+
+  if ((comp?.id && rootComp && comp.id === rootComp.id) || item.isPropContent) {
+    return (
+      <Menu mouseEvent={event} onClose={onClose}>
+        {paste}
+      </Menu>
+    );
+  }
+
   return (
     <Menu mouseEvent={event} onClose={onClose}>
       {type === "item" && (
@@ -301,92 +402,8 @@ export const ETreeRightClick: FC<{
           navigator.clipboard.writeText(str);
         }}
       />
+      {paste}
 
-      <MenuItem
-        label={
-          local.clipboardAllowed && (type === "item" || type === "section") ? (
-            "Paste"
-          ) : (
-            <div className="text-gray-400">Paste</div>
-          )
-        }
-        onClick={() => {
-          if (type === "item" || type === "section") {
-            if (mitem)
-              if (mitem.get("childs")) {
-                let paste = "";
-                try {
-                  navigator.clipboard.readText().then((e) => {
-                    paste = e;
-                    let desc = paste.replaceAll("_prasi", "");
-                    let obj = {} as IContent;
-                    let jso = JSON.parse(desc) as IContent;
-                    const childs = get(jso, "data") as any;
-                    if (childs) {
-                      p.item.multiple = [];
-                      let select = [] as Array<string>;
-
-                      mitem.doc?.transact(() => {
-                        childs.map((e: any) => {
-                          const nmap = fillID(e);
-                          const map = new Y.Map() as MContent;
-                          syncronize(map as any, nmap);
-                          if (map) {
-                            const childs = mitem.get("childs");
-                            if (childs) {
-                              // console.log("push", map);
-                              childs.push([map]);
-                            }
-                            const item = map.toJSON();
-                            select.push(item.id);
-                            p.render();
-                          }
-                        });
-                      });
-
-                      p.item.active = "";
-                      p.item.multiple = select;
-                    } else {
-                      mitem.doc?.transact(() => {
-                        if (jso.type === "section") {
-                          const newItem = {
-                            id: createId(),
-                            name: jso.name,
-                            type: "item",
-                            dim: { w: "fit", h: "fit" },
-                            childs: jso.childs,
-                            component: get(jso, "component"),
-                            adv: jso.adv,
-                          } as IItem;
-                          obj = newItem;
-                        } else {
-                          obj = jso;
-                        }
-                        let walkId: any = [];
-                        const nmap = fillID(obj);
-                        const map = new Y.Map() as MContent;
-                        syncronize(map as any, nmap);
-                        if (map) {
-                          const childs = mitem.get("childs");
-                          if (childs) {
-                            // console.log("push", map);
-                            childs.push([map]);
-                          }
-                          const item = map.toJSON();
-                          walkId.push(item.id);
-                          p.render();
-                        }
-                        p.item.active = "";
-                        p.item.multiple = walkId;
-                      });
-                    }
-                    p.render();
-                  });
-                } catch (error) {}
-              }
-          }
-        }}
-      />
       {(type === "text" || type === "item") && (
         <MenuItem
           label={`Wrap`}

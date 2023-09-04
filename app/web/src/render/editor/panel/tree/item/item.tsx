@@ -91,9 +91,7 @@ export const ETreeItem: FC<{
       onClick={() => onClick(node)}
       onPointerOver={() => onHover(node)}
       onContextMenu={(e) => {
-        if (!isRootComponent) {
           onRightClick(node, e);
-        }
       }}
       ref={(e) => {
         local.el = e;
