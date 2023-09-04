@@ -56,7 +56,7 @@ export const scanComponent = (
     }
   }
 
-  if (item.type !== "text") {
+  if (item.type !== "text"&& item.childs) {
     for (const c of item.childs) {
       scanComponent(c, ids);
     }
