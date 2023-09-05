@@ -26,6 +26,7 @@ export const EditorGlobal = {
     active: localStorage.getItem("prasi-item-active-id") || "",
     hover: "",
     sideHover: false,
+    selectMode: "single" as "single" | "multi",
     multiple: [] as string[],
     copy: {
       mode: "single" as "single" | "multiple",

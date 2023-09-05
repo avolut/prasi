@@ -1,17 +1,19 @@
 import { NodeModel } from "@minoru/react-dnd-treeview";
+import { useCallback } from "react";
 import { useGlobal, useLocal } from "web-utils";
+import { MItem } from "../../../../utils/types/item";
+import { Loading } from "../../../../utils/ui/loading";
 import { EditorGlobal } from "../../logic/global";
 import { ETreeBody } from "./body";
 import { NodeContent, flattenTree } from "./utils/flatten";
-import { MItem } from "../../../../utils/types/item";
-import { Loading } from "../../../../utils/ui/loading";
-import { useCallback } from "react";
+import { Tooltip } from "../../../../utils/ui/tooltip";
 
 export const ETree = () => {
   const p = useGlobal(EditorGlobal, "EDITOR");
   const local = useLocal({
     ready: true,
     timeout: null as any,
+    search: "",
   });
   let tree: NodeModel<NodeContent>[] = [];
   const comp = p.comps.doc[p.comp?.id || ""];
@@ -25,15 +27,18 @@ export const ETree = () => {
     local.ready = false;
   }, [Object.keys(p.comps.doc).length]);
 
-  if (comp) {
-    const contentTree = comp.getMap("map").get("content_tree") as MItem;
-    if (contentTree) tree = flattenTree(p, contentTree, treeLoading);
-  } else if (p.mpage) {
-    tree = flattenTree(
-      p,
-      p.mpage.getMap("map").get("content_tree"),
-      treeLoading
-    );
+  if (!local.search) {
+    if (comp) {
+      const contentTree = comp.getMap("map").get("content_tree") as MItem;
+      if (contentTree) tree = flattenTree(p, contentTree, treeLoading);
+    } else if (p.mpage) {
+      tree = flattenTree(
+        p,
+        p.mpage.getMap("map").get("content_tree"),
+        treeLoading
+      );
+    }
+  } else {
   }
 
   return (
@@ -44,6 +49,32 @@ export const ETree = () => {
         p.render();
       }}
     >
+      <div className="border-b flex items-stretch h-[25px]">
+        <input
+          type="search"
+          className={cx("flex-1 outline-none px-1 text-sm ")}
+          placeholder="Search"
+          value={local.search}
+          onInput={(e) => {
+            local.search = e.currentTarget.value;
+            local.render();
+          }}
+        />
+        <Tooltip
+          content="Multi Select"
+          placement="right"
+          className="border-l p-1 flex items-center justify-center"
+        >
+          <input
+            type="checkbox"
+            checked={p.item.selectMode === "multi"}
+            onClick={(e) => {
+              p.item.selectMode = e.currentTarget.checked ? "multi" : "single";
+              p.render();
+            }}
+          />
+        </Tooltip>
+      </div>
       {local.ready ? (
         <div
           className={cx(
