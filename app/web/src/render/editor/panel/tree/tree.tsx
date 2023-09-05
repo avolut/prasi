@@ -68,7 +68,8 @@ export const ETree = () => {
       <div className="border-b flex items-stretch h-[24px]">
         <input
           name="search"
-          type="text"
+          type="search"
+          autoComplete="off"
           className={cx("flex-1 outline-none px-2 text-[13px] ")}
           placeholder="Search..."
           value={local.search}
