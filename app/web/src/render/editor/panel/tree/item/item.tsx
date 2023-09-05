@@ -91,7 +91,7 @@ export const ETreeItem: FC<{
       onClick={() => onClick(node)}
       onPointerOver={() => onHover(node)}
       onContextMenu={(e) => {
-          onRightClick(node, e);
+        onRightClick(node, e);
       }}
       ref={(e) => {
         local.el = e;
@@ -146,17 +146,43 @@ const RootComponentClose = () => {
   const p = useGlobal(EditorGlobal, "EDITOR");
 
   return (
-    <div
-      className="flex items-center border border-slate-500 bg-white rounded-sm text-[10px] px-[5px] m-1 opacity-50 hover:opacity-100"
-      onClick={(e) => {
-        e.stopPropagation();
-        p.item.active = p.compEdits[p.compEdits.length - 1].id;
-        p.comp = null;
-        p.compEdits = [];
-        p.render();
-      }}
-    >
-      Close
-    </div>
+    <>
+      {p.compEdits.length > 1 && (
+        <div
+          className="flex items-center border border-slate-500 bg-white rounded-sm text-[10px] space-x-1 px-[5px] m-1 mr-0 opacity-50 hover:opacity-100"
+          onClick={(e) => {
+            e.stopPropagation();
+
+            let comp = p.compEdits.pop();
+
+            if (comp && p.comp) {
+              if (comp.component?.id === p.comp.id) {
+                comp = p.compEdits[p.compEdits.length - 1];
+              }
+
+              if (comp) {
+                p.comp = { id: comp.component?.id || "", content_tree: comp };
+                p.item.active = comp.id;
+                p.render();
+              }
+            }
+          }}
+        >
+          <span>Back</span>
+        </div>
+      )}
+      <div
+        className="flex items-center border border-slate-500 bg-white rounded-sm text-[10px] px-[5px] m-1 opacity-50 hover:opacity-100"
+        onClick={(e) => {
+          e.stopPropagation();
+          p.item.active = p.compEdits[0].id;
+          p.comp = null;
+          p.compEdits = [];
+          p.render();
+        }}
+      >
+        Close
+      </div>
+    </>
   );
 };
