@@ -28,7 +28,7 @@ export const _ = {
   <div id="root"></div>
   <script type="module">
     import { renderPrasi } from "${serverurl}/spa/${site_id}/index.js?pathname=${pathname}${
-      reset ? "&reset" : ""
+      reset || mode === "dev" ? "&reset" : ""
     }";
     renderPrasi(document.getElementById("root"), { 
       baseUrl: "${serverurl}/site/${site_id}"

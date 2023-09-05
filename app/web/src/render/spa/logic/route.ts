@@ -4,6 +4,7 @@ import importModule from "../../editor/tools/dynamic-import";
 import { WS_MSG_GET_PAGE } from "../../../utils/types/ws";
 import { validate } from "uuid";
 import { w } from "../../../utils/types/general";
+import { loadComponent } from "./comp";
 
 export const pageNpmStatus: Record<string, "loaded" | "loading"> = {};
 
@@ -126,6 +127,7 @@ const loadPage = (p: PG, id: string) => {
       for (const [k, v] of Object.entries(comps)) {
         p.comps[k] = v;
       }
+      await loadComponent(p, p.pages[id].content_tree);
       pageNpmStatus[page.id] = "loaded";
     }
     resolve();

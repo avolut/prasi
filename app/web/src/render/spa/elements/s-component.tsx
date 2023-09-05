@@ -1,19 +1,19 @@
 import { FC, useState } from "react";
 import { useGlobal } from "web-utils";
+import { createAPI, createDB } from "../../../utils/script/init-api";
 import { IItem } from "../../../utils/types/item";
 import { FNCompDef } from "../../../utils/types/meta-fn";
-import { PG, SSRGlobal } from "../logic/global";
+import { loadComponent } from "../logic/comp";
+import { PG, SPAGlobal } from "../logic/global";
 import { SItem } from "./s-item";
 import { SRender } from "./s-render";
 import { SText } from "./s-text";
-import { createAPI, createDB } from "../../../utils/script/init-api";
-import { loadComponent } from "../logic/comp";
 
 export const SComponent: FC<{
   item: IItem;
 }> = ({ item }) => {
   const [_, render] = useState({});
-  const p = useGlobal(SSRGlobal, "SSR");
+  const p = useGlobal(SPAGlobal, "SPA");
 
   if (!item.component) return null;
   const compid = item.component.id;

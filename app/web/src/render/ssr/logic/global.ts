@@ -1,7 +1,7 @@
 import { ReactElement } from "react";
-import { CompDoc } from "../../../base/global/content-editor";
 import { IItem } from "../../../utils/types/item";
 import { w } from "./window";
+import { PRASI_COMPONENT } from "../../../utils/types/render";
 
 export const SSRGlobal = {
   mode: w.ssrPrasi.mode,
@@ -9,6 +9,10 @@ export const SSRGlobal = {
   site: w.ssrPrasi.site,
   page: w.ssrPrasi.page,
   pageComp: {} as Record<string, IItem>,
+  comp: {
+    raw: {} as Record<string, PRASI_COMPONENT>,
+    pending: {} as Record<string, any>,
+  },
   treeMeta: {} as Record<
     string,
     {
@@ -17,10 +21,6 @@ export const SSRGlobal = {
       passchild?: any;
     }
   >,
-  comp: {
-    pending: {} as Record<string, any>,
-    doc: {} as Record<string, CompDoc>,
-  },
   ui: {
     loading: null as null | ReactElement,
     preload: null as null | ReactElement,

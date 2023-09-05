@@ -7,6 +7,7 @@ export const w = window as unknown as {
     render: () => void;
   };
   site: { id: string; js: string; npm: string };
+  params: any;
 };
 
 w.ssrContext = {

@@ -5,6 +5,7 @@ import { FC, useEffect } from "react";
 import parseUA from "ua-parser-js";
 import { Loading } from "../../../utils/ui/loading";
 import { routeSPA } from "../logic/route";
+import { SPage } from "./s-page";
 
 export const SPrasi: FC<PrasiOpt> = (opt) => {
   const p = useGlobal(SPAGlobal, "SPA");
@@ -44,5 +45,5 @@ export const SPrasi: FC<PrasiOpt> = (opt) => {
     );
   if (p.status !== "ready") return <Loading />;
 
-  return <>Hello</>;
+  return <SPage />;
 };
