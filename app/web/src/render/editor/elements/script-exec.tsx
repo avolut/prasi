@@ -203,7 +203,7 @@ export const createLocal = (arg: {
   render: () => void;
 }): LocalFC => {
   const { item, render, p } = arg;
-  return ({ name, value, children, effect }) => {
+  return ({ name, value, children, effect, hook }) => {
     if (!item.scope) {
       item.scope = { ...value, render };
     }
@@ -212,6 +212,9 @@ export const createLocal = (arg: {
     let child = children;
     thru(child, { [name]: local });
 
+    if (hook) {
+      hook(local);
+    }
     useEffect(() => {
       if (effect) {
         if (p.page) {
@@ -256,5 +259,7 @@ export type LocalFC = <T extends Record<string, any>>(arg: {
     local: T & { render: () => void }
   ) => void | (() => void) | Promise<void | (() => void)>;
 
-  effects?: LocalEffects<T>;
+  hook?: (
+    local: T & { render: () => void }
+  ) => void | (() => void) | Promise<void | (() => void)>;
 }) => ReactNode;

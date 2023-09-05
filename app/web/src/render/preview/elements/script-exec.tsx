@@ -55,7 +55,7 @@ const produceEvalArgs = (
   const PassProp = meta.passprop;
   const Local = meta.local;
   const PassChild = meta.passchild;
-  
+
   if (typeof item.nprops === "object" && !Array.isArray(item.nprops)) {
     for (const [_, v] of Object.entries(item.nprops)) {
       if (isValidElement(v) && v.props) {
@@ -172,7 +172,7 @@ const thru = (prop: any, nprops: any) => {
 
 const createLocal = (arg: { item: IContent; render: () => void }): LocalFC => {
   const { item, render } = arg;
-  return ({ name, value, children, effect }) => {
+  return ({ name, value, children, effect, hook }) => {
     const scope = { _id: item.id, ...value, render };
 
     if (!item.scope) {
@@ -190,6 +190,10 @@ const createLocal = (arg: { item: IContent; render: () => void }): LocalFC => {
     let child = children;
 
     thru(child, { [name]: local });
+
+    if (hook) {
+      hook(local);
+    }
 
     useEffect(() => {
       if (effect) {
@@ -225,5 +229,7 @@ export type LocalFC = <T extends Record<string, any>>(arg: {
     local: T & { render: () => void }
   ) => void | (() => void) | Promise<void | (() => void)>;
 
-  effects?: LocalEffects<T>;
+  hook?: (
+    local: T & { render: () => void }
+  ) => void | (() => void) | Promise<void | (() => void)>;
 }) => ReactNode;

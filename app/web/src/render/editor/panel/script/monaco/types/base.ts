@@ -39,12 +39,9 @@ const Local: <T extends Record<string, any>>(arg: {
   effect?: (
     local: T & { render: () => void }
   ) => void | (() => void) | Promise<void | (() => void)>;
-  effects?: {
-    effect: (
-      local: T & { render: () => void }
-    ) => void | (() => void) | Promise<void | (() => void)>;
-    deps: any[];
-  }[]
+  hook?: (
+    local: T & { render: () => void }
+  ) => void | (() => void) | Promise<void | (() => void)>;
 }) => ReactNode;
 
 `;

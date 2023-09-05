@@ -179,7 +179,7 @@ const createLocal = (arg: {
   render: () => void;
 }): LocalFC => {
   const { p, item, render } = arg;
-  return ({ name, value, children, effect }) => {
+  return ({ name, value, children, effect, hook }) => {
     if (!item.scope) {
       item.scope = { ...value, render };
     }
@@ -187,6 +187,10 @@ const createLocal = (arg: {
     const local = item.scope;
     let child = children;
     thru(child, { [name]: local });
+
+    if (hook) {
+      hook(local);
+    }
 
     useEffect(() => {
       if (effect) {
@@ -219,6 +223,10 @@ export type LocalFC = <T extends Record<string, any>>(arg: {
   value: T;
   children: ReactNode;
   effect?: (
+    local: T & { render: () => void }
+  ) => void | (() => void) | Promise<void | (() => void)>;
+
+  hook?: (
     local: T & { render: () => void }
   ) => void | (() => void) | Promise<void | (() => void)>;
 
