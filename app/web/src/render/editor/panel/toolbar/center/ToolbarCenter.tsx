@@ -220,8 +220,6 @@ export const ToolbarCenter = () => {
       <ToolbarBox
         items={[
           {
-            async onClick() {},
-            tooltip: <>Export</>,
             content: (
               <Popover
                 content={<Export />}
