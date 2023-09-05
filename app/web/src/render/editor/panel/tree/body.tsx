@@ -131,7 +131,7 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[]; meta?: any }> = ({
   }, [p.item.active]);
 
   useEffect(() => {
-    if (p.comp && p.comp.id) {
+    if (p.comp && p.comp.id && tree[0].id) {
       const open = new Set<any>();
       open.add(tree[0].id);
       local.method?.open([...open]);
