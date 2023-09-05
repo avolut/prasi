@@ -27,12 +27,12 @@ export type FNComponent = {
 };
 
 export type FNCompDef = {
-  name: string;
   idx: number;
   type: string;
   value: any;
   valueBuilt: any;
   content?: IItem;
+  visible?: string;
   meta?: FNCompMeta;
 };
 type FNCompMeta = {

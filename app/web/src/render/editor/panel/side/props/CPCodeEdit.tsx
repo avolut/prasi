@@ -7,7 +7,8 @@ import { newPageComp } from "../../../logic/comp";
 export const CPCodeEdit: FC<{
   value: string;
   onChange: (v: string) => void;
-}> = ({ value, onChange }) => {
+  args?: any;
+}> = ({ value, onChange, args }) => {
   const p = useGlobal(EditorGlobal, "EDITOR");
   const local = useLocal({ comp: p.treeMeta[p.item.active].comp });
 
@@ -25,6 +26,11 @@ export const CPCodeEdit: FC<{
       local.comp = comp;
     }
   }
+  const props = {
+    ...window.exports,
+    ...comp?.nprops,
+    ...args,
+  };
 
   return (
     <EScriptCustom
@@ -36,10 +42,7 @@ export const CPCodeEdit: FC<{
       onChange={(src) => {
         onChange(src);
       }}
-      props={{
-        ...window.exports,
-        ...comp?.nprops,
-      }}
+      props={props}
     />
   );
 };

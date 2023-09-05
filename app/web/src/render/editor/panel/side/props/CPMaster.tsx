@@ -9,6 +9,8 @@ import { Popover } from "../../../../../utils/ui/popover";
 import { EditorGlobal } from "../../../logic/global";
 import { jscript } from "../../script/script-element";
 import { AutoHeightTextarea } from "../panel/link";
+import { CPCoded } from "./CPCoded";
+import { CPCodeEdit } from "./CPCodeEdit";
 
 const popover = {
   name: "",
@@ -122,6 +124,7 @@ export const CPMaster: FC<{ mitem: MItem }> = ({ mitem }) => {
                     key={name}
                     name={name}
                     prop={prop}
+                    props={props}
                     mprop={mprop as any}
                   />
                 );
@@ -179,16 +182,23 @@ export const PreviewItemProp = () => {
   );
 };
 
-const SingleProp: FC<{ name: string; prop: FNCompDef; mprop: FMCompDef }> = ({
-  name,
-  prop,
-  mprop,
-}) => {
+const SingleProp: FC<{
+  name: string;
+  prop: FNCompDef;
+  mprop: FMCompDef;
+  props: Record<string, FNCompDef>;
+}> = ({ name, prop, mprop, props }) => {
   const local = useLocal({ name });
   const type = prop.meta?.type || "text";
 
   return (
-    <SinglePopover name={name} prop={prop} mprop={mprop} local={local}>
+    <SinglePopover
+      name={name}
+      prop={prop}
+      mprop={mprop}
+      local={local}
+      props={props}
+    >
       <div
         className={cx(
           "border-b bg-white cursor-pointer hover:bg-orange-50 flex flex-col items-stretch"
@@ -260,15 +270,28 @@ const SinglePopover: FC<{
   mprop: FMCompDef;
   children: any;
   local: { name: string; render: () => void };
-}> = ({ name, prop, mprop, children, local }) => {
+  props: Record<string, FNCompDef>;
+}> = ({ name, prop, mprop, children, local, props }) => {
   const type = prop.meta?.type || "text";
   const mmeta = mprop.get("meta");
   const meta = prop.meta;
   if (!mmeta || !meta) return null;
+  const state = useLocal({ visibleEdit: false });
+
+  const args: any = {};
+  for (const [k, v] of Object.entries(props)) {
+    try {
+      if (v.valueBuilt || v.value) {
+        const fn = new Function(`return ${v.valueBuilt || v.value}`);
+        args[k] = fn();
+      }
+    } catch (e) {}
+  }
 
   return (
     <Popover
       children={children}
+      autoFocus={false}
       backdrop={false}
       placement="left-start"
       open={popover.name === name}
@@ -327,7 +350,7 @@ const SinglePopover: FC<{
               className="p-1 outline-none border focus:border-blue-500"
               value={local.name}
               onChange={(e) => {
-                local.name = e.currentTarget.value.replace(/\W/ig, "_");
+                local.name = e.currentTarget.value.replace(/\W/gi, "_");
                 local.render();
               }}
               onBlur={() => {
@@ -357,8 +380,41 @@ const SinglePopover: FC<{
               }}
             />
           </div>
+
           {type !== "content-element" && (
             <>
+              <div className="border-t border-slate-300 pl-2 pt-1 flex justify-between items-center">
+                <div className="uppercase text-xs text-slate-500">Visible</div>
+                <Popover
+                  open={state.visibleEdit}
+                  onOpenChange={(open) => {
+                    state.visibleEdit = open;
+                    state.render();
+                  }}
+                  placement="left-start"
+                  autoFocus={false}
+                  backdrop={false}
+                  content={
+                    <div className="bg-white w-[35vw] h-[10vh] flex">
+                      <CPCodeEdit
+                        value={prop.visible || "true"}
+                        onChange={(s) => {
+                          mprop.set("visible", s);
+                        }}
+                        args={args}
+                      />
+                    </div>
+                  }
+                >
+                  <CPCoded
+                    editCode={() => {
+                      state.visibleEdit = true;
+                      state.render();
+                    }}
+                  />
+                </Popover>
+              </div>
+
               <div className="border-t border-slate-300 px-2 pt-2 pb-1 flex flex-col items-stretch">
                 <div className="uppercase text-xs text-slate-500">ts type</div>
                 <AutoHeightTextarea

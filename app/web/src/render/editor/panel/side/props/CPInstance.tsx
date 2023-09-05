@@ -22,25 +22,27 @@ export const CPInstance: FC<{ mitem: MItem }> = ({ mitem }) => {
     ready: false,
     mprops: null as unknown as TypedMap<Record<string, FMCompDef>>,
     props: {} as Record<string, FNCompDef>,
+    visibles: {} as Record<string, string>,
   });
   const comp = p.comps.doc[mitem.get("component")?.get("id") || ""];
+
+  const cprops = comp
+    .getMap("map")
+    .get("content_tree")
+    ?.get("component")
+    ?.get("props");
 
   useEffect(() => {
     (async () => {
       if (comp) {
-        const rprops = comp
-          .getMap("map")
-          .get("content_tree")
-          ?.get("component")
-          ?.get("props");
-
         const mcomp = mitem.get("component");
-        if (rprops && mcomp) {
+        if (cprops && mcomp) {
           local.mprops = mcomp.get("props") as any;
           const newprops: any = {};
-          rprops.forEach((e, k) => {
+          cprops.forEach((e, k) => {
             const prop = local.mprops.get(k);
             newprops[k] = e.toJSON();
+            local.visibles[k] = e.get("visible") || "";
             if (prop) {
               newprops[k].value = prop.get("value");
               newprops[k].valueBuilt = prop.get("valueBuilt");
@@ -95,17 +97,40 @@ export const CPInstance: FC<{ mitem: MItem }> = ({ mitem }) => {
             .map(([k, v]) => {
               let mprop = local.mprops.get(k);
               if (mprop && v.meta?.type !== "content-element") {
-                return (
-                  <SingleProp
-                    key={k}
-                    name={k}
-                    prop={mprop.toJSON() as any}
-                    mprop={mprop}
-                    comp={comp}
-                    render={p.render}
-                    p={p}
-                  />
-                );
+                const prop = mprop.toJSON() as FNCompDef;
+
+                let visible = true;
+                if (local.visibles[k]) {
+                  try {
+                    const comp = p.treeMeta[p.item.active].comp;
+                    const args = {
+                      ...window.exports,
+                      ...comp?.nprops,
+                    };
+                    const fn = new Function(
+                      ...Object.keys(args),
+                      `return ${local.visibles[k]}`
+                    );
+
+                    visible = fn(...Object.values(args));
+                  } catch (e) {
+                    console.log(e);
+                  }
+                }
+
+                if (visible) {
+                  return (
+                    <SingleProp
+                      key={k}
+                      name={k}
+                      prop={prop}
+                      mprop={mprop}
+                      comp={comp}
+                      render={p.render}
+                      p={p}
+                    />
+                  );
+                }
               }
             })}
         </div>
