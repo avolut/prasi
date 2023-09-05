@@ -39,7 +39,7 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[] }> = ({ tree }) => {
   const onClick = useCallback(
     (node: NodeModel<NodeContent>) => {
       if (node.data) {
-        p.item.multiple = [];
+        p.item.selection = [];
         p.item.active = node.data.content.id;
         if (p.treeMeta[p.item.active].item.type === "text") {
           setTimeout(() => {

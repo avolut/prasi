@@ -57,7 +57,7 @@ export const ETreeItem: FC<{
     isComponent = false;
   }
   const p = useGlobal(EditorGlobal, "EDITOR");
-  let isSelect = find(p.item.multiple, (e) => e === item.id) ? true : false;
+  let isSelect = find(p.item.selection, (e) => e === item.id) ? true : false;
 
   if (isComponent) {
     const id = (item as IItem).component?.id;

@@ -79,7 +79,7 @@ export const ETreeRightClick: FC<{
                   let jso = JSON.parse(desc) as IContent;
                   const childs = get(jso, "data") as any;
                   if (childs) {
-                    p.item.multiple = [];
+                    p.item.selection = [];
                     let select = [] as Array<string>;
 
                     _mitem.doc?.transact(() => {
@@ -101,7 +101,7 @@ export const ETreeRightClick: FC<{
                     });
 
                     p.item.active = "";
-                    p.item.multiple = select;
+                    p.item.selection = select;
                   } else {
                     _mitem.doc?.transact(() => {
                       if (jso.type === "section") {
@@ -133,7 +133,7 @@ export const ETreeRightClick: FC<{
                         p.render();
                       }
                       p.item.active = "";
-                      p.item.multiple = walkId;
+                      p.item.selection = walkId;
                     });
                   }
                   p.render();
@@ -272,7 +272,7 @@ export const ETreeRightClick: FC<{
         <MenuItem
           label="Hide"
           onClick={() => {
-            let listItem = p.item.multiple;
+            let listItem = p.item.selection;
             if (listItem.length) {
               // hidden multiple
               const listContent: any = listItem.map((e) => {
@@ -300,7 +300,7 @@ export const ETreeRightClick: FC<{
         <MenuItem
           label="Show"
           onClick={() => {
-            let listItem = p.item.multiple;
+            let listItem = p.item.selection;
             if (listItem.length) {
               // hidden multiple
               const listContent: any = listItem.map((e) => {
@@ -327,7 +327,7 @@ export const ETreeRightClick: FC<{
       <MenuItem
         label="Clone"
         onClick={() => {
-          let listItem = p.item.multiple;
+          let listItem = p.item.selection;
           if (listItem.length) {
             const listContent: any = listItem.map((e) => {
               let item = p.treeMeta[e];
@@ -366,10 +366,10 @@ export const ETreeRightClick: FC<{
       <MenuItem
         label="Cut"
         onClick={() => {
-          let mode = p.item.multiple;
+          let mode = p.item.selection;
           let clipboardText = "";
-          if (p.item.multiple.length) {
-            let data = p.item.multiple.map((id) => {
+          if (p.item.selection.length) {
+            let data = p.item.selection.map((id) => {
               const e = p.treeMeta[id];
               if (e) {
                 let jso = e.mitem.toJSON();
@@ -410,8 +410,8 @@ export const ETreeRightClick: FC<{
         label="Copy"
         onClick={() => {
           let clipboardText = "";
-          if (p.item.multiple.length) {
-            let data = p.item.multiple.map((id) => {
+          if (p.item.selection.length) {
+            let data = p.item.selection.map((id) => {
               const e = p.treeMeta[id];
               if (e) {
                 let jso = e.mitem.toJSON();
@@ -449,7 +449,7 @@ export const ETreeRightClick: FC<{
           label={`Wrap`}
           onClick={() => {
             mitem.doc?.transact(() => {
-              let listItem = p.item.multiple;
+              let listItem = p.item.selection;
               if (listItem.length) {
                 const listContent: any = listItem.map((e) => {
                   let item = p.treeMeta[e];
@@ -529,7 +529,7 @@ export const ETreeRightClick: FC<{
           label={`Unwrap`}
           onClick={() => {
             mitem.doc?.transact(() => {
-              let listItem = p.item.multiple;
+              let listItem = p.item.selection;
               if (listItem.length) {
                 const listContent: any = listItem.map((e) => {
                   let item = p.treeMeta[e];
@@ -585,7 +585,7 @@ export const ETreeRightClick: FC<{
         label={"Delete"}
         onClick={() => {
           mitem.doc?.transact(() => {
-            if (p.item.multiple.length) {
+            if (p.item.selection.length) {
               let tree: NodeModel<NodeContent>[] = [];
               const comp: any = p.comps.doc[p.comp?.id || ""];
               if (comp) {
@@ -596,7 +596,7 @@ export const ETreeRightClick: FC<{
                   p.mpage.getMap("map").get("content_tree")
                 );
               }
-              filterFlatTree(p.item.multiple, tree, p);
+              filterFlatTree(p.item.selection, tree, p);
             } else {
               mitem.parent.forEach((e, idx) => {
                 if (e.get("id") === item.id) {

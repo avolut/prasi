@@ -45,7 +45,7 @@ export const ETree = () => {
     <div
       className={cx("tree flex flex-col")}
       onMouseLeave={() => {
-        p.item.multiple = [];
+        p.item.selection = [];
         p.render();
       }}
     >

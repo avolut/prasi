@@ -76,7 +76,7 @@ export const onDrop = (
 ) => {
   const { dragSource, dropTargetId, dropTarget, relativeIndex } = options;
 
-  let listItem = p.item.multiple;
+  let listItem = p.item.selection;
   if (listItem.length) {
     // Multiple drop targets
     if (
@@ -90,7 +90,7 @@ export const onDrop = (
         if (!find(listItem, (e) => e === dropTargetId)) {
           to.mitem.doc?.transact(() => {
             const open = new Set<string>();
-            p.item.multiple = [];
+            p.item.selection = [];
             let multiple: any = [];
             const listContent: any = listItem.map((e) => {
               let item = p.treeMeta[e];
@@ -139,7 +139,7 @@ export const onDrop = (
               if (typeof dropTargetId === "string") open.add(dropTargetId);
             });
             p.render();
-            p.item.multiple = multiple;
+            p.item.selection = multiple;
             if (local.method) local.method?.open([...open]);
           });
         }
@@ -255,10 +255,10 @@ export const canDrop = (p: PG, arg: DropOptions<NodeContent>, local: any) => {
     } else if (dragSource?.data && dropTarget?.data) {
       const from = dragSource.data.content.type;
       const to = dropTarget.data.content.type;
-      let listItem = p.item.multiple;
+      let listItem = p.item.selection;
       if (listItem.length) {
         if (typeof dragSourceId === "string") {
-          if (find(p.item.multiple, (e) => e === dropTargetId)) return false;
+          if (find(p.item.selection, (e) => e === dropTargetId)) return false;
         }
       } else {
         if (typeof dragSourceId === "string") {
@@ -329,7 +329,7 @@ export const selectMultiple = (
   const comp = p.comps.doc[p.comp?.id || ""];
   const { key } = local;
   let root: any = null;
-  let listId = p.item.multiple || [];
+  let listId = p.item.selection || [];
   if (!listId.length) {
     const item = p.treeMeta[p.item.active];
     if (item) {
@@ -350,7 +350,7 @@ export const selectMultiple = (
     // console.log({ listItemId });
     switch (true) {
       case key === "ctrl":
-        if (find(listId, (e) => e === node.id) && p.item.multiple.length) {
+        if (find(listId, (e) => e === node.id) && p.item.selection.length) {
           listId = listId.filter((e) => !find(listItemId, (x) => x === e));
         } else {
           listId = concat(listItemId, listId);
@@ -369,7 +369,7 @@ export const selectMultiple = (
   }
   listId = uniqBy(listId, (e) => e);
   p.item.active = "";
-  p.item.multiple = listId;
+  p.item.selection = listId;
 };
 
 export const flatTree = (item: Array<IContent>) => {

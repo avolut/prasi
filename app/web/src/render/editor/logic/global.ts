@@ -27,7 +27,7 @@ export const EditorGlobal = {
     hover: "",
     sideHover: false,
     selectMode: "single" as "single" | "multi",
-    multiple: [] as string[],
+    selection: [] as string[],
     copy: {
       mode: "single" as "single" | "multiple",
     },
