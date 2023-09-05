@@ -348,23 +348,10 @@ export const selectMultiple = (
     // let idItem = treeContent()
     const listItemId = treeContent(item.mitem);
     // console.log({ listItemId });
-    switch (true) {
-      case key === "ctrl":
-        if (find(listId, (e) => e === node.id) && p.item.selection.length) {
-          listId = listId.filter((e) => !find(listItemId, (x) => x === e));
-        } else {
-          listId = concat(listItemId, listId);
-        }
-        break;
-      case key === "shift":
-        let listIdx: Array<any> = concat(listId, listItemId);
-        listIdx = listIdx.map((x) => {
-          return findIndex(tree, (e) => e === x);
-        });
-        listId = slice(tree, Math.min(...listIdx), Math.max(...listIdx) + 1);
-        break;
-      default:
-        break;
+    if (find(listId, (e) => e === node.id) && p.item.selection.length) {
+      listId = listId.filter((e) => !find(listItemId, (x) => x === e));
+    } else {
+      listId = concat(listItemId, listId);
     }
   }
   listId = uniqBy(listId, (e) => e);

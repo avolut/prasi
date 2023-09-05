@@ -20,8 +20,13 @@ import {
   onDragEnd,
   onDragStart,
   onDrop,
+  selectMultiple,
 } from "./utils/tree-utils";
-export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[] }> = ({ tree }) => {
+export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[]; meta?: any }> = ({
+  tree,
+  meta,
+}) => {
+  // console.log({ tree });
   const TypedTree = DNDTree<NodeContent>;
   const p = useGlobal(EditorGlobal, "EDITOR");
   // const
@@ -39,24 +44,52 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[] }> = ({ tree }) => {
   const onClick = useCallback(
     (node: NodeModel<NodeContent>) => {
       if (node.data) {
-        p.item.selection = [];
-        p.item.active = node.data.content.id;
-        if (p.treeMeta[p.item.active].item.type === "text") {
-          setTimeout(() => {
-            const text = document.getElementById(
-              `text-${p.item.active}`
-            ) as HTMLInputElement;
-            if (text && text.focus) {
-              text.focus();
+        if (meta.search) {
+          meta.search = "";
+          meta.render();
+          p.item.selection = [];
+          p.item.active = node.data.content.id;
+          if (p.treeMeta[p.item.active].item.type === "text") {
+            setTimeout(() => {
+              const text = document.getElementById(
+                `text-${p.item.active}`
+              ) as HTMLInputElement;
+              if (text && text.focus) {
+                text.focus();
+              }
+            }, 100);
+          }
+
+          if (p.compProp.edit) {
+            p.compProp.edit = false;
+          }
+
+          p.softRender.all();
+        } else {
+          if (p.item.selectMode === "multi") {
+            selectMultiple(p, node, local);
+            p.softRender.all();
+          } else {
+            p.item.selection = [];
+            p.item.active = node.data.content.id;
+            if (p.treeMeta[p.item.active].item.type === "text") {
+              setTimeout(() => {
+                const text = document.getElementById(
+                  `text-${p.item.active}`
+                ) as HTMLInputElement;
+                if (text && text.focus) {
+                  text.focus();
+                }
+              }, 100);
             }
-          }, 100);
-        }
 
-        if (p.compProp.edit) {
-          p.compProp.edit = false;
-        }
+            if (p.compProp.edit) {
+              p.compProp.edit = false;
+            }
 
-        p.softRender.all();
+            p.softRender.all();
+          }
+        }
       }
     },
     [tree]
@@ -175,7 +208,7 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[] }> = ({ tree }) => {
                     local.rightClick.event = event;
                     local.render();
                   }}
-                /> 
+                />
               );
             }}
             dragPreviewRender={DragPreview}

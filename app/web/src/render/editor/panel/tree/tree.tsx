@@ -7,6 +7,8 @@ import { EditorGlobal } from "../../logic/global";
 import { ETreeBody } from "./body";
 import { NodeContent, flattenTree } from "./utils/flatten";
 import { Tooltip } from "../../../../utils/ui/tooltip";
+import { fuzzyMatch } from "./utils/search";
+import { flatTree } from "./utils/tree-utils";
 
 export const ETree = () => {
   const p = useGlobal(EditorGlobal, "EDITOR");
@@ -39,6 +41,33 @@ export const ETree = () => {
       );
     }
   } else {
+    if (comp) {
+      const contentTree = comp.getMap("map").get("content_tree") as MItem;
+      if (contentTree) tree = flattenTree(p, contentTree, treeLoading);
+    } else if (p.mpage) {
+      tree = flattenTree(
+        p,
+        p.mpage.getMap("map").get("content_tree"),
+        treeLoading
+      );
+    }
+    tree = tree.filter((e) => fuzzyMatch(local.search, e.text));
+    tree.map((item) => {
+      item.parent = "root";
+    });
+    // let flatten = tree.map((e: any) => {
+    //   return e.data.content;
+    // });
+    // let res = flatTree(flatten);
+    // res.map((e: any) => {
+    //   let item = tree.find((x) => x.id === e.id);
+    //   if (item) {
+    //     item.parent = "root";
+    //   }
+    // });
+    // console.log({ flatten, res });,.
+    treeLoading;
+    // console.log("filter", tree);
   }
 
   return (
@@ -81,7 +110,7 @@ export const ETree = () => {
             "relative flex-1 overflow-auto flex flex-col items-stretch bg-slate-100"
           )}
         >
-          <ETreeBody tree={tree} />
+          <ETreeBody tree={tree} meta={local} />
         </div>
       ) : (
         <Loading backdrop={false} />

@@ -316,6 +316,9 @@ export const ETreeRightClick: FC<{
                   item.mitem.set("hidden", false);
                 }
               });
+              p.item.selectMode = "single";
+              p.item.selection = [];
+              p.render();
             } else {
               mitem.set("hidden", false);
               p.render();
@@ -349,6 +352,9 @@ export const ETreeRightClick: FC<{
                 });
               }
             });
+            p.item.selectMode = "single";
+            p.item.selection = [];
+            p.render();
           } else {
             mitem.doc?.transact(() => {
               mitem.parent.forEach((e: MContent, idx) => {
@@ -360,7 +366,6 @@ export const ETreeRightClick: FC<{
               });
             });
           }
-          p.render();
         }}
       />
       <MenuItem
@@ -404,6 +409,9 @@ export const ETreeRightClick: FC<{
               mitem.parent.delete(idx);
             }
           });
+          p.item.selectMode = "single";
+          p.item.selection = [];
+          p.render();
         }}
       />
       <MenuItem
@@ -435,6 +443,9 @@ export const ETreeRightClick: FC<{
             let flat = rootContent.data as Array<IContent>;
             let res = flatTree(flat);
             clipboardText = JSON.stringify({ data: res });
+            p.item.selectMode = "single";
+            p.item.selection = [];
+            p.render();
           } else {
             clipboardText = JSON.stringify(item);
           }
@@ -521,6 +532,9 @@ export const ETreeRightClick: FC<{
                 });
               }
             });
+            p.item.selectMode = "single";
+            p.item.selection = [];
+            p.render();
           }}
         />
       )}
@@ -577,6 +591,9 @@ export const ETreeRightClick: FC<{
                 });
               }
             });
+            p.item.selectMode = "single";
+            p.item.selection = [];
+            p.render();
           }}
         />
       )}
@@ -605,6 +622,9 @@ export const ETreeRightClick: FC<{
               });
             }
           });
+          p.item.selectMode = "single";
+          p.item.selection = [];
+          p.render();
         }}
       />
     </Menu>

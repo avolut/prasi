@@ -11,6 +11,7 @@ export const treeItemStyle = (arg: {
     isComponent && !isActive && !isHover && "bg-purple-50",
     isActive && (isComponent ? "bg-purple-100" : "bg-blue-100"),
     isHover && (isComponent ? "bg-purple-100" : "bg-blue-50"),
+    isSelect ? "bg-blue-100" : "",
     css`
       min-height: 28px;
       > div {
