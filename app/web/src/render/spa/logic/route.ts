@@ -18,7 +18,11 @@ export const routeSPA = (p: PG, pathname: string) => {
     } else {
       const found = p.route.lookup(pathname);
       if (!found) {
-        p.status = "not-found";
+        if (Object.keys(p.pages).length > 0) {
+          p.status = "not-found";
+        } else {
+          p.status = "loading";
+        }
       } else {
         const id = p.page?.id;
         let paramsChanged = false;
@@ -125,9 +129,8 @@ const loadPage = (p: PG, id: string) => {
       };
       const comps = await api.comp_scan(id);
       for (const [k, v] of Object.entries(comps)) {
-        p.comps[k] = v;
+        p.comp.raw[k] = v;
       }
-      await loadComponent(p, p.pages[id].content_tree);
       pageNpmStatus[page.id] = "loaded";
     }
     resolve();

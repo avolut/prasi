@@ -98,6 +98,7 @@ export const Loading: FC<{
             className={cx(
               "w-1/6 flex flex-col items-center justify-center",
               css`
+                min-width: 30px;
                 .pr-outer {
                   background: rgba(0, 0, 0, 0.1) !important;
                 }

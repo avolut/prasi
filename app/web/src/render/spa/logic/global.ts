@@ -37,7 +37,6 @@ export const SPAGlobal = {
   page: null as null | SPAPage,
   pagePreload: {} as Record<string, true>,
   pageComp: {} as Record<string, IItem>,
-  comps: {} as Record<string, { id: string; content_tree: IItem }>,
   ui: {
     loading: null as null | ReactElement,
     preload: null as null | ReactElement,

@@ -28,8 +28,10 @@ export const initApi = async (config: any) => {
     url = config.api_url;
   }
   if (!w.prasiApi) w.prasiApi = {};
-  if (!w.prasiApi[url]) {
-    await reloadDBAPI(url);
+  if (url) {
+    if (!w.prasiApi[url]) {
+      await reloadDBAPI(url);
+    }
   }
   return url;
 };

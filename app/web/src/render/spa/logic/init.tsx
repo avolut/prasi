@@ -1,9 +1,9 @@
 import trim from "lodash.trim";
-import { PG, PrasiOpt } from "./global";
 import { defineWindow } from "web-init/src/web/define-window";
-import { IItem } from "../../../utils/types/item";
-import { Loading } from "../../../utils/ui/loading";
 import { initApi } from "../../../utils/script/init-api";
+import { PRASI_COMPONENT } from "../../../utils/types/render";
+import { Loading } from "../../../utils/ui/loading";
+import { PG, PrasiOpt } from "./global";
 
 const w = window as unknown as {
   basepath: string;
@@ -17,14 +17,13 @@ const w = window as unknown as {
   site: any;
   prasi_page: any;
   prasi_pages: any[];
-  prasi_comps: Record<string, { id: string; content_tree: IItem }>;
+  prasi_comps: Record<string, PRASI_COMPONENT>;
 };
 
 export const initSPA = async (p: PG, opt: PrasiOpt) => {
   document.body.style.opacity = "1";
   p.site = w.site;
   p.site.js = w.site.js_compiled || "";
-  p.site.api_url = await initApi(w.site.config);
 
   p.baseUrl = new URL(trim(opt.baseUrl || location.href, "/ "));
   p.status = "loading";
@@ -32,8 +31,8 @@ export const initSPA = async (p: PG, opt: PrasiOpt) => {
   if (window.innerWidth < 600) p.mode = "mobile";
   else p.mode = "desktop";
 
-  p.ui.loading = <Loading note="editor-root" />;
-  p.ui.preload = <Loading note="preload-root" backdrop={false} />;
+  p.ui.loading = <Loading />;
+  p.ui.preload = <Loading backdrop={false} />;
   p.ui.notfound = (
     <div className="flex-1 flex items-center justify-center">NOT FOUND</div>
   );
@@ -53,13 +52,18 @@ export const initSPA = async (p: PG, opt: PrasiOpt) => {
   }
   if (w.prasi_pages) {
     for (const page of w.prasi_pages) {
-      p.pages[page.id] = page;
-      p.route.insert(page.url, page);
+      if (p.page && page.id === p.page?.id) {
+        p.pages[page.id] = p.page;
+        p.route.insert(page.url, p.page);
+      } else {
+        p.pages[page.id] = page;
+        p.route.insert(page.url, page);
+      }
     }
   }
   if (w.prasi_comps) {
     for (const comp of Object.values(w.prasi_comps)) {
-      p.comps[comp.id] = comp;
+      p.comp.raw[comp.id] = comp;
     }
   }
 
@@ -87,5 +91,6 @@ export const initSPA = async (p: PG, opt: PrasiOpt) => {
   };
 
   p.status = "ready";
+  p.site.api_url = await initApi(w.site.config);
   p.render();
 };

@@ -99,7 +99,12 @@ export const EditorGlobal = {
 
   /** connection */
   ws: null as null | WebSocket,
-  wsRetry: { fast: false, localIP: false, disabled: false },
+  wsRetry: {
+    fast: false,
+    localIP: false,
+    disabled: false,
+    reconnecting: false,
+  },
   ui: {
     loading: null as null | ReactElement,
     preload: null as null | ReactElement,

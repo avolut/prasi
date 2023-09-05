@@ -48,6 +48,7 @@ export const editorWS = async (p: PG) => {
       const retry = (e: any) => {
         if (p.wsRetry.disabled) return;
 
+        p.wsRetry.reconnecting = true;
         p.wsRetry.localIP = true;
         if (p.wsRetry.fast) {
           editorWS(p);
@@ -66,7 +67,13 @@ export const editorWS = async (p: PG) => {
         console.log("close", e);
         retry(e);
       });
-      ws.addEventListener("open", () => resolve());
+      ws.addEventListener("open", () => {
+        if (p.wsRetry.reconnecting) {
+          p.wsRetry.reconnecting = false;
+          console.log("Connected");
+        }
+        resolve();
+      });
       ws.addEventListener("message", async (e) => {
         const msg = JSON.parse(e.data) as WS_MSG;
         // console.log("<", msg.type);

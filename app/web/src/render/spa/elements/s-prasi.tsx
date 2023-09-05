@@ -35,7 +35,12 @@ export const SPrasi: FC<PrasiOpt> = (opt) => {
     initSPA(p, opt);
   }
 
-  routeSPA(p, pathname.substring(p.baseUrl.pathname.length));
+  let basePath = p.baseUrl.pathname;
+  if (basePath.endsWith("/")) {
+    basePath = basePath.substring(0, basePath.length - 1);
+  }
+
+  routeSPA(p, location.pathname.substring(basePath.length));
 
   if (p.status === "not-found")
     return (

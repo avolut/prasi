@@ -27,9 +27,9 @@ export const _ = {
 <body class="flex-col flex-1 w-full min-h-screen flex opacity-0">
   <div id="root"></div>
   <script type="module">
-    import { renderPrasi } from "${serverurl}/spa/${site_id}/index.js?pathname=${pathname}${
-      reset || mode === "dev" ? "&reset" : ""
-    }";
+    import { renderPrasi } from "${serverurl}/spa/${site_id}/index.js?pathname=${encodeURIComponent(
+      `/${pathname}`
+    )}${reset || mode === "dev" ? "&reset" : ""}";
     renderPrasi(document.getElementById("root"), { 
       baseUrl: "${serverurl}/site/${site_id}"
     })

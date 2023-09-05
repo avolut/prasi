@@ -62,12 +62,12 @@ export const serveSPA = async ({
     if (!cache[index] || runMode === "dev") {
       cache[index] = await readAsync(index);
     }
-
+ 
     if (
       !site[site_id] ||
-      (site[site_id] && Date.now() - site[site_id].ts > 60 * 1000) ||
+      (site[site_id] && Date.now() - site[site_id].ts >= 2 * 1000) ||
       typeof req.query_parameters["reset"] === "string"
-    ) {
+    ) { 
       const baseUrl =
         runMode === "dev"
           ? "http://localhost:12300/"
@@ -108,6 +108,7 @@ export const serveSPA = async ({
         cache[index] +
         `\n
 window.__SRV_URL__ = "${baseUrl}";
+window.siteApiUrl = __SRV_URL__;
 window.prasi_pages = ${JSON.stringify(pages)};
 window.prasi_page = ${JSON.stringify(page)};
 window.prasi_comps = ${JSON.stringify(comps)};

@@ -27,7 +27,7 @@ export const SRender: FC<{
     })
     .map((e) => {
       if (e.type === "item" && e.component?.id) {
-        if (!p.comps[e.id]) {
+        if (!p.pageComp[e.id]) {
           const comp = newPageComp(p, e);
           if (comp) p.pageComp[e.id] = comp;
         }

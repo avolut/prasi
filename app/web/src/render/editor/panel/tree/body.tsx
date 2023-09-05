@@ -175,7 +175,7 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[] }> = ({ tree }) => {
                     local.rightClick.event = event;
                     local.render();
                   }}
-                />
+                /> 
               );
             }}
             dragPreviewRender={DragPreview}
@@ -186,7 +186,9 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[] }> = ({ tree }) => {
             sort={false}
             onDragStart={(node) => onDragStart(p, node)}
             onDragEnd={(node) => onDragEnd(p, node)}
-            canDrop={(_, args) => canDrop(p, args, local)}
+            canDrop={(_, args) => {
+              return canDrop(p, args, local);
+            }}
             onDrop={(...args) => onDrop(p, ...args, local)}
           ></TypedTree>
         </div>

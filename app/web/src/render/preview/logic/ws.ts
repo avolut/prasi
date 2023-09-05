@@ -44,11 +44,28 @@ export const previewWS = async (p: PG) => {
 
     if (ws) {
       const retry = (e: any) => {
-        console.log("Reconnecting...");
+        if (p.wsRetry.disabled) return;
+
+        p.wsRetry.reconnecting = true;
+        p.wsRetry.localIP = true;
+        if (p.wsRetry.fast) {
+          previewWS(p);
+        } else {
+          setTimeout(() => {
+            console.log("Reconnecting...");
+            previewWS(p);
+          }, 2000);
+        }
       };
       ws.addEventListener("error", retry);
       ws.addEventListener("close", retry);
-      ws.addEventListener("open", () => resolve());
+      ws.addEventListener("open", () => {
+        if (p.wsRetry.reconnecting) {
+          p.wsRetry.reconnecting = false;
+          console.log("Connected");
+        }
+        resolve();
+      });
       ws.addEventListener("message", async (e) => {
         const msg = JSON.parse(e.data) as WS_MSG;
 

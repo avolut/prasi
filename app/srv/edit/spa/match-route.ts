@@ -7,5 +7,5 @@ export const matchRoute = (pathname: string) => {
     site_id = parts.shift() || "";
   }
 
-  return { site_id, pathname: `${parts.join("/")}` };
+  return { site_id, pathname: parts.join("/") };
 };

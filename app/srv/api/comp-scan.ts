@@ -4,14 +4,17 @@ import { IItem } from "../../web/src/utils/types/item";
 export const _ = {
   url: "/comp-scan/:page_id",
   async api(page_id: string) {
-    const comps = {} as Record<string, { id: string; content_tree: IItem }>;
+    const comps = {} as Record<
+      string,
+      { id: string; name: string; content_tree: IItem }
+    >;
 
     if (page_id) {
       const res = await db.page.findFirst({
         where: {
           id: page_id,
         },
-        select: { content_tree: true },
+        select: { content_tree: true, id: true, name: true },
       });
 
       if (res) {
@@ -32,6 +35,7 @@ export const scanComponent = async (
         where: { id: item.component.id },
         select: {
           id: true,
+          name: true,
           content_tree: true,
         },
       });
