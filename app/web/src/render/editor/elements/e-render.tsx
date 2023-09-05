@@ -94,7 +94,7 @@ export const ERender: FC<{
   let componentOver = null;
   if (item.type === "item" && item.component?.id) {
     const compEdit = p.compEdits.find((e) => {
-      if (e.id === item.id) return true;
+      if (e.component?.id === item.component?.id) return true;
     });
     if (p.comp && compEdit) {
       componentOver = null;
