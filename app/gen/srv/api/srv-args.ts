@@ -114,6 +114,10 @@ export const site = {
   url: "/site/**",
   args: [],
 }
+export const spa_export = {
+  url: "/spa-export/:site_id",
+  args: ["site_id"],
+}
 export const spa_raw = {
   url: "/spa-raw/**",
   args: [],

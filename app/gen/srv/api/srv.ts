@@ -201,6 +201,13 @@ export const site = {
   args: [],
   handler: import("../../../srv/api/site")
 }
+export const spa_export = {
+  name: "spa_export",
+  url: "/spa-export/:site_id",
+  path: "app/srv/api/spa-export.ts",
+  args: ["site_id"],
+  handler: import("../../../srv/api/spa-export")
+}
 export const spa_raw = {
   name: "spa_raw",
   url: "/spa-raw/**",
