@@ -17,7 +17,7 @@ import React, {
 import ReactDOMServer from "react-dom/server";
 import JSXRuntime from "react/jsx-runtime";
 
-const PRASI_BASE_URL = "https://api.prasi.id";
+const PRASI_BASE_URL = "https://api.prasi.app";
 const SITE_ID = "${site_id}";
 const w = window as any;
 
