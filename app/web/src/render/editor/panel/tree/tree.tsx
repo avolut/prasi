@@ -55,19 +55,6 @@ export const ETree = () => {
     tree.map((item) => {
       item.parent = "root";
     });
-    // let flatten = tree.map((e: any) => {
-    //   return e.data.content;
-    // });
-    // let res = flatTree(flatten);
-    // res.map((e: any) => {
-    //   let item = tree.find((x) => x.id === e.id);
-    //   if (item) {
-    //     item.parent = "root";
-    //   }
-    // });
-    // console.log({ flatten, res });,.
-    treeLoading;
-    // console.log("filter", tree);
   }
 
   return (
@@ -78,18 +65,19 @@ export const ETree = () => {
         p.render();
       }}
     >
-      <div className="border-b flex items-stretch h-[25px]">
+      <div className="border-b flex items-stretch h-[24px]">
         <input
-          type="search"
-          className={cx("flex-1 outline-none px-1 text-sm ")}
-          placeholder="Search"
+          name="search"
+          type="text"
+          className={cx("flex-1 outline-none px-2 text-[13px] ")}
+          placeholder="Search..."
           value={local.search}
           onInput={(e) => {
             local.search = e.currentTarget.value;
             local.render();
           }}
         />
-        <Tooltip
+        {/* <Tooltip
           content="Multi Select"
           placement="right"
           className="border-l p-1 flex items-center justify-center"
@@ -102,7 +90,7 @@ export const ETree = () => {
               p.render();
             }}
           />
-        </Tooltip>
+        </Tooltip> */}
       </div>
       {local.ready ? (
         <div
