@@ -124,7 +124,7 @@ export const ETreeItemAction: FC<{
             className="flex items-center p-1 pr-[2px] h-full text-green-700"
             onClick={() => {
               mitem.parent.forEach((e: MContent, idx) => {
-                if (e === mitem) {
+                if (e.get("id") === mitem.get("id")) {
                   const json = e.toJSON() as IContent;
                   const map = newMap(fillID(json)) as MContent;
                   mitem.parent.insert(idx, [map]);
@@ -144,7 +144,7 @@ export const ETreeItemAction: FC<{
             className="flex items-center p-1 h-full text-red-700"
             onClick={() => {
               mitem.parent.forEach((e: MContent, idx) => {
-                if (e === mitem) {
+                if (e.get('id') === mitem.get('id')) {
                   const json = e.toJSON() as IContent;
                   const map = newMap(fillID(json)) as MContent;
                   mitem.parent.delete(idx);

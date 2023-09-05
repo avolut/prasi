@@ -14,7 +14,6 @@ export const getArray = <T extends any>(map: TypedMap<any>, key: string) => {
 
 export const newMap = (item: any) => {
   const map = new Y.Map();
-
   syncronize(map, item as any);
   return map;
 };

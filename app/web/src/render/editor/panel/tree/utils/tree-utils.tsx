@@ -195,7 +195,7 @@ export const onDrop = (
           const nmap = fillID(json);
           map = newMap(nmap);
           mitem.parent.forEach((e, idx) => {
-            if (e === mitem) {
+            if (e.get("id") === mitem.get("id")) {
               mitem.parent.delete(idx);
             }
           });

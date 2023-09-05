@@ -325,7 +325,7 @@ export const ETreeRightClick: FC<{
       )}
 
       <MenuItem
-        label="Duplicate"
+        label="Clone"
         onClick={() => {
           let listItem = p.item.multiple;
           if (listItem.length) {
@@ -341,7 +341,7 @@ export const ETreeRightClick: FC<{
               if (item) {
                 const mitem = item.mitem;
                 mitem.parent.forEach((e: MContent, idx) => {
-                  if (e === mitem) {
+                  if (e.get("id") === mitem.get("id")) {
                     const json = e.toJSON() as IContent;
                     const map = newMap(fillID(json)) as MContent;
                     mitem.parent.insert(idx, [map]);
@@ -352,7 +352,7 @@ export const ETreeRightClick: FC<{
           } else {
             mitem.doc?.transact(() => {
               mitem.parent.forEach((e: MContent, idx) => {
-                if (e === mitem) {
+                if (e.get("id") === mitem.get("id")) {
                   const json = e.toJSON() as IContent;
                   const map = newMap(fillID(json)) as MContent;
                   mitem.parent.insert(idx, [map]);
@@ -400,7 +400,7 @@ export const ETreeRightClick: FC<{
           navigator.clipboard.writeText(str);
 
           mitem.parent.forEach((e: MContent, idx) => {
-            if (e === mitem) {
+            if (e.get("id") === mitem.get("id")) {
               mitem.parent.delete(idx);
             }
           });
@@ -504,7 +504,7 @@ export const ETreeRightClick: FC<{
                 }
               } else {
                 mitem.parent.forEach((e: MContent, idx) => {
-                  if (e === mitem) {
+                  if (e.get("id") === mitem.get("id")) {
                     const json: IContent = {
                       id: createId(),
                       name: `Wrapped`,
@@ -543,16 +543,14 @@ export const ETreeRightClick: FC<{
                   if (item) {
                     const mitem = item.mitem;
                     mitem.parent.forEach((e: MContent, idx) => {
-                      if (e === mitem) {
+                      if (e.get("id") === mitem.get("id")) {
                         const json = e.toJSON() as IContent;
                         if (json.type === "item") {
                           mitem.parent.delete(idx);
                           mitem.parent.insert(
                             idx,
                             json.childs.map((e) => {
-                              const map = new Y.Map() as MContent;
-                              syncronize(map as any, fillID(e));
-                              return map;
+                              return newMap(fillID(e));
                             })
                           );
                         }
@@ -562,7 +560,7 @@ export const ETreeRightClick: FC<{
                 });
               } else {
                 mitem.parent.forEach((e: MContent, idx) => {
-                  if (e === mitem) {
+                  if (e.get("id") === mitem.get("id")) {
                     const json = e.toJSON() as IContent;
                     if (json.type === "item") {
                       mitem.parent.delete(idx);
@@ -601,7 +599,7 @@ export const ETreeRightClick: FC<{
               filterFlatTree(p.item.multiple, tree, p);
             } else {
               mitem.parent.forEach((e, idx) => {
-                if (e === item) {
+                if (e.get("id") === item.id) {
                   mitem.parent.delete(idx);
                 }
               });
