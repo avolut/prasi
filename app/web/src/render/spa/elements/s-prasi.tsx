@@ -49,6 +49,6 @@ export const SPrasi: FC<PrasiOpt> = (opt) => {
       </div>
     );
   if (p.status !== "ready") return <Loading />;
-
+ 
   return <SPage />;
 };

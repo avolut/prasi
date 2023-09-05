@@ -37156,6 +37156,22 @@ ERROR: Async operation of type "${type}" was created in "process.exit" callback.
             }
           );
         }
+        await new Promise(async (resolve) => {
+          if (await (0, import_fs_jetpack17.existsAsync)(dir.root("app/gen/srv/api/srv-args.ts"))) {
+            resolve();
+          } else {
+            const retry = () => {
+              setTimeout(async () => {
+                if (await (0, import_fs_jetpack17.existsAsync)(dir.root("app/gen/srv/api/srv-args.ts"))) {
+                  resolve();
+                } else {
+                  retry();
+                }
+              }, 300);
+            };
+            retry();
+          }
+        });
         await buildSPA(mode);
         await buildSPARaw(mode);
         await buildSSR(mode);
@@ -37164,18 +37180,34 @@ ERROR: Async operation of type "${type}" was created in "process.exit" callback.
         await (0, import_fs_jetpack17.removeAsync)(dir.root(".output/app/srv/spa-raw"));
         const ctx = await (0, import_esbuild2.context)({
           bundle: true,
+          absWorkingDir: dir.root(""),
           entryPoints: [dir.root("app/web/src/render/spa/spa-raw.tsx")],
           outdir: dir.root(".output/app/srv/spa-raw"),
-          splitting: true,
-          format: "esm",
+          format: "iife",
           jsx: "transform",
           minify: true,
           sourcemap: true,
-          logLevel: "silent",
+          logLevel: "error",
           define: {
             "process.env.NODE_ENV": `"production"`
           },
-          external: ["react", "react/jsx-runtime"],
+          external: ["react"],
+          plugins: [
+            lib_default({
+              react: {
+                varName: "window.React",
+                type: "cjs"
+              },
+              "react-dom/server": {
+                varName: "window.ReactDOMServer",
+                type: "cjs"
+              },
+              "react/jsx-runtime": {
+                varName: "window.JSXRuntime",
+                type: "cjs"
+              }
+            })
+          ],
           banner: {
             js: `if (typeof isSSR === 'undefined') {
   if (typeof window !== 'undefined') window.isSSR = false;
@@ -37193,6 +37225,7 @@ ERROR: Async operation of type "${type}" was created in "process.exit" callback.
         await (0, import_fs_jetpack17.removeAsync)(dir.root(".output/app/srv/spa"));
         const ctx = await (0, import_esbuild2.context)({
           bundle: true,
+          absWorkingDir: dir.root(""),
           entryPoints: [dir.root("app/web/src/render/spa/spa.tsx")],
           outdir: dir.root(".output/app/srv/spa"),
           splitting: true,
@@ -37200,7 +37233,7 @@ ERROR: Async operation of type "${type}" was created in "process.exit" callback.
           jsx: "transform",
           minify: true,
           sourcemap: true,
-          logLevel: "silent",
+          logLevel: "error",
           define: {
             "process.env.NODE_ENV": `"production"`
           },
@@ -37220,11 +37253,12 @@ ERROR: Async operation of type "${type}" was created in "process.exit" callback.
       buildSSR = async (mode) => {
         const ctx = await (0, import_esbuild2.context)({
           bundle: true,
+          absWorkingDir: dir.root(""),
           entryPoints: [dir.root("app/web/src/render/ssr/ssr.tsx")],
           outfile: dir.root(".output/app/srv/ssr/index.jsx"),
           format: "iife",
           jsx: "transform",
-          logLevel: "silent",
+          logLevel: "error",
           define: {
             "process.env.NODE_ENV": `"production"`
           },

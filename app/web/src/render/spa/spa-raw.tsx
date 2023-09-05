@@ -6,11 +6,12 @@ import { w } from "./logic/window";
 
 export const Prasi: FC<PrasiOpt> = (opt) => {
   const [_, render] = useState({});
-  w.ssrContext.render = () => render({});
+  w.prasiContext.render = () => render({});
 
   return (
-    <GlobalContext.Provider value={w.ssrContext}>
+    <GlobalContext.Provider value={w.prasiContext}>
       <SPrasi {...opt} />
     </GlobalContext.Provider>
   );
 };
+w.PrasiBaseComponent = Prasi;

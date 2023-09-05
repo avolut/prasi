@@ -6,6 +6,7 @@ import { SSR } from "web-types";
 import { g } from "./src/types";
 import { defineReact } from "./src/web/define-react";
 import { defineWindow } from "./src/web/define-window";
+import { defineApi } from "./src/web/define-api";
 import { initRouter } from "./src/web/router";
 
 const w = window as any;
@@ -16,6 +17,7 @@ export const initApp = async (name: string, App: SSR["App"]) => {
     setup(React.createElement);
     defineReact();
     defineWindow();
+    defineApi();
 
     const pageImport = (await import(
       "../../../../../../app/gen/web/page/entry"

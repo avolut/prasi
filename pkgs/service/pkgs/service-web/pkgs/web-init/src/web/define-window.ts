@@ -1,6 +1,5 @@
-import { apiClient } from "./api";
-import { dbClient } from "./db";
 import { css, extractCss } from "goober";
+import { dbClient } from "./db";
 
 export const defineWindow = async (baseurl?: URL) => {
   let w = typeof window === "object" ? window : (globalThis as any);
@@ -79,16 +78,6 @@ export const defineWindow = async (baseurl?: URL) => {
       w.rootRender();
     }
   };
-
-  const apiEntry = import("../../../../../../../../app/gen/srv/api/entry-args");
-  await new Promise<void>((resolve) => {
-    apiEntry.then((e) => {
-      w.apiEntry = e["srv"];
-      w.api = apiClient(w.apiEntry);
-      w.apiClient = apiClient;
-      resolve();
-    });
-  });
 
   if (typeof window === "object") {
     window.addEventListener("popstate", () => {

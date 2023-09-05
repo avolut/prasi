@@ -13,6 +13,23 @@ export const build = async (mode: string) => {
       }
     );
   }
+
+  await new Promise<void>(async (resolve) => {
+    if (await existsAsync(dir.root("app/gen/srv/api/srv-args.ts"))) {
+      resolve();
+    } else {
+      const retry = () => {
+        setTimeout(async () => {
+          if (await existsAsync(dir.root("app/gen/srv/api/srv-args.ts"))) {
+            resolve();
+          } else {
+            retry();
+          }
+        }, 300);
+      };
+      retry();
+    }
+  });
   await buildSPA(mode);
   await buildSPARaw(mode);
   await buildSSR(mode);
@@ -22,18 +39,34 @@ const buildSPARaw = async (mode: string) => {
   await removeAsync(dir.root(".output/app/srv/spa-raw"));
   const ctx = await context({
     bundle: true,
+    absWorkingDir: dir.root(""),
     entryPoints: [dir.root("app/web/src/render/spa/spa-raw.tsx")],
     outdir: dir.root(".output/app/srv/spa-raw"),
-    splitting: true,
-    format: "esm",
+    format: "iife",
     jsx: "transform",
     minify: true,
     sourcemap: true,
-    logLevel: "silent",
+    logLevel: "error",
     define: {
       "process.env.NODE_ENV": `"production"`,
     },
-    external: ["react", "react/jsx-runtime"],
+    external: ["react"],
+    plugins: [
+      globalExternals({
+        react: {
+          varName: "window.React",
+          type: "cjs",
+        },
+        "react-dom/server": {
+          varName: "window.ReactDOMServer",
+          type: "cjs",
+        },
+        "react/jsx-runtime": {
+          varName: "window.JSXRuntime",
+          type: "cjs",
+        },
+      }),
+    ],
     banner: {
       js: `\
 if (typeof isSSR === 'undefined') {
@@ -53,6 +86,7 @@ const buildSPA = async (mode: string) => {
   await removeAsync(dir.root(".output/app/srv/spa"));
   const ctx = await context({
     bundle: true,
+    absWorkingDir: dir.root(""),
     entryPoints: [dir.root("app/web/src/render/spa/spa.tsx")],
     outdir: dir.root(".output/app/srv/spa"),
     splitting: true,
@@ -60,7 +94,7 @@ const buildSPA = async (mode: string) => {
     jsx: "transform",
     minify: true,
     sourcemap: true,
-    logLevel: "silent",
+    logLevel: "error",
     define: {
       "process.env.NODE_ENV": `"production"`,
     },
@@ -82,11 +116,12 @@ if (typeof isSSR === 'undefined') {
 const buildSSR = async (mode: string) => {
   const ctx = await context({
     bundle: true,
+    absWorkingDir: dir.root(""),
     entryPoints: [dir.root("app/web/src/render/ssr/ssr.tsx")],
     outfile: dir.root(".output/app/srv/ssr/index.jsx"),
     format: "iife",
     jsx: "transform",
-    logLevel: "silent",
+    logLevel: "error",
     define: {
       "process.env.NODE_ENV": `"production"`,
     },

@@ -27,6 +27,16 @@ export const serveSPA = async ({
   const { res, req, mode: runMode } = ctx;
   let { pathname, site_id } = matchRoute(req.params._);
 
+  res.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT");
+  res.setHeader("Access-Control-Allow-Headers", "content-type rid");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader("Access-Control-Allow-Origin", "*");
+
+  if (req.method !== "GET") {
+    res.send("");
+    return;
+  }
+
   if (req.query_parameters["pathname"]) {
     pathname = req.query_parameters["pathname"];
   }
@@ -62,12 +72,12 @@ export const serveSPA = async ({
     if (!cache[index] || runMode === "dev") {
       cache[index] = await readAsync(index);
     }
- 
+
     if (
       !site[site_id] ||
       (site[site_id] && Date.now() - site[site_id].ts >= 2 * 1000) ||
       typeof req.query_parameters["reset"] === "string"
-    ) { 
+    ) {
       const baseUrl =
         runMode === "dev"
           ? "http://localhost:12300/"
