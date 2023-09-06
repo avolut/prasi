@@ -180,21 +180,23 @@ const createLocal = (arg: {
 }): LocalFC => {
   const { p, item, render } = arg;
   const meta = {
-    default: null as any,
+    page_id: "",
+    params: "",
   };
   return ({ name, value, children, effect, hook, cache }) => {
-    if (!meta.default) {
-      meta.default = structuredClone(value);
-    }
     if (!item.scope) {
-      item.scope = { ...meta.default, render };
+      item.scope = { _id: item.id, ...structuredClone(value), render };
     }
+
     if (!cache) {
-      useEffect(() => {
-        item.scope = { _id: item.id, ...meta.default, render };
-      }, [p.page?.id]);
+      const params_str = JSON.stringify(params);
+      if (meta.page_id !== p.page?.id && meta.params !== params_str) {
+        meta.page_id = p.page?.id || "";
+        meta.params = params_str;
+        item.scope = { _id: item.id, ...structuredClone(value), render };
+      }
     }
-    
+
     item.scope.render = render;
 
     const local = item.scope;
