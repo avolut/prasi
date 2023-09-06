@@ -3,12 +3,11 @@ import { useCallback, useEffect } from "react";
 import { useGlobal, useLocal } from "web-utils";
 import { MItem } from "../../../../utils/types/item";
 import { Loading } from "../../../../utils/ui/loading";
+import { Tooltip } from "../../../../utils/ui/tooltip";
 import { EditorGlobal } from "../../logic/global";
 import { ETreeBody } from "./body";
 import { NodeContent, flattenTree } from "./utils/flatten";
-import { Tooltip } from "../../../../utils/ui/tooltip";
 import { fuzzyMatch } from "./utils/search";
-import { flatTree } from "./utils/tree-utils";
 
 export const ETree = () => {
   const p = useGlobal(EditorGlobal, "EDITOR");
@@ -16,50 +15,38 @@ export const ETree = () => {
     ready: true,
     timeout: null as any,
     search: "",
+    hovering: false,
+    multi: false,
   });
   let tree: NodeModel<NodeContent>[] = [];
   const comp = p.comps.doc[p.comp?.id || ""];
-  useEffect(() => {
-    const keyDown = async (evt: KeyboardEvent) => {
-      if (evt.shiftKey || evt.metaKey) {
-        if (!p.item.selection.length && p.item.selectMode === "multi") {
-          p.item.selectMode = "single";
-        } else {
-          p.item.selectMode = "multi";
-        }
-        p.render();
-        return;
-      }
-      if (
-        evt.keyCode === 224 ||
-        evt.keyCode === 17 ||
-        evt.keyCode === 91 ||
-        evt.keyCode === 93 ||
-        evt.metaKey
-      ) {
-        if (!p.item.selection.length && p.item.selectMode === "multi") {
-          p.item.selectMode = "single";
-        } else {
-          p.item.selectMode = "multi";
-        }
-        p.render();
-        return;
-      }
-      if (evt.ctrlKey || evt.metaKey) {
-        if (!p.item.selection.length && p.item.selectMode === "multi") {
-          p.item.selectMode = "single";
-        } else {
-          p.item.selectMode = "multi";
-        }
-        p.render();
-        return;
-      }
-    };
-    window.addEventListener("keydown", keyDown, true);
-    return () => {
-      window.removeEventListener("keydown", keyDown, true);
-    };
-  }, []);
+  // useEffect(() => {
+  //   const keyDown = async (evt: KeyboardEvent) => {
+  //     if (evt.shiftKey || evt.metaKey) {
+  //       local.multi = true;
+  //       if (local.hovering) {
+  //         p.item.selectMode = "multi";
+  //         p.render();
+  //       } else {
+  //         local.render();
+  //       }
+  //       return;
+  //     }
+  //   };
+
+  //   const keyUp = async (evt: KeyboardEvent) => {
+  //     local.multi = false;
+  //     p.item.selectMode = "single";
+  //     p.render();
+  //     return;
+  //   };
+  //   window.addEventListener("keydown", keyDown, true);
+  //   window.addEventListener("keyup", keyUp, true);
+  //   return () => {
+  //     window.removeEventListener("keydown", keyDown, true);
+  //     window.removeEventListener("keyup", keyUp, true);
+  //   };
+  // }, []);
   const treeLoading = useCallback(() => {
     clearTimeout(local.timeout);
     local.timeout = setTimeout(() => {
@@ -100,9 +87,18 @@ export const ETree = () => {
   return (
     <div
       className={cx("tree flex flex-col")}
+      onMouseEnter={() => {
+        local.hovering = true;
+        if (local.multi) {
+          p.item.selectMode = "multi";
+          p.render();
+        } else {
+          local.render();
+        }
+      }}
       onMouseLeave={() => {
-        p.item.selection = [];
-        p.render();
+        local.hovering = false;
+        local.render();
       }}
     >
       <div className="border-b flex items-stretch h-[24px]">
@@ -121,16 +117,32 @@ export const ETree = () => {
         <Tooltip
           content="Multi Select"
           placement="right"
-          className="border-l p-1 flex items-center justify-center"
+          className={cx(
+            "border-l p-1 flex items-center justify-center cursor-pointer",
+            p.item.selectMode === "multi"
+              ? "bg-blue-600"
+              : "hover:bg-blue-100"
+          )}
+          onClick={(e) => {
+            p.item.selectMode =
+              p.item.selectMode === "single" ? "multi" : "single";
+            p.render();
+          }}
         >
-          <input
-            type="checkbox"
-            checked={p.item.selectMode === "multi"}
-            onClick={(e) => {
-              p.item.selectMode = e.currentTarget.checked ? "multi" : "single";
-              p.render();
-            }}
-          />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="13"
+            height="13"
+            viewBox="0 0 24 24"
+            className={cx(
+              p.item.selectMode === "multi" ? "text-white" : "opacity-40"
+            )}
+          >
+            <path
+              fill="currentColor"
+              d="M.41 13.41L6 19l1.41-1.42L1.83 12m20.41-6.42L11.66 16.17 7.5 12l-1.43 1.41L11.66 19l12-12M18 7l-1.41-1.42-6.35 6.35 1.42 1.41L18 7z"
+            ></path>
+          </svg>
         </Tooltip>
       </div>
       {local.ready ? (
