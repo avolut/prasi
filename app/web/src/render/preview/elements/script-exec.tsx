@@ -176,17 +176,21 @@ const createLocal = (arg: {
   render: () => void;
 }): LocalFC => {
   const { item, render, p } = arg;
+  const meta = {
+    page_id: "",
+    params: "",
+  };
   return ({ name, value, children, effect, hook, cache }) => {
-
-    const scope = { _id: item.id, ...value, render };
-
     if (!item.scope) {
-      item.scope = scope;
-    } else {
-      if (item.scope._id !== scope._id) {
-        for (const [k, v] of Object.entries(scope)) {
-          if (k !== "render") item.scope[k] = v;
-        }
+      item.scope = { _id: item.id, ...structuredClone(value), render };
+    }
+
+    if (!cache) {
+      const params_str = JSON.stringify(params);
+      if (meta.page_id !== p.page?.id && meta.params !== params_str) {
+        meta.page_id = p.page?.id || "";
+        meta.params = params_str;
+        item.scope = { _id: item.id, ...structuredClone(value), render };
       }
     }
 
