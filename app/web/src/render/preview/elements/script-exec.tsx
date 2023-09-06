@@ -180,10 +180,19 @@ const createLocal = (arg: {
     default: null as any,
   };
   return ({ name, value, children, effect, hook, cache }) => {
+    if (!meta.default) {
+      meta.default = structuredClone(value);
+    }
     const scope = { _id: item.id, ...meta.default, render };
 
     if (!item.scope) {
       item.scope = scope;
+    } else {
+      if (item.scope._id !== scope._id) {
+        for (const [k, v] of Object.entries(scope)) {
+          if (k !== "render") item.scope[k] = v;
+        }
+      }
     }
 
     if (!cache) {
