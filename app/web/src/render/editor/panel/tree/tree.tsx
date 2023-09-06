@@ -119,9 +119,7 @@ export const ETree = () => {
           placement="right"
           className={cx(
             "border-l p-1 flex items-center justify-center cursor-pointer",
-            p.item.selectMode === "multi"
-              ? "bg-blue-600"
-              : "hover:bg-blue-100"
+            p.item.selectMode === "multi" ? "bg-blue-600" : "hover:bg-blue-100"
           )}
           onClick={(e) => {
             p.item.selectMode =
@@ -131,16 +129,16 @@ export const ETree = () => {
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="13"
-            height="13"
-            viewBox="0 0 24 24"
+            width="17"
+            height="17"
+            viewBox="0 0 16 16"
             className={cx(
               p.item.selectMode === "multi" ? "text-white" : "opacity-40"
             )}
           >
             <path
               fill="currentColor"
-              d="M.41 13.41L6 19l1.41-1.42L1.83 12m20.41-6.42L11.66 16.17 7.5 12l-1.43 1.41L11.66 19l12-12M18 7l-1.41-1.42-6.35 6.35 1.42 1.41L18 7z"
+              d="M8.97 4.97a.75.75 0 011.07 1.05l-3.99 4.99a.75.75 0 01-1.08.02L2.324 8.384a.75.75 0 111.06-1.06l2.094 2.093L8.95 4.992a.252.252 0 01.02-.022zm-.92 5.14l.92.92a.75.75 0 001.079-.02l3.992-4.99a.75.75 0 10-1.091-1.028L9.477 9.417l-.485-.486-.943 1.179z"
             ></path>
           </svg>
         </Tooltip>
