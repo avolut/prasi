@@ -25,7 +25,7 @@ export const serveSPA = async ({
   ctx: APIContext;
 }) => {
   const { res, req, mode: runMode } = ctx;
-  let { pathname, site_id } = matchRoute(req.params._);
+  let { site_id } = matchRoute(req.params._);
 
   res.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT");
   res.setHeader("Access-Control-Allow-Headers", "content-type rid");
@@ -37,6 +37,7 @@ export const serveSPA = async ({
     return;
   }
 
+  let pathname = undefined as undefined | string;
   if (req.query_parameters["pathname"]) {
     pathname = req.query_parameters["pathname"];
   }
@@ -94,19 +95,29 @@ export const serveSPA = async ({
         },
       });
 
-      const router = createRouter<{ id: string; url: string }>({
-        strictTrailingSlash: false,
-      });
-      for (const page of pages) {
-        router.insert(page.url, page);
-      }
-
-      const found = router.lookup(`/${pathname}`);
       let page: any = null;
       let comps: any = {};
-      if (found) {
-        page = await loadPage(found.id);
-        const ppage = pages.find((e) => e.id === found.id);
+
+      if (typeof pathname === "string") {
+        const router = createRouter<{ id: string; url: string }>({
+          strictTrailingSlash: false,
+        });
+        for (const page of pages) {
+          router.insert(page.url, page);
+        }
+
+        const found = router.lookup(`/${pathname}`);
+        if (found) {
+          page = await loadPage(found.id);
+        }
+      } else if (typeof req.query_parameters["page_id"] === "string") {
+        if (req.query_parameters["page_id"]) {
+          page = await loadPage(req.query_parameters["page_id"]);
+        }
+      }
+
+      if (page) {
+        const ppage = pages.find((e) => e.id === page.id);
         if (ppage) {
           for (const [k, v] of Object.entries(page)) {
             (ppage as any)[k] = v;
@@ -114,6 +125,7 @@ export const serveSPA = async ({
         }
         await scanComponent(page.content_tree, comps);
       }
+
       const raw =
         cache[index] +
         `\n
@@ -137,10 +149,12 @@ window.site=${JSON.stringify(
     }
   }
 
-  if (dirs[mode].includes(pathname)) {
-    sendFile(`srv/${mode}/${pathname}`);
-  } else if (dirs.web.includes(pathname) && pathname !== "index.js") {
-    sendFile(`web/public/${pathname}`);
+  if (pathname) {
+    if (dirs[mode].includes(pathname)) {
+      sendFile(`srv/${mode}/${pathname}`);
+    } else if (dirs.web.includes(pathname) && pathname !== "index.js") {
+      sendFile(`web/public/${pathname}`);
+    }
   } else {
     res.setHeader("content-type", "text/javascript");
     res.setHeader("ETag", site[site_id].etag);

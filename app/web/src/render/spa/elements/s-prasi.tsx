@@ -13,9 +13,6 @@ export const SPrasi: FC<PrasiOpt> = (opt) => {
   if (!p.mode) {
     const parsed = parseUA();
     p.mode = parsed.device.type === "mobile" ? "mobile" : "desktop";
-    if (localStorage.getItem("editor-mode")) {
-      p.mode = localStorage.getItem("editor-mode") as any;
-    }
   }
 
   useEffect(() => {
