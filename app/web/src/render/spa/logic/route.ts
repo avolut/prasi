@@ -52,8 +52,7 @@ export const routeSPA = (p: PG, pathname: string) => {
     }
 
     if (page_id) {
-      const page = p.pages[page_id];
-      if (!page) {
+      if (!p.pages[page_id]) {
         p.status = "loading";
         loadPage(p, page_id).then(() => {
           p.status = "ready";
@@ -61,9 +60,8 @@ export const routeSPA = (p: PG, pathname: string) => {
         });
       } else {
         p.status = "ready";
-      }
+        const page = structuredClone(p.pages[page_id]);
 
-      if (page) {
         if (!pageNpmStatus[page.id]) {
           p.status = "loading";
           pageNpmStatus[page.id] = "loading";

@@ -179,20 +179,19 @@ const createLocal = (arg: {
   render: () => void;
 }): LocalFC => {
   const { p, item, render } = arg;
-  const meta = {
-    page_id: "",
-    params: "",
-  };
+
   return ({ name, value, children, effect, hook, cache }) => {
     if (!item.scope) {
       item.scope = { _id: item.id, ...structuredClone(value), render };
-    }
+    } else if (cache === false) {
+      const page = p.page as any;
 
-    if (!cache) {
-      const params_str = JSON.stringify(params);
-      if (meta.page_id !== p.page?.id && meta.params !== params_str) {
-        meta.page_id = p.page?.id || "";
-        meta.params = params_str;
+      if (!page.localHash) {
+        page.localHash = new Set();
+      }
+      const hash: Set<string> = page.localHash;
+      if (!hash.has(item.id)) {
+        hash.add(item.id);
         item.scope = { _id: item.id, ...structuredClone(value), render };
       }
     }

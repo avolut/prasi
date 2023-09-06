@@ -150,10 +150,15 @@ export const EScriptElement: FC<{}> = ({}) => {
         >
           {(!jscript.editor || !jscript.build) && (
             <>
-              {!jscript.editor && (
+              {!jscript.editor && !jscript.build && (
+                <Loading note={"js-code"} backdrop={false} />
+              )}
+              {!jscript.editor && jscript.build && (
                 <Loading note={"js-editor"} backdrop={false} />
               )}
-              {!jscript.build && <Loading note={"js-build"} backdrop={false} />}
+              {!jscript.build && jscript.editor && (
+                <Loading note={"js-build"} backdrop={false} />
+              )}
             </>
           )}
           {jscript.editor && jscript.build && (
