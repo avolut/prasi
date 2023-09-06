@@ -87,7 +87,12 @@ export const ETreeItem: FC<{
 
   return (
     <div
-      className={treeItemStyle({ isActive, isHover, isComponent, isSelect })}
+      className={treeItemStyle({
+        isActive: isActive || p.item.selection.includes(item.id),
+        isHover,
+        isComponent,
+        isSelect,
+      })}
       onClick={() => onClick(node)}
       onPointerOver={() => onHover(node)}
       onContextMenu={(e) => {
@@ -107,7 +112,7 @@ export const ETreeItem: FC<{
         type={type}
         isOpen={isOpen}
         hasChilds={hasChilds}
-        isActive={isActive}
+        isActive={isActive || p.item.selection.includes(item.id)}
         isComponent={isComponent}
       />
       <ETreeItemName

@@ -176,14 +176,9 @@ const createLocal = (arg: {
   render: () => void;
 }): LocalFC => {
   const { item, render, p } = arg;
-  const meta = {
-    default: null as any,
-  };
   return ({ name, value, children, effect, hook, cache }) => {
-    if (!meta.default) {
-      meta.default = structuredClone(value);
-    }
-    const scope = { _id: item.id, ...meta.default, render };
+
+    const scope = { _id: item.id, ...value, render };
 
     if (!item.scope) {
       item.scope = scope;
@@ -193,12 +188,6 @@ const createLocal = (arg: {
           if (k !== "render") item.scope[k] = v;
         }
       }
-    }
-
-    if (!cache) {
-      useEffect(() => {
-        item.scope = { _id: item.id, ...meta.default, render };
-      }, [p.page?.id]);
     }
 
     item.scope.render = render;

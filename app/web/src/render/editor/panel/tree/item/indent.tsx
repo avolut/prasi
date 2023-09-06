@@ -20,8 +20,8 @@ export const ETreeItemIndent: FC<{
       {isComponent && !hasChilds && (
         <div
           className={cx(
-            isActive ? "bg-purple-700" : "bg-purple-400",
-            "bg-opacity-40 flex items-center justify-center text-white absolute left-0 top-0 bottom-0",
+            isActive ? "bg-blue-400" : "bg-purple-400 bg-opacity-40",
+            " flex items-center justify-center text-white absolute left-0 top-0 bottom-0",
             depth > 1 ? "w-[16px]" : "w-[7px]"
           )}
         >
