@@ -45,7 +45,7 @@ const produceEvalArgs = (
 
   if (!p.treeMeta[item.id]) {
     p.treeMeta[item.id] = {
-      local: createLocal({ item, render }),
+      local: createLocal({ item, render, p }),
       passchild: createPassChild({ item }),
       passprop: createPassProp(),
     };
@@ -170,20 +170,28 @@ const thru = (prop: any, nprops: any) => {
   }
 };
 
-const createLocal = (arg: { item: IContent; render: () => void }): LocalFC => {
-  const { item, render } = arg;
-  return ({ name, value, children, effect, hook }) => {
-    const scope = { _id: item.id, ...value, render };
+const createLocal = (arg: {
+  p: PG;
+  item: IContent;
+  render: () => void;
+}): LocalFC => {
+  const { item, render, p } = arg;
+  const meta = {
+    default: null as any,
+  };
+  return ({ name, value, children, effect, hook, cache }) => {
+    const scope = { _id: item.id, ...meta.default, render };
 
     if (!item.scope) {
       item.scope = scope;
-    } else {
-      if (item.scope._id !== scope._id) {
-        for (const [k, v] of Object.entries(scope)) {
-          if (k !== "render") item.scope[k] = v;
-        }
-      }
     }
+
+    if (!cache) {
+      useEffect(() => {
+        item.scope = { _id: item.id, ...meta.default, render };
+      }, [p.page?.id]);
+    }
+
     item.scope.render = render;
 
     const local = item.scope;
@@ -232,4 +240,6 @@ export type LocalFC = <T extends Record<string, any>>(arg: {
   hook?: (
     local: T & { render: () => void }
   ) => void | (() => void) | Promise<void | (() => void)>;
+
+  cache?: boolean;
 }) => ReactNode;

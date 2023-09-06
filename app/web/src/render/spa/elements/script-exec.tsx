@@ -179,10 +179,23 @@ const createLocal = (arg: {
   render: () => void;
 }): LocalFC => {
   const { p, item, render } = arg;
-  return ({ name, value, children, effect, hook }) => {
-    if (!item.scope) {
-      item.scope = { ...value, render };
+  const meta = {
+    default: null as any,
+  };
+  return ({ name, value, children, effect, hook, cache }) => {
+    if (!meta.default) {
+      meta.default = structuredClone(value);
     }
+    if (!item.scope) {
+      item.scope = { ...meta.default, render };
+    }
+    if (!cache) {
+      useEffect(() => {
+        item.scope = { _id: item.id, ...meta.default, render };
+      }, [p.page?.id]);
+    }
+    
+    item.scope.render = render;
 
     const local = item.scope;
     let child = children;
@@ -230,5 +243,5 @@ export type LocalFC = <T extends Record<string, any>>(arg: {
     local: T & { render: () => void }
   ) => void | (() => void) | Promise<void | (() => void)>;
 
-  effects?: LocalEffects<T>;
+  cache?: boolean;
 }) => ReactNode;

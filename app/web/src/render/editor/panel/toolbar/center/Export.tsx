@@ -7,9 +7,10 @@ export const Export = () => {
 import Prasi from "./Prasi"
 
 export default () => {
-  return <Prasi 
-    pageId={"${p.page?.id}"}
-  />;
+ return <Prasi 
+  pageId={"${p.page?.id}"}
+  /* pathname={"${p.page?.url}"} */
+ />;
 }`;
   return (
     <div className="w-[450px] p-2 text-sm flex flex-col">

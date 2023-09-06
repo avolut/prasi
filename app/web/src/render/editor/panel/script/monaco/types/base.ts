@@ -42,6 +42,7 @@ const Local: <T extends Record<string, any>>(arg: {
   hook?: (
     local: T & { render: () => void }
   ) => void | (() => void) | Promise<void | (() => void)>;
+  cache?: boolean;
 }) => ReactNode;
 
 `;
