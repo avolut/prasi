@@ -1,5 +1,5 @@
 import { NodeModel } from "@minoru/react-dnd-treeview";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { useGlobal, useLocal } from "web-utils";
 import { MItem } from "../../../../utils/types/item";
 import { Loading } from "../../../../utils/ui/loading";
@@ -19,7 +19,47 @@ export const ETree = () => {
   });
   let tree: NodeModel<NodeContent>[] = [];
   const comp = p.comps.doc[p.comp?.id || ""];
-
+  useEffect(() => {
+    const keyDown = async (evt: KeyboardEvent) => {
+      if (evt.shiftKey || evt.metaKey) {
+        if (!p.item.selection.length && p.item.selectMode === "multi") {
+          p.item.selectMode = "single";
+        } else {
+          p.item.selectMode = "multi";
+        }
+        p.render();
+        return;
+      }
+      if (
+        evt.keyCode === 224 ||
+        evt.keyCode === 17 ||
+        evt.keyCode === 91 ||
+        evt.keyCode === 93 ||
+        evt.metaKey
+      ) {
+        if (!p.item.selection.length && p.item.selectMode === "multi") {
+          p.item.selectMode = "single";
+        } else {
+          p.item.selectMode = "multi";
+        }
+        p.render();
+        return;
+      }
+      if (evt.ctrlKey || evt.metaKey) {
+        if (!p.item.selection.length && p.item.selectMode === "multi") {
+          p.item.selectMode = "single";
+        } else {
+          p.item.selectMode = "multi";
+        }
+        p.render();
+        return;
+      }
+    };
+    window.addEventListener("keydown", keyDown, true);
+    return () => {
+      window.removeEventListener("keydown", keyDown, true);
+    };
+  }, []);
   const treeLoading = useCallback(() => {
     clearTimeout(local.timeout);
     local.timeout = setTimeout(() => {
@@ -78,7 +118,7 @@ export const ETree = () => {
             local.render();
           }}
         />
-        {/* <Tooltip
+        <Tooltip
           content="Multi Select"
           placement="right"
           className="border-l p-1 flex items-center justify-center"
@@ -91,7 +131,7 @@ export const ETree = () => {
               p.render();
             }}
           />
-        </Tooltip> */}
+        </Tooltip>
       </div>
       {local.ready ? (
         <div
