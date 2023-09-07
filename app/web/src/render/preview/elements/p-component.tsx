@@ -116,7 +116,18 @@ export const getRenderPropVal = (
           ...window.exports,
           ...item.nprops,
         });
-      } catch (e) {}
+      } catch (e) {
+        let compName = "";
+        if (p && item.component?.id) {
+          const name = p.comp.doc[item.component.id]
+            .getMap("map")
+            .get("content_tree")
+            ?.get("name");
+          compName = `in component ${name}`;
+        }
+        console.warn(`Error when evaluating prop [${key}] ${compName}`, e);
+        console.warn(`CODE: return ${prop.value}`);
+      }
     }
     nprops[key] = val;
   }
