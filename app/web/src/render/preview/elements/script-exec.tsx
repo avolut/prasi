@@ -1,4 +1,4 @@
-import { ReactNode, Suspense, isValidElement, useEffect } from "react";
+import { ReactNode, Suspense, isValidElement, useEffect, useRef } from "react";
 import { ErrorBoundary } from "web-init/src/web/error-boundary";
 import { useLocal } from "web-utils";
 import { IContent, w } from "../../../utils/types/general";
@@ -177,6 +177,8 @@ const createLocal = (arg: {
 }): LocalFC => {
   const { item, render, p } = arg;
   return ({ name, value, children, effect, hook, cache }) => {
+    const ref = useRef({ ts: 0 });
+
     if (!item.scope) {
       item.scope = { _id: item.id, ...structuredClone(value), render };
     } else if (cache === false) {
@@ -185,10 +187,16 @@ const createLocal = (arg: {
       if (!page.localHash) {
         page.localHash = new Set();
       }
+
       const hash: Set<string> = page.localHash;
       if (!hash.has(item.id)) {
         hash.add(item.id);
-        item.scope = { _id: item.id, ...structuredClone(value), render };
+
+        for (const [k, v] of Object.entries(structuredClone(value))) {
+          item.scope[k] = v;
+        }
+
+        ref.current.ts = Date.now();
       }
     }
 
@@ -216,7 +224,7 @@ const createLocal = (arg: {
           return res;
         }
       }
-    }, []);
+    }, [ref.current.ts]);
 
     return child as ReactNode;
   };
