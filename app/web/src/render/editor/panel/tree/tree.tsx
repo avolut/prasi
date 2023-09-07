@@ -15,7 +15,7 @@ export const ETree = () => {
     ready: true,
     timeout: null as any,
     search: "",
-    searchFocus: true,
+    searchFocus: false,
     searchTypes: {
       Name: true,
       JS: false,
