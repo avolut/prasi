@@ -350,7 +350,9 @@ const SinglePopover: FC<{
               className="p-1 outline-none border focus:border-blue-500"
               value={local.name}
               onChange={(e) => {
-                local.name = e.currentTarget.value.replace(/\W/gi, "_");
+                local.name = e.currentTarget.value
+                  .toLowerCase()
+                  .replace(/\W/gi, "_");
                 local.render();
               }}
               onBlur={() => {
