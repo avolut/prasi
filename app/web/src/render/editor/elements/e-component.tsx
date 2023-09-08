@@ -12,8 +12,8 @@ import { Loading } from "../../../utils/ui/loading";
 
 export const EComponent: FC<{
   item: IItem;
-  editComponentId?: string;
-}> = ({ item, editComponentId }) => {
+  instance?: { id: string; cid: string };
+}> = ({ item, instance }) => {
   const [_, render] = useState({});
   const p = useGlobal(EditorGlobal, "EDITOR");
 
@@ -72,12 +72,25 @@ export const EComponent: FC<{
 
       return (
         <>
-          <ERender item={citem} editComponentId={editComponentId}>
+          <ERender item={citem} instance={instance}>
             {(childs) => {
               return childs.map((e) => {
                 if (e.type === "item")
-                  return <EItem item={e} key={e.id} editComponentId={cid} />;
-                else return <EText item={e} key={e.id} editComponentId={cid} />;
+                  return (
+                    <EItem
+                      item={e}
+                      key={e.id}
+                      instance={{ id: item.id, cid }}
+                    />
+                  );
+                else
+                  return (
+                    <EText
+                      item={e}
+                      key={e.id}
+                      instance={{ id: item.id, cid }}
+                    />
+                  );
               });
             }}
           </ERender>
@@ -92,12 +105,17 @@ export const EComponent: FC<{
   const cid = item.component.id;
 
   return (
-    <ERender item={item} editComponentId={cid}>
+    <ERender item={item} instance={{ id: item.id, cid }}>
       {(childs) => {
         return childs.map((e) => {
           if (e.type === "item")
-            return <EItem item={e} key={e.id} editComponentId={cid} />;
-          else return <EText item={e} key={e.id} editComponentId={cid} />;
+            return (
+              <EItem item={e} key={e.id} instance={{ id: item.id, cid }} />
+            );
+          else
+            return (
+              <EText item={e} key={e.id} instance={{ id: item.id, cid }} />
+            );
         });
       }}
     </ERender>

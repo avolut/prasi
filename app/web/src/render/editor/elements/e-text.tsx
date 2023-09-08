@@ -6,10 +6,10 @@ import { ERender } from "./e-render";
 
 export const EText: FC<{
   item: IText;
-  editComponentId?: string;
-}> = ({ item, editComponentId }) => {
+  instance?: { id: string; cid: string };
+}> = ({ item, instance }) => {
   return (
-    <ERender item={item} editComponentId={editComponentId}>
+    <ERender item={item} instance={instance}>
       {() => item.html || ""}
     </ERender>
   );

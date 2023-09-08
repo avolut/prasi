@@ -62,7 +62,6 @@ export const detachComp = async (
     }
     for (const child of Object.values(propChild)) {
       const citem = child.toJSON() as any;
-      delete citem.isPropContent;
       citem.hidden = "all";
       newitem.childs.unshift(citem);
     }

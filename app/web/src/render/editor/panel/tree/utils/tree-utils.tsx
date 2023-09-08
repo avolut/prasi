@@ -108,6 +108,7 @@ export const onDrop = (
                   } as IItem;
                   return newItem;
                 }
+
                 return item.mitem.toJSON();
               }
             });
@@ -191,7 +192,6 @@ export const onDrop = (
         let map = null as any;
         toitem.doc?.transact(() => {
           const json = mitem.toJSON() as IContent;
-
           const nmap = fillID(json);
           map = newMap(nmap);
           mitem.parent.forEach((e, idx) => {
@@ -225,6 +225,10 @@ export const onDrop = (
         }
         if (map) {
           const item = map.toJSON();
+          p.treeMeta[item.id] = {
+            item,
+            mitem: map,
+          };
           if (item) {
             p.item.active = item.id;
           }
@@ -319,15 +323,9 @@ export const canDrop = (p: PG, arg: DropOptions<NodeContent>, local: any) => {
 export const onDragEnd = (p: PG, node: NodeModel<NodeContent>) => {};
 export const onDragStart = (p: PG, node: NodeModel<NodeContent>) => {};
 
-export const selectMultiple = (
-  p: PG,
-  node: NodeModel<NodeContent>,
-  local: any
-) => {
+export const selectMultiple = (p: PG, node: NodeModel<NodeContent>) => {
   console.clear();
-  // console.log("selectMultiple");
   const comp = p.comps.doc[p.comp?.id || ""];
-  const { key } = local;
   let root: any = null;
   let listId = p.item.selection || [];
   if (!listId.length) {
@@ -336,18 +334,14 @@ export const selectMultiple = (
       listId = treeContent(item.mitem);
     }
   }
-  // console.log(listId);
   if (comp) {
     root = comp.getMap("map").get("content_tree");
   } else if (p.mpage) {
     root = p.mpage.getMap("map").get("content_tree");
   }
-  let tree = walk(root);
   const item = p.treeMeta[node.id];
   if (item) {
-    // let idItem = treeContent()
     const listItemId = treeContent(item.mitem);
-    // console.log({ listItemId });
     if (find(listId, (e) => e === node.id) && p.item.selection.length) {
       listId = listId.filter((e) => !find(listItemId, (x) => x === e));
     } else {

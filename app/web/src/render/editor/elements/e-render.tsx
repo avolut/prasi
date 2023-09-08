@@ -14,8 +14,8 @@ import { scriptExec } from "./script-exec";
 export const ERender: FC<{
   item: IContent;
   children: (childs: (IItem | IText)[]) => ReactNode;
-  editComponentId?: string;
-}> = ({ item, children, editComponentId }) => {
+  instance?: { id: string; cid: string };
+}> = ({ item, children, instance }) => {
   const p = useGlobal(EditorGlobal, "EDITOR");
 
   const childs = (item.type !== "text" ? item.childs || [] : [])
@@ -83,7 +83,7 @@ export const ERender: FC<{
 
   let _children = children(childs);
 
-  const elprop = createElProp(item, p, editComponentId);
+  const elprop = createElProp(item, p, instance);
   const className = produceCSS(item, {
     mode: p.mode,
     hover: p.item.sideHover ? false : p.item.hover === item.id,
@@ -152,7 +152,7 @@ export const ERender: FC<{
     }
   }
 
-  if (item.type === "text") {
+  if (item.type === "text" && (!instance?.cid || instance.cid === p.comp?.id)) {
     return (
       <ETextInternal
         key={item.id}

@@ -78,6 +78,11 @@ export const ETreeItem: FC<{
       }
     }
   }
+  let isPropContent = false;
+  const mitem = p.treeMeta[item.id].mitem;
+  if (mitem && (mitem.parent as any).get("content")) {
+    isPropContent = true;
+  }
 
   useEffect(() => {
     if (isActive && local.el) {
@@ -130,6 +135,7 @@ export const ETreeItem: FC<{
         (!isRootComponent ? (
           <ETreeItemAction
             isComponent={isComponent}
+            isPropContent={isPropContent}
             mode={mode}
             item={item}
             rename={() => {

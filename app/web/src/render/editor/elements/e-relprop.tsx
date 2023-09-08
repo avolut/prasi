@@ -1,15 +1,16 @@
 import { FC } from "react";
-import { IContent } from "../../../utils/types/general";
-import { IItem } from "../../../utils/types/item";
+import { IContent, MContent } from "../../../utils/types/general";
+import { IItem, MItem } from "../../../utils/types/item";
 import { editComp } from "../logic/comp";
 import { PG } from "../logic/global";
+import { MRoot } from "../../../utils/types/root";
 const hoverAttempt: { id: string; ts: number }[] = [];
 
 export type ElProp = ReturnType<typeof createElProp>;
 export const createElProp = (
   item: IContent,
   p: PG,
-  editComponentId?: string
+  instance?: { id: string; cid: string }
 ) => {
   return {
     onPointerEnter: (e: React.PointerEvent<HTMLDivElement>) => {
@@ -36,7 +37,7 @@ export const createElProp = (
         return;
       }
 
-      if (p.comp?.id && !editComponentId) {
+      if (p.comp?.id && !instance?.cid) {
         p.item.hover = item.id;
         p.softRender.all();
         return;
@@ -56,7 +57,16 @@ export const createElProp = (
         (document.activeElement as any)?.blur();
       }
 
-      if (p.comp?.id && !editComponentId) {
+      if (
+        !p.treeMeta[item.id] &&
+        instance?.id &&
+        p.treeMeta[instance?.id].item
+      ) {
+        editComp(p, p.treeMeta[instance?.id].item);
+        return;
+      }
+
+      if (p.comp?.id && !instance?.cid) {
         p.comp = null;
         p.compEdits = [];
         p.item.active = item.id;

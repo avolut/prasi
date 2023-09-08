@@ -28,7 +28,6 @@ export type MetaItem = {
   nprops?: any;
   scope?: any;
   hidden?: "only-editor" | "all" | false;
-  isPropContent?: boolean;
 };
 
 export type BasicItem = {

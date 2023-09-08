@@ -44,12 +44,22 @@ export const ETreeRightClick: FC<{
   const mitem = p.treeMeta[item.id].mitem;
   const mcomp = mitem.get("component");
 
+  let canDelete = true;
+  let isPropContent = false;
+  if (mitem && (mitem.parent as any).get("content")) {
+    isPropContent = true;
+  }
+
+  if (isPropContent || rootComp?.id === item.id) {
+    canDelete = false;
+  }
+
   try {
     navigator.clipboard.readText().then((e) => {
       local.clipboardAllowed = e.includes("prasi") ? true : false;
-      local.render();
     });
   } catch (error) {}
+
   const paste = (
     <MenuItem
       label={
@@ -145,7 +155,7 @@ export const ETreeRightClick: FC<{
     />
   );
 
-  if ((comp?.id && rootComp && comp.id === rootComp.id) || item.isPropContent) {
+  if (comp?.id && rootComp && comp.id === rootComp.id) {
     return (
       <Menu mouseEvent={event} onClose={onClose}>
         {paste}
@@ -188,6 +198,23 @@ export const ETreeRightClick: FC<{
                       .get("content_tree")
                       ?.toJSON() as IItem;
 
+                    const props: any = {};
+                    if (citem.component?.props) {
+                      for (const [k, v] of Object.entries(
+                        citem.component.props
+                      )) {
+                        if (v.meta?.type === "content-element") {
+                          props[k] = {
+                            meta: { type: "content-element" },
+                            content: {
+                              ...mitem.toJSON(),
+                              name: k,
+                            },
+                          };
+                        }
+                      }
+                    }
+
                     if (citem) {
                       syncronize(mitem as any, {
                         id: citem.id,
@@ -195,7 +222,7 @@ export const ETreeRightClick: FC<{
                         childs: [],
                         component: {
                           id: citem.component?.id,
-                          props: {},
+                          props,
                         },
                         type: "item",
                       });
@@ -368,52 +395,54 @@ export const ETreeRightClick: FC<{
           }
         }}
       />
-      <MenuItem
-        label="Cut"
-        onClick={() => {
-          let mode = p.item.selection;
-          let clipboardText = "";
-          if (p.item.selection.length) {
-            let data = p.item.selection.map((id) => {
-              const e = p.treeMeta[id];
-              if (e) {
-                let jso = e.mitem.toJSON();
-                if (jso.type === "section") {
-                  const newItem = {
-                    id: jso.id,
-                    name: jso.name,
-                    type: "item",
-                    dim: { w: "fit", h: "fit" },
-                    childs: jso.childs,
-                    component: get(jso, "component"),
-                    adv: jso.adv,
-                  } as IItem;
-                  return newItem;
+      {canDelete && (
+        <MenuItem
+          label="Cut"
+          onClick={() => {
+            let mode = p.item.selection;
+            let clipboardText = "";
+            if (p.item.selection.length) {
+              let data = p.item.selection.map((id) => {
+                const e = p.treeMeta[id];
+                if (e) {
+                  let jso = e.mitem.toJSON();
+                  if (jso.type === "section") {
+                    const newItem = {
+                      id: jso.id,
+                      name: jso.name,
+                      type: "item",
+                      dim: { w: "fit", h: "fit" },
+                      childs: jso.childs,
+                      component: get(jso, "component"),
+                      adv: jso.adv,
+                    } as IItem;
+                    return newItem;
+                  }
+                  return jso;
                 }
-                return jso;
+              });
+              data = data.filter((x) => typeof x !== "string");
+              let rootContent = JSON.parse(JSON.stringify({ data }));
+              let flat = rootContent.data as Array<IContent>;
+              let res = flatTree(flat);
+              clipboardText = JSON.stringify({ data: res });
+            } else {
+              clipboardText = JSON.stringify(item);
+            }
+            let str = clipboardText + "_prasi";
+            navigator.clipboard.writeText(str);
+
+            mitem.parent.forEach((e: MContent, idx) => {
+              if (e.get("id") === mitem.get("id")) {
+                mitem.parent.delete(idx);
               }
             });
-            data = data.filter((x) => typeof x !== "string");
-            let rootContent = JSON.parse(JSON.stringify({ data }));
-            let flat = rootContent.data as Array<IContent>;
-            let res = flatTree(flat);
-            clipboardText = JSON.stringify({ data: res });
-          } else {
-            clipboardText = JSON.stringify(item);
-          }
-          let str = clipboardText + "_prasi";
-          navigator.clipboard.writeText(str);
-
-          mitem.parent.forEach((e: MContent, idx) => {
-            if (e.get("id") === mitem.get("id")) {
-              mitem.parent.delete(idx);
-            }
-          });
-          p.item.selectMode = "single";
-          p.item.selection = [];
-          p.render();
-        }}
-      />
+            p.item.selectMode = "single";
+            p.item.selection = [];
+            p.render();
+          }}
+        />
+      )}
       <MenuItem
         label="Copy"
         onClick={() => {
@@ -538,7 +567,7 @@ export const ETreeRightClick: FC<{
           }}
         />
       )}
-      {type === "item" && !mcomp?.get("id") && (
+      {type === "item" && !mcomp?.get("id") && canDelete && (
         <MenuItem
           label={`Unwrap`}
           onClick={() => {
@@ -598,35 +627,37 @@ export const ETreeRightClick: FC<{
         />
       )}
 
-      <MenuItem
-        label={"Delete"}
-        onClick={() => {
-          mitem.doc?.transact(() => {
-            if (p.item.selection.length) {
-              let tree: NodeModel<NodeContent>[] = [];
-              const comp: any = p.comps.doc[p.comp?.id || ""];
-              if (comp) {
-                tree = flattenTree(p, comp.getMap("map").get("content_tree"));
-              } else if (p.mpage) {
-                tree = flattenTree(
-                  p,
-                  p.mpage.getMap("map").get("content_tree")
-                );
-              }
-              filterFlatTree(p.item.selection, tree, p);
-            } else {
-              mitem.parent.forEach((e, idx) => {
-                if (e.get("id") === item.id) {
-                  mitem.parent.delete(idx);
+      {canDelete && (
+        <MenuItem
+          label={"Delete"}
+          onClick={() => {
+            mitem.doc?.transact(() => {
+              if (p.item.selection.length) {
+                let tree: NodeModel<NodeContent>[] = [];
+                const comp: any = p.comps.doc[p.comp?.id || ""];
+                if (comp) {
+                  tree = flattenTree(p, comp.getMap("map").get("content_tree"));
+                } else if (p.mpage) {
+                  tree = flattenTree(
+                    p,
+                    p.mpage.getMap("map").get("content_tree")
+                  );
                 }
-              });
-            }
-          });
-          p.item.selectMode = "single";
-          p.item.selection = [];
-          p.render();
-        }}
-      />
+                filterFlatTree(p.item.selection, tree, p);
+              } else {
+                mitem.parent.forEach((e, idx) => {
+                  if (e.get("id") === item.id) {
+                    mitem.parent.delete(idx);
+                  }
+                });
+              }
+            });
+            p.item.selectMode = "single";
+            p.item.selection = [];
+            p.render();
+          }}
+        />
+      )}
     </Menu>
   );
 };

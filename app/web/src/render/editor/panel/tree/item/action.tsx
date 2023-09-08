@@ -13,8 +13,9 @@ export const ETreeItemAction: FC<{
   item: IContent;
   mode: "mobile" | "desktop";
   isComponent: boolean;
+  isPropContent: boolean;
   rename: () => void;
-}> = ({ item, mode, isComponent, rename }) => {
+}> = ({ item, mode, isComponent, isPropContent, rename }) => {
   const p = useGlobal(EditorGlobal, "EDITOR");
 
   let link: string;
@@ -36,6 +37,11 @@ export const ETreeItemAction: FC<{
   ) {
     canDelete = false;
   }
+
+  if (isPropContent) {
+    canDelete = false;
+  }
+
   return (
     <div className="flex action pl-3 items-center w-[100px] justify-end">
       {!!link && (

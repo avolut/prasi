@@ -265,7 +265,7 @@ export const CompManager: FC = () => {
               </div> */}
               <input
                 type="search"
-                value={w.compManagerSearch}
+                value={w.compManagerSearch || ""}
                 ref={(e) => {
                   local.searchRef = e;
                 }}

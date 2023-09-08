@@ -22,6 +22,8 @@ import {
   onDrop,
   selectMultiple,
 } from "./utils/tree-utils";
+import { IItem, MItem } from "../../../../utils/types/item";
+import { IText } from "../../../../utils/types/text";
 export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[]; meta?: any }> = ({
   tree,
   meta,
@@ -67,7 +69,7 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[]; meta?: any }> = ({
           p.softRender.all();
         } else {
           if (p.item.selectMode === "multi") {
-            selectMultiple(p, node, local);
+            selectMultiple(p, node);
             p.softRender.all();
           } else {
             p.item.selection = [];
@@ -106,37 +108,45 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[]; meta?: any }> = ({
   );
   useEffect(() => {
     if (p.item.active) {
-      let m = p.treeMeta[p.item.active];
-      if (m)
-        if (m.mitem) {
-          let mitem = m.mitem;
-          if (mitem.parent) {
-            let item = mitem.parent.parent as any;
-            const open = new Set<string>();
-            const walkParent = (item: any) => {
-              if (!item) return;
-              const id = item.get("id");
-              if (id) {
-                if (id !== "root") open.add(id);
-              }
-              if (item.parent && item.parent.parent) {
-                walkParent(item.parent.parent);
-              }
-            };
-            walkParent(item);
-            local.method?.open([...open]);
+      if (p.comp) {
+        const walk = (item: IItem | IText, parents: string[]) => {
+          if (item.id === p.item.active) {
+            const open = [...parents, item.id];
+            local.method?.open(open);
+            return;
           }
-        }
+          if (item.type === "item") {
+            for (const child of item.childs) {
+              walk(child, [...parents, item.id]);
+            }
+          }
+        };
+        walk(p.comp.content_tree, []);
+      } else {
+        let m = p.treeMeta[p.item.active];
+        if (m)
+          if (m.mitem) {
+            let mitem = m.mitem;
+            if (mitem.parent) {
+              let item = mitem.parent.parent as any;
+              const open = new Set<string>();
+              const walkParent = (item: any) => {
+                if (!item) return;
+                const id = item.get("id");
+                if (id) {
+                  if (id !== "root") open.add(id);
+                }
+                if (item.parent && item.parent.parent) {
+                  walkParent(item.parent.parent);
+                }
+              };
+              walkParent(item);
+              local.method?.open([...open]);
+            }
+          }
+      }
     }
-  }, [p.item.active]);
-
-  useEffect(() => {
-    if (p.comp && p.comp.id && tree[0].id) {
-      const open = new Set<any>();
-      open.add(tree[0].id);
-      local.method?.open([...open]);
-    }
-  }, [p.comp?.id, local.method]);
+  }, [p.item.active, local.method, p.comp?.id]);
 
   return (
     <div

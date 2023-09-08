@@ -6,26 +6,21 @@ import { EText } from "./e-text";
 
 export const EItem: FC<{
   item: IItem;
-  editComponentId?: string;
-}> = ({ item, editComponentId }) => {
+  instance?: { id: string; cid: string };
+}> = ({ item, instance }) => {
   const compid = item.component?.id;
   if (compid) {
-    return <EComponent item={item} editComponentId={editComponentId} />;
+    return <EComponent item={item} instance={instance} />;
   }
 
   return (
     <>
-      <ERender item={item} editComponentId={editComponentId}>
+      <ERender item={item} instance={instance}>
         {(childs) =>
           childs.map((e) => {
             if (e.type === "item")
-              return (
-                <EItem item={e} key={e.id} editComponentId={editComponentId} />
-              );
-            else
-              return (
-                <EText item={e} key={e.id} editComponentId={editComponentId} />
-              );
+              return <EItem item={e} key={e.id} instance={instance} />;
+            else return <EText item={e} key={e.id} instance={instance} />;
           })
         }
       </ERender>

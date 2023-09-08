@@ -82,7 +82,7 @@ export const AddElement: FC<{}> = ({}) => {
                   let done = false;
                   mitem.parent.forEach((e, idx) => {
                     if (done) return;
-                    if (e.get("id") === p.item.active) {
+                    if (e && e.get("id") === p.item.active) {
                       const map = new Y.Map() as MContent;
                       if (map && p.item.active) {
                         syncronize(map as any, fillID(json));
