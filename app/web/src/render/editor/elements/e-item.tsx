@@ -6,7 +6,7 @@ import { EText } from "./e-text";
 
 export const EItem: FC<{
   item: IItem;
-  instance?: { id: string; cid: string };
+  instance?: { pid?: string; cid: string; id: string };
 }> = ({ item, instance }) => {
   const compid = item.component?.id;
   if (compid) {

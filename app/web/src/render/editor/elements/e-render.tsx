@@ -14,7 +14,7 @@ import { scriptExec } from "./script-exec";
 export const ERender: FC<{
   item: IContent;
   children: (childs: (IItem | IText)[]) => ReactNode;
-  instance?: { id: string; cid: string };
+  instance?: { id: string; cid: string; pid?: string };
 }> = ({ item, children, instance }) => {
   const p = useGlobal(EditorGlobal, "EDITOR");
 
@@ -34,20 +34,18 @@ export const ERender: FC<{
         const mcomp = p.comps.doc[e.component.id];
 
         if (mcomp) {
-          let mitem = mcomp.getMap("map").get("content_tree");
+          let citem = mcomp.getMap("map").get("content_tree");
 
-          if (mitem) {
-            if (!meta) {
-              p.treeMeta[e.id] = { item: e, mitem: mitem };
-              meta = p.treeMeta[e.id];
-            }
-
-            if (p.comp?.id === e.component.id && !meta.pmitem) {
-              meta.pmitem = meta.mitem as MItem;
-              meta.mitem = mitem as MContent;
-            } else if (meta.pmitem) {
-              meta.mitem = meta.pmitem;
-              delete meta.pmitem;
+          if (citem && meta) {
+            if (
+              p.comp?.id === e.component.id &&
+              p.comp?.item.id === instance?.id
+            ) {
+              meta.originalMitem = meta.mitem;
+              meta.mitem = citem as MContent;
+            } else if (meta.originalMitem) {
+              meta.mitem = meta.originalMitem;
+              delete meta.originalMitem;
             }
           }
 

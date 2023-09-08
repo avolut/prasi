@@ -130,6 +130,7 @@ export const editComp = (p: PG, item: IContent) => {
         p.item.active = map.id;
         p.comp = {
           id: cid,
+          item,
           content_tree: map,
         };
         p.render();

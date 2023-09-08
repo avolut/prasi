@@ -68,6 +68,7 @@ export const EditorGlobal = {
   },
   comp: null as null | {
     id: string;
+    item: IItem;
     content_tree: IItem;
   },
   compProp: {
@@ -83,7 +84,7 @@ export const EditorGlobal = {
     string,
     {
       mitem: MContent;
-      pmitem?: MItem;
+      originalMitem?: MContent;
       item: IContent;
       comp?: IItem;
       passprop?: any;

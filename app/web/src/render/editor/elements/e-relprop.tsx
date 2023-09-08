@@ -1,16 +1,15 @@
 import { FC } from "react";
-import { IContent, MContent } from "../../../utils/types/general";
-import { IItem, MItem } from "../../../utils/types/item";
+import { IContent } from "../../../utils/types/general";
+import { IItem } from "../../../utils/types/item";
 import { editComp } from "../logic/comp";
 import { PG } from "../logic/global";
-import { MRoot } from "../../../utils/types/root";
 const hoverAttempt: { id: string; ts: number }[] = [];
 
 export type ElProp = ReturnType<typeof createElProp>;
 export const createElProp = (
   item: IContent,
   p: PG,
-  instance?: { id: string; cid: string }
+  instance?: { id: string; cid: string; pid?: string }
 ) => {
   return {
     onPointerEnter: (e: React.PointerEvent<HTMLDivElement>) => {

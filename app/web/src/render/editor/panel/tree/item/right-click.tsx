@@ -193,10 +193,12 @@ export const ETreeRightClick: FC<{
                     compitem = p.comps.doc[comp.id];
                   }
                   mitem.doc.transact(() => {
-                    const citem = compitem
-                      .getMap("map")
-                      .get("content_tree")
-                      ?.toJSON() as IItem;
+                    const citem = fillID(
+                      compitem
+                        .getMap("map")
+                        .get("content_tree")
+                        ?.toJSON() as IItem
+                    ) as IItem;
 
                     const props: any = {};
                     if (citem.component?.props) {
@@ -207,7 +209,7 @@ export const ETreeRightClick: FC<{
                           props[k] = {
                             meta: { type: "content-element" },
                             content: {
-                              ...mitem.toJSON(),
+                              ...fillID(mitem.toJSON() as IItem),
                               name: k,
                             },
                           };
@@ -226,9 +228,13 @@ export const ETreeRightClick: FC<{
                         },
                         type: "item",
                       });
+
+                      p.treeMeta[citem.id] = {
+                        item: citem,
+                        mitem,
+                      };
                     }
                   });
-                  p.render();
                 }
               };
               p.render();
