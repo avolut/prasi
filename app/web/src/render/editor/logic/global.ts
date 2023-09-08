@@ -78,6 +78,7 @@ export const EditorGlobal = {
     inherit: true,
   },
   compEdits: [] as IItem[],
+  compLoading: {} as Record<string, true>,
 
   /** write-only */
   treeMeta: {} as Record<

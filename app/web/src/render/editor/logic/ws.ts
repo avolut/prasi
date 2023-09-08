@@ -143,47 +143,49 @@ export const editorWS = async (p: PG) => {
                   extract(msg.changes),
                   "remote"
                 );
-                p.comps.doc[msg.comp_id].on(
-                  "update",
-                  throttle((e, origin) => {
-                    for (const meta of Object.values(p.treeMeta)) {
-                      if (
-                        meta.item.type === "item" &&
-                        meta.item.component?.id === msg.comp_id
-                      ) {
-                        delete meta.comp;
-                      }
-                    }
-                    render();
-                    if (origin === "remote") {
-                      return;
-                    }
-
-                    const doc = p.comps.doc[msg.comp_id];
-                    if (doc) {
-                      if (!origin && origin !== "updated_at") {
-                        const id = doc.getMap("map").get("id");
-                        if (id) {
-                          doc.transact(() => {
-                            doc
-                              .getMap("map")
-                              .set("updated_at", new Date().toISOString());
-                          }, "updated_at");
-
-                          const sendmsg: WS_MSG_SV_LOCAL = {
-                            type: "sv_local",
-                            mode: "comp",
-                            id,
-                            sv_local: compress(
-                              Y.encodeStateVector(doc as any).toString()
-                            ),
-                          };
-                          wsend(p, JSON.stringify(sendmsg));
+                setTimeout(() => {
+                  p.comps.doc[msg.comp_id].on(
+                    "update",
+                    throttle((e, origin) => {
+                      for (const meta of Object.values(p.treeMeta)) {
+                        if (
+                          meta.item.type === "item" &&
+                          meta.item.component?.id === msg.comp_id
+                        ) {
+                          delete meta.comp;
                         }
                       }
-                    }
-                  })
-                );
+                      render();
+                      if (origin === "remote") {
+                        return;
+                      }
+
+                      const doc = p.comps.doc[msg.comp_id];
+                      if (doc) {
+                        if (!origin && origin !== "updated_at") {
+                          const id = doc.getMap("map").get("id");
+                          if (id) {
+                            doc.transact(() => {
+                              doc
+                                .getMap("map")
+                                .set("updated_at", new Date().toISOString());
+                            }, "updated_at");
+
+                            const sendmsg: WS_MSG_SV_LOCAL = {
+                              type: "sv_local",
+                              mode: "comp",
+                              id,
+                              sv_local: compress(
+                                Y.encodeStateVector(doc as any).toString()
+                              ),
+                            };
+                            wsend(p, JSON.stringify(sendmsg));
+                          }
+                        }
+                      }
+                    })
+                  );
+                }, 500);
                 const comp = p.comps.doc[msg.comp_id]
                   .getMap("map")
                   .get("content_tree")

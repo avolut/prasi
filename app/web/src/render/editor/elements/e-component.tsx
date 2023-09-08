@@ -51,7 +51,7 @@ export const EComponent: FC<{
 
   if (
     p.comp?.id === item.component.id &&
-    p.comp?.item.id === instance?.id && 
+    p.comp?.item.id === instance?.id &&
     p.compEdits.find((e) => e.id === item.id)
   ) {
     const comp = p.comps.doc[p.comp?.id || ""];
@@ -73,7 +73,7 @@ export const EComponent: FC<{
 
       return (
         <>
-          <ERender item={citem} instance={instance}>
+          <ERender item={citem} instance={{ id: item.id, cid, pid: item.id }}>
             {(childs) => {
               return childs.map((e) => {
                 if (e.type === "item")
@@ -81,7 +81,7 @@ export const EComponent: FC<{
                     <EItem
                       item={e}
                       key={e.id}
-                      instance={{ id: item.id, cid, pid: instance?.pid }}
+                      instance={{ id: e.id, cid, pid: item.id }}
                     />
                   );
                 else
@@ -89,7 +89,7 @@ export const EComponent: FC<{
                     <EText
                       item={e}
                       key={e.id}
-                      instance={{ id: item.id, cid, pid: instance?.pid }}
+                      instance={{ id: e.id, cid, pid: item.id }}
                     />
                   );
               });
@@ -106,7 +106,7 @@ export const EComponent: FC<{
   const cid = item.component.id;
 
   return (
-    <ERender item={item} instance={{ id: item.id, cid, pid: instance?.pid }}>
+    <ERender item={item} instance={{ id: item.id, cid, pid: item.id }}>
       {(childs) => {
         return childs.map((e) => {
           if (e.type === "item")
@@ -114,7 +114,7 @@ export const EComponent: FC<{
               <EItem
                 item={e}
                 key={e.id}
-                instance={{ id: item.id, cid, pid: instance?.pid }}
+                instance={{ id: e.id, cid, pid: item.id }}
               />
             );
           else
@@ -122,7 +122,7 @@ export const EComponent: FC<{
               <EText
                 item={e}
                 key={e.id}
-                instance={{ id: item.id, cid, pid: instance?.pid }}
+                instance={{ id: e.id, cid, pid: item.id }}
               />
             );
         });

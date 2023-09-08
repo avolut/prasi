@@ -16,6 +16,7 @@ import { loadComponent } from "../../../logic/comp";
 
 export const AddElement: FC<{}> = ({}) => {
   const p = useGlobal(EditorGlobal, "EDITOR");
+  
   let canAdd = true;
   if (!p.item.active) {
     canAdd = false;

@@ -15,12 +15,28 @@ export const EItem: FC<{
 
   return (
     <>
-      <ERender item={item} instance={instance}>
+      <ERender
+        item={item}
+        instance={instance ? { ...instance, id: item.id } : undefined}
+      >
         {(childs) =>
           childs.map((e) => {
             if (e.type === "item")
-              return <EItem item={e} key={e.id} instance={instance} />;
-            else return <EText item={e} key={e.id} instance={instance} />;
+              return (
+                <EItem
+                  item={e}
+                  key={e.id}
+                  instance={instance ? { ...instance, id: e.id } : undefined}
+                />
+              );
+            else
+              return (
+                <EText
+                  item={e}
+                  key={e.id}
+                  instance={instance ? { ...instance, id: e.id } : undefined}
+                />
+              );
           })
         }
       </ERender>

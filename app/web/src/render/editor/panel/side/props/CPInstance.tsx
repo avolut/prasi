@@ -9,7 +9,7 @@ import { FMCompDef, FNCompDef } from "../../../../../utils/types/meta-fn";
 import { Menu, MenuItem } from "../../../../../utils/ui/context-menu";
 import { Loading } from "../../../../../utils/ui/loading";
 import { Popover } from "../../../../../utils/ui/popover";
-import { editComp } from "../../../logic/comp";
+import { editComp, loadComponent } from "../../../logic/comp";
 import { EditorGlobal, PG } from "../../../logic/global";
 import { jscript } from "../../script/script-element";
 import { CPCodeEdit } from "./CPCodeEdit";
@@ -24,13 +24,6 @@ export const CPInstance: FC<{ mitem: MItem }> = ({ mitem }) => {
     props: {} as Record<string, FNCompDef>,
     visibles: {} as Record<string, string>,
   });
-  const comp = p.comps.doc[mitem.get("component")?.get("id") || ""];
-
-  const cprops = comp
-    .getMap("map")
-    .get("content_tree")
-    ?.get("component")
-    ?.get("props");
 
   useEffect(() => {
     (async () => {
@@ -67,6 +60,22 @@ export const CPInstance: FC<{ mitem: MItem }> = ({ mitem }) => {
       }
     })();
   }, [mitem]);
+
+  const comp = p.comps.doc[mitem.get("component")?.get("id") || ""];
+
+  if (!comp) {
+    loadComponent(p, mitem.get("component")?.get("id") || "").then(
+      local.render
+    );
+
+    return <Loading note="cp-comp" backdrop={false} />;
+  }
+
+  const cprops = comp
+    .getMap("map")
+    .get("content_tree")
+    ?.get("component")
+    ?.get("props");
 
   if (!local.ready) return <Loading note="cp-instance" backdrop={false} />;
 

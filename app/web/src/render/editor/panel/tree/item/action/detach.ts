@@ -48,12 +48,17 @@ export const detachComp = async (
         }
       });
     }
-    const js = `<PassProp ${Object.entries(pass)
-      .map(([k, v]) => {
-        return `${k}={${v}}`;
-      })
-      .join(" ")}>${js_original}</PassProp>`;
-    const js_compiled = await build("element.tsx", `render(${js})`);
+    let js = "";
+    let js_compiled = "";
+
+    if (Object.entries(pass).length > 0) {
+      js = `<PassProp ${Object.entries(pass)
+        .map(([k, v]) => {
+          return `${k}={${v}}`;
+        })
+        .join(" ")}>${js_original}</PassProp>`;
+      js_compiled = await build("element.tsx", `render(${js})`);
+    }
 
     if (!newitem.adv) newitem.adv = {};
     if (newitem.adv) {
@@ -68,7 +73,7 @@ export const detachComp = async (
     newitem.id = id;
     delete newitem.component;
 
-    p.mpage?.transact(() => {
+    item.doc?.transact(() => {
       item.parent.forEach((e, idx) => {
         if (e === item) {
           const map = new Y.Map();

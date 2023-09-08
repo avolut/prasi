@@ -58,10 +58,17 @@ export const createElProp = (
 
       if (
         !p.treeMeta[item.id] &&
-        instance?.id &&
-        p.treeMeta[instance?.id].item
+        instance?.pid &&
+        p.treeMeta[instance?.pid].item
       ) {
-        editComp(p, p.treeMeta[instance?.id].item);
+        if (p.comp?.id !== instance.cid && instance.pid !== p.comp?.item.id) {
+          editComp(p, p.treeMeta[instance?.pid].item);
+        }
+        if (p.item.active !== item.id) {
+          p.item.active = item.id;
+          console.log(item.id, instance.id, instance.pid);
+          p.softRender.all();
+        }
         return;
       }
 

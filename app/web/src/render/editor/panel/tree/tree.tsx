@@ -1,8 +1,6 @@
 import { NodeModel } from "@minoru/react-dnd-treeview";
-import { useCallback, useEffect } from "react";
 import { useGlobal, useLocal } from "web-utils";
 import { MItem } from "../../../../utils/types/item";
-import { Loading } from "../../../../utils/ui/loading";
 import { Tooltip } from "../../../../utils/ui/tooltip";
 import { EditorGlobal } from "../../logic/global";
 import { ETreeBody } from "./body";
@@ -12,7 +10,6 @@ import { fuzzyMatch } from "./utils/search";
 export const ETree = () => {
   const p = useGlobal(EditorGlobal, "EDITOR");
   const local = useLocal({
-    ready: true,
     timeout: null as any,
     search: "",
     searchFocus: false,
@@ -28,36 +25,20 @@ export const ETree = () => {
   });
   let tree: NodeModel<NodeContent>[] = [];
   const comp = p.comps.doc[p.comp?.id || ""];
-  const treeLoading = useCallback(() => {
-    clearTimeout(local.timeout);
-    local.timeout = setTimeout(() => {
-      local.ready = true;
-      local.render();
-    }, 500);
-    local.ready = false;
-  }, [Object.keys(p.comps.doc).length]);
 
   if (!local.search) {
     if (comp) {
       const contentTree = comp.getMap("map").get("content_tree") as MItem;
-      if (contentTree) tree = flattenTree(p, contentTree, treeLoading);
+      if (contentTree) tree = flattenTree(p, contentTree);
     } else if (p.mpage) {
-      tree = flattenTree(
-        p,
-        p.mpage.getMap("map").get("content_tree"),
-        treeLoading
-      );
+      tree = flattenTree(p, p.mpage.getMap("map").get("content_tree"));
     }
   } else {
     if (comp) {
       const contentTree = comp.getMap("map").get("content_tree") as MItem;
-      if (contentTree) tree = flattenTree(p, contentTree, treeLoading);
+      if (contentTree) tree = flattenTree(p, contentTree);
     } else if (p.mpage) {
-      tree = flattenTree(
-        p,
-        p.mpage.getMap("map").get("content_tree"),
-        treeLoading
-      );
+      tree = flattenTree(p, p.mpage.getMap("map").get("content_tree"));
     }
     tree = tree.filter((e) => fuzzyMatch(local.search, e.text));
     tree.map((item) => {
@@ -175,17 +156,13 @@ export const ETree = () => {
           </div>
         )}
       </div>
-      {local.ready ? (
-        <div
-          className={cx(
-            "relative flex-1 overflow-auto flex flex-col items-stretch bg-slate-100"
-          )}
-        >
-          <ETreeBody tree={tree} meta={local} />
-        </div>
-      ) : (
-        <Loading backdrop={false} />
-      )}
+      <div
+        className={cx(
+          "relative flex-1 overflow-auto flex flex-col items-stretch bg-slate-100"
+        )}
+      >
+        <ETreeBody tree={tree} meta={local} />
+      </div>
     </div>
   );
 };

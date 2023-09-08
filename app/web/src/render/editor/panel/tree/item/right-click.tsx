@@ -54,11 +54,12 @@ export const ETreeRightClick: FC<{
     canDelete = false;
   }
 
-  try {
-    navigator.clipboard.readText().then((e) => {
+  navigator.clipboard
+    .readText()
+    .then((e) => {
       local.clipboardAllowed = e.includes("prasi") ? true : false;
-    });
-  } catch (error) {}
+    })
+    .catch(() => {});
 
   const paste = (
     <MenuItem
@@ -165,7 +166,7 @@ export const ETreeRightClick: FC<{
 
   return (
     <Menu mouseEvent={event} onClose={onClose}>
-      {type === "item" && (
+      {type === "item" && !isActiveComponent && !item.component?.id && (
         <MenuItem
           label="Attach Component"
           onClick={() => {
@@ -275,6 +276,8 @@ export const ETreeRightClick: FC<{
             if (type === "item") {
               if (item.id) {
                 if (!isActiveComponent) {
+                  p.compLoading[item.id] = true;
+                  p.render();
                   api
                     .comp_create({
                       item_id: item.id,
@@ -285,7 +288,8 @@ export const ETreeRightClick: FC<{
                     .then(async (e) => {
                       if (e) {
                         await loadComponent(p, e.id);
-                        p.render();
+                        delete p.compLoading[item.id];
+                        p.softRender.all();
                       }
                     });
                 } else {

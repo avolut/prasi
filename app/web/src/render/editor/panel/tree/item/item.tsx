@@ -1,14 +1,17 @@
 import { NodeModel, useDragOver } from "@minoru/react-dnd-treeview";
+import find from "lodash.find";
 import { FC, useEffect } from "react";
+import { useGlobal, useLocal } from "web-utils";
+import { IContent } from "../../../../../utils/types/general";
+import { IItem } from "../../../../../utils/types/item";
+import { EditorGlobal } from "../../../logic/global";
 import { NodeContent } from "../utils/flatten";
+import { Adv, ETreeItemAction } from "./action";
 import { ETreeItemIndent } from "./indent";
 import { ETreeItemName } from "./name";
 import { treeItemStyle } from "./style";
-import { IItem } from "../../../../../utils/types/item";
-import { useGlobal, useLocal } from "web-utils";
-import { Adv, ETreeItemAction } from "./action";
-import { EditorGlobal } from "../../../logic/global";
-import find from "lodash.find";
+import { Loading } from "../../../../../utils/ui/loading";
+import { loadComponent } from "../../../logic/comp";
 
 export const ETreeItem: FC<{
   node: NodeModel<NodeContent>;
@@ -57,23 +60,41 @@ export const ETreeItem: FC<{
     isComponent = false;
   }
   const p = useGlobal(EditorGlobal, "EDITOR");
+  useEffect(() => {
+    if (isActive && local.el) {
+      local.el.scrollIntoView();
+    }
+  }, [isActive]);
+
   let isSelect = find(p.item.selection, (e) => e === item.id) ? true : false;
 
+  let loading = !!p.compLoading[item.id];
   if (isComponent) {
     const id = (item as IItem).component?.id;
     if (id) {
-      const props = p.comps.doc[id]
-        .getMap("map")
-        .get("content_tree")
-        ?.get("component")
-        ?.get("props")
-        ?.toJSON();
-      if (props) {
-        if (
-          Object.values(props).filter((e) => e.meta?.type === "content-element")
-            .length > 0
-        ) {
-          hasChilds = true;
+      const comp = p.comps.doc[id];
+      if (!comp) {
+        p.compLoading[item.id] = true;
+        loading = !!p.compLoading[item.id];
+        loadComponent(p, id).then(() => {
+          delete p.compLoading[item.id];
+          local.render();
+        });
+      } else {
+        const props = comp
+          .getMap("map")
+          .get("content_tree")
+          ?.get("component")
+          ?.get("props")
+          ?.toJSON();
+        if (props) {
+          if (
+            Object.values(props).filter(
+              (e) => e.meta?.type === "content-element"
+            ).length > 0
+          ) {
+            hasChilds = true;
+          }
         }
       }
     }
@@ -83,12 +104,6 @@ export const ETreeItem: FC<{
   if (mitem && (mitem.parent as any).get("content")) {
     isPropContent = true;
   }
-
-  useEffect(() => {
-    if (isActive && local.el) {
-      local.el.scrollIntoView();
-    }
-  }, [isActive]);
 
   return (
     <div
@@ -108,52 +123,58 @@ export const ETreeItem: FC<{
       }}
       {...dragOverProps}
     >
-      <ETreeItemIndent
-        depth={depth}
-        onToggle={() => {
-          if (hasChilds) onToggle();
-          else onClick(node);
-        }}
-        type={type}
-        isOpen={isOpen}
-        hasChilds={hasChilds}
-        isActive={isActive || p.item.selection.includes(item.id)}
-        isComponent={isComponent}
-      />
-      <ETreeItemName
-        item={item}
-        name={itemName}
-        renaming={local.renaming}
-        isComponent={isComponent}
-        doneRenaming={() => {
-          local.renaming = false;
-          local.render();
-        }}
-      />
-
-      {!local.renaming &&
-        (!isRootComponent ? (
-          <ETreeItemAction
+      {loading ? (
+        <Loading backdrop={false} />
+      ) : (
+        <>
+          <ETreeItemIndent
+            depth={depth}
+            onToggle={() => {
+              if (hasChilds) onToggle();
+              else onClick(node);
+            }}
+            type={type}
+            isOpen={isOpen}
+            hasChilds={hasChilds}
+            isActive={isActive || p.item.selection.includes(item.id)}
             isComponent={isComponent}
-            isPropContent={isPropContent}
-            mode={mode}
+          />
+          <ETreeItemName
             item={item}
-            rename={() => {
-              local.renaming = true;
+            name={itemName}
+            renaming={local.renaming}
+            isComponent={isComponent}
+            doneRenaming={() => {
+              local.renaming = false;
               local.render();
             }}
           />
-        ) : (
-          <>
-            <Adv p={p} item={item} />
-            <RootComponentClose />
-          </>
-        ))}
+
+          {!local.renaming &&
+            (!isRootComponent ? (
+              <ETreeItemAction
+                isComponent={isComponent}
+                isPropContent={isPropContent}
+                mode={mode}
+                item={item}
+                rename={() => {
+                  local.renaming = true;
+                  local.render();
+                }}
+              />
+            ) : (
+              <>
+                <Adv p={p} item={item} />
+                <RootComponentClose item={item} />
+              </>
+            ))}
+        </>
+      )}
     </div>
   );
 };
 
-const RootComponentClose = () => {
+const RootComponentClose = ({ item }: { item: IContent }) => {
   const p = useGlobal(EditorGlobal, "EDITOR");
 
   return (
@@ -172,7 +193,11 @@ const RootComponentClose = () => {
               }
 
               if (comp) {
-                p.comp = { id: comp.component?.id || "", content_tree: comp };
+                p.comp = {
+                  id: comp.component?.id || "",
+                  content_tree: comp,
+                  item: item as IItem,
+                };
                 p.item.active = comp.id;
                 p.render();
               }
