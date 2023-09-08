@@ -63,7 +63,7 @@ export const EComponent: FC<{
         }
         citem.nprops = item.nprops;
       }
-      getRenderPropVal(props, citem, p, false);
+      getRenderPropVal(props, citem, p);
 
       return (
         <>
@@ -87,7 +87,7 @@ export const EComponent: FC<{
   }
 
   if (props) {
-    getRenderPropVal(props, item, p, true);
+    getRenderPropVal(props, item, p);
   }
   const cid = item.component.id;
 
@@ -108,8 +108,7 @@ export const EComponent: FC<{
 export const getRenderPropVal = (
   props: Record<string, FNCompDef>,
   item: IItem,
-  p: PG,
-  enableEdit: boolean
+  p: PG
 ) => {
   const nprops: any = {};
 
@@ -146,19 +145,10 @@ export const getRenderPropVal = (
       if (mprop) {
         shouldEval = false;
 
-        if (enableEdit) {
-          const mcontent = mprop.get("content");
-          if (mcontent) {
-            const content = mcontent.toJSON() as IItem;
-            content.nprops = item.nprops;
-            val = <EItem item={content} />;
-          }
-        } else {
-          const content = prop.content;
-          if (content) {
-            content.nprops = item.nprops;
-            val = <EItem item={content} />;
-          }
+        const content = prop.content;
+        if (content) {
+          content.nprops = item.nprops;
+          val = <EItem item={content} />;
         }
       }
       if (!val) val = <></>;
