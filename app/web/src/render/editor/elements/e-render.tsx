@@ -1,8 +1,8 @@
 import { FC, ReactNode } from "react";
 import { useGlobal } from "web-utils";
 import { produceCSS } from "../../../utils/css/gen";
-import { IContent, MContent } from "../../../utils/types/general";
-import { IItem, MItem } from "../../../utils/types/item";
+import { IContent } from "../../../utils/types/general";
+import { IItem } from "../../../utils/types/item";
 import { FNAdv, FNCompDef } from "../../../utils/types/meta-fn";
 import { IText } from "../../../utils/types/text";
 import { newPageComp } from "../logic/comp";
@@ -14,7 +14,7 @@ import { scriptExec } from "./script-exec";
 export const ERender: FC<{
   item: IContent;
   children: (childs: (IItem | IText)[]) => ReactNode;
-  instance?: { id: string; cid: string; pid?: string };
+  instance?: { id: string; cid: string };
 }> = ({ item, children, instance }) => {
   const p = useGlobal(EditorGlobal, "EDITOR");
 
@@ -26,49 +26,37 @@ export const ERender: FC<{
     })
     .map((e) => {
       let meta = p.treeMeta[e.id];
-      if (meta) {
-        meta.item = e;
-      }
 
       if (e.type === "item" && e.component?.id) {
-        const mcomp = p.comps.doc[e.component.id];
+        const mitem = p.comps.doc[e.component.id]
+          .getMap("map")
+          .get("content_tree");
 
-        if (mcomp) {
-          let citem = mcomp.getMap("map").get("content_tree");
+        const comp = newPageComp(p, e);
+        if (comp && mitem) {
+          p.treeMeta[e.id] = {
+            item: e,
+            mitem,
+            comp,
+          };
+          meta = p.treeMeta[e.id];
+        }
+      }
 
-          if (citem && meta) {
-            if (
-              p.comp?.id === e.component.id &&
-              p.comp?.item.id === instance?.id
-            ) {
-              meta.originalMitem = meta.mitem;
-              meta.mitem = citem as MContent;
-            } else if (meta.originalMitem) {
-              meta.mitem = meta.originalMitem;
-              delete meta.originalMitem;
-            }
-          }
-
+      if (meta) {
+        meta.item = e;
+        if (e.type === "item" && e.component?.id) {
           if (!meta.comp) {
             const comp = newPageComp(p, e);
             if (comp) {
-              if (item.nprops) {
-                comp.nprops = item.nprops;
-              }
-
               meta.comp = comp;
-              return comp;
             }
-          } else {
-            if (item.nprops) {
-              meta.comp.nprops = item.nprops;
-            }
+          }
+
+          if (meta.comp) {
+            if (item.nprops) meta.comp.nprops = item.nprops;
             return meta.comp;
           }
-        } else {
-          console.warn(
-            `Warning component not found: ${e.component.id} ${e.name}`
-          );
         }
       }
 
@@ -91,10 +79,10 @@ export const ERender: FC<{
 
   let componentOver = null;
   if (item.type === "item" && item.component?.id) {
-    const compEdit = p.compEdits.find((e) => {
-      if (e.component?.id === item.component?.id) return true;
-    });
-    if (p.comp && compEdit) {
+    const isCompEdit = p.compEdits.find(
+      (e) => e.component?.id === item.component?.id
+    );
+    if (p.comp && isCompEdit) {
       componentOver = null;
     } else {
       let hasChilds = false;
@@ -126,6 +114,7 @@ export const ERender: FC<{
   if (item.hidden) {
     return null;
   }
+
   if (adv) {
     const html = renderHTML(item.id, className, adv, elprop);
 

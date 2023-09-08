@@ -85,7 +85,6 @@ export const EditorGlobal = {
     string,
     {
       mitem: MContent;
-      originalMitem?: MContent;
       item: IContent;
       comp?: IItem;
       passprop?: any;

@@ -1,19 +1,19 @@
 import { FC, useState } from "react";
 import { useGlobal } from "web-utils";
+import { createAPI, createDB } from "../../../utils/script/init-api";
 import { IItem, MItem } from "../../../utils/types/item";
 import { FNCompDef } from "../../../utils/types/meta-fn";
-import { loadComponent } from "../logic/comp";
+import { Loading } from "../../../utils/ui/loading";
+import { loadComponent, newPageComp } from "../logic/comp";
 import { EditorGlobal, PG } from "../logic/global";
 import { EItem } from "./e-item";
 import { ERender } from "./e-render";
 import { EText } from "./e-text";
-import { createAPI, createDB } from "../../../utils/script/init-api";
-import { Loading } from "../../../utils/ui/loading";
+import { ErrorBoundary } from "web-init";
 
 export const EComponent: FC<{
   item: IItem;
-  instance?: { pid?: string; cid: string; id: string };
-}> = ({ item, instance }) => {
+}> = ({ item }) => {
   const [_, render] = useState({});
   const p = useGlobal(EditorGlobal, "EDITOR");
 
@@ -49,15 +49,9 @@ export const EComponent: FC<{
   }
   const props = comp.content_tree.component?.props || {};
 
-  if (
-    p.comp?.id === item.component.id &&
-    p.comp?.item.id === instance?.id &&
-    p.compEdits.find((e) => e.id === item.id)
-  ) {
-    const comp = p.comps.doc[p.comp?.id || ""];
-
-    const contentTree = comp.getMap("map").get("content_tree") as MItem;
-    const cid = comp.getMap("map").get("id");
+  if (p.comp?.id === item.component.id && p.comp?.item.id === item?.id) {
+    const cid = pcomp.getMap("map").get("id");
+    const contentTree = pcomp.getMap("map").get("content_tree") as MItem;
     const instanceId = contentTree.get("id");
 
     if (contentTree && cid && instanceId) {
@@ -73,24 +67,16 @@ export const EComponent: FC<{
 
       return (
         <>
-          <ERender item={citem} instance={{ id: item.id, cid, pid: item.id }}>
+          <ERender item={citem} instance={{ id: item.id, cid }}>
             {(childs) => {
               return childs.map((e) => {
                 if (e.type === "item")
                   return (
-                    <EItem
-                      item={e}
-                      key={e.id}
-                      instance={{ id: e.id, cid, pid: item.id }}
-                    />
+                    <EItem item={e} key={e.id} instance={{ id: e.id, cid }} />
                   );
                 else
                   return (
-                    <EText
-                      item={e}
-                      key={e.id}
-                      instance={{ id: e.id, cid, pid: item.id }}
-                    />
+                    <EText item={e} key={e.id} instance={{ id: e.id, cid }} />
                   );
               });
             }}
@@ -106,25 +92,13 @@ export const EComponent: FC<{
   const cid = item.component.id;
 
   return (
-    <ERender item={item} instance={{ id: item.id, cid, pid: item.id }}>
+    <ERender item={item} instance={{ id: item.id, cid }}>
       {(childs) => {
         return childs.map((e) => {
           if (e.type === "item")
-            return (
-              <EItem
-                item={e}
-                key={e.id}
-                instance={{ id: e.id, cid, pid: item.id }}
-              />
-            );
+            return <EItem item={e} key={e.id} instance={{ id: e.id, cid }} />;
           else
-            return (
-              <EText
-                item={e}
-                key={e.id}
-                instance={{ id: e.id, cid, pid: item.id }}
-              />
-            );
+            return <EText item={e} key={e.id} instance={{ id: e.id, cid }} />;
         });
       }}
     </ERender>
@@ -139,8 +113,10 @@ export const getRenderPropVal = (
 ) => {
   const nprops: any = {};
 
-  const meta = p.treeMeta[item.id];
-  if (!meta) return;
+  let meta = p.treeMeta[item.id];
+  if (!meta) {
+    return;
+  }
   const mitem = meta.mitem as MItem;
 
   const exec = (key: string, fn: string, scopes: any) => {

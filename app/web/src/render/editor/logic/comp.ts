@@ -1,5 +1,5 @@
 import { IContent } from "../../../utils/types/general";
-import { IItem } from "../../../utils/types/item";
+import { IItem, MItem } from "../../../utils/types/item";
 import { PRASI_COMPONENT } from "../../../utils/types/render";
 import { IRoot } from "../../../utils/types/root";
 import { WS_MSG_GET_COMP } from "../../../utils/types/ws";
@@ -14,7 +14,8 @@ export const newPageComp = (p: PG, item: IItem) => {
       return null;
     }
 
-    const comp = p.comps.doc[item.component.id].getMap("map").toJSON();
+    const map = p.comps.doc[item.component.id].getMap("map");
+    const comp = map.toJSON();
     if (comp && comp.content_tree) {
       const citem = fillID(comp.content_tree) as IItem;
 
@@ -31,7 +32,7 @@ export const newPageComp = (p: PG, item: IItem) => {
           },
         },
       };
-
+      
       return nitem as IItem;
     }
   }

@@ -107,17 +107,19 @@ const produceEvalArgs = (
     },
     render: (jsx: ReactNode) => {
       output.jsx = (
-        <ErrorBoundary>
-          <Suspense
-            fallback={
-              <div className="flex flex-1 items-center justify-center w-full h-full relative">
-                {p.ui.loading}
-              </div>
-            }
-          >
-            {jsx}
-          </Suspense>
-        </ErrorBoundary>
+        <>
+          <ErrorBoundary>
+            <Suspense
+              fallback={
+                <div className="flex flex-1 items-center justify-center w-full h-full relative">
+                  {p.ui.loading}
+                </div>
+              }
+            >
+              {jsx}
+            </Suspense>
+          </ErrorBoundary>
+        </>
       );
     },
     ...scopeProps,

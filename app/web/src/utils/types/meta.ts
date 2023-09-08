@@ -21,6 +21,7 @@ export type MetaItem = {
   name: string;
   expand?: boolean;
   field?: string;
+  crefid?: string;
   collapsed?: boolean;
   deleted?: true;
   html?: string;

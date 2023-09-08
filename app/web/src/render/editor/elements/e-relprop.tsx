@@ -9,7 +9,7 @@ export type ElProp = ReturnType<typeof createElProp>;
 export const createElProp = (
   item: IContent,
   p: PG,
-  instance?: { id: string; cid: string; pid?: string }
+  instance?: { id: string; cid: string }
 ) => {
   return {
     onPointerEnter: (e: React.PointerEvent<HTMLDivElement>) => {
@@ -56,17 +56,15 @@ export const createElProp = (
         (document.activeElement as any)?.blur();
       }
 
-      if (
-        !p.treeMeta[item.id] &&
-        instance?.pid &&
-        p.treeMeta[instance?.pid].item
-      ) {
-        if (p.comp?.id !== instance.cid && instance.pid !== p.comp?.item.id) {
-          editComp(p, p.treeMeta[instance?.pid].item);
+      if (!p.treeMeta[item.id] && instance?.id && p.treeMeta[instance?.id]) {
+        const found = p.compEdits.find(
+          (e) => e.component?.id === instance.cid && e.id === instance.id
+        );
+        if (found) {
+          editComp(p, found);
         }
         if (p.item.active !== item.id) {
           p.item.active = item.id;
-          console.log(item.id, instance.id, instance.pid);
           p.softRender.all();
         }
         return;
