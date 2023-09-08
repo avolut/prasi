@@ -27,13 +27,14 @@ export const ERender: FC<{
     .map((e) => {
       let meta = p.treeMeta[e.id];
 
-      if (e.type === "item" && e.component?.id) {
+      if (e.type === "item" && e.component?.id && !meta) {
         const mitem = p.comps.doc[e.component.id]
           .getMap("map")
           .get("content_tree");
 
         const comp = newPageComp(p, e);
         if (comp && mitem) {
+          console.log(e.id);
           p.treeMeta[e.id] = {
             item: e,
             mitem,

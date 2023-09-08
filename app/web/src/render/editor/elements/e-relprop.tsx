@@ -56,30 +56,27 @@ export const createElProp = (
         (document.activeElement as any)?.blur();
       }
 
-      if (!p.treeMeta[item.id] && instance?.id && p.treeMeta[instance?.id]) {
-        const found = p.compEdits.find(
-          (e) => e.component?.id === instance.cid && e.id === instance.id
-        );
-        if (found) {
-          editComp(p, found);
+      if (instance) {
+        if (p.treeMeta[instance.id]) {
+          editComp(p, p.treeMeta[instance.id].item);
+        } else {
+          const found = p.compEdits.find(
+            (e) => e.component?.id === instance.cid && e.id === instance.id
+          );
+          if (found) {
+            editComp(p, found);
+          }
         }
-        if (p.item.active !== item.id) {
-          p.item.active = item.id;
-          p.softRender.all();
-        }
-        return;
-      }
-
-      if (p.comp?.id && !instance?.cid) {
+      } else if (p.comp?.id) {
         p.comp = null;
         p.compEdits = [];
-        p.item.active = item.id;
+        p.item.active = item.originalId || item.id;
         p.render();
         return;
       }
 
       if (p.item.active !== item.id) {
-        p.item.active = item.id;
+        p.item.active = item.originalId || item.id;
         p.softRender.all();
       }
     },
@@ -91,6 +88,9 @@ export const ComponentOver: FC<{ item: IItem; p: PG; elprop: ElProp }> = ({
   p,
   elprop,
 }) => {
+  if (p.compDirectEdit) {
+    return <></>;
+  }
   return (
     <div
       className={cx(
@@ -113,6 +113,13 @@ export const ComponentOver: FC<{ item: IItem; p: PG; elprop: ElProp }> = ({
             `
       )}
       {...elprop}
+      onPointerDown={async (e) => {
+        e.stopPropagation();
+        if (p.item.active !== item.id) {
+          p.item.active = item.id;
+          p.softRender.all();
+        }
+      }}
     >
       <div
         className={cx(

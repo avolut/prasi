@@ -87,7 +87,7 @@ export const ETree = () => {
           />
           <Tooltip
             content="Multi Select"
-            placement="right"
+            placement="top"
             className={cx(
               "border-l p-1 flex items-center justify-center cursor-pointer",
               p.item.selectMode === "multi"
@@ -112,6 +112,38 @@ export const ETree = () => {
               <path
                 fill="currentColor"
                 d="M8.97 4.97a.75.75 0 011.07 1.05l-3.99 4.99a.75.75 0 01-1.08.02L2.324 8.384a.75.75 0 111.06-1.06l2.094 2.093L8.95 4.992a.252.252 0 01.02-.022zm-.92 5.14l.92.92a.75.75 0 001.079-.02l3.992-4.99a.75.75 0 10-1.091-1.028L9.477 9.417l-.485-.486-.943 1.179z"
+              ></path>
+            </svg>
+          </Tooltip>
+          <Tooltip
+            content="Direct Component Edit"
+            placement="right"
+            className={cx(
+              "border-l p-1 flex items-center justify-center cursor-pointer",
+              p.compDirectEdit ? "bg-blue-600 text-white" : "hover:bg-blue-100"
+            )}
+            onClick={(e) => {
+              p.compDirectEdit = !p.compDirectEdit;
+
+              if (!p.compDirectEdit) {
+                p.comp = null;
+                p.compEdits = [];
+              }
+              p.render();
+            }}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="13"
+              height="13"
+              fill="none"
+              viewBox="0 0 15 15"
+            >
+              <path
+                fill="currentColor"
+                fillRule="evenodd"
+                d="M7.5 0a.5.5 0 01.5.5v1.307A5.624 5.624 0 0113.007 7H14.5a.5.5 0 010 1h-1.511A5.625 5.625 0 018 12.989V14.5a.5.5 0 01-1 0v-1.493A5.624 5.624 0 011.807 8H.5a.5.5 0 010-1h1.289A5.624 5.624 0 017 1.789V.5a.5.5 0 01.5-.5zM8 12.032V9.5a.5.5 0 00-1 0v2.554A4.675 4.675 0 012.763 8H5.5a.5.5 0 000-1H2.742A4.674 4.674 0 017 2.742V5.5a.5.5 0 001 0V2.763A4.675 4.675 0 0112.054 7H9.5a.5.5 0 000 1h2.532A4.675 4.675 0 018 12.032z"
+                clipRule="evenodd"
               ></path>
             </svg>
           </Tooltip>

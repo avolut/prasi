@@ -4,12 +4,11 @@ import { createAPI, createDB } from "../../../utils/script/init-api";
 import { IItem, MItem } from "../../../utils/types/item";
 import { FNCompDef } from "../../../utils/types/meta-fn";
 import { Loading } from "../../../utils/ui/loading";
-import { loadComponent, newPageComp } from "../logic/comp";
+import { loadComponent } from "../logic/comp";
 import { EditorGlobal, PG } from "../logic/global";
 import { EItem } from "./e-item";
 import { ERender } from "./e-render";
 import { EText } from "./e-text";
-import { ErrorBoundary } from "web-init";
 
 export const EComponent: FC<{
   item: IItem;
@@ -72,11 +71,19 @@ export const EComponent: FC<{
               return childs.map((e) => {
                 if (e.type === "item")
                   return (
-                    <EItem item={e} key={e.id} instance={{ id: e.id, cid }} />
+                    <EItem
+                      item={e}
+                      key={e.id}
+                      instance={{ id: item.id, cid }}
+                    />
                   );
                 else
                   return (
-                    <EText item={e} key={e.id} instance={{ id: e.id, cid }} />
+                    <EText
+                      item={e}
+                      key={e.id}
+                      instance={{ id: item.id, cid }}
+                    />
                   );
               });
             }}
@@ -96,9 +103,13 @@ export const EComponent: FC<{
       {(childs) => {
         return childs.map((e) => {
           if (e.type === "item")
-            return <EItem item={e} key={e.id} instance={{ id: e.id, cid }} />;
+            return (
+              <EItem item={e} key={e.id} instance={{ id: item.id, cid }} />
+            );
           else
-            return <EText item={e} key={e.id} instance={{ id: e.id, cid }} />;
+            return (
+              <EText item={e} key={e.id} instance={{ id: item.id, cid }} />
+            );
         });
       }}
     </ERender>

@@ -77,6 +77,7 @@ export const EditorGlobal = {
     edit: false,
     inherit: true,
   },
+  compDirectEdit: false,
   compEdits: [] as IItem[],
   compLoading: {} as Record<string, true>,
 

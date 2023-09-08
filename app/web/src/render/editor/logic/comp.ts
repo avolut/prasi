@@ -17,7 +17,9 @@ export const newPageComp = (p: PG, item: IItem) => {
     const map = p.comps.doc[item.component.id].getMap("map");
     const comp = map.toJSON();
     if (comp && comp.content_tree) {
-      const citem = fillID(comp.content_tree) as IItem;
+      const citem = fillID(comp.content_tree, (item) => {
+        item.originalId = item.id;
+      }) as IItem;
 
       const nitem = {
         ...item,
@@ -32,7 +34,7 @@ export const newPageComp = (p: PG, item: IItem) => {
           },
         },
       };
-      
+
       return nitem as IItem;
     }
   }
