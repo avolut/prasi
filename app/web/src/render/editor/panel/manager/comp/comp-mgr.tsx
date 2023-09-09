@@ -1,12 +1,11 @@
 import { FC, Fragment, ReactElement, useEffect } from "react";
 import { useGlobal, useLocal } from "web-utils";
+import { IItem } from "../../../../../utils/types/item";
 import { Dropdown } from "../../../../../utils/ui/dropdown";
 import { Loading } from "../../../../../utils/ui/loading";
-import { Modal } from "../../../../../utils/ui/modal";
-import { EditorGlobal } from "../../../logic/global";
 import { EItem } from "../../../elements/e-item";
-import { IItem } from "../../../../../utils/types/item";
 import { loadComponent } from "../../../logic/comp";
+import { EditorGlobal } from "../../../logic/global";
 
 const w = window as unknown as {
   compManagerSearch: string;
@@ -38,6 +37,7 @@ export const CompManager: FC = () => {
     trash_id: "",
     collapsed: new Set(),
     sharedPopup: false,
+    checked: new Set<string>(),
   });
 
   useEffect(() => {
@@ -254,6 +254,76 @@ export const CompManager: FC = () => {
               />
             </Modal> */}
             <div className="fixed top-0 right-[20px] bg-white z-10 m-[8px] flex">
+              {local.checked.size > 0 && (
+                <>
+                  <div
+                    className="border text-xs flex items-center px-2 cursor-pointer mr-1"
+                    onClick={() => {
+                      local.checked.clear();
+                      p.render();
+                    }}
+                  >
+                    Unselect
+                  </div>
+                  <div
+                    className="bg-red-500 text-white text-xs flex items-center px-2 cursor-pointer mr-1"
+                    onClick={async () => {
+                      if (
+                        confirm(
+                          "Delete component cannot be undone. Are you sure? "
+                        )
+                      ) {
+                        const totrash: string[] = [];
+                        local.checked.forEach((e) => {
+                          const [id, gid] = e.split("|");
+                          const idx = local.group[gid].comps.findIndex(
+                            (e) => e.id === id
+                          );
+                          const comp = local.group[gid].comps[idx];
+                          if (idx >= 0) {
+                            if (comp.id_component_group !== local.trash_id) {
+                              totrash.push(comp.id);
+                            }
+                          }
+                        });
+                        if (totrash.length > 0) {
+                          if (!local.trash_id) {
+                            const res = await db.component_group.create({
+                              data: {
+                                name: "__TRASH__",
+                                component_site: {
+                                  create: {
+                                    id_site: p.site?.id || "",
+                                  },
+                                },
+                              },
+                            });
+                            local.trash_id = res.id;
+                          }
+
+                          if (local.trash_id) {
+                            await db.component.updateMany({
+                              where: {
+                                id: { in: totrash },
+                              },
+                              data: {
+                                id_component_group: local.trash_id,
+                              },
+                            });
+
+                            w.compGroup = {};
+
+                            local.checked.clear();
+                            await reloadComps();
+                          }
+                        }
+                      }
+                    }}
+                  >
+                    Delete {local.checked.size} selected
+                  </div>
+                </>
+              )}
               {/* <div
                 className="hover:bg-blue-500 hover:text-white text-xs flex items-center px-2 cursor-pointer border text-blue-500 border-blue-200 mr-1"
                 onClick={() => {
@@ -513,7 +583,7 @@ export const CompManager: FC = () => {
                               key={e.id}
                               className={cx(
                                 boxClass,
-                                "justify-between transition-all",
+                                "justify-between transition-all relative",
                                 local.selected_id === e.id
                                   ? "border-blue-500 bg-blue-100"
                                   : "hover:border-blue-500",
@@ -537,6 +607,45 @@ export const CompManager: FC = () => {
                                 local.render();
                               }}
                             >
+                              <div
+                                className={cx(
+                                  "absolute top-0 right-0 flex items-center justify-center w-[20px] h-[20px] border border-r-0 border-t-0",
+                                  local.checked.has(`${e.id}|${g.info.id}`)
+                                    ? "bg-blue-500 text-white border-blue-500"
+                                    : "bg-white hover:border-blue-500"
+                                )}
+                                onClick={(ev) => {
+                                  ev.stopPropagation();
+                                  ev.preventDefault();
+                                  if (
+                                    local.checked.has(`${e.id}|${g.info.id}`)
+                                  ) {
+                                    local.checked.delete(
+                                      `${e.id}|${g.info.id}`
+                                    );
+                                  } else {
+                                    local.checked.add(`${e.id}|${g.info.id}`);
+                                  }
+                                  p.render();
+                                }}
+                              >
+                                {local.checked.has(`${e.id}|${g.info.id}`) && (
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="15"
+                                    height="15"
+                                    fill="none"
+                                    viewBox="0 0 15 15"
+                                  >
+                                    <path
+                                      fill="currentColor"
+                                      fillRule="evenodd"
+                                      d="M11.467 3.727c.289.189.37.576.181.865l-4.25 6.5a.625.625 0 01-.944.12l-2.75-2.5a.625.625 0 01.841-.925l2.208 2.007 3.849-5.886a.625.625 0 01.865-.181z"
+                                      clipRule="evenodd"
+                                    ></path>
+                                  </svg>
+                                )}
+                              </div>
                               <div className="flex flex-col">
                                 <div>{e.name}</div>
                                 <div className="text-slate-400 text-[10px]">

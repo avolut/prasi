@@ -8,7 +8,7 @@ import { EScriptElement } from "./script/script-element";
 import { ESide } from "./side/Side";
 import { Toolbar } from "./toolbar/Toolbar";
 import { ETree } from "./tree/tree";
-import { CompManager } from "./manager/comp/CompManager";
+import { CompManager } from "./manager/comp/comp-mgr";
 
 export const EMainEditor = () => {
   const p = useGlobal(EditorGlobal, "EDITOR");
