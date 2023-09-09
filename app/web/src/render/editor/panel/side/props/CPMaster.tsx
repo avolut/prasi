@@ -42,7 +42,7 @@ export const CPMaster: FC<{ mitem: MItem }> = ({ mitem }) => {
     ?.get("content_tree")
     ?.get("component")
     ?.get("props");
-  const props = mprops?.toJSON() as Record<string, FNCompDef>;
+  const props = (mprops?.toJSON() || {}) as Record<string, FNCompDef>;
 
   return (
     <div className="flex flex-col flex-1">
