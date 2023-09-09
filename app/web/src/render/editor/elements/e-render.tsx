@@ -34,7 +34,6 @@ export const ERender: FC<{
 
         const comp = newPageComp(p, e);
         if (comp && mitem) {
-          console.log(e.id);
           p.treeMeta[e.id] = {
             item: e,
             mitem,

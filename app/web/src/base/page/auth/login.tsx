@@ -46,7 +46,12 @@ export default page({
               form.render();
               alert(s.reason);
             } else {
-              navigate("/editor");
+              const rto = (window as any).redirectTo;
+              if (rto) {
+                navigate(rto);
+              } else {
+                navigate("/editor");
+              }
             }
           }}
           className={cx("border-[3px] border-black", formStyle)}
