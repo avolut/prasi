@@ -10,15 +10,15 @@ import { IItem, MItem } from "../../../../../utils/types/item";
 import { FNComponent } from "../../../../../utils/types/meta-fn";
 import { IText } from "../../../../../utils/types/text";
 import { Menu, MenuItem } from "../../../../../utils/ui/context-menu";
+import { loadComponent } from "../../../logic/comp";
 import { EditorGlobal } from "../../../logic/global";
 import { fillID } from "../../../tools/fill-id";
 import { flatTree } from "../../../tools/flat-tree";
 import { newMap } from "../../../tools/yjs-tools";
 import { jscript } from "../../script/script-element";
 import { NodeContent, flattenTree } from "../utils/flatten";
-import { detachComp } from "./action/detach";
 import { filterFlatTree } from "../utils/tree-utils";
-import { loadComponent } from "../../../logic/comp";
+import { detachComp } from "./action/detach";
 
 export const ETreeRightClick: FC<{
   node: NodeModel<NodeContent>;
@@ -267,7 +267,9 @@ export const ETreeRightClick: FC<{
                     if (citem.component?.props) {
                       for (const [k, v] of Object.entries(
                         citem.component.props
-                      )) {
+                      ).sort((a, b) => {
+                        return a[1].idx - b[1].idx;
+                      })) {
                         if (v.meta?.type === "content-element") {
                           props[k] = {
                             meta: { type: "content-element" },
@@ -276,6 +278,7 @@ export const ETreeRightClick: FC<{
                               name: k,
                             },
                           };
+                          break;
                         }
                       }
                     }

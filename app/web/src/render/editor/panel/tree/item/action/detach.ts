@@ -39,8 +39,9 @@ export const detachComp = async (
           if (cprop.meta?.type === "content-element") {
             const content = p.get("content");
             if (content) {
-              pass[k] = `<PassChild name={"${k}"}/>`;
-              propChild[k] = content;
+              pass[k] = `<PassChild name={"_${k}_"}/>`;
+              content.set("name", `_${k}_`);
+              propChild[`_${k}_`] = content;
             }
           } else {
             pass[k] = prop.value;

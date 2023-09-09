@@ -26,16 +26,16 @@ export const ESide = () => {
   const update = useCallback(
     (key: string, value: any) => {
       if (p.item.active) {
-        let act = p.treeMeta[p.item.active].mitem as TypedMap<any>;
+        let mitem = p.treeMeta[p.item.active].mitem as TypedMap<any>;
         if (p.mode === "mobile") {
-          let mobile = act.get("mobile");
+          let mobile = mitem.get("mobile");
           if (!mobile) {
-            act.set("mobile", new Y.Map() as any);
-            mobile = act.get("mobile");
+            mitem.set("mobile", new Y.Map() as any);
+            mobile = mitem.get("mobile");
           }
-          act = mobile as any;
+          mitem = mobile as any;
         }
-        let prop = act?.get(key);
+        let prop = mitem?.get(key);
 
         if (!prop) {
           let nprop = null;
@@ -46,8 +46,10 @@ export const ESide = () => {
               nprop = new Y.Map();
             }
           }
-          act.set(key, nprop);
-          prop = act.get(key);
+          if (mitem) {
+            mitem.set(key, nprop);
+            prop = mitem.get(key);
+          }
         }
 
         if (prop) {

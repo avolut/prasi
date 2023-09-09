@@ -1,7 +1,7 @@
 import { NodeModel } from "@minoru/react-dnd-treeview";
 import { createId } from "@paralleldrive/cuid2";
 import { FC } from "react";
-import { useGlobal } from "web-utils";
+import { useGlobal, useLocal } from "web-utils";
 import { syncronize } from "y-pojo";
 import * as Y from "yjs";
 import { MContent } from "../../../../../utils/types/general";
@@ -11,23 +11,19 @@ import { IText } from "../../../../../utils/types/text";
 import { ToolbarBox } from "../../../../../utils/ui/box";
 import { EditorGlobal } from "../../../logic/global";
 import { fillID } from "../../../tools/fill-id";
-import { NodeContent, flattenTree } from "../../tree/utils/flatten";
 import { loadComponent } from "../../../logic/comp";
 
 export const AddElement: FC<{}> = ({}) => {
   const p = useGlobal(EditorGlobal, "EDITOR");
-  
+  const local = useLocal({});
+  p.softRender.addEl = local.render;
+
+
   let canAdd = true;
   if (!p.item.active) {
     canAdd = false;
   }
-  let tree: NodeModel<NodeContent>[] = [];
-  const comp: any = p.comps.doc[p.comp?.id || ""];
-  if (comp) {
-    tree = flattenTree(p, comp.getMap("map").get("content_tree"));
-  } else if (p.mpage) {
-    tree = flattenTree(p, p.mpage.getMap("map").get("content_tree"));
-  }
+
   const item = p.treeMeta[p.item.active];
   let mitem = item ? item.mitem : null;
   const type = mitem?.get("type");

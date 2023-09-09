@@ -37,10 +37,12 @@ export const EditorGlobal = {
     tree: () => {},
     page: () => {},
     side: () => {},
+    addEl: () => {},
     all() {
       this.tree();
       this.page();
       this.side();
+      this.addEl();
     },
   },
 

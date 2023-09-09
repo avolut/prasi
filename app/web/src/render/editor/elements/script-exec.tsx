@@ -30,14 +30,13 @@ export const scriptExec = (arg: JsArg, api_url?: string) => {
   if (adv && adv.jsBuilt) {
     const output = { jsx: null };
 
-    let error = false;
     let evalArgs = {} as any;
     try {
       evalArgs = produceEvalArgs({ ...arg, output }, api_url);
+
       const scriptEval = new Function(...Object.keys(evalArgs), adv.jsBuilt);
       scriptEval(...Object.values(evalArgs));
     } catch (e) {
-      error = true;
       console.warn(e);
       console.warn(`ERROR in ${arg.item.type} [${arg.item.name}]:\n ` + adv.js);
     }
@@ -132,9 +131,8 @@ const produceEvalArgs = (
   return result;
 };
 
-export const createPassChild =
-  (arg: { item: IContent }) =>
-  ({ name }: { name: string }) => {
+export const createPassChild = (arg: { item: IContent }) => {
+  return ({ name }: { name: string }) => {
     const local = useLocal({ child: null as any });
     if (!local.child) {
       if (arg.item.type !== "text") {
@@ -156,6 +154,7 @@ export const createPassChild =
         );
     }
   };
+};
 
 export const createPassProp = () => {
   return (prop: any) => {
