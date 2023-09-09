@@ -208,7 +208,12 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[]; meta?: any }> = ({
                   mode={p.mode}
                   depth={depth}
                   isOpen={isOpen}
-                  onToggle={onToggle}
+                  onToggle={() => {
+                    if (isOpen) {
+                      onClick(node);
+                    }
+                    onToggle();
+                  }}
                   onHover={onHover}
                   onClick={onClick}
                   editCompId={p.comp?.id}
