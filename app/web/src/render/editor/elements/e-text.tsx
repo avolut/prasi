@@ -8,11 +8,7 @@ export const EText: FC<{
   item: IText;
   instance?: { id: string; cid: string };
 }> = ({ item, instance }) => {
-  return (
-    <ERender item={item} instance={instance}>
-      {() => item.html || ""}
-    </ERender>
-  );
+  return <ERender item={item} instance={instance} />;
 };
 const currentFocus = {
   id: "",

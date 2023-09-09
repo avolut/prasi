@@ -13,7 +13,7 @@ import { scriptExec } from "./script-exec";
 
 export const ERender: FC<{
   item: IContent;
-  children: (childs: (IItem | IText)[]) => ReactNode;
+  children?: (childs: (IItem | IText)[]) => ReactNode;
   instance?: { id: string; cid: string };
 }> = ({ item, children, instance }) => {
   const p = useGlobal(EditorGlobal, "EDITOR");
@@ -68,7 +68,7 @@ export const ERender: FC<{
     })
     .filter((e) => e);
 
-  let _children = children(childs);
+  let _children = children ? children(childs) : undefined;
 
   const elprop = createElProp(item, p, instance);
   const className = produceCSS(item, {
@@ -140,7 +140,7 @@ export const ERender: FC<{
     }
   }
 
-  if (item.type === "text" && (!instance?.cid || instance.cid === p.comp?.id)) {
+  if (item.type === "text") {
     return (
       <ETextInternal
         key={item.id}
@@ -148,14 +148,13 @@ export const ERender: FC<{
         elprop={elprop}
         item={item}
         p={p}
-        _children={_children}
+        _children={item.html || item.text}
       />
     );
   }
 
-  
   return (
-    <div className={className}  {...elprop}>
+    <div className={className} {...elprop}>
       {/* <pre className={"text-[9px] font-mono text-black"}>{item.id}</pre> */}
       {_children}
       {componentOver}
