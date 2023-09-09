@@ -16,10 +16,13 @@ export default page({
       },
       async () => {
         const s = await api.session();
-
-        console.log(s);
         if (s && s.id) {
-          navigate("/editor");
+          const rto = (window as any).redirectTo;
+          if (rto) {
+            navigate(rto);
+          } else {
+            navigate("/editor");
+          }
         } else {
           form.init = true;
           form.render();

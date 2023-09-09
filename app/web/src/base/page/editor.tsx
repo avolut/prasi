@@ -19,6 +19,7 @@ export default page({
       api.session().then(async (e) => {
         local.init = true;
         if (!e) {
+          (window as any).redirectTo = location.pathname;
           navigate("/login");
           return;
         }
