@@ -18,9 +18,11 @@ export const EItem: FC<{
       <ERender item={item} instance={instance}>
         {(childs) =>
           childs.map((e) => {
-            if (e.type === "item")
+            if (e.type === "item") {
               return <EItem item={e} key={e.id} instance={instance} />;
-            else return <EText item={e} key={e.id} instance={instance} />;
+            } else {
+              return <EText item={e} key={e.id} instance={instance} />;
+            }
           })
         }
       </ERender>

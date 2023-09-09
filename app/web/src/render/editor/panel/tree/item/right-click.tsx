@@ -26,12 +26,62 @@ export const ETreeRightClick: FC<{
   onClose: () => void;
 }> = ({ node, event, onClose }) => {
   const p = useGlobal(EditorGlobal, "EDITOR");
-  const local = useLocal({ clipboardAllowed: false });
+  const local = useLocal({
+    clipboardAllowed: false,
+    compGroups: {
+      list: [] as { id: string; name: string }[],
+      choose: null as null | ((id: string) => void),
+    },
+  });
   const item = node.data?.content;
   const type = item?.type;
   const comp = (item as IItem).component as FNComponent | undefined;
   const rootComp = p.comp;
   const isActiveComponent = rootComp && rootComp.id === item?.id && rootComp.id;
+
+  if (local.compGroups.list.length === 0) {
+    db.component_group
+      .findMany({
+        where: { component_site: { some: { id_site: p.site.id } } },
+      })
+      .then((comps) => {
+        local.compGroups.list = comps;
+        local.render();
+      });
+  }
+
+  if (local.compGroups.choose) {
+    return (
+      <Menu mouseEvent={event} onClose={onClose}>
+        {local.compGroups.list
+          .sort((a, b) => {
+            if (a.name < b.name) {
+              return -1;
+            }
+            if (a.name > b.name) {
+              return 1;
+            }
+            return 0;
+          })
+          .map((e) => {
+            if (e.name === "__TRASH__") return null;
+            return (
+              <MenuItem
+                key={e.id}
+                label={e.name}
+                onClick={() => {
+                  if (local.compGroups.choose) {
+                    local.compGroups.choose(e.id);
+                  }
+                  local.compGroups.choose = null;
+                  local.render();
+                }}
+              />
+            );
+          })}
+      </Menu>
+    );
+  }
 
   if (!item) {
     return (
@@ -186,11 +236,23 @@ export const ETreeRightClick: FC<{
                   }, 100);
                   return;
                 }
+
                 if (mitem.doc) {
                   let compitem = p.comps.doc[comp.id];
-
+                  p.compLoading[item.id] = true;
+                  p.render();
                   if (!compitem) {
-                    await loadComponent(p, comp.id);
+                    loadComponent(p, comp.id);
+
+                    await new Promise<void>((resolve) => {
+                      const ival = setInterval(() => {
+                        if (p.comps.doc[comp.id]) {
+                          clearInterval(ival);
+                          resolve();
+                        }
+                      }, 200);
+                    });
+
                     compitem = p.comps.doc[comp.id];
                   }
                   mitem.doc.transact(() => {
@@ -235,6 +297,9 @@ export const ETreeRightClick: FC<{
                         mitem,
                       };
                     }
+
+                    delete p.compLoading[item.id];
+                    p.render();
                   });
                 }
               };
@@ -272,26 +337,32 @@ export const ETreeRightClick: FC<{
               <div className="text-gray-400">Create Component</div>
             )
           }
-          onClick={() => {
+          onClick={(e) => {
             if (type === "item") {
               if (item.id) {
                 if (!isActiveComponent) {
-                  p.compLoading[item.id] = true;
-                  p.render();
-                  api
-                    .comp_create({
-                      item_id: item.id,
-                      site_id: p.site.id || "",
-                      page_id: rootComp ? undefined : p.page?.id,
-                      comp_id: rootComp ? rootComp.id : undefined,
-                    })
-                    .then(async (e) => {
-                      if (e) {
-                        await loadComponent(p, e.id);
-                        delete p.compLoading[item.id];
-                        p.softRender.all();
-                      }
-                    });
+                  e.stopPropagation();
+                  e.preventDefault();
+                  local.compGroups.choose = (group_id) => {
+                    p.compLoading[item.id] = true;
+                    p.render();
+                    api
+                      .comp_create({
+                        item_id: item.id,
+                        site_id: p.site.id || "",
+                        page_id: rootComp ? undefined : p.page?.id,
+                        comp_id: rootComp ? rootComp.id : undefined,
+                        group_id,
+                      })
+                      .then(async (e) => {
+                        if (e) {
+                          await loadComponent(p, e.id);
+                          delete p.compLoading[item.id];
+                          p.softRender.all();
+                        }
+                      });
+                  };
+                  local.render();
                 } else {
                   alert(`This item is already a component!`);
                 }

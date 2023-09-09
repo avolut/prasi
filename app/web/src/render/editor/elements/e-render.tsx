@@ -153,8 +153,9 @@ export const ERender: FC<{
     );
   }
 
+  
   return (
-    <div className={className} {...elprop}>
+    <div className={className}  {...elprop}>
       {/* <pre className={"text-[9px] font-mono text-black"}>{item.id}</pre> */}
       {_children}
       {componentOver}

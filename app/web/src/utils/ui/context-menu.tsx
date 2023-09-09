@@ -186,14 +186,16 @@ export const Menu = forwardRef<
                   ref(node: HTMLButtonElement) {
                     listItemsRef.current[index] = node;
                   },
-                  onClick() {
-                    child.props.onClick?.();
-                    setIsOpen(false);
+                  onClick(e) {
+                    child.props.onClick?.(e);
+                    if (!e.defaultPrevented) {
+                      setIsOpen(false);
+                    }
                   },
-                  onMouseUp() {
-                    child.props.onClick?.();
-                    setIsOpen(false);
-                  },
+                  // onMouseUp(e) {
+                  //   child.props.onClick?.(e);
+                  //   setIsOpen(false);
+                  // },
                 })
               )
           )}

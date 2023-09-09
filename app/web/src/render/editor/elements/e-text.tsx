@@ -6,7 +6,7 @@ import { ERender } from "./e-render";
 
 export const EText: FC<{
   item: IText;
-  instance?: { id: string; cid: string; };
+  instance?: { id: string; cid: string };
 }> = ({ item, instance }) => {
   return (
     <ERender item={item} instance={instance}>

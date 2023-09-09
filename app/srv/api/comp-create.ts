@@ -11,8 +11,9 @@ export const _ = {
     page_id?: string;
     item_id: string;
     comp_id?: string;
+    group_id?: string;
   }) {
-    const { page_id, site_id, item_id, comp_id } = arg;
+    const { page_id, site_id, item_id, comp_id, group_id } = arg;
     let element = undefined as TypedMap<IContent> | undefined;
     const walk = (el: TypedMap<IItem>): TypedMap<IItem> | undefined => {
       if (el.get("id") === item_id) {
@@ -47,32 +48,18 @@ export const _ = {
       }
     }
 
-    let group = await db.component_group.findFirst({
-      where: {
-        component_site: {
-          some: {
-            id_site: site_id,
-          },
-        },
-        name: {
-          not: {
-            equals: "__TRASH__",
-          },
-        },
-      },
-      select: {
-        id: true,
-        name: true,
-      },
-    });
-
-    if (!group) {
-      group = await db.component_group.create({
-        data: {
-          name: "All",
+    let gid = group_id;
+    if (!gid) {
+      let group = await db.component_group.findFirst({
+        where: {
           component_site: {
-            create: {
+            some: {
               id_site: site_id,
+            },
+          },
+          name: {
+            not: {
+              equals: "__TRASH__",
             },
           },
         },
@@ -81,8 +68,25 @@ export const _ = {
           name: true,
         },
       });
-    }
 
+      if (!group) {
+        group = await db.component_group.create({
+          data: {
+            name: "All",
+            component_site: {
+              create: {
+                id_site: site_id,
+              },
+            },
+          },
+          select: {
+            id: true,
+            name: true,
+          },
+        });
+      }
+      gid = group.id;
+    }
     if (element) {
       const newcomp = await db.component.create({
         data: {
@@ -90,7 +94,7 @@ export const _ = {
           content_tree: element.toJSON(),
           component_group: {
             connect: {
-              id: group.id,
+              id: gid,
             },
           },
         },
@@ -105,8 +109,7 @@ export const _ = {
           component: {
             id: newcomp.id,
             group: {
-              id: group.id,
-              name: group.name,
+              id: gid,
             },
           },
         };
@@ -161,7 +164,7 @@ export const _ = {
 
         return {
           id: newcomp.id,
-          group_id: group.id,
+          group_id: gid,
         };
       }
     }

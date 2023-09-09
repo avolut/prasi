@@ -81,18 +81,20 @@ export const loadComponent = async (
   }
 
   scanComponent(tree, compIds);
-  await Promise.all(
-    [...compIds]
-      .filter((id) => {
-        if (!p.comps.doc[id] && !p.comps.pending[id]) return true;
-        return false;
-      })
-      .map(async (id) => {
-        const res = await loadSingleComponent(p, id);
-        await loadComponent(p, res.content_tree);
-        return res;
-      })
-  );
+  const promises = [...compIds]
+    .filter((id) => {
+      if (!p.comps.doc[id] && !p.comps.pending[id]) return true;
+      return false;
+    })
+    .map(async (id) => {
+      const res = await loadSingleComponent(p, id);
+      await loadComponent(p, res.content_tree);
+      return res;
+    });
+
+  if (promises.length > 0) {
+    await Promise.all(promises);
+  } 
 };
 
 const loadSingleComponent = (p: PG, comp_id: string) => {
