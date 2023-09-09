@@ -61,8 +61,11 @@ export const ETreeItem: FC<{
   }
   const p = useGlobal(EditorGlobal, "EDITOR");
   useEffect(() => {
-    if (isActive && local.el) {
+    if (isActive && local.el && !p.preventTreeScroll) {
       local.el.scrollIntoView();
+    }
+    if (p.preventTreeScroll) {
+      p.preventTreeScroll = false;
     }
   }, [isActive]);
 

@@ -45,6 +45,7 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[]; meta?: any }> = ({
 
   const onClick = useCallback(
     (node: NodeModel<NodeContent>) => {
+      p.preventTreeScroll = true;
       if (node.data) {
         if (meta.search) {
           meta.search = "";

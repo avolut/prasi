@@ -32,6 +32,7 @@ export const EditorGlobal = {
       mode: "single" as "single" | "multiple",
     },
   },
+  preventTreeScroll: false,
   softRender: {
     tree: () => {},
     page: () => {},
