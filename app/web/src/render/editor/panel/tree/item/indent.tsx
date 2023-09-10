@@ -1,6 +1,6 @@
 import { FC } from "react";
+import { IContent, MContent } from "../../../../../utils/types/general";
 import { DEPTH_WIDTH } from "../utils/tree-utils";
-import { IContent } from "../../../../../utils/types/general";
 
 export const ETreeItemIndent: FC<{
   depth: number;
@@ -10,18 +10,53 @@ export const ETreeItemIndent: FC<{
   isOpen: boolean;
   isActive: boolean;
   isComponent: boolean;
-}> = ({ depth, onToggle, type, hasChilds, isOpen, isActive, isComponent }) => {
+  mitem: MContent;
+}> = ({
+  depth,
+  onToggle,
+  type,
+  hasChilds,
+  isOpen,
+  isActive,
+  isComponent,
+  mitem,
+}) => {
   return (
     <>
       {isActive && !isComponent && (
         <div className="bg-blue-500 absolute left-0 top-0 bottom-0 w-[3px]"></div>
       )}
 
-      {isComponent && !hasChilds && (
+      {isComponent && (
         <div
           className={cx(
             isActive ? "bg-blue-400" : "bg-purple-400 bg-opacity-40",
             " flex items-center justify-center text-white absolute left-0 top-0 bottom-0",
+            depth > 1 ? "w-[16px]" : "w-[7px]"
+          )}
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width={depth > 1 ? "10" : "0"}
+            height={depth > 1 ? "10" : "0"}
+            fill="none"
+            viewBox="0 0 15 15"
+          >
+            <path
+              fill="currentColor"
+              fillRule="evenodd"
+              d="M7.289.797a.5.5 0 01.422 0l6 2.8A.5.5 0 0114 4.05v6.9a.5.5 0 01-.289.453l-6 2.8a.5.5 0 01-.422 0l-6-2.8A.5.5 0 011 10.95v-6.9a.5.5 0 01.289-.453l6-2.8zM2 4.806L7 6.93v6.034l-5-2.333V4.806zm6 8.159l5-2.333V4.806L8 6.93v6.034zm-.5-6.908l4.772-2.028L7.5 1.802 2.728 4.029 7.5 6.057z"
+              clipRule="evenodd"
+            ></path>
+          </svg>
+        </div>
+      )}
+
+      {(mitem.parent as any).get("content") && (
+        <div
+          className={cx(
+            isActive ? "bg-blue-400 text-white " : "text-purple-600",
+            " flex items-center justify-center absolute left-0 top-0 bottom-0",
             depth > 1 ? "w-[16px]" : "w-[7px]"
           )}
         >
