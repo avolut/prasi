@@ -94,6 +94,7 @@ export const EditorGlobal = {
       passprop?: any;
       local?: any;
       passchild?: any;
+      js?: string
     }
   >,
   mpage: null as null | MPage,

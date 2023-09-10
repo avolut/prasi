@@ -59,9 +59,15 @@ const produceEvalArgs = (
     meta = tempMeta;
   }
 
-  meta[item.id].local = createLocal({ item, render, p });
-  meta[item.id].passchild = createPassChild({ item });
-  meta[item.id].passprop = createPassProp();
+  if (
+    typeof arg.item.adv?.js === "string" &&
+    meta[item.id].js !== arg.item.adv?.js
+  ) {
+    meta[item.id].js = arg.item.adv?.js || "";
+    meta[item.id].local = createLocal({ item, render, p });
+    meta[item.id].passchild = createPassChild({ item });
+    meta[item.id].passprop = createPassProp();
+  }
 
   const tm = meta[item.id];
   const PassProp = tm.passprop;
