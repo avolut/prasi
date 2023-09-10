@@ -1,4 +1,5 @@
 import type { Editor as MonacoEditor, OnMount } from "@monaco-editor/react";
+import { emmetHTML, emmetJSX } from "emmet-monaco-es";
 import trim from "lodash.trim";
 import Delta from "quill-delta";
 import { FC } from "react";
@@ -10,13 +11,6 @@ import { Loading } from "../../../../../utils/ui/loading";
 import { EditorGlobal } from "../../../logic/global";
 import { jsMount } from "./mount";
 import { monacoTypings } from "./typings";
-import { emmetHTML, emmetJSX } from "emmet-monaco-es";
-import { IItem } from "../../../../../utils/types/item";
-import {
-  createLocal,
-  createPassChild,
-  createPassProp,
-} from "../../../elements/script-exec";
 
 export type MonacoEditor = Parameters<OnMount>[0];
 export const DefaultScript = {
@@ -392,7 +386,6 @@ export const ScriptMonacoElement: FC<{
             };
 
             const propTypes: any = p.script.siteTypes;
-
             await jsMount(editor, monaco);
             await monacoTypings(p, monaco, {
               values: propVal,

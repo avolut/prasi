@@ -1,5 +1,5 @@
 import trim from "lodash.trim";
-import { forwardRef, isValidElement } from "react";
+import { isValidElement } from "react";
 
 export const extractProp = (prop: {
   values: Record<string, any>;

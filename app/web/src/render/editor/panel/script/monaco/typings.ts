@@ -122,7 +122,8 @@ export const register = (monaco: Monaco, source: string, uri: string) => {
     return e.uri.toString() === uri;
   });
   if (model) {
-    model.dispose();
+    model.setValue(source);
+  } else {
+    monaco.editor.createModel(source, "typescript", monaco.Uri.parse(uri));
   }
-  monaco.editor.createModel(source, "typescript", monaco.Uri.parse(uri));
 };
