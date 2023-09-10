@@ -1,4 +1,5 @@
 import {
+  FC,
   ReactElement,
   ReactNode,
   Suspense,
@@ -9,6 +10,7 @@ import { ErrorBoundary } from "web-init/src/web/error-boundary";
 import { useLocal } from "web-utils";
 import { createAPI, createDB } from "../../../utils/script/init-api";
 import { IContent } from "../../../utils/types/general";
+import { IItem } from "../../../utils/types/item";
 import { PG } from "../logic/global";
 import { EItem } from "./e-item";
 import { ElProp } from "./e-relprop";
@@ -25,20 +27,20 @@ type JsArg = {
 };
 
 export const scriptExec = (arg: JsArg, api_url?: string) => {
-  const adv = arg.item.adv;
+  const item = arg.item;
+  const adv = item.adv;
 
   if (adv && adv.jsBuilt) {
-    const output = { jsx: null };
-
+    const output = { jsx: null as any };
     let evalArgs = {} as any;
     try {
       evalArgs = produceEvalArgs({ ...arg, output }, api_url);
-
       const scriptEval = new Function(...Object.keys(evalArgs), adv.jsBuilt);
       scriptEval(...Object.values(evalArgs));
+
     } catch (e) {
       console.warn(e);
-      console.warn(`ERROR in ${arg.item.type} [${arg.item.name}]:\n ` + adv.js);
+      console.warn(`ERROR in ${item.type} [${item.name}]:\n ` + adv.js);
     }
     return output.jsx;
   }
@@ -90,6 +92,19 @@ const produceEvalArgs = (
     ...item.nprops,
   };
 
+  for (const [k, v] of Object.entries(scopeProps)) {
+    if (typeof v === "object") {
+      const c: { _jsx: true; content: IItem; Comp: FC<any> } = v as any;
+      if (c._jsx && c.content) {
+        c.content.nprops = scopeProps;
+        if (!c.content.name.startsWith("jsx:")) {
+          c.content.name = `jsx:${c.content.name}`;
+        }
+        scopeProps[k] = <c.Comp item={c.content} />;
+      }
+    }
+  }
+
   const result: any = {
     PassProp,
     Local,
@@ -109,19 +124,17 @@ const produceEvalArgs = (
     },
     render: (jsx: ReactNode) => {
       output.jsx = (
-        <>
-          <ErrorBoundary>
-            <Suspense
-              fallback={
-                <div className="flex flex-1 items-center justify-center w-full h-full relative">
-                  {p.ui.loading}
-                </div>
-              }
-            >
-              {jsx}
-            </Suspense>
-          </ErrorBoundary>
-        </>
+        <ErrorBoundary>
+          <Suspense
+            fallback={
+              <div className="flex flex-1 items-center justify-center w-full h-full relative">
+                {p.ui.loading}
+              </div>
+            }
+          >
+            {jsx}
+          </Suspense>
+        </ErrorBoundary>
       );
     },
     ...scopeProps,

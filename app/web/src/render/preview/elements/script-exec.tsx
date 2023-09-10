@@ -6,6 +6,7 @@ import { PG } from "../logic/global";
 import { PItem } from "./p-item";
 import { PText } from "./p-text";
 import { createAPI, createDB } from "../../../utils/script/init-api";
+import { IItem } from "../../../utils/types/item";
 
 type JsArg = {
   p: PG;
@@ -72,6 +73,19 @@ const produceEvalArgs = (
     ...item.nprops,
     params: w.params,
   };
+
+  for (const [k, v] of Object.entries(scopeProps)) {
+    if (typeof v === "object") {
+      const c: { _jsx: true; content: IItem } = v as any;
+      if (c._jsx && c.content) {
+        c.content.nprops = scopeProps;
+        if (!c.content.name.startsWith("jsx:")) {
+          c.content.name = `jsx:${c.content.name}`;
+        }
+        scopeProps[k] = <PItem item={c.content} />;
+      }
+    }
+  }
 
   const result: any = {
     PassProp,

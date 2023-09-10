@@ -62,7 +62,7 @@ export const EComponent: FC<{
         }
         citem.nprops = item.nprops;
       }
-      getRenderPropVal(props, citem, p);
+      getRenderPropVal(props, citem, p, { id: item.id, cid });
 
       return (
         <>
@@ -92,11 +92,11 @@ export const EComponent: FC<{
       );
     }
   }
+  const cid = item.component.id;
 
   if (props) {
-    getRenderPropVal(props, item, p);
+    getRenderPropVal(props, item, p, { id: item.id, cid });
   }
-  const cid = item.component.id;
 
   return (
     <ERender item={item} instance={{ id: item.id, cid }}>
@@ -119,7 +119,8 @@ export const EComponent: FC<{
 export const getRenderPropVal = (
   props: Record<string, FNCompDef>,
   item: IItem,
-  p: PG
+  p: PG,
+  instance: { cid: string; id: string }
 ) => {
   const nprops: any = {};
 
@@ -156,13 +157,18 @@ export const getRenderPropVal = (
       if (mprop) {
         shouldEval = false;
 
-        const content = mprop.get('content')?.toJSON() as IItem;
+        const content = mprop.get("content")?.toJSON() as IItem;
         if (content) {
           content.nprops = item.nprops;
-          val = <EItem item={content} />;
+          val = {
+            _jsx: true,
+            content: content,
+            Comp: (c: { item: IItem }) => {
+              return <EItem item={c.item} instance={instance} />;
+            },
+          };
         }
       }
-      if (!val) val = <></>;
     }
 
     if (shouldEval) {

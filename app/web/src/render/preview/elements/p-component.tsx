@@ -105,7 +105,11 @@ export const getRenderPropVal = (
     if (prop.meta?.type === "content-element") {
       if (prop.content) {
         prop.content.nprops = item.nprops;
-        val = <PItem item={prop.content} />;
+        const content = prop.content;
+        val = {
+          _jsx: true,
+          content: content,
+        };
         shouldEval = false;
       }
     }

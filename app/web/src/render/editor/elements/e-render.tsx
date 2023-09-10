@@ -120,6 +120,7 @@ export const ERender: FC<{
 
     if (html) return html;
     else if (adv.jsBuilt && adv.js) {
+      
       return (
         <>
           {scriptExec(
