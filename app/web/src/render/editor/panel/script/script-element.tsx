@@ -12,6 +12,7 @@ import {
   FBuild,
   ScriptMonacoElement,
 } from "./monaco/monaco-element";
+import { MItem } from "../../../../utils/types/item";
 
 export const jscript = {
   editor: null as typeof MonacoEditor | null,
@@ -68,18 +69,30 @@ export const EScriptElement: FC<{}> = ({}) => {
     <Modal
       onOpenChange={(open) => {
         if (p.script.active) {
-          const mitem = p.treeMeta[p.item.active]?.mitem;
+          let mitem = p.treeMeta[p.item.active]?.mitem;
+
+          if (p.item.active === p.comp?.item.id) {
+            mitem = p.comps.doc[p.comp.id]
+              .getMap("map")
+              .get("content_tree") as MItem;
+          }
           if (!mitem) return;
 
-          const adv = mitem.get("adv");
-          if (adv) {
-            const src = adv.get(p.script.type) as any;
-            if (src && src instanceof Y.Text) {
-              const txt = src.toJSON();
+          mitem.doc?.transact(() => {
+            const adv = mitem.get("adv");
+            if (adv) {
+              const src = adv.get(p.script.type) as any;
+              let txt = "";
+              if (src && src instanceof Y.Text) {
+                txt = src.toJSON();
+              } else {
+                txt = src;
+              }
               if (
-                typeof txt === "string" &&
-                txt.replace(/[\W_]+/g, "") ===
-                  DefaultScript[p.script.type].replace(/[\W_]+/g, "")
+                !txt ||
+                (typeof txt === "string" &&
+                  txt.replace(/[\W_]+/g, "") ===
+                    DefaultScript[p.script.type].replace(/[\W_]+/g, ""))
               ) {
                 if (p.script.type === "js") {
                   adv.delete("js");
@@ -89,7 +102,7 @@ export const EScriptElement: FC<{}> = ({}) => {
                 }
               }
             }
-          }
+          });
         }
 
         p.script.active = false;

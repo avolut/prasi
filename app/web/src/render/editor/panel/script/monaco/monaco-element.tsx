@@ -11,6 +11,7 @@ import { Loading } from "../../../../../utils/ui/loading";
 import { EditorGlobal } from "../../../logic/global";
 import { jsMount } from "./mount";
 import { monacoTypings } from "./typings";
+import { MItem } from "../../../../../utils/types/item";
 
 export type MonacoEditor = Parameters<OnMount>[0];
 export const DefaultScript = {
@@ -91,7 +92,14 @@ export const ScriptMonacoElement: FC<{
     }
   };
 
-  const mitem = p.treeMeta[p.item.active]?.mitem;
+  let mitem = p.treeMeta[p.item.active]?.mitem;
+
+  if (p.item.active === p.comp?.item.id) {
+    mitem = p.comps.doc[p.comp.id]
+      .getMap("map")
+      .get("content_tree") as MItem;
+  }
+
   if (!mitem) {
     p.script.active = false;
     return <div>no mitem</div>;
