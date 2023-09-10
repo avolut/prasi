@@ -10,6 +10,7 @@ import { ISection } from "../../../../../utils/types/section";
 import { IItem } from "../../../../../utils/types/item";
 import { IText } from "../../../../../utils/types/text";
 import { responsiveVal } from "../../../tools/responsive-val";
+import { useLocal } from "web-utils";
 
 type LinkTagUpdate = {
   linktag: FNLinkTag;
@@ -24,6 +25,12 @@ export const PanelLink: FC<{
   ) => void;
 }> = ({ value, update, mode }) => {
   const linktag = responsiveVal<FNLinkTag>(value, "linktag", mode, {});
+  const local = useLocal({ link: linktag.link });
+
+  useEffect(() => {
+    local.link = linktag.link;
+    local.render();
+  }, [linktag.link]);
 
   return (
     <>
@@ -31,11 +38,14 @@ export const PanelLink: FC<{
         spellCheck={false}
         minRows={1}
         className={cx("flex-1 border border-slate-300 p-1 h-[25px]")}
-        value={linktag.link || ""}
+        value={local.link || ""}
         placeholder="Link Href"
         onChange={(e) => {
-          e.stopPropagation();
-          update("linktag", { ...linktag, link: e.currentTarget.value });
+          local.link = e.currentTarget.value;
+          local.render();
+        }}
+        onBlur={() => {
+          update("linktag", { ...linktag, link: local.link });
         }}
       />
     </>
