@@ -43,7 +43,7 @@ const Renaming: FC<{
   const rootComponentID = p.comp?.id;
   const itemComponent = item.get("component")?.toJSON() as FNComponent;
   let isRootComponent = false;
-  if (itemComponent.id === rootComponentID) {
+  if (itemComponent && itemComponent.id === rootComponentID) {
     isRootComponent = true;
   }
 
