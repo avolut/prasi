@@ -16,7 +16,6 @@ eg.edit = {
   ws: new WeakMap(),
 };
 export const collabEditHandler = (ws: Websocket) => {
-  
   eg.edit.ws.set(ws, {
     clientID: createId(),
   });
@@ -24,6 +23,11 @@ export const collabEditHandler = (ws: Websocket) => {
   ws.on("message", async (raw: string) => {
     try {
       const msg = JSON.parse(raw) as WS_MSG;
+
+      if (msg.type === "ping") {
+        ws.send(JSON.stringify({ type: "pong" }));
+        return;
+      }
 
       switch (msg.type) {
         case "get_page":

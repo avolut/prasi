@@ -1,14 +1,54 @@
-import { useGlobal } from "web-utils";
+import { useGlobal, useLocal } from "web-utils";
 import { Popover } from "../../../../../utils/ui/popover";
 import { EditorGlobal } from "../../../logic/global";
 import { ResponsiveToggle } from "./ResponsiveToggle";
 import { AutoHeightTextarea } from "../../../../../utils/ui/auto-textarea";
 import { ToolbarBox } from "../../../../../utils/ui/box";
+import { Tooltip } from "../../../../../utils/ui/tooltip";
 
 export const ToolbarRight = () => {
   const p = useGlobal(EditorGlobal, "EDITOR");
+  const local = useLocal({ pingOpen: false });
+  p.softRender.topR = local.render;
+
   return (
     <div className={cx("toolbar-right", "flex mr-2")}>
+      <Tooltip
+        className="flex items-center mr-2"
+        open={local.pingOpen}
+        onOpenChange={(open) => {
+          local.pingOpen = open;
+          local.render();
+        }}
+        content={p.wsPing < 0 ? `Disconnected` : `Ping: ${p.wsPing}ms`}
+        placement="left"
+      >
+        <div
+          className={cx(
+            "cursor-pointer p-[1px] border rounded-sm flex items-center justify-center"
+          )}
+          onClick={() => {
+            local.pingOpen = true;
+            local.render();
+          }}
+        >
+          {p.wsPing < 0 && (
+            <div className="bg-red-500 w-[10px] h-[10px] rounded-sm"></div>
+          )}
+
+          {p.wsPing <= 250 && p.wsPing >= 0 && (
+            <div className="bg-green-500 w-[10px] h-[10px] rounded-sm"></div>
+          )}
+
+          {p.wsPing > 200 && (
+            <div className="bg-orange-300 w-[10px] h-[10px] rounded-sm"></div>
+          )}
+
+          {p.wsPing > 1000 && (
+            <div className="bg-red-500 w-[10px] h-[10px] rounded-sm"></div>
+          )}
+        </div>
+      </Tooltip>
       <ToolbarBox
         items={[
           {

@@ -38,11 +38,13 @@ export const EditorGlobal = {
     page: () => {},
     side: () => {},
     addEl: () => {},
+    topR: () => {},
     all() {
       this.tree();
       this.page();
       this.side();
       this.addEl();
+      this.topR();
     },
   },
 
@@ -94,7 +96,7 @@ export const EditorGlobal = {
       passprop?: any;
       local?: any;
       passchild?: any;
-      js?: string
+      js?: string;
     }
   >,
   mpage: null as null | MPage,
@@ -106,6 +108,9 @@ export const EditorGlobal = {
 
   /** connection */
   ws: null as null | WebSocket,
+  wsPing: -1,
+  wsPingTs: 0,
+  wsPingInterval: null as any,
   wsRetry: {
     fast: false,
     localIP: false,

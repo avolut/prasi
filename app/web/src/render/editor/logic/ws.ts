@@ -74,9 +74,24 @@ export const editorWS = async (p: PG) => {
         }
         resolve();
       });
+      clearInterval(p.wsPingInterval);
+      p.wsPingInterval = setInterval(() => {
+        if (ws.readyState === ws.OPEN) {
+          wsend(p, JSON.stringify({ type: "ping" }));
+          p.wsPingTs = Date.now();
+        } else {
+          p.wsPing = -1;
+          p.softRender.topR();
+        }
+      }, 2000);
       ws.addEventListener("message", async (e) => {
         const msg = JSON.parse(e.data) as WS_MSG;
-        // console.log("<", msg.type);
+
+        if (msg.type === "pong") {
+          p.wsPing = Date.now() - p.wsPingTs;
+          p.softRender.topR();
+          return;
+        }
 
         switch (msg.type) {
           case "get_page":
@@ -219,6 +234,9 @@ export const editorWS = async (p: PG) => {
       });
       ws.addEventListener("open", () => {
         p.wsRetry.disabled = false;
+
+        wsend(p, JSON.stringify({ type: "ping" }));
+        p.wsPingTs = Date.now();
       });
     }
   });
