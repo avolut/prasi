@@ -95,9 +95,7 @@ export const ScriptMonacoElement: FC<{
   let mitem = p.treeMeta[p.item.active]?.mitem;
 
   if (p.item.active === p.comp?.item.id) {
-    mitem = p.comps.doc[p.comp.id]
-      .getMap("map")
-      .get("content_tree") as MItem;
+    mitem = p.comps.doc[p.comp.id].getMap("map").get("content_tree") as MItem;
   }
 
   if (!mitem) {
@@ -110,8 +108,10 @@ export const ScriptMonacoElement: FC<{
   if (!adv) {
     setTimeout(() => {
       mitem.set("adv", new Y.Map() as any);
+      console.log("failed to load adv:", mitem.toJSON());
       p.render();
     }, 100);
+
     return <Loading note="monaco-el" backdrop={false} />;
   }
   let _ytext = adv.get(script.type) as any;
