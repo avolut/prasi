@@ -140,7 +140,7 @@ export const previewWS = async (p: PG) => {
                   throttle((e, origin) => {
                     p.pageComp = {};
                     p.status = "init";
-
+                    console.clear();
                     console.log(
                       `🔥 Component updated: ${p.comp.doc[msg.comp_id]
                         .getMap("map")
