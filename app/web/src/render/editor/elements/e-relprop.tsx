@@ -57,15 +57,21 @@ export const createElProp = (
       }
 
       if (instance) {
-        if (p.treeMeta[instance.id]) {
-          editComp(p, p.treeMeta[instance.id].item);
-        } else {
-          const found = p.compEdits.find(
-            (e) => e.component?.id === instance.cid && e.id === instance.id
-          );
-          if (found) {
-            editComp(p, found);
+        if (p.compDirectEdit) {
+          if (p.treeMeta[instance.id]) {
+            editComp(p, p.treeMeta[instance.id].item);
+          } else {
+            const found = p.compEdits.find(
+              (e) => e.component?.id === instance.cid && e.id === instance.id
+            );
+            if (found) {
+              editComp(p, found);
+            }
           }
+        } else {
+          p.item.active = instance.id;
+          p.render();
+          return;
         }
       } else if (p.comp?.id) {
         p.comp = null;

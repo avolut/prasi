@@ -75,6 +75,7 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[]; meta?: any }> = ({
           } else {
             p.item.selection = [];
             p.item.active = node.data.content.id;
+
             if (p.treeMeta[p.item.active].item.type === "text") {
               setTimeout(() => {
                 const text = document.getElementById(

@@ -6,6 +6,7 @@ import { IRoot, MRoot } from "../../../../../utils/types/root";
 import { PG } from "../../../logic/global";
 import { syncronize } from "y-pojo";
 import { createId } from "@paralleldrive/cuid2";
+import { FMCompDef } from "../../../../../utils/types/meta-fn";
 
 export type NodeContent = {
   content: IContent;
@@ -61,7 +62,18 @@ export const flattenTree = (p: PG, content: MRoot | MItem | undefined) => {
 
         if (masterProp) {
           let i = 0;
+          const sortedProps: { v: FMCompDef; k: string }[] = [];
+
           masterProp.forEach((v, k) => {
+            sortedProps.push({ v, k });
+          });
+
+          sortedProps.sort((a, b) => {
+            return (a.v.get("idx") || 0) - (b.v.get("idx") || 0);
+          });
+
+          sortedProps.forEach((x) => {
+            const { k, v } = x;
             if (v) {
               const meta = v.get("meta");
               if (meta && meta.get("type") === "content-element" && itemProp) {
