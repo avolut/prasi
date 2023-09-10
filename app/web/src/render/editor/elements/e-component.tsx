@@ -12,7 +12,8 @@ import { EText } from "./e-text";
 
 export const EComponent: FC<{
   item: IItem;
-}> = ({ item }) => {
+  instance?: { cid: string; id: string };
+}> = ({ item, instance }) => {
   const [_, render] = useState({});
   const p = useGlobal(EditorGlobal, "EDITOR");
 
@@ -62,7 +63,7 @@ export const EComponent: FC<{
         }
         citem.nprops = item.nprops;
       }
-      getRenderPropVal(props, citem, p, { id: item.id, cid });
+      getRenderPropVal(props, citem, p, instance);
 
       return (
         <>
@@ -95,7 +96,7 @@ export const EComponent: FC<{
   const cid = item.component.id;
 
   if (props) {
-    getRenderPropVal(props, item, p, { id: item.id, cid });
+    getRenderPropVal(props, item, p, instance);
   }
 
   return (
@@ -120,7 +121,7 @@ export const getRenderPropVal = (
   props: Record<string, FNCompDef>,
   item: IItem,
   p: PG,
-  instance: { cid: string; id: string }
+  instance?: { cid: string; id: string }
 ) => {
   const nprops: any = {};
 

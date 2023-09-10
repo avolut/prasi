@@ -10,7 +10,7 @@ export const EItem: FC<{
 }> = ({ item, instance }) => {
   const compid = item.component?.id;
   if (compid) {
-    return <EComponent item={item} />;
+    return <EComponent item={item} instance={instance} />;
   }
 
   return (
