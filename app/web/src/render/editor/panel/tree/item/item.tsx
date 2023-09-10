@@ -6,12 +6,13 @@ import { IContent } from "../../../../../utils/types/general";
 import { IItem } from "../../../../../utils/types/item";
 import { EditorGlobal } from "../../../logic/global";
 import { NodeContent } from "../utils/flatten";
-import { Adv, ETreeItemAction } from "./action";
+import { Adv, ETreeItemAction, Rename } from "./action";
 import { ETreeItemIndent } from "./indent";
 import { ETreeItemName } from "./name";
 import { treeItemStyle } from "./style";
 import { Loading } from "../../../../../utils/ui/loading";
 import { loadComponent } from "../../../logic/comp";
+import { Tooltip } from "../../../../../utils/ui/tooltip";
 
 export const ETreeItem: FC<{
   node: NodeModel<NodeContent>;
@@ -167,10 +168,20 @@ export const ETreeItem: FC<{
                 }}
               />
             ) : (
-              <>
+              <div className="flex items-center">
                 <Adv p={p} item={item} />
+                <Tooltip
+                  content="Rename"
+                  className="flex items-center p-1 h-full text-blue-700"
+                  onClick={() => {
+                    local.renaming = true;
+                    local.render();
+                  }}
+                >
+                  <Rename />
+                </Tooltip>
                 <RootComponentClose item={item} />
-              </>
+              </div>
             ))}
         </>
       )}

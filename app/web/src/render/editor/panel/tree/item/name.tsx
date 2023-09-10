@@ -1,9 +1,8 @@
 import { FC } from "react";
-import { IContent } from "../../../../../utils/types/general";
 import { useGlobal, useLocal } from "web-utils";
-import { EditorGlobal } from "../../../logic/global";
+import { IContent } from "../../../../../utils/types/general";
 import { FNComponent } from "../../../../../utils/types/meta-fn";
-import find from "lodash.find";
+import { EditorGlobal } from "../../../logic/global";
 
 export const ETreeItemName: FC<{
   item: IContent;
@@ -43,6 +42,10 @@ const Renaming: FC<{
 
   const rootComponentID = p.comp?.id;
   const itemComponent = item.get("component")?.toJSON() as FNComponent;
+  let isRootComponent = false;
+  if (itemComponent.id === rootComponentID) {
+    isRootComponent = true;
+  }
 
   return (
     <input
@@ -72,12 +75,7 @@ const Renaming: FC<{
           item.set("name", local.newname);
         }
 
-        if (
-          !isComponent &&
-          itemComponent &&
-          rootComponentID === itemComponent.id &&
-          rootComponentID
-        ) {
+        if (isRootComponent && rootComponentID) {
           const doc = p.comps.doc[rootComponentID];
           if (doc) {
             doc.transact(() => {

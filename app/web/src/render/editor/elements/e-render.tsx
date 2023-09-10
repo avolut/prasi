@@ -46,6 +46,14 @@ export const ERender: FC<{
       if (meta) {
         meta.item = e;
         if (e.type === "item" && e.component?.id) {
+          const mcomp = p.comps.doc[e.component.id]
+            .getMap("map")
+            .get("content_tree");
+
+          if (mcomp && meta.mitem.get("name") !== mcomp.get("name")) {
+            meta.mitem.set("name", mcomp.get("name") || "");
+          }
+
           if (!meta.comp) {
             const comp = newPageComp(p, e);
             if (comp) {
@@ -120,7 +128,6 @@ export const ERender: FC<{
 
     if (html) return html;
     else if (adv.jsBuilt && adv.js) {
-      
       return (
         <>
           {scriptExec(

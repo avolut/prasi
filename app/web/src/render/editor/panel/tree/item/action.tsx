@@ -278,7 +278,7 @@ const Trash = () => (
   </svg>
 );
 
-const Rename = () => (
+export const Rename = () => (
   <svg
     width={actionSize}
     height={actionSize}
