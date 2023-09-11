@@ -10,7 +10,7 @@ import { useEffect } from "react";
 import { useGlobal, useLocal } from "web-utils";
 import { Loading } from "../../../../../utils/ui/loading";
 import { EditorGlobal } from "../../../logic/global";
-import { PageForm } from "./PageForm";
+import { PageForm } from "./page-mgr-form";
 
 export type PageItem = {
   id: string;

@@ -86,7 +86,7 @@ export const useGlobal = <T extends object>(
 
   return res as any;
 };
-const deepClone = (object: any): any => {
+export const deepClone = (object: any): any => {
   if (null == object || typeof object != "object") return object;
   // Handle Date
   if (object instanceof Date) {

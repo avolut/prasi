@@ -2,7 +2,7 @@ import { useGlobal } from "web-utils";
 import { EPage } from "../elements/e-page";
 import { editorStyle } from "../elements/style";
 import { EditorGlobal } from "../logic/global";
-import { PageManager } from "./manager/page/PageManager";
+import { PageManager } from "./manager/page/page-mgr";
 import { SiteManager } from "./manager/site/SiteManager";
 import { EScriptElement } from "./script/script-element";
 import { ESide } from "./side/Side";

@@ -29,6 +29,7 @@ export const w = window as unknown as {
   loadedFonts: string[];
   prasiApiDbPull: boolean;
   params: any;
+  editorGlbDefault: string;
 };
 
 export type Page = {

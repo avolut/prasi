@@ -46,7 +46,7 @@ export default page({
               },
             });
             if (page) {
-              navigate(`/ed/${res.id}/${page.id}`);
+              navigate(`/editor/${res.id}/${page.id}`);
             }
           } else {
             local.loading = false;
@@ -76,7 +76,7 @@ export default page({
           }
 
           if (res) {
-            navigate(`/ed/${site_id}/${res.id}`);
+            navigate(`/editor/${site_id}/${res.id}`);
           }
         } else {
           local.init = true;

@@ -1,5 +1,5 @@
 import { FC, useEffect } from "react";
-import { useGlobal } from "web-utils";
+import { useGlobal, deepClone } from "web-utils";
 import { Loading } from "../../utils/ui/loading";
 import { EMainEditor } from "./panel/e-main-editor";
 import { EditorGlobal } from "./logic/global";
@@ -14,6 +14,7 @@ export const Editor: FC<{ site_id: string; page_id: string; session: any }> = ({
   page_id,
 }) => {
   const p = useGlobal(EditorGlobal, "EDITOR");
+
   p.session = session;
 
   useEffect(() => {
@@ -60,6 +61,10 @@ export const Editor: FC<{ site_id: string; page_id: string; session: any }> = ({
 
   useEffect(() => {
     if (p.status !== "init" && w.prasiApi) {
+      for (const [k, v] of Object.entries(deepClone(EditorGlobal))) {
+        (p as any)[k] = v;
+      }
+
       execSiteJS(p);
       p.render();
     }
