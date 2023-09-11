@@ -72,8 +72,8 @@ export const createElProp = (
               editComp(p, found);
             }
           }
-        } else {
-          if (p.comp?.item.id !== instance.id) {
+        } else if (p.comp) {
+          if (p.comp.item.id !== instance.id) {
             p.item.active = instance.id;
             p.render();
             return;
@@ -95,11 +95,12 @@ export const createElProp = (
   };
 };
 
-export const ComponentOver: FC<{ item: IItem; p: PG; elprop: ElProp }> = ({
-  item,
-  p,
-  elprop,
-}) => {
+export const ComponentOver: FC<{
+  item: IItem;
+  p: PG;
+  elprop: ElProp;
+  instance?: { id: string; cid: string };
+}> = ({ item, p, elprop, instance }) => {
   if (p.compDirectEdit) {
     return <></>;
   }
@@ -127,6 +128,15 @@ export const ComponentOver: FC<{ item: IItem; p: PG; elprop: ElProp }> = ({
       {...elprop}
       onPointerDown={async (e) => {
         e.stopPropagation();
+
+        if (instance) {
+          if (instance.cid && p.comp?.id !== instance.cid) {
+            const citem = p.treeMeta[instance.id].item;
+            editComp(p, citem);
+            return;
+          }
+        }
+
         if (p.item.active !== item.id) {
           p.item.active = item.id;
           p.softRender.all();

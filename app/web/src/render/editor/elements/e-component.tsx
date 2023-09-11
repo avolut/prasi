@@ -100,7 +100,7 @@ export const EComponent: FC<{
   }
 
   return (
-    <ERender item={item} instance={{ id: item.id, cid }}>
+    <ERender item={item} instance={instance}>
       {(childs) => {
         return childs.map((e) => {
           if (e.type === "item")

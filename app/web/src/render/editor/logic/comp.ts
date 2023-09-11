@@ -94,7 +94,7 @@ export const loadComponent = async (
 
   if (promises.length > 0) {
     await Promise.all(promises);
-  } 
+  }
 };
 
 const loadSingleComponent = (p: PG, comp_id: string) => {
@@ -116,7 +116,7 @@ export const editComp = (p: PG, item: IContent) => {
     let doc = p.comps.doc[cid];
     if (doc) {
       const map = doc.getMap("map").get("content_tree")?.toJSON() as IItem;
-      if (map.component) {
+      if (map && map.component) {
         map.component.props = {
           ...map.component.props,
           ...item.component.props,

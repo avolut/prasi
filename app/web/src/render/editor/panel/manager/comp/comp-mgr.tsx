@@ -790,7 +790,9 @@ const CompPreview: FC<{
 
   if (comp) {
     local.comp = comp.getMap("map").get("content_tree")?.toJSON() as IItem;
-    local.name = local.comp.name;
+    if (local.comp) {
+      local.name = local.comp.name;
+    }
   } else {
     loadComponent(p, comp_id).then(() => {
       local.render();

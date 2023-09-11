@@ -32,12 +32,10 @@ export const ERender: FC<{
           .getMap("map")
           .get("content_tree");
 
-        const comp = newPageComp(p, e);
-        if (comp && mitem) {
+        if (mitem) {
           p.treeMeta[e.id] = {
             item: e,
             mitem,
-            comp,
           };
           meta = p.treeMeta[e.id];
         }
@@ -62,7 +60,7 @@ export const ERender: FC<{
           }
 
           if (meta.comp) {
-            if (item.nprops) meta.comp.nprops = item.nprops;
+            if (item.nprops) meta.comp.nprops = { ...item.nprops };
             return meta.comp;
           }
         }
@@ -114,7 +112,14 @@ export const ERender: FC<{
         }
       }
       if (!hasChilds) {
-        componentOver = <ComponentOver item={item} p={p} elprop={elprop} />;
+        componentOver = (
+          <ComponentOver
+            item={item}
+            p={p}
+            elprop={elprop}
+            instance={instance}
+          />
+        );
       }
     }
   }

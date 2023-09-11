@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import { useLocal } from "web-utils";
 import { AutoHeightTextarea } from "../panel/link";
 import { CPCoded } from "./CPCoded";
@@ -13,13 +13,16 @@ export const CPText: FC<CPArgs> = ({
 }) => {
   const local = useLocal({ value: "", codeEditing: false });
 
-  if (prop.value) {
-    try {
-      eval(`local.value = ${prop.valueBuilt}`);
-    } catch (e) {}
-  } else {
-    local.value = "";
-  }
+  useEffect(() => {
+    if (prop.value) {
+      try {
+        eval(`local.value = ${prop.valueBuilt}`);
+      } catch (e) {}
+    } else {
+      local.value = "";
+    }
+    local.render();
+  }, [prop.value, prop.valueBuilt]);
 
   if (
     local.codeEditing ||
@@ -49,6 +52,9 @@ export const CPText: FC<CPArgs> = ({
         value={local.value}
         onChange={async (e) => {
           local.value = e.currentTarget.value;
+          local.render();
+        }}
+        onBlur={() => {
           onChange(`"${local.value}"`);
         }}
         onContextMenu={(e) => {
