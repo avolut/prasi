@@ -13,6 +13,10 @@ export const createElProp = (
 ) => {
   return {
     onPointerEnter: (e: React.PointerEvent<HTMLDivElement>) => {
+      if (p.item.sideHover) {
+        p.item.sideHover = false;
+        p.render();
+      }
       hoverAttempt.unshift({ id: item.id, ts: Date.now() });
       if (hoverAttempt.length > 6) {
         hoverAttempt.pop();
