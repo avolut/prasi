@@ -24,7 +24,8 @@ export const CPText: FC<CPArgs> = ({
   if (
     local.codeEditing ||
     typeof local.value !== "string" ||
-    (typeof local.value === "string" && !local.value.trim().startsWith('"'))
+    (typeof prop.valueBuilt === "string" &&
+      !prop.valueBuilt.trim().startsWith('"'))
   ) {
     return (
       <CPCoded
@@ -53,7 +54,7 @@ export const CPText: FC<CPArgs> = ({
         onContextMenu={(e) => {
           e.stopPropagation();
         }}
-        className="flex-1 p-1 font-mono border-2 border-transparent outline-none bg-transparent focus:bg-white focus:border-blue-500 border-slate-300 text-[11px]"
+        className="flex-1 self-stretch font-mono border-2 border-transparent outline-none bg-transparent focus:bg-white focus:border-blue-500 border-slate-300 text-[10px] min-h-[25px] pt-[3px] pl-[3px]"
         spellCheck={false}
       />
     </>
