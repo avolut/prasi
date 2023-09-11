@@ -55,7 +55,7 @@ export default page({
           }
         } else if (!page_id) {
           let res = await db.page.findFirst({
-            where: { id_site: site_id },
+            where: { id_site: site_id, is_deleted: false },
             select: {
               id: true,
             },
