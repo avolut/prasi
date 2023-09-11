@@ -79,6 +79,11 @@ export const createElProp = (
             return;
           }
         }
+        if (p.treeMeta[instance.id]) {
+          p.item.active = instance.id;
+          p.render();
+          return;
+        }
       } else if (p.comp?.id) {
         p.comp = null;
         p.compEdits = [];
