@@ -37,7 +37,6 @@ export const scriptExec = (arg: JsArg, api_url?: string) => {
       evalArgs = produceEvalArgs({ ...arg, output }, api_url);
       const scriptEval = new Function(...Object.keys(evalArgs), adv.jsBuilt);
       scriptEval(...Object.values(evalArgs));
-
     } catch (e) {
       console.warn(e);
       console.warn(`ERROR in ${item.type} [${item.name}]:\n ` + adv.js);
@@ -95,7 +94,7 @@ const produceEvalArgs = (
   for (const [k, v] of Object.entries(scopeProps)) {
     if (typeof v === "object") {
       const c: { _jsx: true; content: IItem; Comp: FC<any> } = v as any;
-      if (c._jsx && c.content) {
+      if (c !== null && c._jsx && c.content) {
         c.content.nprops = scopeProps;
         if (!c.content.name.startsWith("jsx:")) {
           c.content.name = `jsx:${c.content.name}`;

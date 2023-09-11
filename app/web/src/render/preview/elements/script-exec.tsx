@@ -77,7 +77,7 @@ const produceEvalArgs = (
   for (const [k, v] of Object.entries(scopeProps)) {
     if (typeof v === "object") {
       const c: { _jsx: true; content: IItem } = v as any;
-      if (c._jsx && c.content) {
+      if (c !== null && c._jsx && c.content) {
         c.content.nprops = scopeProps;
         if (!c.content.name.startsWith("jsx:")) {
           c.content.name = `jsx:${c.content.name}`;
