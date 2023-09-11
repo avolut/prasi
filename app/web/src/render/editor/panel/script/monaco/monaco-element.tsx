@@ -1,17 +1,16 @@
 import type { Editor as MonacoEditor, OnMount } from "@monaco-editor/react";
-import { emmetHTML, emmetJSX } from "emmet-monaco-es";
 import trim from "lodash.trim";
 import Delta from "quill-delta";
 import { FC } from "react";
 import strDelta from "textdiff-create";
 import { useGlobal, useLocal } from "web-utils";
 import * as Y from "yjs";
+import { MItem } from "../../../../../utils/types/item";
 import { Button } from "../../../../../utils/ui/form/Button";
 import { Loading } from "../../../../../utils/ui/loading";
 import { EditorGlobal } from "../../../logic/global";
 import { jsMount } from "./mount";
 import { monacoTypings } from "./typings";
-import { MItem } from "../../../../../utils/types/item";
 
 export type MonacoEditor = Parameters<OnMount>[0];
 export const DefaultScript = {

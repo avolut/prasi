@@ -39,7 +39,7 @@ export const ETreeRightClick: FC<{
   const rootComp = p.comp;
   const isActiveComponent = rootComp && rootComp.id === item?.id && rootComp.id;
 
-  if (local.compGroups.list.length === 0) {
+  if (local.compGroups.list && local.compGroups.list.length === 0) {
     db.component_group
       .findMany({
         where: { component_site: { some: { id_site: p.site.id } } },
