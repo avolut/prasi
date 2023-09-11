@@ -40,11 +40,11 @@ export const ToolbarRight = () => {
             <div className="bg-green-500 w-[10px] h-[10px] rounded-sm"></div>
           )}
 
-          {p.wsPing > 200 && (
+          {p.wsPing > 250 && p.wsPing < 1000 &&  (
             <div className="bg-orange-300 w-[10px] h-[10px] rounded-sm"></div>
           )}
 
-          {p.wsPing > 1000 && (
+          {p.wsPing >= 1000 && (
             <div className="bg-red-500 w-[10px] h-[10px] rounded-sm"></div>
           )}
         </div>

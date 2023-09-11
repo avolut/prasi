@@ -357,9 +357,9 @@ export const ScriptMonacoElement: FC<{
           }}
           beforeMount={(monaco) => {
             if (script.type === "js") {
-              emmetJSX(monaco, ["typescript"]);
+              // emmetJSX(monaco, ["typescript"]);
             } else if (script.type === "html") {
-              emmetHTML(monaco);
+              // emmetHTML(monaco);
             }
           }}
           defaultValue={ytext.toJSON() || defaultSrc}
