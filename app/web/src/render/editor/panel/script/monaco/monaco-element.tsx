@@ -29,7 +29,7 @@ export const DefaultScript = {
 const w = window as unknown as {
   importCache: {
     prettier: any;
-    prettier_babel: any;
+    prettier_parser: any;
   };
 };
 
@@ -54,24 +54,26 @@ export const ScriptMonacoElement: FC<{
   const doEdit = async (newval: string, all?: boolean) => {
     if (local.editor) {
       if (!w.importCache) {
-        w.importCache = { prettier_babel: "", prettier: "" };
+        w.importCache = { prettier_parser: "", prettier: "" };
       }
-      if (!w.importCache.prettier_babel)
-        w.importCache.prettier_babel = await import("prettier/parser-babel");
+      if (!w.importCache.prettier_parser)
+        w.importCache.prettier_parser = await import(
+          "prettier/parser-typescript"
+        );
 
       if (!w.importCache.prettier)
         w.importCache.prettier = await import("prettier/standalone");
 
       const prettier = w.importCache.prettier;
-      const prettier_babel = w.importCache.prettier_babel;
+      const prettier_parser = w.importCache.prettier_parser;
       const text = trim(
         prettier.format(
           all
             ? newval
             : local.editor?.getValue().replace(/\{\s*children\s*\}/gi, newval),
           {
-            parser: "babel",
-            plugins: [prettier_babel],
+            parser: "typescript",
+            plugins: [prettier_parser],
           }
         ),
         "; \n"
