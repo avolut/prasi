@@ -27,6 +27,7 @@ type JsArg = {
 };
 
 export const scriptExec = (arg: JsArg, api_url?: string) => {
+  const p = arg.p;
   const item = arg.item;
   const adv = item.adv;
 
@@ -37,6 +38,12 @@ export const scriptExec = (arg: JsArg, api_url?: string) => {
       evalArgs = produceEvalArgs({ ...arg, output }, api_url);
       const scriptEval = new Function(...Object.keys(evalArgs), adv.jsBuilt);
       scriptEval(...Object.values(evalArgs));
+
+      // if (p.comp?.item.name === "button") {
+      //   if (item.name === "inside"){
+      //     console.log('evargs', evalArgs, item);
+      //   }
+      // }
     } catch (e) {
       console.warn(e);
       console.warn(`ERROR in ${item.type} [${item.name}]:\n ` + adv.js);

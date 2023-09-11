@@ -49,7 +49,7 @@ export const EComponent: FC<{
   }
   const props = comp.content_tree.component?.props || {};
 
-  if (p.comp?.id === item.component.id && p.comp?.item.id === item?.id) {
+  if (p.comp?.id === item.component.id) {
     const cid = pcomp.getMap("map").get("id");
     const contentTree = pcomp.getMap("map").get("content_tree") as MItem;
     const instanceId = contentTree.get("id");
