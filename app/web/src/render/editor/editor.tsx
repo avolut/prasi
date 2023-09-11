@@ -70,7 +70,7 @@ export const Editor: FC<{ site_id: string; page_id: string; session: any }> = ({
   }
 
   if (p.status === "init") {
-    p.ui.loading = <Loading note="editor-root" />;
+    p.ui.loading = <Loading note="init" />;
     p.ui.preload = <Loading note="preload-root" backdrop={false} />;
     p.ui.notfound = (
       <div className="flex-1 flex items-center justify-center">NOT FOUND</div>
@@ -82,7 +82,7 @@ export const Editor: FC<{ site_id: string; page_id: string; session: any }> = ({
     );
     initEditor(p, site_id);
 
-    return p.ui.loading;
+    return <Loading note="editor-root" />;
   }
 
   routeEditor(p, page_id);
@@ -95,7 +95,7 @@ export const Editor: FC<{ site_id: string; page_id: string; session: any }> = ({
       return p.ui.error;
     }
 
-    return p.ui.loading;
+    return <Loading note={p.status} />;
   }
 
   return <EMainEditor />;

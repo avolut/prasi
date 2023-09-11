@@ -83,7 +83,7 @@ export const editorWS = async (p: PG) => {
           p.wsPing = -1;
           p.softRender.topR();
         }
-      }, 2000);
+      }, 5000);
       ws.addEventListener("message", async (e) => {
         const msg = JSON.parse(e.data) as WS_MSG;
 
