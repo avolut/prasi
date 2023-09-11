@@ -73,9 +73,11 @@ export const createElProp = (
             }
           }
         } else {
-          p.item.active = instance.id;
-          p.render();
-          return;
+          if (p.comp?.item.id !== instance.id) {
+            p.item.active = instance.id;
+            p.render();
+            return;
+          }
         }
       } else if (p.comp?.id) {
         p.comp = null;
