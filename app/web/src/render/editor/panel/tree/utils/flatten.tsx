@@ -12,7 +12,12 @@ export type NodeContent = {
   content: IContent;
   idx: number;
 };
-export const flattenTree = (p: PG, content: MRoot | MItem | undefined) => {
+export const flattenTree = (
+  p: PG,
+  content: MRoot | MItem | undefined,
+  isRootComponent?: boolean,
+  rootParent?: any
+) => {
   const result: NodeModel<NodeContent>[] = [];
   if (content && p.page) {
     const walk = (mitem: MContent, parent_id: string, idx: number) => {
@@ -28,7 +33,12 @@ export const flattenTree = (p: PG, content: MRoot | MItem | undefined) => {
       }
       result.push({
         id: item.id,
-        parent: parent_id,
+        parent:
+          parent_id === "root"
+            ? parent_id
+            : rootParent
+            ? rootParent
+            : parent_id,
         text: item.name,
         data: { content: item, idx },
       });
@@ -36,7 +46,8 @@ export const flattenTree = (p: PG, content: MRoot | MItem | undefined) => {
       if (
         item.type === "item" &&
         item.component?.id &&
-        item.component?.id !== p.comp?.id
+        item.component?.id !== p.comp?.id &&
+        !isRootComponent
       ) {
         const itemComp = mitem.get("component");
         let itemProp = itemComp?.get("props");

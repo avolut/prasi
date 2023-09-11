@@ -5,7 +5,7 @@ import { Tooltip } from "../../../../utils/ui/tooltip";
 import { EditorGlobal } from "../../logic/global";
 import { ETreeBody } from "./body";
 import { NodeContent, flattenTree } from "./utils/flatten";
-import { fuzzyMatch } from "./utils/search";
+import { search } from "./utils/search";
 
 export const ETree = () => {
   const p = useGlobal(EditorGlobal, "EDITOR");
@@ -40,10 +40,12 @@ export const ETree = () => {
     } else if (p.mpage) {
       tree = flattenTree(p, p.mpage.getMap("map").get("content_tree"));
     }
-    tree = tree.filter((e) => fuzzyMatch(local.search, e.text));
-    tree.map((item) => {
-      item.parent = "root";
-    });
+    tree = search(
+      p,
+      { ...local.searchTypes, searchDeep: local.searchDeep },
+      local.search,
+      tree
+    );
   }
 
   return (
