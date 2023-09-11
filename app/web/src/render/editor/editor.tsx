@@ -61,7 +61,9 @@ export const Editor: FC<{ site_id: string; page_id: string; session: any }> = ({
 
   useEffect(() => {
     if (p.status !== "init" && w.prasiApi) {
+      console.log("eh");
       for (const [k, v] of Object.entries(deepClone(EditorGlobal))) {
+        if (k === "session") continue;
         (p as any)[k] = v;
       }
 
@@ -100,7 +102,7 @@ export const Editor: FC<{ site_id: string; page_id: string; session: any }> = ({
       return p.ui.error;
     }
 
-    return <Loading note={p.status} />;
+    return <Loading note={`page-${p.status}`} />;
   }
 
   return <EMainEditor />;

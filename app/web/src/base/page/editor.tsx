@@ -24,6 +24,7 @@ export default page({
           return;
         }
         local.session = e;
+
         if (!site_id) {
           const res = await db.site.findFirst({
             where: {
@@ -76,6 +77,7 @@ export default page({
           }
 
           if (res) {
+            local.loading = false;
             navigate(`/editor/${site_id}/${res.id}`);
           }
         } else {
