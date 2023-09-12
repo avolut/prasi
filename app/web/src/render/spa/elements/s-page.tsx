@@ -13,8 +13,8 @@ export const SPage = () => {
         window.innerWidth > 800 &&
           p.mode === "mobile" &&
           css`
-            border-left: 1px solid #ccc;
-            border-right: 1px solid #ccc;
+            border-left: 1px solid #fafafa;
+            border-right: 1px solid #fafafa;
             max-width: 375px;
             margin: 0px auto;
             top: 0px;

@@ -17,6 +17,9 @@ import { PRASI_COMPONENT } from "../../../utils/types/render";
 import { MPage } from "../../../utils/types/general";
 import { execSiteJS } from "./init";
 
+const conf = {
+  timeout: null as any,
+};
 export const editorWS = async (p: PG) => {
   if (p.ws && p.ws.readyState === p.ws.OPEN) {
     if (p.page) {
@@ -40,6 +43,7 @@ export const editorWS = async (p: PG) => {
     }
 
     wsurl.pathname = "/edit";
+    clearTimeout(conf.timeout);
 
     p.ws = new WebSocket(wsurl);
     const ws = p.ws;
@@ -53,7 +57,9 @@ export const editorWS = async (p: PG) => {
         if (p.wsRetry.fast) {
           editorWS(p);
         } else {
-          setTimeout(() => {
+          clearTimeout(conf.timeout);
+
+          conf.timeout = setTimeout(() => {
             console.log("Reconnecting...");
             editorWS(p);
           }, 5000);
