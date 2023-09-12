@@ -44,15 +44,6 @@ export const serveSPA = async ({
     pathname = routePath;
   }
 
-  console.log(
-    req.query_parameters["pathname"],
-    routePath,
-    pathname,
-    dirs[mode].includes(pathname),
-    dirs.web.includes(pathname) && pathname !== "index.js",
-    dirs.web
-  );
-
   const sendFile = async (path: string) => {
     if (runMode === "dev") {
       res.sendFile(dir.path(path));
@@ -76,6 +67,8 @@ export const serveSPA = async ({
     if (type) {
       res.setHeader("content-type", type);
     }
+    console.log(path, cache[path].length);
+
     res.send(cache[path]);
   };
 
