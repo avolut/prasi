@@ -76,9 +76,13 @@ export const createElProp = (
           if (p.comp.item.id !== instance.id) {
             p.item.active = instance.id;
             p.render();
-            return;
+          } else {
+            p.item.active = item.id;
+            p.softRender.all();
           }
+          return;
         }
+
         if (p.treeMeta[instance.id]) {
           p.item.active = instance.id;
           p.render();
