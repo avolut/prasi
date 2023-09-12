@@ -107,6 +107,9 @@ export const ScriptMonacoElement: FC<{
   const adv = mitem.get("adv");
 
   if (!adv) {
+    if (p.page) {
+      api.page_reload(p.page.id);
+    }
     setTimeout(() => {
       mitem.set("adv", new Y.Map() as any);
       console.log("failed to load adv:", mitem.toJSON());

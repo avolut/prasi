@@ -26,8 +26,14 @@ export const routeEditor = (p: PG, page_id: string) => {
           }
 
           if (loadingCounter[page_id] > 2) {
+            p.status = "reload";
+            p.render();
+            p.mpageLoaded = () => {
+              p.status = "ready";
+              p.render();
+            };
+
             await api.page_reload(page_id);
-            location.reload();
           }
         }
       });

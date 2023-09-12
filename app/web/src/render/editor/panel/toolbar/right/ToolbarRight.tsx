@@ -98,7 +98,7 @@ export const ToolbarRight = () => {
                     onFocus={(e) => {
                       e.currentTarget.select();
                     }}
-                    value={`https://app.prasi.app/site/${p.site.id}/${p.page?.id}`}
+                    value={`https://api.prasi.app/site/${p.site.id}/${p.page?.id}`}
                   />
                 }
               >

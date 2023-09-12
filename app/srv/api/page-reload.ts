@@ -3,9 +3,10 @@ import { Websocket } from "service-srv";
 import { syncronize } from "y-pojo";
 import * as Y from "yjs";
 import { MPage } from "../../web/src/utils/types/general";
-import { WS_MSG_SV_LOCAL } from "../../web/src/utils/types/ws";
+import { WS_MSG_SET_PAGE, WS_MSG_SV_LOCAL } from "../../web/src/utils/types/ws";
 import { eg } from "../edit/edit-global";
 import { loadPage } from "../edit/tools/load-page";
+import { getPage } from "../edit/action/get-page";
 
 export const _ = {
   url: "/page-reload/:page_id",
@@ -24,7 +25,7 @@ export const _ = {
           );
           const broadcast: WS_MSG_SV_LOCAL = {
             type: "sv_local",
-            sv_local, 
+            sv_local,
             mode: "page",
             id: page_id,
           };
@@ -37,6 +38,14 @@ export const _ = {
 
         eg.edit.page[page_id].doc = ydoc;
         eg.edit.page[page_id].undoManager = um;
+
+        eg.edit.page[page_id].ws.forEach((w) => {
+          const sent: WS_MSG_SET_PAGE = {
+            type: "set_page",
+            changes: compress(Y.encodeStateAsUpdate(ydoc as any).toString()),
+          };
+          w.send(JSON.stringify(sent));
+        });
       }
     }
 

@@ -123,6 +123,9 @@ export const editorWS = async (p: PG) => {
                 }
               })
             );
+
+            p.treeMeta = {};
+            p.render();
             if (p.mpageLoaded) {
               p.mpageLoaded(p.mpage);
               p.mpageLoaded = null;
