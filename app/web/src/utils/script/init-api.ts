@@ -18,10 +18,20 @@ export const initApi = async (config: any) => {
   let url = "";
   if (config.prasi) {
     if (
-      location.hostname !== "prasi.app" &&
-      location.hostname !== "localhost"
+      !(
+        location.hostname === "prasi.app" ||
+        location.hostname === "api.prasi.app"
+      ) // android localhost
     ) {
-      url = `http://${location.hostname}:${config.prasi.port}`;
+      if (
+        location.hostname === "localhost" ||
+        location.hostname === "127.0.0.1" ||
+        location.hostname === "10.0.2.2"
+      ) {
+        url = `http://${location.hostname}:${config.prasi.port}`;
+      } else {
+        url = `https://${location.hostname}:${config.prasi.port}`;
+      }
     } else {
       url = `https://${config.prasi.port}.prasi.world`;
     }
