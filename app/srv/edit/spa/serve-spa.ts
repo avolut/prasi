@@ -17,6 +17,7 @@ const etag = {} as Record<string, string>;
 const cache = {} as Record<string, any>;
 const site = {} as Record<string, { raw: string; etag: string; ts: number }>;
 
+const conf = { ts: 0 };
 export const serveSPA = async ({
   mode,
   ctx,
@@ -129,6 +130,10 @@ export const serveSPA = async ({
         await scanComponent(page.content_tree, comps);
       }
 
+      if (!conf.ts) {
+        conf.ts = Date.now();
+      }
+
       const raw =
         cache[index] +
         `\n
@@ -137,6 +142,7 @@ window.siteApiUrl = __SRV_URL__;
 window.prasi_pages = ${JSON.stringify(pages)};
 window.prasi_page = ${JSON.stringify(page)};
 window.prasi_comps = ${JSON.stringify(comps)};
+window.ts = ${conf.ts};
 window.site=${JSON.stringify(
           await db.site.findFirst({
             where: { id: site_id },

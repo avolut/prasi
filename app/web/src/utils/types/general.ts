@@ -30,6 +30,7 @@ export const w = window as unknown as {
   prasiApiDbPull: boolean;
   params: any;
   editorGlbDefault: string;
+  ts: number;
 };
 
 export type Page = {

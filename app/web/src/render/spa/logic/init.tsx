@@ -1,12 +1,12 @@
 import trim from "lodash.trim";
+import React from "react";
+import { apiClient, dbClient } from "web-init";
 import { defineWindow } from "web-init/src/web/define-window";
 import { createAPI, createDB, initApi } from "../../../utils/script/init-api";
 import { PRASI_COMPONENT } from "../../../utils/types/render";
 import { Loading } from "../../../utils/ui/loading";
-import { PG, PrasiOpt } from "./global";
 import importModule from "../../editor/tools/dynamic-import";
-import React from "react";
-import { apiClient, dbClient } from "web-init";
+import { PG, PrasiOpt } from "./global";
 
 const w = window as unknown as {
   basepath: string;
@@ -26,12 +26,14 @@ const w = window as unknown as {
   apiClient: typeof apiClient;
   dbClient: typeof dbClient;
   React: typeof React;
+  ts: number;
 };
 
 export const initSPA = async (p: PG, opt: PrasiOpt) => {
   document.body.style.opacity = "1";
   p.site = w.site;
   p.site.js = w.site.js_compiled || "";
+  w.serverurl = trim(w.serverurl, "/");
 
   p.baseUrl = new URL(trim(opt.baseUrl || location.href, "/ "));
   p.status = "loading";
@@ -104,7 +106,7 @@ export const initSPA = async (p: PG, opt: PrasiOpt) => {
     return _href;
   };
 
-  await importModule(`${serverurl}/npm/site/${w.site.id}/index.js`);
+  await importModule(`${serverurl}/npm/site/${w.site.id}/index.js?${w.ts}`);
   p.site.api_url = await initApi(w.site.config);
 
   const exec = (fn: string, scopes: any) => {
