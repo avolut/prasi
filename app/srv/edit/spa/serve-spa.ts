@@ -38,7 +38,7 @@ export const serveSPA = async ({
   }
 
   let pathname = undefined as undefined | string;
-  if (req.query_parameters["pathname"]) {
+  if (typeof req.query_parameters["pathname"] === "string") {
     pathname = req.query_parameters["pathname"];
   } else {
     pathname = routePath;
