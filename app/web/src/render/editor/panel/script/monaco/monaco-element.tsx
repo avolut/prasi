@@ -335,7 +335,9 @@ export const ScriptMonacoElement: FC<{
                   true
                 );
               }}
-            ></Button>
+            >
+              ClassName
+            </Button>
           </div>
           {/* <div>
             <Button
