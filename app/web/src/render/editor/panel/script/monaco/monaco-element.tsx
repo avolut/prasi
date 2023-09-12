@@ -319,8 +319,23 @@ export const ScriptMonacoElement: FC<{
                 );
               }}
             >
-              Custom CSS
+              CSS
             </Button>
+            <Button
+              onClick={() => {
+                doEdit(
+                  `\
+<div
+  {...props}
+  className={cx(props.className,"custom-class")}
+>
+  {children}
+</div>
+                  `,
+                  true
+                );
+              }}
+            ></Button>
           </div>
           {/* <div>
             <Button
