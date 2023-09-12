@@ -113,20 +113,15 @@ export const SRender: FC<{
     const props = {
       className: className,
       href: href,
+      onPointerDown: (e: any) => {
+        e.stopPropagation();
+        e.preventDefault();
+        navigate(href);
+      },
     };
 
     if (item.type === "text" && _children) {
-      return (
-        <a
-          {...props}
-          onPointerDown={(e) => {
-            e.stopPropagation();
-            e.preventDefault();
-            navigate(href);
-          }}
-          dangerouslySetInnerHTML={{ __html: _children }}
-        />
-      );
+      return <a {...props} dangerouslySetInnerHTML={{ __html: _children }} />;
     }
     return <a {...props}>{_children}</a>;
   }
