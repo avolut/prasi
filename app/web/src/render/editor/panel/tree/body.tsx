@@ -148,7 +148,7 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[]; meta?: any }> = ({
           }
       }
     }
-  }, [p.item.active, local.method, p.comp?.id]);
+  }, [p.item.active, p.comp?.id]);
 
   return (
     <div
@@ -210,9 +210,6 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[]; meta?: any }> = ({
                   depth={depth}
                   isOpen={isOpen}
                   onToggle={() => {
-                    if (isOpen) {
-                      onClick(node);
-                    }
                     onToggle();
                   }}
                   onHover={onHover}
