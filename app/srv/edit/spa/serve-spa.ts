@@ -67,7 +67,6 @@ export const serveSPA = async ({
     if (type) {
       res.setHeader("content-type", type);
     }
-    console.log(path, type, etag[path], cache[path].length);
 
     res.send(cache[path]);
   };
