@@ -28,7 +28,7 @@ export const initApi = async (config: any) => {
         location.hostname === "127.0.0.1" ||
         location.hostname === "10.0.2.2"
       ) {
-        url = `http://${location.hostname}:${config.prasi.port}`;
+        url = `https://${config.prasi.port}.prasi.world`;
       } else {
         url = `https://${location.hostname}:${config.prasi.port}`;
       }

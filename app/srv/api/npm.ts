@@ -2,6 +2,7 @@ import { dir } from "dir";
 import { apiContext } from "service-srv";
 import mime from "mime-types";
 import { readAsync } from "fs-jetpack";
+import crypto from "crypto";
 
 export const _ = {
   url: "/npm/:mode/:id/*",
@@ -19,6 +20,10 @@ export const _ = {
     if (path.length > dir.path(`../npm/${mode}/${id}`).length) {
       const file = await readAsync(path, "buffer");
       if (file) {
+        res.setHeader(
+          "etag",
+          crypto.createHash("md5").update(file).digest("hex")
+        );
         res.setHeader("content-length", file.byteLength.toString());
         res.send(file);
         return;

@@ -56,7 +56,7 @@ export const editorWS = async (p: PG) => {
           setTimeout(() => {
             console.log("Reconnecting...");
             editorWS(p);
-          }, 2000);
+          }, 5000);
         }
       };
       ws.addEventListener("error", (e) => {

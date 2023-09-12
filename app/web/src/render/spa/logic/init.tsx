@@ -25,6 +25,7 @@ const w = window as unknown as {
   prasiApi: any;
   apiClient: typeof apiClient;
   dbClient: typeof dbClient;
+  React: typeof React;
 };
 
 export const initSPA = async (p: PG, opt: PrasiOpt) => {
@@ -55,11 +56,13 @@ export const initSPA = async (p: PG, opt: PrasiOpt) => {
   w.isDesktop = p.mode === "desktop";
   w.apiClient = apiClient;
   w.dbClient = dbClient;
+  w.React = React;
   defineWindow();
 
   if (w.prasi_page) {
     p.page = w.prasi_page;
   }
+
   if (w.prasi_pages) {
     for (const page of w.prasi_pages) {
       if (p.page && page.id === p.page?.id) {
@@ -101,6 +104,7 @@ export const initSPA = async (p: PG, opt: PrasiOpt) => {
     return _href;
   };
 
+  await importModule(`${serverurl}/npm/site/${w.site.id}/index.js`);
   p.site.api_url = await initApi(w.site.config);
 
   const exec = (fn: string, scopes: any) => {
@@ -133,7 +137,7 @@ export const initSPA = async (p: PG, opt: PrasiOpt) => {
       w.exports[k] = v;
     }
   }
-  
+
   p.status = "ready";
   p.render();
 };
