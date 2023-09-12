@@ -84,6 +84,7 @@ export const initSPA = async (p: PG, opt: PrasiOpt) => {
       }
       if (
         location.hostname === "prasi.app" ||
+        location.hostname === "api.prasi.app" ||
         location.hostname === "localhost" ||
         location.hostname === "127.0.0.1" ||
         location.hostname === "10.0.2.2" // android localhost

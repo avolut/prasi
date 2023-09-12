@@ -98,7 +98,9 @@ export const SRender: FC<{
       if (
         (location.pathname.startsWith("/preview/") ||
           location.pathname.startsWith("/site/")) &&
-        ["localhost", "127.0.0.1", "prasi.app"].includes(location.hostname)
+        ["localhost", "127.0.0.1", "prasi.app", "api.prasi.app"].includes(
+          location.hostname
+        )
       ) {
         const parts = location.pathname.split("/");
         if (parts.length >= 3) {
