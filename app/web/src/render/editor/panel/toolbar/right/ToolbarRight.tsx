@@ -126,8 +126,7 @@ export const ToolbarRight = () => {
           `
         )}
       />
-
-      <ResponsiveToggle />
+      {p.site.responsive === "all" && <ResponsiveToggle />}
     </div>
   );
 };

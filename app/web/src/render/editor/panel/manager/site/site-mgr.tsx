@@ -2,7 +2,7 @@ import { org } from "dbgen";
 import { useGlobal, useLocal } from "web-utils";
 import { Loading } from "../../../../../utils/ui/loading";
 import { EditorGlobal } from "../../../logic/global";
-import { SiteForm } from "./SiteForm";
+import { SiteForm } from "./site-form";
 
 export type SiteItem = {
   id: string;
@@ -46,6 +46,7 @@ export const SiteManager = () => {
           id_org: true,
           id: true,
           name: true,
+          responsive: true,
           domain: true,
         },
       });

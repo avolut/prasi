@@ -140,7 +140,13 @@ window.prasi_comps = ${JSON.stringify(comps)};
 window.site=${JSON.stringify(
           await db.site.findFirst({
             where: { id: site_id },
-            select: { id: true, name: true, js_compiled: true, config: true },
+            select: {
+              id: true,
+              name: true,
+              js_compiled: true,
+              config: true,
+              responsive: true,
+            },
           })
         )};\n`;
 

@@ -9,7 +9,19 @@ export const SPage = () => {
   return (
     <div
       className={cx(
-        "flex flex-col items-stretch flex-1 bg-white justify-between"
+        "flex flex-col items-stretch flex-1 bg-white",
+        window.innerWidth > 800 &&
+          p.mode === "mobile" &&
+          css`
+            border-left: 1px solid #ccc;
+            border-right: 1px solid #ccc;
+            max-width: 375px;
+            margin: 0px auto;
+            top: 0px;
+            overflow-x: hidden;
+            overflow-y: auto;
+            bottom: 0px;
+          `
       )}
     >
       {p.page.content_tree.childs.map((e) => (

@@ -73,7 +73,13 @@ export const Editor: FC<{ site_id: string; page_id: string; session: any }> = ({
   }, [page_id]);
 
   if (!p.mode) {
-    p.mode = (localStorage.getItem("editor-mode") || "desktop") as any;
+    if (p.site.responsive === "mobile-only") {
+      p.mode = "mobile";
+    } else if (p.site.responsive === "desktop-only") {
+      p.mode = "desktop";
+    } else {
+      p.mode = (localStorage.getItem("editor-mode") || "desktop") as any;
+    }
   }
 
   if (p.status === "init") {

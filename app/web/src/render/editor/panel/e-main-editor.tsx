@@ -3,7 +3,7 @@ import { EPage } from "../elements/e-page";
 import { editorStyle } from "../elements/style";
 import { EditorGlobal } from "../logic/global";
 import { PageManager } from "./manager/page/page-mgr";
-import { SiteManager } from "./manager/site/SiteManager";
+import { SiteManager } from "./manager/site/site-mgr";
 import { EScriptElement } from "./script/script-element";
 import { ESide } from "./side/Side";
 import { Toolbar } from "./toolbar/Toolbar";

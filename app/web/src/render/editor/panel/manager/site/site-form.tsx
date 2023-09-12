@@ -12,7 +12,10 @@ export const SiteForm: FC<{
   group_id: string;
 }> = ({ site, onClose, onSave, group_id }) => {
   const p = useGlobal(EditorGlobal, "EDITOR");
-  const local = useLocal({ init: false, saving: false });
+  const local = useLocal({
+    init: false,
+    saving: false,
+  });
   const form = useLocal({} as Partial<site>);
 
   if (!local.init) {
@@ -41,11 +44,11 @@ export const SiteForm: FC<{
                   await db.site.create({
                     data: {
                       name: form.name,
-                      colors: {},
                       favicon: "",
                       domain: form.domain || "",
                       id_user: p.session.data.user.id,
                       id_org: group_id,
+                      responsive: form.responsive,
                     },
                   });
                 } catch (e) {
@@ -53,7 +56,11 @@ export const SiteForm: FC<{
                 }
               } else {
                 await db.site.update({
-                  data: { name: form.name, domain: form.domain },
+                  data: {
+                    name: form.name,
+                    domain: form.domain,
+                    responsive: form.responsive,
+                  },
                   where: { id: form.id },
                 });
               }
@@ -96,12 +103,28 @@ export const SiteForm: FC<{
             />
           </label>
 
+          <label>
+            <span>Responsive</span>
+            <select
+              value={form.responsive}
+              onChange={(e) => {
+                form.responsive = e.currentTarget.value as any;
+                local.render();
+              }}
+            >
+              <option value="all">All</option>
+              <option value="mobile-only">Mobile Only</option>
+              <option value="desktop-only">Desktop Only</option>
+            </select>
+          </label>
+          
           {form.id && (
             <label>
               <span>Site ID:</span>
               <Input form={form} name="id" disabled />
             </label>
           )}
+
 
           <div className="flex">
             <button type="submit" disabled={local.saving} className="flex-1">

@@ -63,6 +63,7 @@ export const EditorGlobal = {
       port: "",
       db: "",
     },
+    responsive: "all" as "all" | "mobile-only" | "desktop-only",
     domain: "",
     name: "",
     js: "",

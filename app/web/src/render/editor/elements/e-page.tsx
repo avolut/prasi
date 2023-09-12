@@ -35,7 +35,7 @@ export const EPage = () => {
             ? css`
                 border-left: 1px solid #ccc;
                 border-right: 1px solid #ccc;
-                width: 420px;
+                width: 375px;
                 top: 0px;
                 overflow-x: hidden;
                 overflow-y: auto;

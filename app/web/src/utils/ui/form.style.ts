@@ -21,7 +21,9 @@ export const formStyle = css`
       margin-bottom: 2px;
     }
   }
-  input {
+  
+  input,
+  select {
     border: 3px solid black;
     padding: 3px;
     width: 300px;

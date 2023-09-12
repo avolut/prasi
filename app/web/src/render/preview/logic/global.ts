@@ -12,6 +12,7 @@ export const PreviewGlobal = {
     id: "",
     api_url: "",
     js: "",
+    responsive: "" as "" | "all" | "mobile-only" | "desktop-only",
   },
   mpage: null as null | MPage,
   mpageLoaded: null as null | ((mpage: MPage) => void),

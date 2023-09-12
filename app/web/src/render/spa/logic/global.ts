@@ -20,7 +20,13 @@ export const SPAGlobal = {
   status: "init" as "init" | "ready" | "loading" | "not-found",
   mode: "mobile" as "mobile" | "desktop",
   baseUrl: new URL(location.href),
-  site: { id: "", js: "", npm: "", api_url: "" },
+  site: {
+    id: "",
+    js: "",
+    npm: "",
+    api_url: "",
+    responsive: "" as "" | "all" | "mobile-only" | "desktop-only",
+  },
   treeMeta: {} as Record<
     string,
     {

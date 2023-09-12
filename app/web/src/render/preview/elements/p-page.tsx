@@ -7,7 +7,23 @@ export const PPage = () => {
 
   if (!p.page) return null;
   return (
-    <div className="flex flex-col items-stretch flex-1 bg-white">
+    <div
+      className={cx(
+        "flex flex-col items-stretch flex-1 bg-white",
+        window.innerWidth > 800 &&
+          p.mode === "mobile" &&
+          css`
+            border-left: 1px solid #ccc;
+            border-right: 1px solid #ccc;
+            max-width: 375px;
+            margin: 0px auto;
+            top: 0px;
+            overflow-x: hidden;
+            overflow-y: auto;
+            bottom: 0px;
+          `
+      )}
+    >
       {p.page.content_tree.childs.map((e) => (
         <PSection key={e.id} item={e} />
       ))}

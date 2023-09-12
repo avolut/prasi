@@ -7,7 +7,7 @@ const cache = {
 export const _ = {
   url: "/site/**",
   async api() {
-    const { req, res, mode } = apiContext(this);
+    const { req, mode } = apiContext(this);
     const { pathname, site_id } = matchRoute(req.params._);
 
     if (!site_id) {

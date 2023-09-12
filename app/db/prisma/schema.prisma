@@ -32,7 +32,6 @@ model page {
 model site {
   id             String           @id(map: "site_id") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name           String
-  colors         Json
   favicon        String
   domain         String           @unique(map: "site_domain")
   id_user        String           @db.Uuid
@@ -44,6 +43,7 @@ model site {
   js_compiled    String?          @default("")
   config         Json             @default("{}")
   is_deleted     Boolean          @default(false)
+  responsive     String           @default("all")
   component_site component_site[]
   npm_site       npm_site[]
   page           page[]
