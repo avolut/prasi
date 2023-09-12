@@ -50,8 +50,8 @@ export const Loading: FC<{
       {backdrop !== false && (
         <div
           className={cx(
-            "flex items-center z-40 bg-gray-50 pointer-events-none",
-            "w-screen h-screen fixed transition-all duration-1000",
+            "flex items-center z-40 bg-white pointer-events-none",
+            "w-full h-full fixed transition-all duration-1000",
             typeof show !== "undefined"
               ? show
                 ? "opacity-50"
@@ -73,7 +73,7 @@ export const Loading: FC<{
             className
               ? className
               : backdrop !== false
-              ? "w-screen h-screen fixed"
+              ? "w-full h-full fixed"
               : "",
             typeof show !== "undefined" ? (show ? "" : "hidden") : ""
           )}
@@ -89,7 +89,7 @@ export const Loading: FC<{
             className
               ? className
               : backdrop !== false
-              ? "w-screen h-screen fixed"
+              ? "w-full h-full fixed"
               : "",
             typeof show !== "undefined" ? (show ? "" : "hidden") : ""
           )}
