@@ -66,15 +66,5 @@ export const Preview: FC<{
     routePreview(p, pathname);
   }
 
-  if (p.status !== "ready") {
-    if (p.status === "not-found") {
-      return p.ui.notfound;
-    }
-    if (p.status === "error") {
-      return p.ui.error;
-    }
-    return p.ui.loading;
-  }
-
   return <PPage />;
 };

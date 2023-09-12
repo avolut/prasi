@@ -53,13 +53,5 @@ export const SPrasi: FC<PrasiOpt> = (opt) => {
 
   routeSPA(p, location.pathname.substring(basePath.length));
 
-  if (p.status === "not-found")
-    return (
-      <div className="flex-1 flex items-center justify-center">
-        404 Not Found
-      </div>
-    );
-  if (p.status !== "ready") return <Loading />;
-
   return <SPage />;
 };

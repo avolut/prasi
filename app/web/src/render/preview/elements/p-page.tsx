@@ -5,7 +5,6 @@ import { PSection } from "./p-section";
 export const PPage = () => {
   const p = useGlobal(PreviewGlobal, "PREVIEW");
 
-  if (!p.page) return null;
   return (
     <div
       className={cx(
@@ -24,9 +23,27 @@ export const PPage = () => {
           `
       )}
     >
-      {p.page.content_tree.childs.map((e) => (
-        <PSection key={e.id} item={e} />
-      ))}
+      {p.status !== "ready" ? (
+        <>
+          {p.status === "error"
+            ? p.ui.error
+            : p.status === "not-found"
+            ? p.ui.notfound
+            : p.ui.loading}
+        </>
+      ) : (
+        <>
+          {p.page ? (
+            <>
+              {p.page.content_tree.childs.map((e) => (
+                <PSection key={e.id} item={e} />
+              ))}
+            </>
+          ) : (
+            p.ui.loading
+          )}
+        </>
+      )}
     </div>
   );
 };

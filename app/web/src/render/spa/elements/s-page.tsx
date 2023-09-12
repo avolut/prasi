@@ -5,7 +5,6 @@ import { SSection } from "./s-section";
 export const SPage = () => {
   const p = useGlobal(SPAGlobal, "SPA");
 
-  if (!p.page) return p.ui.loading;
   return (
     <div
       className={cx(
@@ -24,9 +23,27 @@ export const SPage = () => {
           `
       )}
     >
-      {p.page.content_tree.childs.map((e) => (
-        <SSection key={e.id} item={e} />
-      ))}
+      {p.status !== "ready" ? (
+        <>
+          {p.status === "not-found" ? (
+            <>
+              <div className="flex-1 flex items-center justify-center">
+                404 Not Found
+              </div>
+            </>
+          ) : (
+            p.ui.loading
+          )}
+        </>
+      ) : (
+        <>
+          {p.page
+            ? p.page.content_tree.childs.map((e) => (
+                <SSection key={e.id} item={e} />
+              ))
+            : p.ui.loading}
+        </>
+      )}
     </div>
   );
 };
