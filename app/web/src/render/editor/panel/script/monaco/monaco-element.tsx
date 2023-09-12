@@ -46,6 +46,7 @@ export const ScriptMonacoElement: FC<{
   const p = useGlobal(EditorGlobal, "EDITOR");
   const local = useLocal({
     editor: null as null | MonacoEditor,
+    reloading: false,
   });
 
   const script = p.script;
@@ -107,14 +108,13 @@ export const ScriptMonacoElement: FC<{
   const adv = mitem.get("adv");
 
   if (!adv) {
-    if (p.page) {
-      api.page_reload(p.page.id);
+    if (p.page && !local.reloading) {
+      local.reloading = true;
+      api.page_reload(p.page.id).then(() => {
+        local.reloading = false;
+        local.render();
+      });
     }
-    setTimeout(() => {
-      mitem.set("adv", new Y.Map() as any);
-      console.log("failed to load adv:", mitem.toJSON());
-      p.render();
-    }, 100);
 
     return <Loading note="monaco-el" backdrop={false} />;
   }

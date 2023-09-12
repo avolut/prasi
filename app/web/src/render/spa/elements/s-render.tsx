@@ -54,6 +54,7 @@ export const SRender: FC<{
 
   const className = produceCSS(item, { mode: p.mode });
   const adv = item.adv;
+
   if (adv) {
     const html = renderHTML(className, adv);
     if (html) return html;
@@ -90,7 +91,6 @@ export const SRender: FC<{
 
   const linktag = responsiveVal<FNLinkTag>(item, "linktag", p.mode, {});
 
-
   if (linktag && linktag.link) {
     let href = linktag.link || "";
 
@@ -116,7 +116,17 @@ export const SRender: FC<{
     };
 
     if (item.type === "text" && _children) {
-      return <a {...props} dangerouslySetInnerHTML={{ __html: _children }} />;
+      return (
+        <a
+          {...props}
+          onPointerDown={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            navigate(href);
+          }}
+          dangerouslySetInnerHTML={{ __html: _children }}
+        />
+      );
     }
     return <a {...props}>{_children}</a>;
   }
