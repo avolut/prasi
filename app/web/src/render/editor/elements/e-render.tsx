@@ -10,6 +10,7 @@ import { EditorGlobal } from "../logic/global";
 import { ComponentOver, ElProp, createElProp } from "./e-relprop";
 import { ETextInternal } from "./e-text";
 import { scriptExec } from "./script-exec";
+import { loadComponent } from "../logic/comp";
 
 export const ERender: FC<{
   item: IContent;
@@ -44,12 +45,16 @@ export const ERender: FC<{
       if (meta) {
         meta.item = e;
         if (e.type === "item" && e.component?.id) {
-          const mcomp = p.comps.doc[e.component.id]
-            .getMap("map")
-            .get("content_tree");
+          if (!p.comps.doc[e.component.id]) {
+            loadComponent(p, e.component.id);
+          } else {
+            const mcomp = p.comps.doc[e.component.id]
+              .getMap("map")
+              .get("content_tree");
 
-          if (mcomp && meta.mitem.get("name") !== mcomp.get("name")) {
-            meta.mitem.set("name", mcomp.get("name") || "");
+            if (mcomp && meta.mitem.get("name") !== mcomp.get("name")) {
+              meta.mitem.set("name", mcomp.get("name") || "");
+            }
           }
 
           if (!meta.comp) {
