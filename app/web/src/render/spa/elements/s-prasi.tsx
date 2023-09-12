@@ -6,9 +6,11 @@ import parseUA from "ua-parser-js";
 import { Loading } from "../../../utils/ui/loading";
 import { routeSPA } from "../logic/route";
 import { SPage } from "./s-page";
+import { w } from "../logic/window";
 
 export const SPrasi: FC<PrasiOpt> = (opt) => {
   const p = useGlobal(SPAGlobal, "SPA");
+  w.rootRender = p.render;
 
   if (!p.mode) {
     const parsed = parseUA();
@@ -46,6 +48,6 @@ export const SPrasi: FC<PrasiOpt> = (opt) => {
       </div>
     );
   if (p.status !== "ready") return <Loading />;
- 
+
   return <SPage />;
 };

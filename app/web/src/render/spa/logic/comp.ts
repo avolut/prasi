@@ -91,12 +91,8 @@ export const loadComponent = async (
 const loadSingleComponent = (p: PG, comp_id: string) => {
   return new Promise<PRASI_COMPONENT>(async (resolve) => {
     p.comp.pending[comp_id] = resolve;
-    const comp = await db.component.findFirst({
-      where: {
-        id: comp_id,
-      },
-      select: { id: true, name: true, content_tree: true },
-    });
+    const res = await fetch(`${serverurl}/spa-comp/${comp_id}`);
+    const comp = await res.json();
 
     if (comp) {
       p.comp.raw[comp.id] = comp as PRASI_COMPONENT;

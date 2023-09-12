@@ -9,6 +9,9 @@ import { produceCSS } from "../../../utils/css/gen";
 import { responsiveVal } from "../../editor/tools/responsive-val";
 import { SPAGlobal } from "../logic/global";
 import { newPageComp } from "../logic/comp";
+import { extractNavigate, preload } from "../logic/route";
+
+const navExtracted = new Set<string>();
 
 export const SRender: FC<{
   item: IContent;
@@ -55,6 +58,14 @@ export const SRender: FC<{
     const html = renderHTML(className, adv);
     if (html) return html;
     else if (adv.jsBuilt && typeof adv.js === "string" && adv.js.trim()) {
+      if (!navExtracted.has(item.id)) {
+        navExtracted.add(item.id);
+        const navs = extractNavigate(adv.js as string);
+        navs.forEach((n) => {
+          preload(p, n);
+        });
+      }
+
       if (
         adv.js.replace(/\s/g, "") !==
         "<div {...props}>{children}</div>".replace(/\s/g, "")
@@ -81,6 +92,20 @@ export const SRender: FC<{
 
   if (linktag && linktag.link) {
     let href = linktag.link || "";
+
+    if (href.startsWith("/")) {
+      preload(p, href);
+      if (
+        (location.pathname.startsWith("/preview/") ||
+          location.pathname.startsWith("/site/")) &&
+        ["localhost", "127.0.0.1", "prasi.app"].includes(location.hostname)
+      ) {
+        const parts = location.pathname.split("/");
+        if (parts.length >= 3) {
+          href = `/${parts[1]}/${parts[2]}${href}`;
+        }
+      }
+    }
 
     const props = {
       className: className,

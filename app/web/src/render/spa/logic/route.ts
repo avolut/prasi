@@ -5,6 +5,7 @@ import { WS_MSG_GET_PAGE } from "../../../utils/types/ws";
 import { validate } from "uuid";
 import { w } from "../../../utils/types/general";
 import { loadComponent } from "./comp";
+import { PRASI_COMPONENT } from "../../../utils/types/render";
 
 export const pageNpmStatus: Record<string, "loaded" | "loading"> = {};
 
@@ -52,7 +53,7 @@ export const routeSPA = (p: PG, pathname: string) => {
     }
 
     if (page_id) {
-      if (!p.pages[page_id]) {
+      if (!p.pages[page_id] || !p.pages[page_id].content_tree) {
         p.status = "loading";
         loadPage(p, page_id).then(() => {
           p.status = "ready";
@@ -85,8 +86,12 @@ export const routeSPA = (p: PG, pathname: string) => {
 
 export const preload = async (p: PG, pathname: string) => {
   const found = p.route.lookup(pathname);
+
   if (found) {
-    if (!p.pages[found.id] && !p.pagePreload[found.id]) {
+    if (
+      (!p.pages[found.id] || !p.pages[found.id].content_tree) &&
+      !p.pagePreload[found.id]
+    ) {
       p.pagePreload[found.id] = true;
       await loadPage(p, found.id);
     }
@@ -106,15 +111,8 @@ const loadNpmPage = async (id: string) => {
 
 const loadPage = (p: PG, id: string) => {
   return new Promise<void>(async (resolve) => {
-    const page = await db.page.findFirst({
-      where: { id: id },
-      select: {
-        id: true,
-        url: true,
-        content_tree: true,
-        js_compiled: true,
-      },
-    });
+    const res = await fetch(`${serverurl}/spa-page/${id}`);
+    const page = await res.json();
     if (page) {
       pageNpmStatus[page.id] = "loading";
       await loadNpmPage(page.id);
@@ -125,9 +123,11 @@ const loadPage = (p: PG, id: string) => {
         js: page.js_compiled as any,
         content_tree: page.content_tree as any,
       };
-      const comps = await api.comp_scan(id);
-      for (const [k, v] of Object.entries(comps)) {
-        p.comp.raw[k] = v;
+      const res = await fetch(`${serverurl}/comp-scan/${page.id}`);
+      const comps: PRASI_COMPONENT[] = await res.json();
+
+      for (const v of Object.values(comps)) {
+        p.comp.raw[v.id] = v;
       }
       pageNpmStatus[page.id] = "loaded";
     }

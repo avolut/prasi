@@ -1,5 +1,4 @@
 import { css, extractCss } from "goober";
-import { dbClient } from "./db";
 
 export const defineWindow = async (baseurl?: URL) => {
   let w = typeof window === "object" ? window : (globalThis as any);
@@ -58,9 +57,6 @@ export const defineWindow = async (baseurl?: URL) => {
       });
     return result.join(" ");
   };
-
-  w.db = dbClient("db");
-  w.dbClient = dbClient;
 
   w.navigate = (href: string) => {
     let _href = href;

@@ -243,7 +243,7 @@ export const ScriptMonacoElement: FC<{
               onClick={() => {
                 doEdit(
                   `\
-<div {...props}><input /></div>`,
+<input {...props} />`,
                   true
                 );
               }}

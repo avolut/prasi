@@ -25,7 +25,7 @@ export const serveSPA = async ({
   ctx: APIContext;
 }) => {
   const { res, req, mode: runMode } = ctx;
-  let { site_id } = matchRoute(req.params._);
+  let { site_id, pathname: routePath } = matchRoute(req.params._);
 
   res.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT");
   res.setHeader("Access-Control-Allow-Headers", "content-type rid");
@@ -40,6 +40,8 @@ export const serveSPA = async ({
   let pathname = undefined as undefined | string;
   if (req.query_parameters["pathname"]) {
     pathname = req.query_parameters["pathname"];
+  } else {
+    pathname = routePath;
   }
 
   const sendFile = async (path: string) => {
@@ -154,6 +156,10 @@ window.site=${JSON.stringify(
       sendFile(`srv/${mode}/${pathname}`);
     } else if (dirs.web.includes(pathname) && pathname !== "index.js") {
       sendFile(`web/public/${pathname}`);
+    } else {
+      res.setHeader("content-type", "text/javascript");
+      res.setHeader("ETag", site[site_id].etag);
+      res.send(site[site_id].raw);
     }
   } else {
     res.setHeader("content-type", "text/javascript");

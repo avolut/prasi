@@ -1,5 +1,5 @@
 import { validate } from "uuid";
-import { createRouter } from "web-init";
+import { apiClient, createRouter } from "web-init";
 import { createAPI, createDB, initApi } from "../../../utils/script/init-api";
 import importModule from "../../editor/tools/dynamic-import";
 import { PG } from "./global";
@@ -13,6 +13,7 @@ const w = window as unknown as {
   isDesktop: boolean;
   exports: any;
   params: any;
+  apiClient: typeof apiClient;
 };
 
 export const initPreview = async (p: PG, domain: string) => {

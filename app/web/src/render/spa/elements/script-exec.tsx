@@ -1,6 +1,6 @@
 import React, { ReactNode, Suspense, isValidElement, useEffect } from "react";
 import { ErrorBoundary } from "web-init/src/web/error-boundary";
-import { useLocal } from "web-utils";
+import { deepClone, useLocal } from "web-utils";
 import { createAPI, createDB } from "../../../utils/script/init-api";
 import { IContent } from "../../../utils/types/general";
 import { PG } from "../logic/global";
@@ -182,7 +182,7 @@ const createLocal = (arg: {
 
   return ({ name, value, children, effect, hook, cache }) => {
     if (!item.scope) {
-      item.scope = { _id: item.id, ...structuredClone(value), render };
+      item.scope = { _id: item.id, ...deepClone(value), render };
     } else if (cache === false) {
       const page = p.page as any;
 
@@ -192,7 +192,7 @@ const createLocal = (arg: {
       const hash: Set<string> = page.localHash;
       if (!hash.has(item.id)) {
         hash.add(item.id);
-        item.scope = { _id: item.id, ...structuredClone(value), render };
+        item.scope = { _id: item.id, ...deepClone(value), render };
       }
     }
 

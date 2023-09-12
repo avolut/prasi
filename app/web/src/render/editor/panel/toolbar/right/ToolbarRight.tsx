@@ -40,7 +40,7 @@ export const ToolbarRight = () => {
             <div className="bg-green-500 w-[10px] h-[10px] rounded-sm"></div>
           )}
 
-          {p.wsPing > 250 && p.wsPing < 1000 &&  (
+          {p.wsPing > 250 && p.wsPing < 1000 && (
             <div className="bg-orange-300 w-[10px] h-[10px] rounded-sm"></div>
           )}
 
@@ -54,7 +54,10 @@ export const ToolbarRight = () => {
           {
             content: "Preview",
             onClick: () => {
-              window.open(`/preview/${p.site.id}/${p.page?.id}`, "_blank");
+              window.open(
+                `https://api.prasi.app/site/${p.site.id}/${p.page?.id}`,
+                "_blank"
+              );
             },
           },
           {
@@ -72,7 +75,7 @@ export const ToolbarRight = () => {
                     onFocus={(e) => {
                       e.currentTarget.select();
                     }}
-                    value={`${location.protocol}//${location.host}/preview/${p.site.id}/${p.page?.id}`}
+                    value={`https://api.prasi.app/site/${p.site.id}/${p.page?.id}`}
                   />
                 }
               >

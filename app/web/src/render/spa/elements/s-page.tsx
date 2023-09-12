@@ -6,7 +6,6 @@ export const SPage = () => {
   const p = useGlobal(SPAGlobal, "SPA");
 
   if (!p.page) return p.ui.loading;
-
   return (
     <div
       className={cx(

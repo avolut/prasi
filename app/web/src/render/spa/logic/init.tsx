@@ -1,9 +1,12 @@
 import trim from "lodash.trim";
 import { defineWindow } from "web-init/src/web/define-window";
-import { initApi } from "../../../utils/script/init-api";
+import { createAPI, createDB, initApi } from "../../../utils/script/init-api";
 import { PRASI_COMPONENT } from "../../../utils/types/render";
 import { Loading } from "../../../utils/ui/loading";
 import { PG, PrasiOpt } from "./global";
+import importModule from "../../editor/tools/dynamic-import";
+import React from "react";
+import { apiClient, dbClient } from "web-init";
 
 const w = window as unknown as {
   basepath: string;
@@ -18,6 +21,10 @@ const w = window as unknown as {
   prasi_page: any;
   prasi_pages: any[];
   prasi_comps: Record<string, PRASI_COMPONENT>;
+  api: any;
+  prasiApi: any;
+  apiClient: typeof apiClient;
+  dbClient: typeof dbClient;
 };
 
 export const initSPA = async (p: PG, opt: PrasiOpt) => {
@@ -42,9 +49,12 @@ export const initSPA = async (p: PG, opt: PrasiOpt) => {
     </div>
   );
 
+  w.exports = {};
   w.isEditor = false;
   w.isMobile = p.mode === "mobile";
   w.isDesktop = p.mode === "desktop";
+  w.apiClient = apiClient;
+  w.dbClient = dbClient;
   defineWindow();
 
   if (w.prasi_page) {
@@ -79,18 +89,50 @@ export const initSPA = async (p: PG, opt: PrasiOpt) => {
         location.hostname === "10.0.2.2" // android localhost
       ) {
         if (
-          location.pathname.startsWith("/preview") &&
-          !_href.startsWith("/preview")
+          location.pathname.startsWith("/site") &&
+          !_href.startsWith("/site")
         ) {
           const patharr = location.pathname.split("/");
-          _href = `/preview/${patharr[2]}${_href}`;
+          _href = `/site/${patharr[2]}${_href}`;
         }
       }
     }
     return _href;
   };
 
-  p.status = "ready";
   p.site.api_url = await initApi(w.site.config);
+
+  const exec = (fn: string, scopes: any) => {
+    if (p) {
+      scopes["api"] = createAPI(p.site.api_url);
+      scopes["db"] = createDB(p.site.api_url);
+      scopes.params = w.params;
+      scopes.module = {};
+      const f = new Function(...Object.keys(scopes), fn);
+      const res = f(...Object.values(scopes));
+      return res;
+    }
+    return null;
+  };
+  const scope = {
+    types: {},
+    exports: w.exports,
+    load: importModule,
+    render: p.render,
+    isEditor: false,
+    module: {
+      exports: {} as any,
+    },
+    React: React,
+  };
+  exec(p.site.js, scope);
+
+  if (scope.module.exports) {
+    for (const [k, v] of Object.entries(scope.module.exports)) {
+      w.exports[k] = v;
+    }
+  }
+  
+  p.status = "ready";
   p.render();
 };

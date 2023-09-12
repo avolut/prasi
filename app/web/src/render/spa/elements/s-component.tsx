@@ -8,6 +8,7 @@ import { PG, SPAGlobal } from "../logic/global";
 import { SItem } from "./s-item";
 import { SRender } from "./s-render";
 import { SText } from "./s-text";
+import { extractNavigate, preload } from "../logic/route";
 
 export const SComponent: FC<{
   item: IItem;
@@ -70,6 +71,22 @@ export const getRenderPropVal = (
     if (p) {
       scopes["api"] = createAPI(p.site.api_url);
       scopes["db"] = createDB(p.site.api_url);
+
+      if (key.includes("url") || key.includes("href") || key.includes("link")) {
+        try {
+          let url = "";
+          eval(`url = ${fn}`);
+          if (typeof url === "string" && url.startsWith("/")) {
+            preload(p, url);
+          }
+        } catch (e) {}
+      }
+      if (fn.includes("navigate(") && p.route) {
+        const navs = extractNavigate(fn);
+        for (const n of navs) {
+          preload(p, n);
+        }
+      }
 
       const f = new Function(...Object.keys(scopes), `return ${fn}`);
       const res = f(...Object.values(scopes));

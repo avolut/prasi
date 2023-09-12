@@ -1,5 +1,5 @@
 import trim from "lodash.trim";
-
+import type { dbClient } from "web-init";
 const w = window as unknown as {
   prasiApi: Record<string, any>;
   apiHeaders: any;
@@ -10,7 +10,8 @@ export const createAPI = (url: string) => {
 };
 
 export const createDB = (url: string) => {
-  return (window as any).dbClient("db", url);
+  const dbc: typeof dbClient = (window as any).dbClient;
+  return dbc("db", url);
 };
 
 export const initApi = async (config: any) => {
@@ -27,7 +28,9 @@ export const initApi = async (config: any) => {
   } else if (config.api_url) {
     url = config.api_url;
   }
-  if (!w.prasiApi) w.prasiApi = {};
+  if (!w.prasiApi) {
+    w.prasiApi = {};
+  }
   if (url) {
     if (!w.prasiApi[url]) {
       await reloadDBAPI(url);

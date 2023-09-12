@@ -201,12 +201,26 @@ export const site = {
   args: [],
   handler: import("../../../srv/api/site")
 }
+export const spa_comp = {
+  name: "spa_comp",
+  url: "/spa-comp/:comp_id",
+  path: "app/srv/api/spa-comp.ts",
+  args: ["comp_id"],
+  handler: import("../../../srv/api/spa-comp")
+}
 export const spa_export = {
   name: "spa_export",
   url: "/spa-export/:site_id",
   path: "app/srv/api/spa-export.ts",
   args: ["site_id"],
   handler: import("../../../srv/api/spa-export")
+}
+export const spa_page = {
+  name: "spa_page",
+  url: "/spa-page/:page_id",
+  path: "app/srv/api/spa-page.ts",
+  args: ["page_id"],
+  handler: import("../../../srv/api/spa-page")
 }
 export const spa_raw = {
   name: "spa_raw",

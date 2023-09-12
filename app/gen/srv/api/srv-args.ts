@@ -114,9 +114,17 @@ export const site = {
   url: "/site/**",
   args: [],
 }
+export const spa_comp = {
+  url: "/spa-comp/:comp_id",
+  args: ["comp_id"],
+}
 export const spa_export = {
   url: "/spa-export/:site_id",
   args: ["site_id"],
+}
+export const spa_page = {
+  url: "/spa-page/:page_id",
+  args: ["page_id"],
 }
 export const spa_raw = {
   url: "/spa-raw/**",

@@ -79,6 +79,7 @@ export const createFrameCors = async (url: string, win?: any) => {
             }
           };
           w.addEventListener("message", wm[id]);
+
           iframe.contentWindow.postMessage({ input, init, id }, "*");
         }
       });

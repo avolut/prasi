@@ -10,6 +10,7 @@ export const w = window as unknown as {
   PrasiBaseComponent: FC<PrasiOpt>;
   site: { id: string; js: string; npm: string };
   params: any;
+  rootRender: () => void;
 };
 
 w.prasiContext = {

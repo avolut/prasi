@@ -123,11 +123,13 @@ export const fetchSendDb = async (
 
   const hsum = hash_sum(params);
   const cached = cachedQueryResult[hsum];
+
   if (!cached || (cached && Date.now() - cached.timestamp > 1000)) {
     cachedQueryResult[hsum] = {
       timestamp: Date.now(),
       result: null,
     };
+
     const result = await frm.send(url, params, w.apiHeaders);
     cachedQueryResult[hsum].result = result;
     return result;

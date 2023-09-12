@@ -30,6 +30,14 @@ export const scanComponent = async (
   comps: Record<string, any>
 ) => {
   if (item.type === "item" && item.component?.id) {
+    if (item.component.props) {
+      for (const v of Object.values(item.component.props)) {
+        if (v.content) {
+          await scanComponent(v.content, comps);
+        }
+      }
+    }
+
     if (!comps[item.component.id]) {
       const res = await db.component.findFirst({
         where: { id: item.component.id },
