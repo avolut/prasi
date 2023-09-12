@@ -38,12 +38,20 @@ export const serveSPA = async ({
   }
 
   let pathname = undefined as undefined | string;
-  console.log(req.query_parameters["pathname"], routePath)
   if (typeof req.query_parameters["pathname"] === "string") {
     pathname = req.query_parameters["pathname"];
   } else {
     pathname = routePath;
   }
+
+  console.log(
+    req.query_parameters["pathname"],
+    routePath,
+    pathname,
+    dirs[mode].includes(pathname),
+    dirs.web.includes(pathname) && pathname !== "index.js",
+    dirs.web
+  );
 
   const sendFile = async (path: string) => {
     if (runMode === "dev") {
