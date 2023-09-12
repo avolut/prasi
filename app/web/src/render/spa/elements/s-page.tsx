@@ -20,6 +20,7 @@ export const SPage = () => {
             overflow-x: hidden;
             overflow-y: auto;
             bottom: 0px;
+            contain: content;
           `
       )}
     >
