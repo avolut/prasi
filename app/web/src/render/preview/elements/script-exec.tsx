@@ -191,26 +191,29 @@ const createLocal = (arg: {
 }): LocalFC => {
   const { item, render, p } = arg;
   return ({ name, value, children, effect, hook, cache }) => {
-    const ref = useRef({ ts: 0 });
+    const page = p.page as any;
+
+    if (!page.localHash) {
+      page.localHash = {};
+    }
+    const hash: Record<string, string> = page.localHash;
 
     if (!item.scope) {
       item.scope = { _id: item.id, ...deepClone(value), render };
-    } else if (cache === false) {
-      const page = p.page as any;
-
-      if (!page.localHash) {
-        page.localHash = new Set();
+      if (cache === false) {
+        hash[item.id] = location.pathname;
       }
+    }
 
-      const hash: Set<string> = page.localHash;
-      if (!hash.has(item.id)) {
-        hash.add(item.id);
-
+    if (cache === false) {
+      if (!hash[item.id] && item.scope) {
+        hash[item.id] = location.pathname;
+      }
+      if (hash[item.id] && hash[item.id] !== location.pathname) {
+        hash[item.id] = location.pathname;
         for (const [k, v] of Object.entries(deepClone(value))) {
           item.scope[k] = v;
         }
-
-        ref.current.ts = Date.now();
       }
     }
 
@@ -238,7 +241,7 @@ const createLocal = (arg: {
           return res;
         }
       }
-    }, [ref.current.ts]);
+    }, [hash[item.id]]);
 
     return child as ReactNode;
   };
