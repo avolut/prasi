@@ -26,38 +26,44 @@ export const initEditor = async (p: PG, site_id: string) => {
       return "";
     };
 
-    const site = await db.site.findFirst({
-      where: site_id ? { id: site_id } : { id_user: p.session.data.user.id },
-      select: {
-        id: true,
-        config: true,
-        domain: true,
-        name: true,
-        js: true,
-        responsive: true,
-        js_compiled: true,
-      },
-    });
+    let site = null as any;
+    if (!p.site.id) {
+      site = await db.site.findFirst({
+        where: site_id ? { id: site_id } : { id_user: p.session.data.user.id },
+        select: {
+          id: true,
+          config: true,
+          domain: true,
+          name: true,
+          js: true,
+          responsive: true,
+          js_compiled: true,
+        },
+      });
 
-    if (site) {
-      w.exports = {};
-      await importModule(
-        `${serverurl}/npm/site/${site.id}/index.js?` + Date.now()
-      );
+      if (site) {
+        w.exports = {};
+        await importModule(
+          `${serverurl}/npm/site/${site.id}/index.js?` + Date.now()
+        );
 
-      p.site.id = site.id;
-      p.site.js = site.js || "";
-      p.site.js_compiled = site.js_compiled || "";
-      p.site.name = site.name;
-      p.site.domain = site.domain;
-      p.site.responsive = site.responsive as any;
-      p.site.api_url = await initApi(site.config);
-      p.site_dts = (await api.site_dts(p.site.id)) || "";
-      const configLocal: any = get(site, "config.prasi");
-      if (configLocal) {
-        p.site.api_prasi.db = configLocal.dburl ? configLocal.dburl : "";
-        p.site.api_prasi.port = configLocal.port ? configLocal.port : "";
+        p.site.id = site.id;
+        p.site.js = site.js || "";
+        p.site.js_compiled = site.js_compiled || "";
+        p.site.name = site.name;
+        p.site.domain = site.domain;
+        p.site.responsive = site.responsive as any;
+        p.site.api_url = await initApi(site.config);
+        p.site_dts = (await api.site_dts(p.site.id)) || "";
+        const configLocal: any = get(site, "config.prasi");
+        if (configLocal) {
+          p.site.api_prasi.db = configLocal.dburl ? configLocal.dburl : "";
+          p.site.api_prasi.port = configLocal.port ? configLocal.port : "";
+        }
+      } else {
+        site = p.site;
       }
+      
       execSiteJS(p);
 
       p.status = "ready";

@@ -61,9 +61,8 @@ export const Editor: FC<{ site_id: string; page_id: string; session: any }> = ({
 
   useEffect(() => {
     if (p.status !== "init" && w.prasiApi) {
-      console.log("eh");
       for (const [k, v] of Object.entries(deepClone(EditorGlobal))) {
-        if (k === "session") continue;
+        if (k === "session" || k === "site") continue;
         (p as any)[k] = v;
       }
 
@@ -83,7 +82,7 @@ export const Editor: FC<{ site_id: string; page_id: string; session: any }> = ({
   }
 
   if (p.status === "init") {
-    p.ui.loading = <Loading note="init" />;
+    p.ui.loading = <Loading note="load-page" />;
     p.ui.preload = <Loading note="preload-root" backdrop={false} />;
     p.ui.notfound = (
       <div className="flex-1 flex items-center justify-center">NOT FOUND</div>
@@ -94,8 +93,6 @@ export const Editor: FC<{ site_id: string; page_id: string; session: any }> = ({
       </div>
     );
     initEditor(p, site_id);
-
-    return <Loading note="editor-root" />;
   }
 
   routeEditor(p, page_id);
@@ -107,8 +104,9 @@ export const Editor: FC<{ site_id: string; page_id: string; session: any }> = ({
     if (p.status === "error") {
       return p.ui.error;
     }
-
-    return <Loading note={`page-${p.status}`} />;
+    if (!p.site.id) {
+      return <Loading note="load-site" />;
+    }
   }
 
   return <EMainEditor />;

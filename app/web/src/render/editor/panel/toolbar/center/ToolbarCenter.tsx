@@ -92,29 +92,18 @@ export const ToolbarCenter = () => {
             onLoad={(e) => {
               local.siteJS.editor = e;
             }}
-            onChange={(src, built) => {
+            onChange={(src, compiled) => {
               if (p.site) {
                 p.site.js = src;
-                p.site.js_compiled = built;
+                p.site.js_compiled = compiled;
                 execSiteJS(p);
                 p.render();
               }
               clearTimeout(local.siteJS.timeout);
               local.siteJS.timeout = setTimeout(async () => {
-                await db.site.update({
-                  where: {
-                    id: p.site?.id || "",
-                  },
-                  data: {
-                    js: src,
-                    js_compiled: built,
-                    updated_at: new Date(),
-                  },
-                  select: {
-                    id: true,
-                  },
-                });
-                p.site_dts = (await api.site_dts(p.site.id)) || "";
+                const res = await api.site_edit_js(p.site.id, src, compiled);
+                p.site_dts = res.dts;
+
                 p.render();
                 wsend(
                   p,

@@ -110,6 +110,10 @@ export const site_dts = {
   url: "/site-dts/:site_id",
   args: ["site_id"],
 }
+export const site_edit_js = {
+  url: "/site-edit-js/:site_id",
+  args: ["site_id","src","compiled"],
+}
 export const site = {
   url: "/site/**",
   args: [],

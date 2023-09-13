@@ -18,14 +18,24 @@ export const EMainEditor = () => {
     >
       <Toolbar />
       <div className={cx("editor-box flex flex-row flex-1")}>
-        <ETree />
-        <EPage />
-        <ESide />
+        {p.status !== "ready" ? (
+          p.ui.loading
+        ) : (
+          <>
+            <ETree />
+            <EPage />
+            <ESide />
+          </>
+        )}
       </div>
-      {p.manager.site && <SiteManager />}
-      {p.manager.page && <PageManager />}
-      {p.manager.comp && <CompManager />}
-      {p.script.active && <EScriptElement />}
+      {p.status === "ready" && (
+        <>
+          {p.manager.site && <SiteManager />}
+          {p.manager.page && <PageManager />}
+          {p.manager.comp && <CompManager />}
+          {p.script.active && <EScriptElement />}
+        </>
+      )}
     </div>
   );
 };

@@ -194,6 +194,13 @@ export const site_dts = {
   args: ["site_id"],
   handler: import("../../../srv/api/site-dts")
 }
+export const site_edit_js = {
+  name: "site_edit_js",
+  url: "/site-edit-js/:site_id",
+  path: "app/srv/api/site-edit-js.ts",
+  args: ["site_id","src","compiled"],
+  handler: import("../../../srv/api/site-edit-js")
+}
 export const site = {
   name: "site",
   url: "/site/**",
