@@ -30,6 +30,9 @@ export const routeSPA = (p: PG, pathname: string) => {
 
         if (found.params) {
           for (const [k, v] of Object.entries(found.params)) {
+            if (!w.params) {
+              w.params = {};
+            }
             if (w.params[k] !== v) {
               paramsChanged = true;
             }

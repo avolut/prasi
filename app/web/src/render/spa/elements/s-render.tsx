@@ -92,6 +92,7 @@ export const SRender: FC<{
   const linktag = responsiveVal<FNLinkTag>(item, "linktag", p.mode, {});
 
   if (linktag && linktag.link) {
+    console.log(item);
     let href = linktag.link || "";
 
     if (href.startsWith("/")) {
@@ -113,7 +114,7 @@ export const SRender: FC<{
     const props = {
       className: className,
       href: href,
-      onPointerDown: (e: any) => {
+      onClick: (e: any) => {
         e.stopPropagation();
         e.preventDefault();
         navigate(href);

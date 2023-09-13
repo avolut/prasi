@@ -181,23 +181,34 @@ const createLocal = (arg: {
   const { p, item, render } = arg;
 
   return ({ name, value, children, effect, hook, cache }) => {
+    const page = p.page as any;
+
+    if (!page.localHash) {
+      page.localHash = {};
+    }
+    const hash: Record<string, string> = page.localHash;
+
     if (!item.scope) {
       item.scope = { _id: item.id, ...deepClone(value), render };
-    } else if (cache === false) {
-      const page = p.page as any;
-
-      if (!page.localHash) {
-        page.localHash = new Set();
+      if (cache === false) {
+        hash[item.id] = location.pathname;
       }
-      const hash: Set<string> = page.localHash;
-      if (!hash.has(item.id)) {
-        hash.add(item.id);
-        item.scope = { _id: item.id, ...deepClone(value), render };
+    }
+
+    if (cache === false) {
+      if (!hash[item.id] && item.scope) {
+        hash[item.id] = location.pathname;
+      }
+      if (hash[item.id] && hash[item.id] !== location.pathname) {
+        hash[item.id] = location.pathname;
+        for (const [k, v] of Object.entries(deepClone(value))) {
+          item.scope[k] = v;
+        }
       }
     }
 
     item.scope.render = render;
-
+    
     const local = item.scope;
     let child = children;
     thru(child, { [name]: local });
