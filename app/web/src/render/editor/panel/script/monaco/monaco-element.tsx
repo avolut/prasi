@@ -11,6 +11,9 @@ import { Loading } from "../../../../../utils/ui/loading";
 import { EditorGlobal } from "../../../logic/global";
 import { jsMount } from "./mount";
 import { monacoTypings } from "./typings";
+import { newMap } from "../../../tools/yjs-tools";
+import { TypedMap } from "yjs-types";
+import { FNAdv } from "../../../../../utils/types/meta-fn";
 
 export type MonacoEditor = Parameters<OnMount>[0];
 export const DefaultScript = {
@@ -110,10 +113,10 @@ export const ScriptMonacoElement: FC<{
   if (!adv) {
     if (p.page && !local.reloading) {
       local.reloading = true;
-      api.page_reload(p.page.id).then(() => {
-        local.reloading = false;
-        local.render();
-      });
+      mitem.set(
+        "adv",
+        newMap({ css: "", js: "", html: "", jsBuilt: "" }) as TypedMap<FNAdv>
+      );
     }
 
     return <Loading note="monaco-el" backdrop={false} />;
