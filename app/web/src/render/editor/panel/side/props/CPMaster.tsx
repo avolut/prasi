@@ -260,6 +260,11 @@ const SingleProp: FC<{
             value={prop.idx}
             onClick={(e) => {
               e.stopPropagation();
+              e.currentTarget.select();
+            }}
+            onFocus={(e) => {
+              e.stopPropagation();
+              e.currentTarget.select();
             }}
             onChange={(e) => {
               prop.idx = parseInt(e.currentTarget.value) || 0;

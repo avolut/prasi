@@ -121,6 +121,13 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[]; meta?: any }> = ({
             for (const child of item.childs) {
               walk(child, [...parents, item.id]);
             }
+            if (item.component?.id && item.component.props) {
+              for (const prop of Object.values(item.component.props)) {
+                if (prop.meta?.type === "content-element" && prop.content) {
+                  walk(prop.content, [...parents, item.id]);
+                }
+              }
+            }
           }
         };
         walk(p.comp.content_tree, []);

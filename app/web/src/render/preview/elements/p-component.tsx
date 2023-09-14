@@ -111,6 +111,17 @@ export const getRenderPropVal = (
           content: content,
         };
         shouldEval = false;
+
+        try {
+          const evaled = exec(key, prop.valueBuilt || prop.value, {
+            ...window.exports,
+            ...item.nprops,
+          });
+
+          if (typeof evaled === "object" && evaled._jsx) {
+            val = evaled;
+          }
+        } catch (e) {}
       }
     }
 

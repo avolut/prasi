@@ -7,6 +7,7 @@ import { PG } from "../logic/global";
 import { w } from "../logic/window";
 import { SItem } from "./s-item";
 import { SText } from "./s-text";
+import { IItem } from "../../../utils/types/item";
 
 type JsArg = {
   p: PG;
@@ -73,6 +74,19 @@ const produceEvalArgs = (
     ...item.nprops,
     params: w.params,
   };
+
+  for (const [k, v] of Object.entries(scopeProps)) {
+    if (typeof v === "object") {
+      const c: { _jsx: true; content: IItem } = v as any;
+      if (c !== null && c._jsx && c.content) {
+        c.content.nprops = scopeProps;
+        if (!c.content.name.startsWith("jsx:")) {
+          c.content.name = `jsx:${c.content.name}`;
+        }
+        scopeProps[k] = <SItem item={c.content} />;
+      }
+    }
+  }
 
   const result: any = {
     PassProp,
@@ -208,7 +222,7 @@ const createLocal = (arg: {
     }
 
     item.scope.render = render;
-    
+
     const local = item.scope;
     let child = children;
     thru(child, { [name]: local });

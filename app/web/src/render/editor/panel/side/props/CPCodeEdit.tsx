@@ -26,11 +26,18 @@ export const CPCodeEdit: FC<{
       local.comp = comp;
     }
   }
-  const props = {
+
+  const props: any = {
     ...window.exports,
     ...comp?.nprops,
     ...args,
   };
+  for (const [k, v] of Object.entries(props)) {
+    const item = v as any;
+    if (item._jsx && typeof item.Comp === "function") {
+      props[k] = item.Comp;
+    }
+  }
 
   return (
     <EScriptCustom

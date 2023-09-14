@@ -103,8 +103,28 @@ export const getRenderPropVal = (
     if (prop.meta?.type === "content-element") {
       if (prop.content) {
         prop.content.nprops = item.nprops;
-        val = <SItem item={prop.content} />;
+        const content = prop.content;
+        val = {
+          _jsx: true,
+          content: content,
+        };
         shouldEval = false;
+
+
+        try {
+          const evaled = exec(key, prop.valueBuilt || prop.value, {
+            ...window.exports,
+            ...item.nprops,
+          });
+
+          if (
+            typeof evaled === "object" &&
+            evaled._jsx &&
+            typeof evaled.Comp === "function"
+          ) {
+            val = evaled;
+          }
+        } catch (e) {}
       }
     }
 

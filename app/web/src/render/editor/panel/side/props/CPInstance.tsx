@@ -15,6 +15,7 @@ import { jscript } from "../../script/script-element";
 import { CPCodeEdit } from "./CPCodeEdit";
 import { CPOption } from "./CPOption";
 import { CPText } from "./CPText";
+import { CPJsx } from "./CPJsx";
 
 export const CPInstance: FC<{ mitem: MItem }> = ({ mitem }) => {
   const p = useGlobal(EditorGlobal, "EDITOR");
@@ -23,6 +24,7 @@ export const CPInstance: FC<{ mitem: MItem }> = ({ mitem }) => {
     mprops: null as unknown as TypedMap<Record<string, FMCompDef>>,
     props: {} as Record<string, FNCompDef>,
     visibles: {} as Record<string, string>,
+    jsx: false,
   });
 
   useEffect(() => {
@@ -105,7 +107,13 @@ export const CPInstance: FC<{ mitem: MItem }> = ({ mitem }) => {
             })
             .map(([k, v]) => {
               let mprop = local.mprops.get(k);
-              if (mprop && v.meta?.type !== "content-element") {
+              if (mprop) {
+                if (
+                  !local.jsx &&
+                  mprop.get("meta")?.get("type") === "content-element"
+                )
+                  return;
+
                 const prop = mprop.toJSON() as FNCompDef;
 
                 let visible = true;
@@ -142,6 +150,18 @@ export const CPInstance: FC<{ mitem: MItem }> = ({ mitem }) => {
                 }
               }
             })}
+
+          <div className="p-2 flex items-center justify-center space-x-2">
+            <div
+              className="bg-white border rounded px-3 text-xs cursor-pointer hover:bg-blue-100 active:bg-blue-500 active:text-white"
+              onClick={() => {
+                local.jsx = !local.jsx;
+                local.render();
+              }}
+            >
+              {local.jsx ? "Hide" : "Show"} JSX
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -330,6 +350,19 @@ const SingleProp: FC<{
           </div>
         ) : (
           <div className="flex items-stretch flex-1">
+            {type === "content-element" && (
+              <CPJsx
+                prop={prop}
+                name={name}
+                onChange={updateValue}
+                editCode={(onClose) => {
+                  local.editCode = true;
+                  local.editCodeOnClose = onClose;
+                  local.render();
+                }}
+                reset={reset}
+              />
+            )}
             {type === "text" && (
               <CPText
                 prop={prop}
