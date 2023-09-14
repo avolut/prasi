@@ -93,23 +93,23 @@ export const ToolbarCenter = () => {
               local.siteJS.editor = e;
             }}
             onChange={(src, compiled) => {
-              if (p.site) {
+              if (p.site && p.site.js && p.site.js !== p.site.js_compiled) {
                 p.site.js = src;
                 p.site.js_compiled = compiled;
                 execSiteJS(p);
                 p.render();
-              }
-              clearTimeout(local.siteJS.timeout);
-              local.siteJS.timeout = setTimeout(async () => {
-                const res = await api.site_edit_js(p.site.id, src, compiled);
-                p.site_dts = res.dts;
+                clearTimeout(local.siteJS.timeout);
+                local.siteJS.timeout = setTimeout(async () => {
+                  const res = await api.site_edit_js(p.site.id, src, compiled);
+                  p.site_dts = res.dts;
 
-                p.render();
-                wsend(
-                  p,
-                  JSON.stringify({ type: "sitejs_reload", id: p.site?.id })
-                );
-              }, 1000);
+                  p.render();
+                  wsend(
+                    p,
+                    JSON.stringify({ type: "sitejs_reload", id: p.site?.id })
+                  );
+                }, 1000);
+              }
             }}
             propTypes={{
               exports: "Record<string, any>",
