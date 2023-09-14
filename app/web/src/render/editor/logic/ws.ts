@@ -131,7 +131,7 @@ export const editorWS = async (p: PG) => {
             );
 
             p.treeMeta = {};
-            p.render();
+            render();
             if (p.mpageLoaded) {
               p.mpageLoaded(p.mpage);
               p.mpageLoaded = null;
@@ -145,7 +145,7 @@ export const editorWS = async (p: PG) => {
             for (const meta of Object.values(p.treeMeta)) {
               if (meta.comp) delete meta.comp;
             }
-            p.render();
+            render();
             break;
           case "diff_local": {
             if (msg.mode === "page") {
@@ -235,7 +235,7 @@ export const editorWS = async (p: PG) => {
             p.site.js = msg.js || "";
             execSiteJS(p);
             console.log(`🔥 Site JS Reloaded: ${new Date().toLocaleString()}`);
-            p.render();
+            render();
             break;
           case "undo":
           case "redo":
@@ -243,7 +243,6 @@ export const editorWS = async (p: PG) => {
           case "get_comp":
             console.log(msg);
         }
-
       });
       ws.addEventListener("open", () => {
         p.wsRetry.disabled = false;
