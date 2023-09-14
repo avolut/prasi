@@ -9,6 +9,7 @@ import { ESide } from "./side/Side";
 import { Toolbar } from "./toolbar/Toolbar";
 import { ETree } from "./tree/tree";
 import { CompManager } from "./manager/comp/comp-mgr";
+import { Loading } from "../../../utils/ui/loading";
 
 export const EMainEditor = () => {
   const p = useGlobal(EditorGlobal, "EDITOR");
@@ -19,7 +20,7 @@ export const EMainEditor = () => {
       <Toolbar />
       <div className={cx("editor-box flex flex-row flex-1")}>
         {p.status !== "ready" ? (
-          p.ui.loading
+          <Loading note={`editor-${p.status}`} />
         ) : (
           <>
             <ETree />

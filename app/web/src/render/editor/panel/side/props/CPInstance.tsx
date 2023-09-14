@@ -186,12 +186,14 @@ const SingleProp: FC<{
   const updateValue = async (val: string) => {
     if (jscript.build) {
       const res = await jscript.build("el.tsx", `return ${val}`);
+      let js = val;
+      let jsBuilt = res.substring(6);
       mprop.doc?.transact(() => {
         mprop.set("value", val);
         mprop.set("valueBuilt", res.substring(6));
       });
       const meta = p.treeMeta[p.item.active];
-      if (meta) {
+      if (meta && meta.comp) {
         delete meta.comp;
       }
       render();
