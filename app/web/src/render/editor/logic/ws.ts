@@ -244,7 +244,6 @@ export const editorWS = async (p: PG) => {
             console.log(msg);
         }
 
-        console.log(msg.type);
       });
       ws.addEventListener("open", () => {
         p.wsRetry.disabled = false;
