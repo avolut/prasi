@@ -47,6 +47,8 @@ export default page({
               },
             });
             if (page) {
+              local.loading = false;
+              local.render();
               navigate(`/editor/${res.id}/${page.id}`);
             }
           } else {
@@ -78,6 +80,7 @@ export default page({
 
           if (res) {
             local.loading = false;
+            local.render();
             navigate(`/editor/${site_id}/${res.id}`);
           }
         } else {

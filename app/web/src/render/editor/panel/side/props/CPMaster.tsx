@@ -11,6 +11,7 @@ import { jscript } from "../../script/script-element";
 import { AutoHeightTextarea } from "../panel/link";
 import { CPCoded } from "./CPCoded";
 import { CPCodeEdit } from "./CPCodeEdit";
+import { newMap } from "../../../tools/yjs-tools";
 
 const popover = {
   name: "",
@@ -131,6 +132,55 @@ export const CPMaster: FC<{ mitem: MItem }> = ({ mitem }) => {
               }
               return <></>;
             })}
+          <div className="p-2 flex items-center justify-center space-x-2">
+            <div
+              className="bg-white border rounded px-3 text-xs cursor-pointer hover:bg-blue-100 active:bg-blue-500 active:text-white"
+              onClick={() => {
+                if (p.comp?.id) {
+                  const props = p.comps.doc[p.comp.id]
+                    .getMap("map")
+                    .get("content_tree")
+                    ?.get("component")
+                    ?.get("props")
+                    ?.toJSON();
+                  console.log(props);
+
+                  const str = JSON.stringify(props) + `_prasiprop`;
+                  navigator.clipboard.writeText(str);
+                }
+              }}
+            >
+              Copy All
+            </div>
+            <div
+              className="bg-white border rounded px-3 text-xs cursor-pointer hover:bg-blue-100 active:bg-blue-500 active:text-white"
+              onClick={async () => {
+                if (p.comp?.id) {
+                  const props = p.comps.doc[p.comp.id]
+                    .getMap("map")
+                    .get("content_tree")
+                    ?.get("component")
+                    ?.get("props");
+
+                  let cp = await navigator.clipboard.readText();
+                  if (cp.endsWith("_prasiprop") && props) {
+                    const cprops = JSON.parse(
+                      cp.substring(0, cp.length - `_prasiprop`.length)
+                    ) as Record<string, any>;
+
+                    props.doc?.transact(() => {
+                      for (const [k, v] of Object.entries(cprops)) {
+                        const prop = newMap({ ...(v as any), name: k });
+                        props?.set(k, prop as any);
+                      }
+                    });
+                  }
+                }
+              }}
+            >
+              Paste
+            </div>
+          </div>
         </div>
       </div>
     </div>
