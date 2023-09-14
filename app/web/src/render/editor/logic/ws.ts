@@ -142,7 +142,11 @@ export const editorWS = async (p: PG) => {
             break;
           case "svd_remote":
             svdRemote({ p, bin: extract(msg.diff_remote), msg });
-            render();
+            for (const meta of Object.values(p.treeMeta)) {
+              if (meta.item) delete (meta as any).item;
+              if (meta.comp) delete meta.comp;
+            }
+            p.render();
             break;
           case "diff_local": {
             if (msg.mode === "page") {
@@ -240,6 +244,8 @@ export const editorWS = async (p: PG) => {
           case "get_comp":
             console.log(msg);
         }
+
+        console.log(msg.type);
       });
       ws.addEventListener("open", () => {
         p.wsRetry.disabled = false;

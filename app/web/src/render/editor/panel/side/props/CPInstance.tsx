@@ -9,7 +9,7 @@ import { FMCompDef, FNCompDef } from "../../../../../utils/types/meta-fn";
 import { Menu, MenuItem } from "../../../../../utils/ui/context-menu";
 import { Loading } from "../../../../../utils/ui/loading";
 import { Popover } from "../../../../../utils/ui/popover";
-import { editComp, loadComponent } from "../../../logic/comp";
+import { editComp, loadComponent, newPageComp } from "../../../logic/comp";
 import { EditorGlobal, PG } from "../../../logic/global";
 import { jscript } from "../../script/script-element";
 import { CPCodeEdit } from "./CPCodeEdit";
@@ -188,13 +188,23 @@ const SingleProp: FC<{
       const res = await jscript.build("el.tsx", `return ${val}`);
       let js = val;
       let jsBuilt = res.substring(6);
+
       mprop.doc?.transact(() => {
         mprop.set("value", val);
         mprop.set("valueBuilt", res.substring(6));
       });
+
       const meta = p.treeMeta[p.item.active];
-      if (meta && meta.comp) {
-        delete meta.comp;
+      if (meta.item.type === "item" && meta.item.component) {
+        meta.item.component.props[name].value = js;
+        meta.item.component.props[name].valueBuilt = jsBuilt;
+        const comp = newPageComp(p, meta.item as any);
+        if (comp) {
+          if (comp.nprops) {
+            comp.nprops = comp.nprops;
+          }
+          meta.comp = comp;
+        }
       }
       render();
     }
