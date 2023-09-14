@@ -138,22 +138,20 @@ export const ERender: FC<{
 
     if (html) return html;
     else if (adv.jsBuilt && adv.js) {
-      return (
-        <>
-          {scriptExec(
-            {
-              item,
-              children: _children,
-              p,
-              className,
-              render: p.render,
-              elprop,
-              componentOver,
-            },
-            p.site.api_url
-          )}
-        </>
+      const el = scriptExec(
+        {
+          item,
+          children: _children,
+          p,
+          className,
+          render: p.render,
+          elprop,
+          componentOver,
+        },
+        p.site.api_url
       );
+
+      return el;
     }
   }
 
@@ -172,7 +170,7 @@ export const ERender: FC<{
 
   return (
     <div className={className} {...elprop}>
-      {/* <pre className={"text-[9px] font-mono text-black"}>{item.id}</pre> */}
+      {/* <pre className={"text-[9px] font-mono text-black"}>{item.name}</pre> */}
       {_children}
       {componentOver}
     </div>

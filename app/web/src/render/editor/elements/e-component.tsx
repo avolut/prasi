@@ -158,7 +158,11 @@ export const getRenderPropVal = (
       if (mprop) {
         shouldEval = false;
 
-        const content = mprop.get("content")?.toJSON() as IItem;
+        let content = mprop.get("content")?.toJSON() as IItem;
+        if (!content && prop.content) {
+          content = prop.content;
+        }
+
         if (content) {
           content.nprops = item.nprops;
           val = {
