@@ -9,15 +9,6 @@ export const extractProp = (prop: {
   const props: Record<string, { val?: any; type?: string }> = {};
 
   if (prop) {
-    if (prop.types) {
-      for (const [k, v] of Object.entries(prop.types)) {
-        if (!props[k]) {
-          props[k] = {};
-        }
-        props[k].type = v;
-      }
-    }
-
     if (prop.values) {
       for (const [k, v] of Object.entries(prop.values)) {
         if (!props[k]) {
@@ -40,6 +31,15 @@ export const extractProp = (prop: {
           }
         }
       }
+    }
+  }
+
+  if (prop.types) {
+    for (const [k, v] of Object.entries(prop.types)) {
+      if (!props[k]) {
+        props[k] = {};
+      }
+      props[k].type = v;
     }
   }
 

@@ -54,7 +54,10 @@ export const monacoTypings = async (
     },
   ]);
 
-  const propText = extractProp(prop);
+  const propText = extractProp({
+    values: prop.values,
+    types: { ...prop.types, ...p.script.siteTypes },
+  });
 
   const apiTypes = w.prasiApi[p.site.api_url]
     ? w.prasiApi[p.site.api_url].apiTypes
