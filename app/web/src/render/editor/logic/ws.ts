@@ -143,7 +143,6 @@ export const editorWS = async (p: PG) => {
           case "svd_remote":
             svdRemote({ p, bin: extract(msg.diff_remote), msg });
             for (const meta of Object.values(p.treeMeta)) {
-              if (meta.item) delete (meta as any).item;
               if (meta.comp) delete meta.comp;
             }
             p.render();
