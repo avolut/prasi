@@ -34,7 +34,7 @@ export const CPCodeEdit: FC<{
   };
   for (const [k, v] of Object.entries(props)) {
     const item = v as any;
-    if (item._jsx && typeof item.Comp === "function") {
+    if (item && item._jsx && typeof item.Comp === "function") {
       props[k] = item.Comp;
     }
   }
