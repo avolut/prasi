@@ -44,9 +44,24 @@ export const ETreeRightClick: FC<{
       .findMany({
         where: { component_site: { some: { id_site: p.site.id } } },
       })
-      .then((comps) => {
-        local.compGroups.list = comps;
-        local.render();
+      .then(async (comps) => {
+        if (comps.length === 0) {
+          const res = await db.component_group.create({
+            data: {
+              component_site: {
+                create: {
+                  id_site: p.site?.id || "",
+                },
+              },
+              name: "All",
+            },
+          });
+          local.compGroups.list = [res];
+          local.render();
+        } else {
+          local.compGroups.list = comps;
+          local.render();
+        }
       });
   }
 

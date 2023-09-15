@@ -15,6 +15,11 @@ export const Editor: FC<{ site_id: string; page_id: string; session: any }> = ({
 }) => {
   const p = useGlobal(EditorGlobal, "EDITOR");
 
+  if (p.site.responsive === "mobile-only") {
+    p.mode = "mobile";
+  } else if (p.site.responsive === "desktop-only") {
+    p.mode = "desktop";
+  }
   p.session = session;
 
   useEffect(() => {
