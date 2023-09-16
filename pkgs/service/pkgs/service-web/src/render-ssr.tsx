@@ -20,8 +20,8 @@ export const renderSSR =
           const publicPath = join(dir.path(`${web.name}/public`));
           for (const f of await readdir(publicPath)) {
             if (f.startsWith("index")) {
-              if (f.endsWith(".css")) web.index.css = f;
-              if (f.endsWith(".js")) web.index.js = f;
+              if (f.endsWith(".css") && !web.index.css) web.index.css = f;
+              if (f.endsWith(".js") && !web.index.js) web.index.js = f;
             }
           }
         } catch (e) {}
