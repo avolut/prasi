@@ -47137,7 +47137,8 @@ var init_prasi = __esm({
             }
             let prisma = "";
             {
-              const pdir2 = dir.path(`db/node_modules/.gen/prisma/index.d.ts`);
+              const pdir2 = dir.path(`db/node_modules/.gen/index.d.ts`);
+              console.log(pdir2);
               if (await (0, import_fs_jetpack10.existsAsync)(pdir2)) {
                 prisma = await (0, import_fs_jetpack10.readAsync)(pdir2, "utf8") || "";
               }
@@ -47145,7 +47146,7 @@ var init_prasi = __esm({
             let prismart = "";
             {
               const pdir2 = dir.path(
-                `db/node_modules/.gen/prisma/runtime/index.d.ts`
+                `db/node_modules/.gen/runtime/index.d.ts`
               );
               if (await (0, import_fs_jetpack10.existsAsync)(pdir2)) {
                 prismart = await (0, import_fs_jetpack10.readAsync)(pdir2, "utf8") || "";
@@ -47154,7 +47155,7 @@ var init_prasi = __esm({
             let prismalib = "";
             {
               const pdir2 = dir.path(
-                `db/node_modules/.gen/prisma/runtime/library.d.ts`
+                `db/node_modules/.gen/runtime/library.d.ts`
               );
               if (await (0, import_fs_jetpack10.existsAsync)(pdir2)) {
                 prismalib = await (0, import_fs_jetpack10.readAsync)(pdir2, "utf8") || "";
