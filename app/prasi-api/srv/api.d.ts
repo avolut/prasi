@@ -31,7 +31,6 @@ declare module "pkgs/base/src/scaffold/parser/traverse" {
     export const traverse: (source: string, params: (parent: Visitor) => Partial<InstanceType<typeof Visitor>>) => Promise<void>;
 }
 declare module "app/srv/api/built-in/_parsejs" {
-    import { Expression } from "@swc/core";
     type SelectField = {
         [key: string]: {
             select?: SelectField;
@@ -64,7 +63,7 @@ declare module "app/srv/api/built-in/_prasi" {
 declare module "app/srv/api/built-in/_upload" {
     export const _: {
         url: string;
-        api(site: string): Promise<string[]>;
+        api(body: any): Promise<string>;
     };
 }
 declare module "app/srv/api/built-in/auth/change-password" {
@@ -82,7 +81,7 @@ declare module "app/srv/api/built-in/auth/login" {
         api(username: string, password: string): Promise<{
             status: string;
             session: {
-                id: string;
+                id: any;
             };
             reason?: undefined;
         } | {
