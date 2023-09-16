@@ -55,7 +55,11 @@ export const ToolbarRight = () => {
             content: "Preview",
             onClick: () => {
               window.open(
-                `https://prasi.app/preview/${p.site.id}/${p.page?.id}`,
+                `${
+                  location.hostname === "localhost"
+                    ? "http://localhost:4550"
+                    : "https://prasi.app"
+                }/preview/${p.site.id}/${p.page?.id}`,
                 "_blank"
               );
             },
@@ -75,7 +79,11 @@ export const ToolbarRight = () => {
                     onFocus={(e) => {
                       e.currentTarget.select();
                     }}
-                    value={`https://prasi.app/preview/${p.site.id}/${p.page?.id}`}
+                    value={`${
+                      location.hostname === "localhost"
+                        ? "http://localhost:4550"
+                        : "https://prasi.app"
+                    }/preview/${p.site.id}/${p.page?.id}`}
                   />
                 }
               >
@@ -98,7 +106,11 @@ export const ToolbarRight = () => {
                     onFocus={(e) => {
                       e.currentTarget.select();
                     }}
-                    value={`https://api.prasi.app/site/${p.site.id}/${p.page?.id}`}
+                    value={`${
+                      location.hostname === "localhost"
+                        ? "http://localhost:12300"
+                        : "https://api.prasi.app"
+                    }/site/${p.site.id}/${p.page?.id}`}
                   />
                 }
               >

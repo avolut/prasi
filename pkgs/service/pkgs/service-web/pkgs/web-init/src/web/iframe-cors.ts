@@ -79,7 +79,6 @@ export const createFrameCors = async (url: string, win?: any) => {
             }
           };
           w.addEventListener("message", wm[id]);
-
           iframe.contentWindow.postMessage({ input, init, id }, "*");
         }
       });
@@ -91,21 +90,35 @@ export const createFrameCors = async (url: string, win?: any) => {
       const uri = input.toString();
       const headers = { ..._headers };
 
-      if (!(data instanceof w.FormData || data instanceof w.File)) {
-        headers["content-type"] = "application/json";
-      } else {
-        if (data instanceof w.File) {
-          let ab = await new Promise<ArrayBuffer | undefined>((resolve) => {
-            const reader = new FileReader();
-            reader.addEventListener("load", (e) => {
-              resolve(e.target?.result as ArrayBuffer);
+      let body = data;
+
+      const formatSingle = async (data: any) => {
+        if (!(data instanceof w.FormData || data instanceof w.File)) {
+          headers["content-type"] = "application/json";
+        } else {
+          if (data instanceof w.File) {
+            let ab = await new Promise<ArrayBuffer | undefined>((resolve) => {
+              const reader = new FileReader();
+              reader.addEventListener("load", (e) => {
+                resolve(e.target?.result as ArrayBuffer);
+              });
+              reader.readAsArrayBuffer(data);
             });
-            reader.readAsArrayBuffer(data);
-          });
-          if (ab) {
-            data = new File([ab], data.name);
+            if (ab) {
+              data = new File([ab], data.name);
+            }
           }
         }
+
+        return data instanceof w.FormData || data instanceof w.File
+          ? data
+          : JSON.stringify(data);
+      };
+
+      if (Array.isArray(data)) {
+        body = await Promise.all(data.map((e) => formatSingle(e)));
+      } else {
+        body = await formatSingle(data);
       }
 
       return await sendRaw(
@@ -116,10 +129,7 @@ export const createFrameCors = async (url: string, win?: any) => {
           ? {
               method: "post",
               headers,
-              body:
-                data instanceof w.FormData || data instanceof w.File
-                  ? data
-                  : JSON.stringify(data),
+              body,
             }
           : {}
       );
