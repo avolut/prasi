@@ -47115,6 +47115,7 @@ var init_prasi = __esm({
             } catch (e) {
               return "API entry not found";
             }
+            res.setHeader("content-type", "text/javascript");
             let apiTypes = "";
             const pdir = dir.path("srv/api.d.ts");
             if (await (0, import_fs_jetpack10.existsAsync)(pdir)) {
