@@ -1,6 +1,6 @@
 import { Request, Response } from "hyper-express";
 import { transformSync } from "esbuild";
-
+import crypto from "crypto";
 const frm = { code: "", etag: "" };
 
 export const buildApiFrm = async () => {
@@ -54,6 +54,7 @@ export const buildApiFrm = async () => {
   parent.postMessage('initialized', '*')`,
     { minify: true }
   ).code;
+  frm.etag = crypto.createHash("md5").update(frm.code).digest("hex");
 };
 
 export const apiFrm = (req: Request, res: Response) => {
@@ -67,5 +68,6 @@ export const apiFrm = (req: Request, res: Response) => {
     res.setHeader("Access-Control-Allow-Origin", allowUrl);
   }
 
+  res.setHeader("etag", frm.etag);
   res.send(`<script>${frm.code}</script>`);
 };

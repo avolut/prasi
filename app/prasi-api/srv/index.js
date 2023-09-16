@@ -23309,7 +23309,7 @@ var require_file = __commonJS({
 var require_inspect = __commonJS({
   "node_modules/.pnpm/fs-jetpack@5.1.0/node_modules/fs-jetpack/lib/inspect.js"(exports2) {
     "use strict";
-    var crypto2 = require("crypto");
+    var crypto3 = require("crypto");
     var pathUtil = require("path");
     var fs = require_fs();
     var validate = require_validate();
@@ -23368,7 +23368,7 @@ var require_inspect = __commonJS({
       return obj;
     };
     var fileChecksum = (path, algo) => {
-      const hash = crypto2.createHash(algo);
+      const hash = crypto3.createHash(algo);
       const data = fs.readFileSync(path);
       hash.update(data);
       return hash.digest("hex");
@@ -23401,7 +23401,7 @@ var require_inspect = __commonJS({
     };
     var fileChecksumAsync = (path, algo) => {
       return new Promise((resolve3, reject) => {
-        const hash = crypto2.createHash(algo);
+        const hash = crypto3.createHash(algo);
         const s = fs.createReadStream(path);
         s.on("data", (data) => {
           hash.update(data);
@@ -24745,7 +24745,7 @@ var require_find = __commonJS({
 var require_inspect_tree = __commonJS({
   "node_modules/.pnpm/fs-jetpack@5.1.0/node_modules/fs-jetpack/lib/inspect_tree.js"(exports2) {
     "use strict";
-    var crypto2 = require("crypto");
+    var crypto3 = require("crypto");
     var pathUtil = require("path");
     var inspect2 = require_inspect();
     var list = require_list();
@@ -24782,7 +24782,7 @@ var require_inspect_tree = __commonJS({
       return parentInspectObj.relativePath + "/" + inspectObj.name;
     };
     var checksumOfDir = (inspectList, algo) => {
-      const hash = crypto2.createHash(algo);
+      const hash = crypto3.createHash(algo);
       inspectList.forEach((inspectObj) => {
         hash.update(inspectObj.name + inspectObj[algo]);
       });
@@ -25513,7 +25513,7 @@ var require_tmp_dir = __commonJS({
     "use strict";
     var pathUtil = require("path");
     var os4 = require("os");
-    var crypto2 = require("crypto");
+    var crypto3 = require("crypto");
     var dir2 = require_dir();
     var fs = require_fs();
     var validate = require_validate();
@@ -25542,7 +25542,7 @@ var require_tmp_dir = __commonJS({
     var randomStringLength = 32;
     var tmpDirSync = (cwdPath, passedOptions) => {
       const options = getOptionsDefaults(passedOptions, cwdPath);
-      const randomString = crypto2.randomBytes(randomStringLength / 2).toString("hex");
+      const randomString = crypto3.randomBytes(randomStringLength / 2).toString("hex");
       const dirPath = pathUtil.join(
         options.basePath,
         options.prefix + randomString
@@ -25561,7 +25561,7 @@ var require_tmp_dir = __commonJS({
     var tmpDirAsync = (cwdPath, passedOptions) => {
       return new Promise((resolve3, reject) => {
         const options = getOptionsDefaults(passedOptions, cwdPath);
-        crypto2.randomBytes(randomStringLength / 2, (err, bytes) => {
+        crypto3.randomBytes(randomStringLength / 2, (err, bytes) => {
           if (err) {
             reject(err);
           } else {
@@ -38046,12 +38046,13 @@ var init_dist = __esm({
 });
 
 // pkgs/service/pkgs/service-srv/src/api/api-frm.ts
-var import_esbuild, frm, buildApiFrm, apiFrm;
+var import_esbuild, import_crypto, frm, buildApiFrm, apiFrm;
 var init_api_frm = __esm({
   "pkgs/service/pkgs/service-srv/src/api/api-frm.ts"() {
     "use strict";
     import_esbuild = require("esbuild");
-    frm = { code: "" };
+    import_crypto = __toESM(require("crypto"));
+    frm = { code: "", etag: "" };
     buildApiFrm = async () => {
       frm.code = (0, import_esbuild.transformSync)(
         `  (BigInt.prototype).toJSON = function () {
@@ -38102,6 +38103,7 @@ var init_api_frm = __esm({
   parent.postMessage('initialized', '*')`,
         { minify: true }
       ).code;
+      frm.etag = import_crypto.default.createHash("md5").update(frm.code).digest("hex");
     };
     apiFrm = (req, res) => {
       const allowUrl = req.headers.origin || req.headers.referer;
@@ -38111,6 +38113,7 @@ var init_api_frm = __esm({
       if (allowUrl) {
         res.setHeader("Access-Control-Allow-Origin", allowUrl);
       }
+      res.setHeader("etag", frm.etag);
       res.send(`<script>${frm.code}</script>`);
     };
   }
@@ -48536,10 +48539,10 @@ var prasi_exports = {};
 __export(prasi_exports, {
   _: () => _5
 });
-var import_crypto, import_fs_jetpack10, cache2, _5;
+var import_crypto2, import_fs_jetpack10, cache2, _5;
 var init_prasi = __esm({
   "app/srv/api/built-in/_prasi.ts"() {
-    import_crypto = __toESM(require("crypto"));
+    import_crypto2 = __toESM(require("crypto"));
     init_export();
     import_fs_jetpack10 = __toESM(require_main2());
     init_export6();
@@ -48553,7 +48556,7 @@ var init_prasi = __esm({
           if (!cache2[name])
             cache2[name] = {
               content,
-              etag: import_crypto.default.createHash("md5").update(content).digest("hex")
+              etag: import_crypto2.default.createHash("md5").update(content).digest("hex")
             };
           res.setHeader("etag", cache2[name].etag);
           res.send(cache2[name].content);
