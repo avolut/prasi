@@ -9,8 +9,10 @@ export const _ = {
     const { req, res } = apiContext(this);
 
     glb.prasiSrv.status[site_id] = "destroying";
-    const proc = glb.prasiSrv.running[site_id];
-    proc?.kill();
+    try {
+      const proc = glb.prasiSrv.running[site_id];
+      proc?.kill();
+    } catch (e) {}
 
     await removeAsync(dir.path(`../prasi-api/${site_id}`));
     await db.site.update({
