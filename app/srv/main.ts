@@ -36,6 +36,10 @@ export const main = createAPIServer({
             glb.prasiSrv.running[site.id] = $({
               cwd: root,
             })`node app.js`;
+
+            glb.prasiSrv.running[site.id].on("exit", () => {
+              glb.prasiSrv.status[site.id] = "stopped";
+            });
           }
           glb.prasiSrv.status[site.id] = "started";
           console.log(` > Site ${site.name}: ${prasi.port}.prasi.world`);
