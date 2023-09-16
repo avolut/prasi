@@ -1,8 +1,11 @@
 import { createId as cuid } from "@paralleldrive/cuid2";
-import { FC, useEffect } from "react";
-import { HexAlphaColorPicker } from "react-colorful";
+import { FC, Suspense, lazy, useEffect } from "react";
 import tinycolor from "tinycolor2";
 import { useLocal } from "web-utils";
+
+const HexAlphaColorPicker = lazy(async () => {
+  return { default: (await import("react-colorful")).HexAlphaColorPicker };
+});
 
 export const FieldPickColor: FC<{
   value?: string;
@@ -45,17 +48,19 @@ export const FieldPickColor: FC<{
           e.preventDefault();
         }}
       >
-        <HexAlphaColorPicker
-          color={meta.inputValue}
-          onChange={(color) => {
-            if (color) {
-              meta.inputValue = color;
-              onChangePicker(color);
-              const convertColor = tinycolor(meta.inputValue);
-              meta.rgbValue = convertColor.toRgbString();
-            }
-          }}
-        />
+        <Suspense>
+          <HexAlphaColorPicker
+            color={meta.inputValue}
+            onChange={(color) => {
+              if (color) {
+                meta.inputValue = color;
+                onChangePicker(color);
+                const convertColor = tinycolor(meta.inputValue);
+                meta.rgbValue = convertColor.toRgbString();
+              }
+            }}
+          />
+        </Suspense>
       </div>
       <div
         className={cx(

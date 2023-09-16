@@ -1,15 +1,37 @@
+import { Suspense, lazy } from "react";
 import { useGlobal } from "web-utils";
-import { EPage } from "../elements/e-page";
+import { Loading } from "../../../utils/ui/loading";
 import { editorStyle } from "../elements/style";
 import { EditorGlobal } from "../logic/global";
-import { PageManager } from "./manager/page/page-mgr";
-import { SiteManager } from "./manager/site/site-mgr";
-import { EScriptElement } from "./script/script-element";
-import { ESide } from "./side/Side";
 import { Toolbar } from "./toolbar/Toolbar";
-import { ETree } from "./tree/tree";
-import { CompManager } from "./manager/comp/comp-mgr";
-import { Loading } from "../../../utils/ui/loading";
+
+const ETree = lazy(async () => ({
+  default: (await import("./tree/tree")).ETree,
+}));
+
+const EPage = lazy(async () => ({
+  default: (await import("../elements/e-page")).EPage,
+}));
+
+const ESide = lazy(async () => ({
+  default: (await import("./side/Side")).ESide,
+}));
+
+const PageManager = lazy(async () => ({
+  default: (await import("./manager/page/page-mgr")).PageManager,
+}));
+
+const EScriptElement = lazy(async () => ({
+  default: (await import("./script/script-element")).EScriptElement,
+}));
+
+const SiteManager = lazy(async () => ({
+  default: (await import("./manager/site/site-mgr")).SiteManager,
+}));
+
+const CompManager = lazy(async () => ({
+  default: (await import("./manager/comp/comp-mgr")).CompManager,
+}));
 
 export const EMainEditor = () => {
   const p = useGlobal(EditorGlobal, "EDITOR");
@@ -23,19 +45,21 @@ export const EMainEditor = () => {
           <Loading note={`editor-${p.status}`} />
         ) : (
           <>
-            <ETree />
-            <EPage />
-            <ESide />
+            <Suspense fallback={<Loading note={`editor-lazy`} />}>
+              <ETree />
+              <EPage />
+              <ESide />
+            </Suspense>
           </>
         )}
       </div>
       {p.status === "ready" && (
-        <>
+        <Suspense fallback={<Loading note={`toolbar`} />}>
           {p.manager.site && <SiteManager />}
           {p.manager.page && <PageManager />}
           {p.manager.comp && <CompManager />}
           {p.script.active && <EScriptElement />}
-        </>
+        </Suspense>
       )}
     </div>
   );
