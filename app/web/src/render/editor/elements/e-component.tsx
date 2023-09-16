@@ -99,8 +99,12 @@ export const EComponent: FC<{
     getRenderPropVal(props, item, p, instance);
   }
 
+  const citem = comp.content_tree as IItem;
+  citem.id = item.id;
+  citem.component = item.component;
+  citem.nprops = item.nprops;
   return (
-    <ERender item={item} instance={instance}>
+    <ERender item={citem} instance={instance}>
       {(childs) => {
         return childs.map((e) => {
           if (e.type === "item")

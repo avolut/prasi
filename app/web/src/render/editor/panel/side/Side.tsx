@@ -26,7 +26,15 @@ export const ESide = () => {
   const update = useCallback(
     (key: string, value: any) => {
       if (p.item.active) {
-        let mitem = p.treeMeta[p.item.active].mitem as TypedMap<any>;
+        const meta = p.treeMeta[p.item.active];
+        let mitem = meta.mitem as TypedMap<any>;
+
+        if (p.comp?.item.id === p.item.active) {
+          mitem = p.comps.doc[p.comp?.id]
+            .getMap("map")
+            .get("content_tree") as MItem;
+        }
+
         if (p.mode === "mobile") {
           let mobile = mitem.get("mobile");
           if (!mobile) {

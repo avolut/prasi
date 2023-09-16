@@ -24,24 +24,7 @@ export const flattenTree = (
       if (!mitem || !mitem.toJSON) {
         return;
       }
-      const item = mitem.toJSON() as IContent;
-      if (!p.treeMeta[item.id]) {
-        p.treeMeta[item.id] = {
-          mitem: mitem,
-          item,
-        };
-      }
-      result.push({
-        id: item.id,
-        parent:
-          parent_id === "root"
-            ? parent_id
-            : rootParent
-            ? rootParent
-            : parent_id,
-        text: item.name,
-        data: { content: item, idx },
-      });
+      let item = mitem.toJSON() as IContent;
 
       if (
         item.type === "item" &&
@@ -59,6 +42,7 @@ export const flattenTree = (
         if (!master) {
           return;
         }
+
         const masterComp = master.get("content_tree")?.get("component");
 
         if (!masterComp) {
@@ -126,6 +110,24 @@ export const flattenTree = (
           .get("childs")
           ?.forEach((e: MContent, idx) => walk(e, item.id, idx));
       }
+
+      if (!p.treeMeta[item.id]) {
+        p.treeMeta[item.id] = {
+          mitem: mitem,
+          item,
+        };
+      }
+      result.push({
+        id: item.id,
+        parent:
+          parent_id === "root"
+            ? parent_id
+            : rootParent
+            ? rootParent
+            : parent_id,
+        text: item.name,
+        data: { content: item, idx },
+      });
     };
 
     const type = (content as any).get("type");

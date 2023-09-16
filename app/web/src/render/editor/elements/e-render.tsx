@@ -16,8 +16,10 @@ export const ERender: FC<{
   item: IContent;
   children?: (childs: (IItem | IText)[]) => ReactNode;
   instance?: { id: string; cid: string };
-}> = ({ item, children, instance }) => {
+}> = ({ item: _item, children, instance }) => {
   const p = useGlobal(EditorGlobal, "EDITOR");
+
+  let item = _item;
 
   const childs = (item.type !== "text" ? item.childs || [] : [])
     .filter((e) => {
