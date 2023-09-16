@@ -5,6 +5,7 @@ import trim from "lodash.trim";
 import { EditorGlobal } from "../../../../logic/global";
 import { Loading } from "../../../../../../utils/ui/loading";
 import { w } from "../../../../../../utils/types/general";
+import { reloadDBAPI } from "../../../../../../utils/script/init-api";
 
 export const InternalAPI: FC<{
   close: () => void;
@@ -163,27 +164,7 @@ export const InternalAPI: FC<{
                         config.api_url = `https://${p.site.api_prasi.port}.prasi.world`;
 
                         const base = trim(config.api_url, "/");
-                        const apiTypes = await fetch(
-                          base + "/_prasi/api-types"
-                        );
-                        const apiEntry = await fetch(
-                          base + "/_prasi/api-entry"
-                        );
-                        w.prasiApi[config.api_url] = {
-                          apiEntry: (await apiEntry.json()).srv,
-                          prismaTypes: {
-                            "prisma.d.ts": await loadText(
-                              `${base}/_prasi/prisma/index.d.ts`
-                            ),
-                            "runtime/index.d.ts": await loadText(
-                              `${base}/_prasi/prisma/runtime/index.d.ts`
-                            ),
-                            "runtime/library.d.ts": await loadText(
-                              `${base}/_prasi/prisma/runtime/library.d.ts`
-                            ),
-                          },
-                          apiTypes: await apiTypes.text(),
-                        };
+                        await reloadDBAPI(base);
                       }
                     } catch (e) {
                       console.log(e);

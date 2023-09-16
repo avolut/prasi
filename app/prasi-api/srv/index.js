@@ -1656,12 +1656,12 @@ var require_lodash2 = __commonJS({
         throw new TypeError(FUNC_ERROR_TEXT);
       }
       var memoized = function() {
-        var args = arguments, key = resolver ? resolver.apply(this, args) : args[0], cache3 = memoized.cache;
-        if (cache3.has(key)) {
-          return cache3.get(key);
+        var args = arguments, key = resolver ? resolver.apply(this, args) : args[0], cache2 = memoized.cache;
+        if (cache2.has(key)) {
+          return cache2.get(key);
         }
         var result = func.apply(this, args);
-        memoized.cache = cache3.set(key, result);
+        memoized.cache = cache2.set(key, result);
         return result;
       };
       memoized.cache = new (memoize.Cache || MapCache)();
@@ -3407,7 +3407,7 @@ var require_sender = __commonJS({
         const perMessageDeflate = this._extensions[PerMessageDeflate.extensionName];
         this._bufferedBytes += options[kByteLength];
         this._deflating = true;
-        perMessageDeflate.compress(data, options.fin, (_12, buf) => {
+        perMessageDeflate.compress(data, options.fin, (_11, buf) => {
           if (this._socket.destroyed) {
             const err = new Error(
               "The socket was closed while data was being compressed"
@@ -3713,7 +3713,7 @@ var require_extension = __commonJS({
       else
         dest[name].push(elem);
     }
-    function parse2(header) {
+    function parse(header) {
       const offers = /* @__PURE__ */ Object.create(null);
       let params = /* @__PURE__ */ Object.create(null);
       let mustUnescape = false;
@@ -3868,7 +3868,7 @@ var require_extension = __commonJS({
         }).join(", ");
       }).join(", ");
     }
-    module2.exports = { format, parse: parse2 };
+    module2.exports = { format, parse };
   }
 });
 
@@ -3900,7 +3900,7 @@ var require_websocket = __commonJS({
     var {
       EventTarget: { addEventListener, removeEventListener }
     } = require_event_target();
-    var { format, parse: parse2 } = require_extension();
+    var { format, parse } = require_extension();
     var { toBuffer } = require_buffer_util();
     var closeTimeout = 30 * 1e3;
     var kAborted = Symbol("kAborted");
@@ -4575,7 +4575,7 @@ var require_websocket = __commonJS({
           }
           let extensions;
           try {
-            extensions = parse2(secWebSocketExtensions);
+            extensions = parse(secWebSocketExtensions);
           } catch (err) {
             const message = "Invalid Sec-WebSocket-Extensions header";
             abortHandshake(websocket, socket, message);
@@ -4745,7 +4745,7 @@ var require_subprotocol = __commonJS({
   "node_modules/.pnpm/ws@8.12.1/node_modules/ws/lib/subprotocol.js"(exports2, module2) {
     "use strict";
     var { tokenChars } = require_validation();
-    function parse2(header) {
+    function parse(header) {
       const protocols = /* @__PURE__ */ new Set();
       let start = -1;
       let end = -1;
@@ -4784,7 +4784,7 @@ var require_subprotocol = __commonJS({
       protocols.add(protocol);
       return protocols;
     }
-    module2.exports = { parse: parse2 };
+    module2.exports = { parse };
   }
 });
 
@@ -13048,7 +13048,7 @@ var require_parse = __commonJS({
     }
     exports2.isTraversal = isTraversal;
     var stripQuotesFromPseudos = /* @__PURE__ */ new Set(["contains", "icontains"]);
-    function funescape(_12, escaped, escapedWhitespace) {
+    function funescape(_11, escaped, escapedWhitespace) {
       var high = parseInt(escaped, 16) - 65536;
       return high !== high || escapedWhitespace ? escaped : high < 0 ? (
         // BMP codepoint
@@ -13067,7 +13067,7 @@ var require_parse = __commonJS({
     function isWhitespace(c) {
       return c === 32 || c === 9 || c === 10 || c === 12 || c === 13;
     }
-    function parse2(selector) {
+    function parse(selector) {
       var subselects = [];
       var endIndex = parseSelector(subselects, "".concat(selector), 0);
       if (endIndex < selector.length) {
@@ -13075,7 +13075,7 @@ var require_parse = __commonJS({
       }
       return subselects;
     }
-    exports2.parse = parse2;
+    exports2.parse = parse;
     function parseSelector(subselects, selector, selectorIndex) {
       var tokens = [];
       function getName(offset) {
@@ -13829,7 +13829,7 @@ var require_parse2 = __commonJS({
     var whitespace = /* @__PURE__ */ new Set([9, 10, 12, 13, 32]);
     var ZERO = "0".charCodeAt(0);
     var NINE = "9".charCodeAt(0);
-    function parse2(formula) {
+    function parse(formula) {
       formula = formula.trim().toLowerCase();
       if (formula === "even") {
         return [2, 0];
@@ -13881,7 +13881,7 @@ var require_parse2 = __commonJS({
         }
       }
     }
-    exports2.parse = parse2;
+    exports2.parse = parse;
   }
 });
 
@@ -23309,7 +23309,7 @@ var require_file = __commonJS({
 var require_inspect = __commonJS({
   "node_modules/.pnpm/fs-jetpack@5.1.0/node_modules/fs-jetpack/lib/inspect.js"(exports2) {
     "use strict";
-    var crypto3 = require("crypto");
+    var crypto2 = require("crypto");
     var pathUtil = require("path");
     var fs = require_fs();
     var validate = require_validate();
@@ -23368,7 +23368,7 @@ var require_inspect = __commonJS({
       return obj;
     };
     var fileChecksum = (path, algo) => {
-      const hash = crypto3.createHash(algo);
+      const hash = crypto2.createHash(algo);
       const data = fs.readFileSync(path);
       hash.update(data);
       return hash.digest("hex");
@@ -23401,7 +23401,7 @@ var require_inspect = __commonJS({
     };
     var fileChecksumAsync = (path, algo) => {
       return new Promise((resolve3, reject) => {
-        const hash = crypto3.createHash(algo);
+        const hash = crypto2.createHash(algo);
         const s = fs.createReadStream(path);
         s.on("data", (data) => {
           hash.update(data);
@@ -24335,7 +24335,7 @@ var require_minimatch = __commonJS({
           let tail;
           tail = re.slice(pl.reStart + pl.open.length);
           this.debug("setting tail", re, pl);
-          tail = tail.replace(/((?:\\{2}){0,64})(\\?)\|/g, (_12, $1, $2) => {
+          tail = tail.replace(/((?:\\{2}){0,64})(\\?)\|/g, (_11, $1, $2) => {
             if (!$2) {
               $2 = "\\";
             }
@@ -24745,7 +24745,7 @@ var require_find = __commonJS({
 var require_inspect_tree = __commonJS({
   "node_modules/.pnpm/fs-jetpack@5.1.0/node_modules/fs-jetpack/lib/inspect_tree.js"(exports2) {
     "use strict";
-    var crypto3 = require("crypto");
+    var crypto2 = require("crypto");
     var pathUtil = require("path");
     var inspect2 = require_inspect();
     var list = require_list();
@@ -24782,7 +24782,7 @@ var require_inspect_tree = __commonJS({
       return parentInspectObj.relativePath + "/" + inspectObj.name;
     };
     var checksumOfDir = (inspectList, algo) => {
-      const hash = crypto3.createHash(algo);
+      const hash = crypto2.createHash(algo);
       inspectList.forEach((inspectObj) => {
         hash.update(inspectObj.name + inspectObj[algo]);
       });
@@ -25513,7 +25513,7 @@ var require_tmp_dir = __commonJS({
     "use strict";
     var pathUtil = require("path");
     var os4 = require("os");
-    var crypto3 = require("crypto");
+    var crypto2 = require("crypto");
     var dir2 = require_dir();
     var fs = require_fs();
     var validate = require_validate();
@@ -25542,7 +25542,7 @@ var require_tmp_dir = __commonJS({
     var randomStringLength = 32;
     var tmpDirSync = (cwdPath, passedOptions) => {
       const options = getOptionsDefaults(passedOptions, cwdPath);
-      const randomString = crypto3.randomBytes(randomStringLength / 2).toString("hex");
+      const randomString = crypto2.randomBytes(randomStringLength / 2).toString("hex");
       const dirPath = pathUtil.join(
         options.basePath,
         options.prefix + randomString
@@ -25561,7 +25561,7 @@ var require_tmp_dir = __commonJS({
     var tmpDirAsync = (cwdPath, passedOptions) => {
       return new Promise((resolve3, reject) => {
         const options = getOptionsDefaults(passedOptions, cwdPath);
-        crypto3.randomBytes(randomStringLength / 2, (err, bytes) => {
+        crypto2.randomBytes(randomStringLength / 2, (err, bytes) => {
           if (err) {
             reject(err);
           } else {
@@ -26533,8 +26533,8 @@ var require_arraySome = __commonJS({
 // node_modules/.pnpm/lodash@4.17.21/node_modules/lodash/_cacheHas.js
 var require_cacheHas = __commonJS({
   "node_modules/.pnpm/lodash@4.17.21/node_modules/lodash/_cacheHas.js"(exports2, module2) {
-    function cacheHas(cache3, key) {
-      return cache3.has(key);
+    function cacheHas(cache2, key) {
+      return cache2.has(key);
     }
     module2.exports = cacheHas;
   }
@@ -26968,12 +26968,12 @@ var require_memoize = __commonJS({
         throw new TypeError(FUNC_ERROR_TEXT);
       }
       var memoized = function() {
-        var args = arguments, key = resolver ? resolver.apply(this, args) : args[0], cache3 = memoized.cache;
-        if (cache3.has(key)) {
-          return cache3.get(key);
+        var args = arguments, key = resolver ? resolver.apply(this, args) : args[0], cache2 = memoized.cache;
+        if (cache2.has(key)) {
+          return cache2.get(key);
         }
         var result = func.apply(this, args);
-        memoized.cache = cache3.set(key, result) || cache3;
+        memoized.cache = cache2.set(key, result) || cache2;
         return result;
       };
       memoized.cache = new (memoize.Cache || MapCache)();
@@ -26991,12 +26991,12 @@ var require_memoizeCapped = __commonJS({
     var MAX_MEMOIZE_SIZE = 500;
     function memoizeCapped(func) {
       var result = memoize(func, function(key) {
-        if (cache3.size === MAX_MEMOIZE_SIZE) {
-          cache3.clear();
+        if (cache2.size === MAX_MEMOIZE_SIZE) {
+          cache2.clear();
         }
         return key;
       });
-      var cache3 = result.cache;
+      var cache2 = result.cache;
       return result;
     }
     module2.exports = memoizeCapped;
@@ -37299,7 +37299,7 @@ var require_prisma_ast_cjs_production_min = __commonJS({
       }
       return j(t2, e2), t2;
     }(e.CstParser))();
-    var _12 = function(e2) {
+    var _11 = function(e2) {
       function t2() {
         var t3;
         return (t3 = e2.call(this) || this).validateVisitor(), t3;
@@ -37376,7 +37376,7 @@ var require_prisma_ast_cjs_production_min = __commonJS({
       var n2 = x.schema();
       if (x.errors.length > 0)
         throw x.errors[0];
-      return new _12().visit(n2);
+      return new _11().visit(n2);
     }
     var I = ["break", "comment"];
     var V = ["generator", "datasource", "model", "enum", "break", "comment"];
@@ -37765,18 +37765,18 @@ var init_proxy2 = __esm({
       return new Proxy(
         { schema: {} },
         {
-          get(_12, table) {
-            if (!_12.schema) {
-              _12.schema = {};
+          get(_11, table) {
+            if (!_11.schema) {
+              _11.schema = {};
             }
             const schema = new Proxy(
               {},
               {
                 async get(__, table2) {
-                  if (!_12.schema[table2]) {
-                    _12.schema[table2] = await rpc.schema(table2);
+                  if (!_11.schema[table2]) {
+                    _11.schema[table2] = await rpc.schema(table2);
                   }
-                  return _12.schema[table2];
+                  return _11.schema[table2];
                 }
               }
             );
@@ -37791,11 +37791,11 @@ var init_proxy2 = __esm({
                     new Proxy(
                       {},
                       {
-                        get(_13, table2) {
+                        get(_12, table2) {
                           return new Proxy(
                             {},
                             {
-                              get(_14, action) {
+                              get(_13, action) {
                                 return async (...params) => {
                                   if (table2 === "query") {
                                     table2 = action;
@@ -37831,7 +37831,7 @@ var init_proxy2 = __esm({
             return new Proxy(
               {},
               {
-                get(_13, action) {
+                get(_12, action) {
                   return async (...params) => {
                     if (table === "query") {
                       table = action;
@@ -47086,1498 +47086,38 @@ var init_img = __esm({
   }
 });
 
-// pkgs/base/src/scaffold/parser/swc/visitor.js
-var Visitor$1, Visitor_2, Visitor, _default;
-var init_visitor = __esm({
-  "pkgs/base/src/scaffold/parser/swc/visitor.js"() {
-    "use strict";
-    Visitor$1 = {};
-    Object.defineProperty(Visitor$1, "__esModule", { value: true });
-    Visitor_2 = Visitor$1.Visitor = void 0;
-    Visitor = class {
-      visitProgram(n) {
-        switch (n.type) {
-          case "Module":
-            return this.visitModule(n);
-          case "Script":
-            return this.visitScript(n);
-        }
-      }
-      visitModule(m) {
-        m.body = this.visitModuleItems(m.body);
-        return m;
-      }
-      visitScript(m) {
-        m.body = this.visitStatements(m.body);
-        return m;
-      }
-      visitModuleItems(items) {
-        return items.map(this.visitModuleItem.bind(this));
-      }
-      visitModuleItem(n) {
-        switch (n.type) {
-          case "ExportDeclaration":
-          case "ExportDefaultDeclaration":
-          case "ExportNamedDeclaration":
-          case "ExportDefaultExpression":
-          case "ImportDeclaration":
-          case "ExportAllDeclaration":
-          case "TsImportEqualsDeclaration":
-          case "TsExportAssignment":
-          case "TsNamespaceExportDeclaration":
-            return this.visitModuleDeclaration(n);
-          default:
-            return this.visitStatement(n);
-        }
-      }
-      visitModuleDeclaration(n) {
-        switch (n.type) {
-          case "ExportDeclaration":
-            return this.visitExportDeclaration(n);
-          case "ExportDefaultDeclaration":
-            return this.visitExportDefaultDeclaration(n);
-          case "ExportNamedDeclaration":
-            return this.visitExportNamedDeclaration(n);
-          case "ExportDefaultExpression":
-            return this.visitExportDefaultExpression(n);
-          case "ImportDeclaration":
-            return this.visitImportDeclaration(n);
-          case "ExportAllDeclaration":
-            return this.visitExportAllDeclaration(n);
-          case "TsImportEqualsDeclaration":
-            return this.visitTsImportEqualsDeclaration(n);
-          case "TsExportAssignment":
-            return this.visitTsExportAssignment(n);
-          case "TsNamespaceExportDeclaration":
-            return this.visitTsNamespaceExportDeclaration(n);
-        }
-      }
-      visitTsNamespaceExportDeclaration(n) {
-        n.id = this.visitBindingIdentifier(n.id);
-        return n;
-      }
-      visitTsExportAssignment(n) {
-        n.expression = this.visitExpression(n.expression);
-        return n;
-      }
-      visitTsImportEqualsDeclaration(n) {
-        n.id = this.visitBindingIdentifier(n.id);
-        n.moduleRef = this.visitTsModuleReference(n.moduleRef);
-        return n;
-      }
-      visitTsModuleReference(n) {
-        switch (n.type) {
-          case "Identifier":
-            return this.visitIdentifierReference(n);
-          case "TsExternalModuleReference":
-            return this.visitTsExternalModuleReference(n);
-          case "TsQualifiedName":
-            return this.visitTsQualifiedName(n);
-        }
-      }
-      visitTsExternalModuleReference(n) {
-        n.expression = this.visitExpression(n.expression);
-        return n;
-      }
-      visitExportAllDeclaration(n) {
-        n.source = this.visitStringLiteral(n.source);
-        return n;
-      }
-      visitExportDefaultExpression(n) {
-        n.expression = this.visitExpression(n.expression);
-        return n;
-      }
-      visitExportNamedDeclaration(n) {
-        n.specifiers = this.visitExportSpecifiers(n.specifiers);
-        n.source = this.visitOptionalStringLiteral(n.source);
-        return n;
-      }
-      visitExportSpecifiers(nodes) {
-        return nodes.map(this.visitExportSpecifier.bind(this));
-      }
-      visitExportSpecifier(n) {
-        switch (n.type) {
-          case "ExportDefaultSpecifier":
-            return this.visitExportDefaultSpecifier(n);
-          case "ExportNamespaceSpecifier":
-            return this.visitExportNamespaceSpecifier(n);
-          case "ExportSpecifier":
-            return this.visitNamedExportSpecifier(n);
-        }
-      }
-      visitNamedExportSpecifier(n) {
-        if (n.exported) {
-          n.exported = this.visitBindingIdentifier(n.exported);
-        }
-        n.orig = this.visitIdentifierReference(n.orig);
-        return n;
-      }
-      visitExportNamespaceSpecifier(n) {
-        n.name = this.visitBindingIdentifier(n.name);
-        return n;
-      }
-      visitExportDefaultSpecifier(n) {
-        n.exported = this.visitBindingIdentifier(n.exported);
-        return n;
-      }
-      visitOptionalStringLiteral(n) {
-        if (n) {
-          return this.visitStringLiteral(n);
-        }
-      }
-      visitExportDefaultDeclaration(n) {
-        n.decl = this.visitDefaultDeclaration(n.decl);
-        return n;
-      }
-      visitDefaultDeclaration(n) {
-        switch (n.type) {
-          case "ClassExpression":
-            return this.visitClassExpression(n);
-          case "FunctionExpression":
-            return this.visitFunctionExpression(n);
-          case "TsInterfaceDeclaration":
-            return this.visitTsInterfaceDeclaration(n);
-        }
-      }
-      visitFunctionExpression(n) {
-        n = this.visitFunction(n);
-        if (n.identifier) {
-          n.identifier = this.visitBindingIdentifier(n.identifier);
-        }
-        return n;
-      }
-      visitClassExpression(n) {
-        n = this.visitClass(n);
-        if (n.identifier) {
-          n.identifier = this.visitBindingIdentifier(n.identifier);
-        }
-        return n;
-      }
-      visitExportDeclaration(n) {
-        n.declaration = this.visitDeclaration(n.declaration);
-        return n;
-      }
-      visitArrayExpression(e) {
-        if (e.elements) {
-          e.elements = e.elements.map(this.visitArrayElement.bind(this));
-        }
-        return e;
-      }
-      visitArrayElement(e) {
-        if (e) {
-          return this.visitExprOrSpread(e);
-        }
-      }
-      visitExprOrSpread(e) {
-        return Object.assign(Object.assign({}, e), {
-          expression: this.visitExpression(e.expression)
-        });
-      }
-      visitSpreadElement(e) {
-        e.arguments = this.visitExpression(e.arguments);
-        return e;
-      }
-      visitOptionalExpression(e) {
-        if (e) {
-          return this.visitExpression(e);
-        }
-      }
-      visitArrowFunctionExpression(e) {
-        e.body = this.visitArrowBody(e.body);
-        e.params = this.visitPatterns(e.params);
-        e.returnType = this.visitTsTypeAnnotation(e.returnType);
-        e.typeParameters = this.visitTsTypeParameterDeclaration(e.typeParameters);
-        return e;
-      }
-      visitArrowBody(body) {
-        switch (body.type) {
-          case "BlockStatement":
-            return this.visitBlockStatement(body);
-          default:
-            return this.visitExpression(body);
-        }
-      }
-      visitBlockStatement(block) {
-        block.stmts = this.visitStatements(block.stmts);
-        return block;
-      }
-      visitStatements(stmts) {
-        return stmts.map(this.visitStatement.bind(this));
-      }
-      visitStatement(stmt) {
-        switch (stmt.type) {
-          case "ClassDeclaration":
-          case "FunctionDeclaration":
-          case "TsEnumDeclaration":
-          case "TsInterfaceDeclaration":
-          case "TsModuleDeclaration":
-          case "TsTypeAliasDeclaration":
-          case "VariableDeclaration":
-            return this.visitDeclaration(stmt);
-          case "BreakStatement":
-            return this.visitBreakStatement(stmt);
-          case "BlockStatement":
-            return this.visitBlockStatement(stmt);
-          case "ContinueStatement":
-            return this.visitContinueStatement(stmt);
-          case "DebuggerStatement":
-            return this.visitDebuggerStatement(stmt);
-          case "DoWhileStatement":
-            return this.visitDoWhileStatement(stmt);
-          case "EmptyStatement":
-            return this.visitEmptyStatement(stmt);
-          case "ForInStatement":
-            return this.visitForInStatement(stmt);
-          case "ForOfStatement":
-            return this.visitForOfStatement(stmt);
-          case "ForStatement":
-            return this.visitForStatement(stmt);
-          case "IfStatement":
-            return this.visitIfStatement(stmt);
-          case "LabeledStatement":
-            return this.visitLabeledStatement(stmt);
-          case "ReturnStatement":
-            return this.visitReturnStatement(stmt);
-          case "SwitchStatement":
-            return this.visitSwitchStatement(stmt);
-          case "ThrowStatement":
-            return this.visitThrowStatement(stmt);
-          case "TryStatement":
-            return this.visitTryStatement(stmt);
-          case "WhileStatement":
-            return this.visitWhileStatement(stmt);
-          case "WithStatement":
-            return this.visitWithStatement(stmt);
-          case "ExpressionStatement":
-            return this.visitExpressionStatement(stmt);
-          default:
-            throw new Error(`Unknown statement type: ` + stmt.type);
-        }
-      }
-      visitSwitchStatement(stmt) {
-        stmt.discriminant = this.visitExpression(stmt.discriminant);
-        stmt.cases = this.visitSwitchCases(stmt.cases);
-        return stmt;
-      }
-      visitSwitchCases(cases) {
-        return cases.map(this.visitSwitchCase.bind(this));
-      }
-      visitSwitchCase(c) {
-        c.test = this.visitOptionalExpression(c.test);
-        c.consequent = this.visitStatements(c.consequent);
-        return c;
-      }
-      visitIfStatement(stmt) {
-        stmt.test = this.visitExpression(stmt.test);
-        stmt.consequent = this.visitStatement(stmt.consequent);
-        stmt.alternate = this.visitOptionalStatement(stmt.alternate);
-        return stmt;
-      }
-      visitOptionalStatement(stmt) {
-        if (stmt) {
-          return this.visitStatement(stmt);
-        }
-      }
-      visitBreakStatement(stmt) {
-        if (stmt.label) {
-          stmt.label = this.visitLabelIdentifier(stmt.label);
-        }
-        return stmt;
-      }
-      visitWhileStatement(stmt) {
-        stmt.test = this.visitExpression(stmt.test);
-        stmt.body = this.visitStatement(stmt.body);
-        return stmt;
-      }
-      visitTryStatement(stmt) {
-        stmt.block = this.visitBlockStatement(stmt.block);
-        stmt.handler = this.visitCatchClause(stmt.handler);
-        if (stmt.finalizer) {
-          stmt.finalizer = this.visitBlockStatement(stmt.finalizer);
-        }
-        return stmt;
-      }
-      visitCatchClause(handler) {
-        if (handler) {
-          if (handler.param) {
-            handler.param = this.visitPattern(handler.param);
-          }
-          handler.body = this.visitBlockStatement(handler.body);
-        }
-        return handler;
-      }
-      visitThrowStatement(stmt) {
-        stmt.argument = this.visitExpression(stmt.argument);
-        return stmt;
-      }
-      visitReturnStatement(stmt) {
-        if (stmt.argument) {
-          stmt.argument = this.visitExpression(stmt.argument);
-        }
-        return stmt;
-      }
-      visitLabeledStatement(stmt) {
-        stmt.label = this.visitLabelIdentifier(stmt.label);
-        stmt.body = this.visitStatement(stmt.body);
-        return stmt;
-      }
-      visitForStatement(stmt) {
-        if (stmt.init) {
-          if (stmt.init.type === "VariableDeclaration") {
-            stmt.init = this.visitVariableDeclaration(stmt.init);
-          } else {
-            stmt.init = this.visitOptionalExpression(stmt.init);
-          }
-        }
-        stmt.test = this.visitOptionalExpression(stmt.test);
-        stmt.update = this.visitOptionalExpression(stmt.update);
-        stmt.body = this.visitStatement(stmt.body);
-        return stmt;
-      }
-      visitForOfStatement(stmt) {
-        if (stmt.left.type === "VariableDeclaration") {
-          stmt.left = this.visitVariableDeclaration(stmt.left);
-        } else {
-          stmt.left = this.visitPattern(stmt.left);
-        }
-        stmt.right = this.visitExpression(stmt.right);
-        stmt.body = this.visitStatement(stmt.body);
-        return stmt;
-      }
-      visitForInStatement(stmt) {
-        if (stmt.left.type === "VariableDeclaration") {
-          stmt.left = this.visitVariableDeclaration(stmt.left);
-        } else {
-          stmt.left = this.visitPattern(stmt.left);
-        }
-        stmt.right = this.visitExpression(stmt.right);
-        stmt.body = this.visitStatement(stmt.body);
-        return stmt;
-      }
-      visitEmptyStatement(stmt) {
-        return stmt;
-      }
-      visitDoWhileStatement(stmt) {
-        stmt.body = this.visitStatement(stmt.body);
-        stmt.test = this.visitExpression(stmt.test);
-        return stmt;
-      }
-      visitDebuggerStatement(stmt) {
-        return stmt;
-      }
-      visitWithStatement(stmt) {
-        stmt.object = this.visitExpression(stmt.object);
-        stmt.body = this.visitStatement(stmt.body);
-        return stmt;
-      }
-      visitDeclaration(decl) {
-        switch (decl.type) {
-          case "ClassDeclaration":
-            return this.visitClassDeclaration(decl);
-          case "FunctionDeclaration":
-            return this.visitFunctionDeclaration(decl);
-          case "TsEnumDeclaration":
-            return this.visitTsEnumDeclaration(decl);
-          case "TsInterfaceDeclaration":
-            return this.visitTsInterfaceDeclaration(decl);
-          case "TsModuleDeclaration":
-            return this.visitTsModuleDeclaration(decl);
-          case "TsTypeAliasDeclaration":
-            return this.visitTsTypeAliasDeclaration(decl);
-          case "VariableDeclaration":
-            return this.visitVariableDeclaration(decl);
-        }
-      }
-      visitVariableDeclaration(n) {
-        n.declarations = this.visitVariableDeclarators(n.declarations);
-        return n;
-      }
-      visitVariableDeclarators(nodes) {
-        return nodes.map(this.visitVariableDeclarator.bind(this));
-      }
-      visitVariableDeclarator(n) {
-        n.id = this.visitPattern(n.id);
-        n.init = this.visitOptionalExpression(n.init);
-        return n;
-      }
-      visitTsTypeAliasDeclaration(n) {
-        n.id = this.visitBindingIdentifier(n.id);
-        n.typeAnnotation = this.visitTsType(n.typeAnnotation);
-        n.typeParams = this.visitTsTypeParameterDeclaration(n.typeParams);
-        return n;
-      }
-      visitTsModuleDeclaration(n) {
-        n.id = this.visitTsModuleName(n.id);
-        if (n.body) {
-          n.body = this.visitTsNamespaceBody(n.body);
-        }
-        return n;
-      }
-      visitTsModuleName(n) {
-        switch (n.type) {
-          case "Identifier":
-            return this.visitBindingIdentifier(n);
-          case "StringLiteral":
-            return this.visitStringLiteral(n);
-        }
-      }
-      visitTsNamespaceBody(n) {
-        if (n) {
-          switch (n.type) {
-            case "TsModuleBlock":
-              return this.visitTsModuleBlock(n);
-            case "TsNamespaceDeclaration":
-              return this.visitTsNamespaceDeclaration(n);
-          }
-        }
-      }
-      visitTsNamespaceDeclaration(n) {
-        const body = this.visitTsNamespaceBody(n.body);
-        if (body) {
-          n.body = body;
-        }
-        n.id = this.visitBindingIdentifier(n.id);
-        return n;
-      }
-      visitTsModuleBlock(n) {
-        n.body = this.visitModuleItems(n.body);
-        return n;
-      }
-      visitTsInterfaceDeclaration(n) {
-        n.id = this.visitBindingIdentifier(n.id);
-        n.typeParams = this.visitTsTypeParameterDeclaration(n.typeParams);
-        n.extends = this.visitTsExpressionsWithTypeArguments(n.extends);
-        n.body = this.visitTsInterfaceBody(n.body);
-        return n;
-      }
-      visitTsInterfaceBody(n) {
-        n.body = this.visitTsTypeElements(n.body);
-        return n;
-      }
-      visitTsTypeElements(nodes) {
-        return nodes.map(this.visitTsTypeElement.bind(this));
-      }
-      visitTsTypeElement(n) {
-        n.params = this.visitTsFnParameters(n.params);
-        n.typeAnnotation = this.visitTsTypeAnnotation(n.typeAnnotation);
-        return n;
-      }
-      visitTsEnumDeclaration(n) {
-        n.id = this.visitIdentifier(n.id);
-        n.members = this.visitTsEnumMembers(n.members);
-        return n;
-      }
-      visitTsEnumMembers(nodes) {
-        return nodes.map(this.visitTsEnumMember.bind(this));
-      }
-      visitTsEnumMember(n) {
-        n.id = this.visitTsEnumMemberId(n.id);
-        n.init = this.visitOptionalExpression(n.init);
-        return n;
-      }
-      visitTsEnumMemberId(n) {
-        switch (n.type) {
-          case "Identifier":
-            return this.visitBindingIdentifier(n);
-          case "StringLiteral":
-            return this.visitStringLiteral(n);
-        }
-      }
-      visitFunctionDeclaration(decl) {
-        decl.identifier = this.visitIdentifier(decl.identifier);
-        decl = this.visitFunction(decl);
-        return decl;
-      }
-      visitClassDeclaration(decl) {
-        decl = this.visitClass(decl);
-        decl.identifier = this.visitIdentifier(decl.identifier);
-        return decl;
-      }
-      visitClassBody(members) {
-        return members.map(this.visitClassMember.bind(this));
-      }
-      visitClassMember(member) {
-        switch (member.type) {
-          case "ClassMethod":
-            return this.visitClassMethod(member);
-          case "ClassProperty":
-            return this.visitClassProperty(member);
-          case "Constructor":
-            return this.visitConstructor(member);
-          case "PrivateMethod":
-            return this.visitPrivateMethod(member);
-          case "PrivateProperty":
-            return this.visitPrivateProperty(member);
-          case "TsIndexSignature":
-            return this.visitTsIndexSignature(member);
-        }
-      }
-      visitTsIndexSignature(n) {
-        n.params = this.visitTsFnParameters(n.params);
-        n.typeAnnotation = this.visitTsTypeAnnotation(n.typeAnnotation);
-        return n;
-      }
-      visitTsFnParameters(params) {
-        return params.map(this.visitTsFnParameter.bind(this));
-      }
-      visitTsFnParameter(n) {
-        n.typeAnnotation = this.visitTsTypeAnnotation(n.typeAnnotation);
-        return n;
-      }
-      visitPrivateProperty(n) {
-        n.decorators = this.visitDecorators(n.decorators);
-        n.key = this.visitPrivateName(n.key);
-        n.typeAnnotation = this.visitTsTypeAnnotation(n.typeAnnotation);
-        n.value = this.visitOptionalExpression(n.value);
-        return n;
-      }
-      visitPrivateMethod(n) {
-        n.accessibility = this.visitAccessibility(n.accessibility);
-        n.function = this.visitFunction(n.function);
-        n.key = this.visitPrivateName(n.key);
-        return n;
-      }
-      visitPrivateName(n) {
-        return n;
-      }
-      visitConstructor(n) {
-        n.accessibility = this.visitAccessibility(n.accessibility);
-        n.key = this.visitPropertyName(n.key);
-        n.params = this.visitConstructorParameters(n.params);
-        if (n.body) {
-          n.body = this.visitBlockStatement(n.body);
-        }
-        return n;
-      }
-      visitConstructorParameters(nodes) {
-        return nodes.map(this.visitConstructorParameter.bind(this));
-      }
-      visitConstructorParameter(n) {
-        switch (n.type) {
-          case "TsParameterProperty":
-            return this.visitTsParameterProperty(n);
-          default:
-            return this.visitParameter(n);
-        }
-      }
-      visitTsParameterProperty(n) {
-        n.accessibility = this.visitAccessibility(n.accessibility);
-        n.decorators = this.visitDecorators(n.decorators);
-        n.param = this.visitTsParameterPropertyParameter(n.param);
-        return n;
-      }
-      visitTsParameterPropertyParameter(n) {
-        n.typeAnnotation = this.visitTsTypeAnnotation(n.typeAnnotation);
-        return n;
-      }
-      visitPropertyName(key) {
-        switch (key.type) {
-          case "Identifier":
-            return this.visitBindingIdentifier(key);
-          case "StringLiteral":
-            return this.visitStringLiteral(key);
-          case "NumericLiteral":
-            return this.visitNumericLiteral(key);
-          default:
-            return this.visitComputedPropertyKey(key);
-        }
-      }
-      visitAccessibility(n) {
-        return n;
-      }
-      visitClassProperty(n) {
-        n.accessibility = this.visitAccessibility(n.accessibility);
-        n.decorators = this.visitDecorators(n.decorators);
-        n.key = this.visitExpression(n.key);
-        n.typeAnnotation = this.visitTsTypeAnnotation(n.typeAnnotation);
-        n.value = this.visitOptionalExpression(n.value);
-        return n;
-      }
-      visitClassMethod(n) {
-        n.accessibility = this.visitAccessibility(n.accessibility);
-        n.function = this.visitFunction(n.function);
-        n.key = this.visitPropertyName(n.key);
-        return n;
-      }
-      visitPropertName(n) {
-        switch (n.type) {
-          case "Identifier":
-            return this.visitIdentifier(n);
-          case "NumericLiteral":
-            return this.visitNumericLiteral(n);
-          case "StringLiteral":
-            return this.visitStringLiteral(n);
-          case "Computed":
-            return this.visitComputedPropertyKey(n);
-        }
-      }
-      visitComputedPropertyKey(n) {
-        n.expression = this.visitExpression(n.expression);
-        return n;
-      }
-      visitClass(n) {
-        n.decorators = this.visitDecorators(n.decorators);
-        n.superClass = this.visitOptionalExpression(n.superClass);
-        n.superTypeParams = this.visitTsTypeParameterInstantiation(
-          n.superTypeParams
-        );
-        if (n.implements) {
-          n.implements = this.visitTsExpressionsWithTypeArguments(n.implements);
-        }
-        n.body = this.visitClassBody(n.body);
-        return n;
-      }
-      visitFunction(n) {
-        n.decorators = this.visitDecorators(n.decorators);
-        n.params = this.visitParameters(n.params);
-        if (n.body) {
-          n.body = this.visitBlockStatement(n.body);
-        }
-        n.returnType = this.visitTsTypeAnnotation(n.returnType);
-        n.typeParameters = this.visitTsTypeParameterDeclaration(n.typeParameters);
-        return n;
-      }
-      visitTsExpressionsWithTypeArguments(nodes) {
-        return nodes.map(this.visitTsExpressionWithTypeArguments.bind(this));
-      }
-      visitTsExpressionWithTypeArguments(n) {
-        n.expression = this.visitTsEntityName(n.expression);
-        n.typeArguments = this.visitTsTypeParameterInstantiation(n.typeArguments);
-        return n;
-      }
-      visitTsTypeParameterInstantiation(n) {
-        if (n) {
-          n.params = this.visitTsTypes(n.params);
-        }
-        return n;
-      }
-      visitTsTypes(nodes) {
-        return nodes.map(this.visitTsType.bind(this));
-      }
-      visitTsEntityName(n) {
-        switch (n.type) {
-          case "Identifier":
-            return this.visitBindingIdentifier(n);
-          case "TsQualifiedName":
-            return this.visitTsQualifiedName(n);
-        }
-      }
-      visitTsQualifiedName(n) {
-        n.left = this.visitTsEntityName(n.left);
-        n.right = this.visitIdentifier(n.right);
-        return n;
-      }
-      visitDecorators(nodes) {
-        if (nodes) {
-          return nodes.map(this.visitDecorator.bind(this));
-        }
-      }
-      visitDecorator(n) {
-        n.expression = this.visitExpression(n.expression);
-        return n;
-      }
-      visitExpressionStatement(stmt) {
-        stmt.expression = this.visitExpression(stmt.expression);
-        return stmt;
-      }
-      visitContinueStatement(stmt) {
-        if (stmt.label) {
-          stmt.label = this.visitLabelIdentifier(stmt.label);
-        }
-        return stmt;
-      }
-      visitExpression(n) {
-        switch (n.type) {
-          case "ArrayExpression":
-            return this.visitArrayExpression(n);
-          case "ArrowFunctionExpression":
-            return this.visitArrowFunctionExpression(n);
-          case "AssignmentExpression":
-            return this.visitAssignmentExpression(n);
-          case "AwaitExpression":
-            return this.visitAwaitExpression(n);
-          case "BinaryExpression":
-            return this.visitBinaryExpression(n);
-          case "BooleanLiteral":
-            return this.visitBooleanLiteral(n);
-          case "CallExpression":
-            return this.visitCallExpression(n);
-          case "ClassExpression":
-            return this.visitClassExpression(n);
-          case "ConditionalExpression":
-            return this.visitConditionalExpression(n);
-          case "FunctionExpression":
-            return this.visitFunctionExpression(n);
-          case "Identifier":
-            return this.visitIdentifierReference(n);
-          case "JSXElement":
-            return this.visitJSXElement(n);
-          case "JSXEmptyExpression":
-            return this.visitJSXEmptyExpression(n);
-          case "JSXFragment":
-            return this.visitJSXFragment(n);
-          case "JSXMemberExpression":
-            return this.visitJSXMemberExpression(n);
-          case "JSXNamespacedName":
-            return this.visitJSXNamespacedName(n);
-          case "JSXText":
-            return this.visitJSXText(n);
-          case "MemberExpression":
-            return this.visitMemberExpression(n);
-          case "MetaProperty":
-            return this.visitMetaProperty(n);
-          case "NewExpression":
-            return this.visitNewExpression(n);
-          case "NullLiteral":
-            return this.visitNullLiteral(n);
-          case "NumericLiteral":
-            return this.visitNumericLiteral(n);
-          case "ObjectExpression":
-            return this.visitObjectExpression(n);
-          case "ParenthesisExpression":
-            return this.visitParenthesisExpression(n);
-          case "PrivateName":
-            return this.visitPrivateName(n);
-          case "RegExpLiteral":
-            return this.visitRegExpLiteral(n);
-          case "SequenceExpression":
-            return this.visitSequenceExpression(n);
-          case "StringLiteral":
-            return this.visitStringLiteral(n);
-          case "TaggedTemplateExpression":
-            return this.visitTaggedTemplateExpression(n);
-          case "TemplateLiteral":
-            return this.visitTemplateLiteral(n);
-          case "ThisExpression":
-            return this.visitThisExpression(n);
-          case "TsAsExpression":
-            return this.visitTsAsExpression(n);
-          case "TsNonNullExpression":
-            return this.visitTsNonNullExpression(n);
-          case "TsTypeAssertion":
-            return this.visitTsTypeAssertion(n);
-          case "TsConstAssertion":
-            return this.visitTsConstAssertion(n);
-          case "UnaryExpression":
-            return this.visitUnaryExpression(n);
-          case "UpdateExpression":
-            return this.visitUpdateExpression(n);
-          case "YieldExpression":
-            return this.visitYieldExpression(n);
-          case "OptionalChainingExpression":
-            return this.visitOptionalChainingExpression(n);
-          case "Invalid":
-            return n;
-        }
-      }
-      visitOptionalChainingExpression(n) {
-        if (n.expr) {
-          n.expr = this.visitExpression(n.expr);
-        }
-        return n;
-      }
-      visitAssignmentExpression(n) {
-        n.left = this.visitPatternOrExpressison(n.left);
-        n.right = this.visitExpression(n.right);
-        return n;
-      }
-      visitPatternOrExpressison(n) {
-        switch (n.type) {
-          case "ObjectPattern":
-          case "ArrayPattern":
-          case "Identifier":
-          case "AssignmentPattern":
-          case "RestElement":
-            return this.visitPattern(n);
-          default:
-            return this.visitExpression(n);
-        }
-      }
-      visitYieldExpression(n) {
-        n.argument = this.visitOptionalExpression(n.argument);
-        return n;
-      }
-      visitUpdateExpression(n) {
-        n.argument = this.visitExpression(n.argument);
-        return n;
-      }
-      visitUnaryExpression(n) {
-        n.argument = this.visitExpression(n.argument);
-        return n;
-      }
-      visitTsTypeAssertion(n) {
-        n.expression = this.visitExpression(n.expression);
-        n.typeAnnotation = this.visitTsType(n.typeAnnotation);
-        return n;
-      }
-      visitTsConstAssertion(n) {
-        n.expression = this.visitExpression(n.expression);
-        return n;
-      }
-      visitTsNonNullExpression(n) {
-        n.expression = this.visitExpression(n.expression);
-        return n;
-      }
-      visitTsAsExpression(n) {
-        n.expression = this.visitExpression(n.expression);
-        n.typeAnnotation = this.visitTsType(n.typeAnnotation);
-        return n;
-      }
-      visitThisExpression(n) {
-        return n;
-      }
-      visitTemplateLiteral(n) {
-        n.expressions = n.expressions.map(this.visitExpression.bind(this));
-        return n;
-      }
-      visitParameters(n) {
-        return n.map(this.visitParameter.bind(this));
-      }
-      visitParameter(n) {
-        n.pat = this.visitPattern(n.pat);
-        return n;
-      }
-      visitTaggedTemplateExpression(n) {
-        n.tag = this.visitExpression(n.tag);
-        const template = this.visitTemplateLiteral(n.template);
-        if (template.type === "TemplateLiteral") {
-          n.template = template;
-        }
-        return n;
-      }
-      visitSequenceExpression(n) {
-        n.expressions = n.expressions.map(this.visitExpression.bind(this));
-        return n;
-      }
-      visitRegExpLiteral(n) {
-        return n;
-      }
-      visitParenthesisExpression(n) {
-        n.expression = this.visitExpression(n.expression);
-        return n;
-      }
-      visitObjectExpression(n) {
-        if (n.properties) {
-          n.properties = this.visitObjectProperties(n.properties);
-        }
-        return n;
-      }
-      visitObjectProperties(nodes) {
-        return nodes.map(this.visitObjectProperty.bind(this));
-      }
-      visitObjectProperty(n) {
-        switch (n.type) {
-          case "SpreadElement":
-            return this.visitSpreadElement(n);
-          default:
-            return this.visitProperty(n);
-        }
-      }
-      visitProperty(n) {
-        switch (n.type) {
-          case "Identifier":
-            return this.visitIdentifier(n);
-          case "AssignmentProperty":
-            return this.visitAssignmentProperty(n);
-          case "GetterProperty":
-            return this.visitGetterProperty(n);
-          case "KeyValueProperty":
-            return this.visitKeyValueProperty(n);
-          case "MethodProperty":
-            return this.visitMethodProperty(n);
-          case "SetterProperty":
-            return this.visitSetterProperty(n);
-        }
-      }
-      visitSetterProperty(n) {
-        n.key = this.visitPropertyName(n.key);
-        n.param = this.visitPattern(n.param);
-        if (n.body) {
-          n.body = this.visitBlockStatement(n.body);
-        }
-        return n;
-      }
-      visitMethodProperty(n) {
-        n.key = this.visitPropertyName(n.key);
-        if (n.body) {
-          n.body = this.visitBlockStatement(n.body);
-        }
-        n.decorators = this.visitDecorators(n.decorators);
-        n.params = this.visitParameters(n.params);
-        n.returnType = this.visitTsTypeAnnotation(n.returnType);
-        n.typeParameters = this.visitTsTypeParameterDeclaration(n.typeParameters);
-        return n;
-      }
-      visitKeyValueProperty(n) {
-        n.key = this.visitPropertyName(n.key);
-        n.value = this.visitExpression(n.value);
-        return n;
-      }
-      visitGetterProperty(n) {
-        n.key = this.visitPropertyName(n.key);
-        if (n.body) {
-          n.body = this.visitBlockStatement(n.body);
-        }
-        n.typeAnnotation = this.visitTsTypeAnnotation(n.typeAnnotation);
-        return n;
-      }
-      visitAssignmentProperty(n) {
-        n.key = this.visitIdentifier(n.key);
-        n.value = this.visitExpression(n.value);
-        return n;
-      }
-      visitNullLiteral(n) {
-        return n;
-      }
-      visitNewExpression(n) {
-        n.callee = this.visitExpression(n.callee);
-        if (n.arguments) {
-          n.arguments = this.visitArguments(n.arguments);
-        }
-        n.typeArguments = this.visitTsTypeArguments(n.typeArguments);
-        return n;
-      }
-      visitTsTypeArguments(n) {
-        if (n) {
-          n.params = this.visitTsTypes(n.params);
-        }
-        return n;
-      }
-      visitArguments(nodes) {
-        return nodes.map(this.visitArgument.bind(this));
-      }
-      visitArgument(n) {
-        n.expression = this.visitExpression(n.expression);
-        return n;
-      }
-      visitMetaProperty(n) {
-        n.meta = this.visitIdentifierReference(n.meta);
-        n.property = this.visitIdentifier(n.property);
-        return n;
-      }
-      visitMemberExpression(n) {
-        n.object = this.visitExpressionOrSuper(n.object);
-        n.property = this.visitExpression(n.property);
-        return n;
-      }
-      visitExpressionOrSuper(n) {
-        if (n.type === "Super") {
-          return n;
-        }
-        return this.visitExpression(n);
-      }
-      visitJSXText(n) {
-        return n;
-      }
-      visitJSXNamespacedName(n) {
-        n.namespace = this.visitIdentifierReference(n.namespace);
-        n.name = this.visitIdentifierReference(n.name);
-        return n;
-      }
-      visitJSXMemberExpression(n) {
-        n.object = this.visitJSXObject(n.object);
-        n.property = this.visitIdentifierReference(n.property);
-        return n;
-      }
-      visitJSXObject(n) {
-        switch (n.type) {
-          case "Identifier":
-            return this.visitIdentifierReference(n);
-          case "JSXMemberExpression":
-            return this.visitJSXMemberExpression(n);
-        }
-      }
-      visitJSXFragment(n) {
-        n.opening = this.visitJSXOpeningFragment(n.opening);
-        if (n.children) {
-          n.children = this.visitJSXElementChildren(n.children);
-        }
-        n.closing = this.visitJSXClosingFragment(n.closing);
-        return n;
-      }
-      visitJSXClosingFragment(n) {
-        return n;
-      }
-      visitJSXElementChildren(nodes) {
-        return nodes.map(this.visitJSXElementChild.bind(this));
-      }
-      visitJSXElementChild(n) {
-        switch (n.type) {
-          case "JSXElement":
-            return this.visitJSXElement(n);
-          case "JSXExpressionContainer":
-            return this.visitJSXExpressionContainer(n);
-          case "JSXFragment":
-            return this.visitJSXFragment(n);
-          case "JSXSpreadChild":
-            return this.visitJSXSpreadChild(n);
-          case "JSXText":
-            return this.visitJSXText(n);
-        }
-      }
-      visitJSXExpressionContainer(n) {
-        n.expression = this.visitExpression(n.expression);
-        return n;
-      }
-      visitJSXSpreadChild(n) {
-        n.expression = this.visitExpression(n.expression);
-        return n;
-      }
-      visitJSXOpeningFragment(n) {
-        return n;
-      }
-      visitJSXEmptyExpression(n) {
-        return n;
-      }
-      visitJSXElement(n) {
-        n.opening = this.visitJSXOpeningElement(n.opening);
-        n.children = this.visitJSXElementChildren(n.children);
-        n.closing = this.visitJSXClosingElement(n.closing);
-        return n;
-      }
-      visitJSXClosingElement(n) {
-        if (n) {
-          n.name = this.visitJSXElementName(n.name);
-        }
-        return n;
-      }
-      visitJSXElementName(n) {
-        switch (n.type) {
-          case "Identifier":
-            return this.visitIdentifierReference(n);
-          case "JSXMemberExpression":
-            return this.visitJSXMemberExpression(n);
-          case "JSXNamespacedName":
-            return this.visitJSXNamespacedName(n);
-        }
-      }
-      visitJSXOpeningElement(n) {
-        n.name = this.visitJSXElementName(n.name);
-        n.typeArguments = this.visitTsTypeParameterInstantiation(n.typeArguments);
-        n.attributes = this.visitJSXAttributes(n.attributes);
-        return n;
-      }
-      visitJSXAttributes(attrs) {
-        if (attrs) {
-          return attrs.map(this.visitJSXAttributeOrSpread.bind(this));
-        }
-      }
-      visitJSXAttributeOrSpread(n) {
-        switch (n.type) {
-          case "JSXAttribute":
-            return this.visitJSXAttribute(n);
-          case "SpreadElement":
-            return this.visitSpreadElement(n);
-        }
-      }
-      visitJSXAttribute(n) {
-        n.name = this.visitJSXAttributeName(n.name);
-        n.value = this.visitJSXAttributeValue(n.value);
-        return n;
-      }
-      visitJSXAttributeValue(n) {
-        if (!n) {
-          return n;
-        }
-        switch (n.type) {
-          case "BooleanLiteral":
-            return this.visitBooleanLiteral(n);
-          case "NullLiteral":
-            return this.visitNullLiteral(n);
-          case "NumericLiteral":
-            return this.visitNumericLiteral(n);
-          case "JSXText":
-            return this.visitJSXText(n);
-          case "StringLiteral":
-            return this.visitStringLiteral(n);
-          case "JSXElement":
-            return this.visitJSXElement(n);
-          case "JSXExpressionContainer":
-            return this.visitJSXExpressionContainer(n);
-          case "JSXFragment":
-            return this.visitJSXFragment(n);
-        }
-        return n;
-      }
-      visitJSXAttributeName(n) {
-        switch (n.type) {
-          case "Identifier":
-            return this.visitIdentifierReference(n);
-          case "JSXNamespacedName":
-            return this.visitJSXNamespacedName(n);
-        }
-      }
-      visitConditionalExpression(n) {
-        n.test = this.visitExpression(n.test);
-        n.consequent = this.visitExpression(n.consequent);
-        n.alternate = this.visitExpression(n.alternate);
-        return n;
-      }
-      visitCallExpression(n) {
-        n.callee = this.visitExpressionOrSuper(n.callee);
-        n.typeArguments = this.visitTsTypeParameterInstantiation(n.typeArguments);
-        if (n.arguments) {
-          n.arguments = this.visitArguments(n.arguments);
-        }
-        return n;
-      }
-      visitBooleanLiteral(n) {
-        return n;
-      }
-      visitBinaryExpression(n) {
-        n.left = this.visitExpression(n.left);
-        n.right = this.visitExpression(n.right);
-        return n;
-      }
-      visitAwaitExpression(n) {
-        n.argument = this.visitExpression(n.argument);
-        return n;
-      }
-      visitTsTypeParameterDeclaration(n) {
-        if (n) {
-          n.parameters = this.visitTsTypeParameters(n.parameters);
-        }
-        return n;
-      }
-      visitTsTypeParameters(nodes) {
-        return nodes.map(this.visitTsTypeParameter.bind(this));
-      }
-      visitTsTypeParameter(n) {
-        if (n.constraint) {
-          n.constraint = this.visitTsType(n.constraint);
-        }
-        if (n.default) {
-          n.default = this.visitTsType(n.default);
-        }
-        n.name = this.visitIdentifierReference(n.name);
-        return n;
-      }
-      visitTsTypeAnnotation(a) {
-        if (a) {
-          a.typeAnnotation = this.visitTsType(a.typeAnnotation);
-        }
-        return a;
-      }
-      visitTsType(n) {
-        return n;
-      }
-      visitPatterns(nodes) {
-        return nodes.map(this.visitPattern.bind(this));
-      }
-      visitImportDeclaration(n) {
-        n.source = this.visitStringLiteral(n.source);
-        n.specifiers = this.visitImportSpecifiers(n.specifiers || []);
-        return n;
-      }
-      visitImportSpecifiers(nodes) {
-        return nodes.map(this.visitImportSpecifier.bind(this));
-      }
-      visitImportSpecifier(node) {
-        switch (node.type) {
-          case "ImportDefaultSpecifier":
-            return this.visitImportDefaultSpecifier(node);
-          case "ImportNamespaceSpecifier":
-            return this.visitImportNamespaceSpecifier(node);
-          case "ImportSpecifier":
-            return this.visitNamedImportSpecifier(node);
-        }
-      }
-      visitNamedImportSpecifier(node) {
-        node.local = this.visitBindingIdentifier(node.local);
-        if (node.imported) {
-          node.imported = this.visitIdentifierReference(node.imported);
-        }
-        return node;
-      }
-      visitImportNamespaceSpecifier(node) {
-        node.local = this.visitBindingIdentifier(node.local);
-        return node;
-      }
-      visitImportDefaultSpecifier(node) {
-        node.local = this.visitBindingIdentifier(node.local);
-        return node;
-      }
-      visitBindingIdentifier(i) {
-        return this.visitIdentifier(i);
-      }
-      visitIdentifierReference(i) {
-        return this.visitIdentifier(i);
-      }
-      visitLabelIdentifier(label) {
-        return this.visitIdentifier(label);
-      }
-      visitIdentifier(n) {
-        return n;
-      }
-      visitStringLiteral(n) {
-        return n;
-      }
-      visitNumericLiteral(n) {
-        return n;
-      }
-      visitPattern(n) {
-        switch (n.type) {
-          case "Identifier":
-            return this.visitBindingIdentifier(n);
-          case "ArrayPattern":
-            return this.visitArrayPattern(n);
-          case "ObjectPattern":
-            return this.visitObjectPattern(n);
-          case "AssignmentPattern":
-            return this.visitAssignmentPattern(n);
-          case "RestElement":
-            return this.visitRestElement(n);
-          default:
-            return this.visitExpression(n);
-        }
-      }
-      visitRestElement(n) {
-        n.argument = this.visitPattern(n.argument);
-        n.typeAnnotation = this.visitTsTypeAnnotation(n.typeAnnotation);
-        return n;
-      }
-      visitAssignmentPattern(n) {
-        n.left = this.visitPattern(n.left);
-        n.right = this.visitExpression(n.right);
-        n.typeAnnotation = this.visitTsTypeAnnotation(n.typeAnnotation);
-        return n;
-      }
-      visitObjectPattern(n) {
-        n.properties = this.visitObjectPatternProperties(n.properties || []);
-        n.typeAnnotation = this.visitTsTypeAnnotation(n.typeAnnotation);
-        return n;
-      }
-      visitObjectPatternProperties(nodes) {
-        return nodes.map(this.visitObjectPatternProperty.bind(this));
-      }
-      visitObjectPatternProperty(n) {
-        switch (n.type) {
-          case "AssignmentPatternProperty":
-            return this.visitAssignmentPatternProperty(n);
-          case "KeyValuePatternProperty":
-            return this.visitKeyValuePatternProperty(n);
-          case "RestElement":
-            return this.visitRestElement(n);
-        }
-      }
-      visitKeyValuePatternProperty(n) {
-        n.key = this.visitPropertyName(n.key);
-        n.value = this.visitPattern(n.value);
-        return n;
-      }
-      visitAssignmentPatternProperty(n) {
-        n.key = this.visitBindingIdentifier(n.key);
-        n.value = this.visitOptionalExpression(n.value);
-        return n;
-      }
-      visitArrayPattern(n) {
-        n.typeAnnotation = this.visitTsTypeAnnotation(n.typeAnnotation);
-        n.elements = this.visitArrayPatternElements(n.elements);
-        return n;
-      }
-      visitArrayPatternElements(nodes) {
-        return nodes.map(this.visitArrayPatternElement.bind(this));
-      }
-      visitArrayPatternElement(n) {
-        if (n) {
-          n = this.visitPattern(n);
-        }
-        return n;
-      }
-    };
-    Visitor_2 = Visitor$1.Visitor = Visitor;
-    _default = Visitor$1.default = Visitor;
-  }
-});
-
-// pkgs/base/src/scaffold/parser/traverse.ts
-var swc, traverse;
-var init_traverse = __esm({
-  "pkgs/base/src/scaffold/parser/traverse.ts"() {
-    "use strict";
-    swc = __toESM(require("@swc/core"));
-    init_visitor();
-    traverse = async (source, params) => {
-      const parsed = await swc.parse(source, {
-        syntax: "typescript",
-        tsx: true,
-        target: "es2022",
-        script: true
-      });
-      class Traverse extends _default {
-        constructor() {
-          super();
-          const result = params(
-            new Proxy(
-              {},
-              {
-                get: (target, p, receiver) => {
-                  return this._parent(p);
-                }
-              }
-            )
-          );
-          for (const [k, v] of Object.entries(result)) {
-            this[k] = v;
-          }
-        }
-        _parent(name) {
-          return super[name];
-        }
-      }
-      new Traverse().visitModule(parsed);
-    };
-  }
-});
-
-// app/srv/api/built-in/_parsejs.ts
-var parsejs_exports = {};
-__export(parsejs_exports, {
-  _: () => _4,
-  extractField: () => extractField
-});
-var _4, extractField;
-var init_parsejs = __esm({
-  "app/srv/api/built-in/_parsejs.ts"() {
-    init_export6();
-    init_traverse();
-    _4 = {
-      url: "/_parsejs",
-      async api(js) {
-        const { req, res } = apiContext(this);
-        const parsed = [];
-        if (js.startsWith("db.")) {
-          await traverse(js, (parent) => ({
-            visitCallExpression(n) {
-              if (n.callee.type === "MemberExpression" && n.callee.property.type === "Identifier" && n.callee.property.value.startsWith("find") && n.callee.object.type === "MemberExpression" && n.callee.object.property.type === "Identifier" && n.callee.object.object.type === "Identifier" && n.callee.object.object.value === "db" && n.arguments.length === 1 && n.arguments[0].expression.type === "ObjectExpression") {
-                const select = {};
-                const where = {};
-                for (const p of n.arguments[0].expression.properties) {
-                  if (p.type === "KeyValueProperty" && p.key.type === "Identifier") {
-                    if (p.key.value === "select") {
-                      extractField(p.value, select);
-                    } else if (p.key.value === "where") {
-                      extractField(p.value, where);
-                    }
-                  }
-                }
-                parsed.push({
-                  type: "query",
-                  // ctx: { start: n.span.start, end: n.span.end },
-                  table: n.callee.object.property.value,
-                  select,
-                  where
-                });
-              }
-              return parent.visitCallExpression(n);
-            }
-          }));
-        }
-        return { status: "ok", parsed };
-      }
-    };
-    extractField = (e, select) => {
-      if (e.type === "ObjectExpression") {
-        for (const p of e.properties) {
-          if (p.type === "KeyValueProperty" && (p.key.type === "Identifier" || p.key.type === "StringLiteral")) {
-            switch (p.value.type) {
-              case "MemberExpression":
-                {
-                  const drillMember = (v) => {
-                    let result = ``;
-                    if (v.object.type === "Identifier") {
-                      result += `${v.object.value}.`;
-                    } else if (v.object.type === "MemberExpression") {
-                      result += `${drillMember(v.object)}.`;
-                    }
-                    if (v.property.type === "Identifier") {
-                      result += v.property.value;
-                    }
-                    return result;
-                  };
-                  select[p.key.value] = drillMember(p.value);
-                }
-                break;
-              case "BooleanLiteral":
-                {
-                  select[p.key.value] = p.value.value;
-                }
-                break;
-              case "TemplateLiteral":
-                {
-                  select[p.key.value] = `"${p.value.quasis.map((e2) => e2.cooked).join("")}"`;
-                }
-                break;
-              case "ObjectExpression":
-                {
-                  select[p.key.value] = {};
-                  extractField(p.value, select[p.key.value]);
-                }
-                break;
-              case "ArrayExpression":
-                {
-                  select[p.key.value] = [];
-                  for (const e2 of p.value.elements) {
-                    if (e2?.expression.type === "ObjectExpression") {
-                      const value = {};
-                      extractField(e2?.expression, value);
-                      select[p.key.value].push(value);
-                    }
-                  }
-                }
-                break;
-            }
-          }
-        }
-      }
-    };
-  }
-});
-
 // app/srv/api/built-in/_prasi.ts
 var prasi_exports = {};
 __export(prasi_exports, {
-  _: () => _5
+  _: () => _4
 });
-var import_crypto2, import_fs_jetpack10, cache2, _5;
+var import_fs_jetpack10, _4;
 var init_prasi = __esm({
   "app/srv/api/built-in/_prasi.ts"() {
-    import_crypto2 = __toESM(require("crypto"));
+    init_export6();
     init_export();
     import_fs_jetpack10 = __toESM(require_main2());
-    init_export6();
-    cache2 = {};
-    _5 = {
+    _4 = {
       url: "/_prasi/**",
       async api() {
         const { req, res } = apiContext(this);
-        res.setHeader("Access-Control-Allow-Origin", "*");
-        const sendCached = (name, content) => {
-          if (!cache2[name])
-            cache2[name] = {
-              content,
-              etag: import_crypto2.default.createHash("md5").update(content).digest("hex")
-            };
-          res.setHeader("etag", cache2[name].etag);
-          res.send(cache2[name].content);
-        };
         const action = {
           _: () => {
-            res.json({ prasi: "v1" });
+            res.setHeader("Access-Control-Allow-Origin", "*");
+            res.json({ prasi: "v2" });
           },
-          prisma: async () => {
-            const path = req.params._.split("/").slice(1).join("/");
-            const pdir = dir.path(`db/node_modules/.gen/${path}`);
-            if (await (0, import_fs_jetpack10.existsAsync)(pdir)) {
-              res.type("text/x.typescript");
-              const content = await (0, import_fs_jetpack10.readAsync)(pdir, "utf8");
-              sendCached("prisma", content);
+          "load.js": async () => {
+            let apiEntry = "";
+            try {
+              apiEntry = JSON.stringify(
+                (await Promise.resolve().then(() => (init_entry(), entry_exports))).srv
+              );
+            } catch (e) {
+              return "API entry not found";
             }
-          },
-          "api-types": async () => {
+            let apiTypes = "";
             const pdir = dir.path("srv/api.d.ts");
             if (await (0, import_fs_jetpack10.existsAsync)(pdir)) {
-              res.type("text/x.typescript");
               let result = await (0, import_fs_jetpack10.readAsync)(pdir, "utf8");
               if (result) {
                 if (!result.startsWith("/* DB-CLEANED */")) {
@@ -48589,24 +47129,57 @@ var init_prasi = __esm({
                   }
                   parr.unshift("/* DB-CLEANED */");
                   result = parr.join("\n");
-                  await (0, import_fs_jetpack10.writeAsync)(pdir, result);
+                  return await (0, import_fs_jetpack10.writeAsync)(pdir, result);
                 }
+                apiTypes = JSON.stringify(result);
               }
-              sendCached("api-types", result);
             }
-          },
-          "api-entry": async () => {
-            try {
-              const apiEntry = await Promise.resolve().then(() => (init_entry(), entry_exports));
-              res.type("application/json");
-              sendCached("api-entry", JSON.stringify(apiEntry));
-            } catch (e) {
-              return "API entry not found";
+            let prisma = "";
+            {
+              const pdir2 = dir.path(`db/node_modules/.gen/prisma/index.d.ts`);
+              if (await (0, import_fs_jetpack10.existsAsync)(pdir2)) {
+                prisma = await (0, import_fs_jetpack10.readAsync)(pdir2, "utf8") || "";
+              }
             }
+            let prismart = "";
+            {
+              const pdir2 = dir.path(
+                `db/node_modules/.gen/prisma/runtime/index.d.ts`
+              );
+              if (await (0, import_fs_jetpack10.existsAsync)(pdir2)) {
+                prismart = await (0, import_fs_jetpack10.readAsync)(pdir2, "utf8") || "";
+              }
+            }
+            let prismalib = "";
+            {
+              const pdir2 = dir.path(
+                `db/node_modules/.gen/prisma/runtime/library.d.ts`
+              );
+              if (await (0, import_fs_jetpack10.existsAsync)(pdir2)) {
+                prismalib = await (0, import_fs_jetpack10.readAsync)(pdir2, "utf8") || "";
+              }
+            }
+            res.send(`
+(() => {
+  const url = "${req.query_parameters["url"]}"
+  const w = window;
+  if (!w.prasiApi) {
+    w.prasiApi = {};
+  }
+  w.prasiApi[url] = {
+    apiEntry: ${apiEntry},
+    apiTypes: ${apiTypes},
+    prismaTypes: {
+      "prisma.d.ts": ${JSON.stringify(prisma)},
+      "runtime/index.d.ts": ${JSON.stringify(prismart)},
+      "runtime/library.d.ts": ${JSON.stringify(prismalib)},
+    },
+  };
+})();`);
           }
         }[req.params._.split("/")[0]];
         if (action)
-          await action();
+          return action();
       }
     };
   }
@@ -48615,16 +47188,16 @@ var init_prasi = __esm({
 // app/srv/api/built-in/_upload.ts
 var upload_exports = {};
 __export(upload_exports, {
-  _: () => _6
+  _: () => _5
 });
-var import_fs_jetpack11, import_path6, _6;
+var import_fs_jetpack11, import_path6, _5;
 var init_upload = __esm({
   "app/srv/api/built-in/_upload.ts"() {
     init_export();
     import_fs_jetpack11 = __toESM(require_main2());
     init_export6();
     import_path6 = require("path");
-    _6 = {
+    _5 = {
       url: "/_upload",
       async api(body) {
         const { req } = apiContext(this);
@@ -48653,14 +47226,14 @@ var init_upload = __esm({
 // app/srv/api/built-in/auth/change-password.ts
 var change_password_exports = {};
 __export(change_password_exports, {
-  _: () => _7
+  _: () => _6
 });
-var import_argon2, _7;
+var import_argon2, _6;
 var init_change_password = __esm({
   "app/srv/api/built-in/auth/change-password.ts"() {
     init_export6();
     import_argon2 = __toESM(require("@node-rs/argon2"));
-    _7 = {
+    _6 = {
       url: "/change-password",
       async api(datas) {
         const { res, req } = apiContext(this);
@@ -48715,14 +47288,14 @@ var init_change_password = __esm({
 // app/srv/api/built-in/auth/login.ts
 var login_exports = {};
 __export(login_exports, {
-  _: () => _8
+  _: () => _7
 });
-var import_argon22, _8;
+var import_argon22, _7;
 var init_login = __esm({
   "app/srv/api/built-in/auth/login.ts"() {
     import_argon22 = __toESM(require("@node-rs/argon2"));
     init_export6();
-    _8 = {
+    _7 = {
       url: "/_login",
       async api(username, password) {
         const { res, req } = apiContext(this);
@@ -48761,13 +47334,13 @@ var init_login = __esm({
 // app/srv/api/built-in/auth/logout.ts
 var logout_exports = {};
 __export(logout_exports, {
-  _: () => _9
+  _: () => _8
 });
-var _9;
+var _8;
 var init_logout = __esm({
   "app/srv/api/built-in/auth/logout.ts"() {
     init_export6();
-    _9 = {
+    _8 = {
       url: "/_logout",
       async api() {
         const { res, req } = apiContext(this);
@@ -48788,14 +47361,14 @@ var init_logout = __esm({
 // app/srv/api/built-in/auth/register.ts
 var register_exports = {};
 __export(register_exports, {
-  _: () => _10
+  _: () => _9
 });
-var import_argon23, _10;
+var import_argon23, _9;
 var init_register = __esm({
   "app/srv/api/built-in/auth/register.ts"() {
     init_export6();
     import_argon23 = __toESM(require("@node-rs/argon2"));
-    _10 = {
+    _9 = {
       url: "/register",
       async api(datas) {
         const { res, req } = apiContext(this);
@@ -48848,13 +47421,13 @@ var init_register = __esm({
 // app/srv/api/built-in/auth/session-old.ts
 var session_old_exports = {};
 __export(session_old_exports, {
-  _: () => _11
+  _: () => _10
 });
-var _11;
+var _10;
 var init_session_old = __esm({
   "app/srv/api/built-in/auth/session-old.ts"() {
     init_export6();
-    _11 = {
+    _10 = {
       url: "/_session",
       async api() {
         const { req } = apiContext(this);
@@ -48871,7 +47444,6 @@ __export(srv_exports, {
   _dbs: () => _dbs,
   _file: () => _file,
   _img: () => _img,
-  _parsejs: () => _parsejs,
   _prasi: () => _prasi,
   _upload: () => _upload,
   change_password: () => change_password,
@@ -48880,7 +47452,7 @@ __export(srv_exports, {
   register: () => register,
   session_old: () => session_old
 });
-var _dbs, _file, _img, _parsejs, _prasi, _upload, change_password, login, logout, register, session_old;
+var _dbs, _file, _img, _prasi, _upload, change_password, login, logout, register, session_old;
 var init_srv = __esm({
   "app/gen/srv/api/srv.ts"() {
     _dbs = {
@@ -48903,13 +47475,6 @@ var init_srv = __esm({
       path: "app/srv/api/built-in/_img.ts",
       args: [],
       handler: Promise.resolve().then(() => (init_img(), img_exports))
-    };
-    _parsejs = {
-      name: "_parsejs",
-      url: "/_parsejs",
-      path: "app/srv/api/built-in/_parsejs.ts",
-      args: ["js"],
-      handler: Promise.resolve().then(() => (init_parsejs(), parsejs_exports))
     };
     _prasi = {
       name: "_prasi",
@@ -49008,7 +47573,7 @@ var init_server2 = __esm({
           server2.ws(k, v);
         }
       }
-      server2.any("/", (_12, res) => {
+      server2.any("/", (_11, res) => {
         res.send("OK");
       });
       await buildApiFrm();

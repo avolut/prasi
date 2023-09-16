@@ -1,19 +1,19 @@
-declare module "app/gen/srv/api/entry" {
-    export * as srv from "app/gen/srv/api/srv";
+declare module "gen/srv/api/entry" {
+    export * as srv from "gen/srv/api/srv";
 }
-declare module "app/srv/api/built-in/_dbs" {
+declare module "srv/api/built-in/_dbs" {
     export const _: {
         url: string;
         api(dbName: any, action?: string): Promise<void>;
     };
 }
-declare module "app/srv/api/built-in/_file" {
+declare module "srv/api/built-in/_file" {
     export const _: {
         url: string;
         api(): Promise<void>;
     };
 }
-declare module "app/srv/api/built-in/_img" {
+declare module "srv/api/built-in/_img" {
     import { FitEnum } from "sharp";
     export const _: {
         url: string;
@@ -26,47 +26,19 @@ declare module "app/srv/api/built-in/_img" {
         slug: string;
     }) => Promise<void>;
 }
-declare module "pkgs/base/src/scaffold/parser/traverse" {
-    import Visitor from "./swc/visitor";
-    export const traverse: (source: string, params: (parent: Visitor) => Partial<InstanceType<typeof Visitor>>) => Promise<void>;
-}
-declare module "app/srv/api/built-in/_parsejs" {
-    type SelectField = {
-        [key: string]: {
-            select?: SelectField;
-        } | boolean;
-    };
-    type WhereField = {
-        [key: string]: WhereField | string | undefined;
-    };
-    export type ParsedQuery = {
-        type: "query";
-        table: string;
-        select: SelectField;
-        where: WhereField;
-    };
+declare module "srv/api/built-in/_prasi" {
     export const _: {
         url: string;
-        api(js: string): Promise<{
-            status: string;
-            parsed: ParsedQuery[];
-        }>;
-    };
-    export const extractField: (e: Expression, select: any) => void;
-}
-declare module "app/srv/api/built-in/_prasi" {
-    export const _: {
-        url: string;
-        api(): Promise<void>;
+        api(): Promise<void | "API entry not found">;
     };
 }
-declare module "app/srv/api/built-in/_upload" {
+declare module "srv/api/built-in/_upload" {
     export const _: {
         url: string;
         api(body: any): Promise<string>;
     };
 }
-declare module "app/srv/api/built-in/auth/change-password" {
+declare module "srv/api/built-in/auth/change-password" {
     export const _: {
         url: string;
         api(datas: any): Promise<{
@@ -75,7 +47,7 @@ declare module "app/srv/api/built-in/auth/change-password" {
         }>;
     };
 }
-declare module "app/srv/api/built-in/auth/login" {
+declare module "srv/api/built-in/auth/login" {
     export const _: {
         url: string;
         api(username: string, password: string): Promise<{
@@ -99,7 +71,7 @@ declare module "app/srv/api/built-in/auth/login" {
         }>;
     };
 }
-declare module "app/srv/api/built-in/auth/logout" {
+declare module "srv/api/built-in/auth/logout" {
     export const _: {
         url: string;
         api(): Promise<{
@@ -107,7 +79,7 @@ declare module "app/srv/api/built-in/auth/logout" {
         }>;
     };
 }
-declare module "app/srv/api/built-in/auth/register" {
+declare module "srv/api/built-in/auth/register" {
     export const _: {
         url: string;
         api(datas: any): Promise<{
@@ -116,88 +88,81 @@ declare module "app/srv/api/built-in/auth/register" {
         }>;
     };
 }
-declare module "app/srv/api/built-in/auth/session-old" {
+declare module "srv/api/built-in/auth/session-old" {
     export const _: {
         url: string;
         api(): Promise<any>;
     };
 }
-declare module "app/gen/srv/api/srv" {
+declare module "gen/srv/api/srv" {
     export const _dbs: {
         name: string;
         url: string;
         path: string;
         args: string[];
-        handler: Promise<typeof import("app/srv/api/built-in/_dbs")>;
+        handler: Promise<typeof import("srv/api/built-in/_dbs")>;
     };
     export const _file: {
         name: string;
         url: string;
         path: string;
         args: any[];
-        handler: Promise<typeof import("app/srv/api/built-in/_file")>;
+        handler: Promise<typeof import("srv/api/built-in/_file")>;
     };
     export const _img: {
         name: string;
         url: string;
         path: string;
         args: any[];
-        handler: Promise<typeof import("app/srv/api/built-in/_img")>;
-    };
-    export const _parsejs: {
-        name: string;
-        url: string;
-        path: string;
-        args: string[];
-        handler: Promise<typeof import("app/srv/api/built-in/_parsejs")>;
+        handler: Promise<typeof import("srv/api/built-in/_img")>;
     };
     export const _prasi: {
         name: string;
         url: string;
         path: string;
         args: any[];
-        handler: Promise<typeof import("app/srv/api/built-in/_prasi")>;
+        handler: Promise<typeof import("srv/api/built-in/_prasi")>;
     };
     export const _upload: {
         name: string;
         url: string;
         path: string;
         args: string[];
-        handler: Promise<typeof import("app/srv/api/built-in/_upload")>;
+        handler: Promise<typeof import("srv/api/built-in/_upload")>;
     };
     export const change_password: {
         name: string;
         url: string;
         path: string;
         args: string[];
-        handler: Promise<typeof import("app/srv/api/built-in/auth/change-password")>;
+        handler: Promise<typeof import("srv/api/built-in/auth/change-password")>;
     };
     export const login: {
         name: string;
         url: string;
         path: string;
         args: string[];
-        handler: Promise<typeof import("app/srv/api/built-in/auth/login")>;
+        handler: Promise<typeof import("srv/api/built-in/auth/login")>;
     };
     export const logout: {
         name: string;
         url: string;
         path: string;
         args: any[];
-        handler: Promise<typeof import("app/srv/api/built-in/auth/logout")>;
+        handler: Promise<typeof import("srv/api/built-in/auth/logout")>;
     };
     export const register: {
         name: string;
         url: string;
         path: string;
         args: string[];
-        handler: Promise<typeof import("app/srv/api/built-in/auth/register")>;
+        handler: Promise<typeof import("srv/api/built-in/auth/register")>;
     };
     export const session_old: {
         name: string;
         url: string;
         path: string;
         args: any[];
-        handler: Promise<typeof import("app/srv/api/built-in/auth/session-old")>;
+        handler: Promise<typeof import("srv/api/built-in/auth/session-old")>;
     };
 }

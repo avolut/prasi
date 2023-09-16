@@ -2,7 +2,7 @@
   "name": "db",
   "version": "0.0.1",
   "dependencies": {
-    "hyper-express": "6.7.1",
+    "hyper-express": "6.8.5",
     "prisma": "5.3.1"
   }
 }

@@ -5,7 +5,7 @@
     "sharp": "0.32.5",
     "@node-rs/argon2": "1.5.2",
     "@swc/core": "^1.3.84",
-    "hyper-express": "6.7.1",
+    "hyper-express": "6.8.5",
     "lmdb": "2.7.9"
   }
 }

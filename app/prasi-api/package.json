@@ -1,7 +1,7 @@
 {
   "name": "app",
   "dependencies": {
-    "hyper-express": "6.7.1",
+    "hyper-express": "6.8.5",
     "esbuild": "^0.18.20"
   }
 }

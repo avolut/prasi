@@ -56,7 +56,6 @@ export const ToolbarCenter = () => {
       try {
         local.apiStatus = "starting";
         local.render();
-        await fetch(p.site.api_url + "/_prasi/api-types");
         await reloadDBAPI(p.site.api_url);
         local.apiStatus = "started";
         local.render();
