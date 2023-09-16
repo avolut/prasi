@@ -112,9 +112,7 @@ export const createFrameCors = async (url: string, win?: any) => {
           }
         }
 
-        return data instanceof w.FormData || data instanceof w.File
-          ? data
-          : JSON.stringify(data);
+        return data;
       };
 
       if (Array.isArray(data)) {
