@@ -1,7 +1,7 @@
 import { DeepProxy } from "@qiwi/deep-proxy";
 import { Server, WSRouteHandler } from "hyper-express";
 import { createRouter } from "radix3";
-import { apiFrm } from "./api/api-frm";
+import { apiFrm, buildApiFrm } from "./api/api-frm";
 import { session } from "./api/session";
 export const server = async ({
   port,
@@ -38,6 +38,7 @@ export const server = async ({
   server.any("/", (_, res) => {
     res.send("OK");
   });
+  await buildApiFrm();
   server.any("/_api_frm", apiFrm);
 
   await session.init({ cookieKey });

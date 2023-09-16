@@ -1,8 +1,11 @@
 import { Request, Response } from "hyper-express";
 import { transformSync } from "esbuild";
 
-const frm = transformSync(
-  `\
+const frm = { code: "" };
+
+export const buildApiFrm = async () => {
+  frm.code = transformSync(
+    `\
   (BigInt.prototype).toJSON = function () {
     return "BigInt::" + this.toString();
   };
@@ -49,8 +52,9 @@ const frm = transformSync(
       })
   })
   parent.postMessage('initialized', '*')`,
-  { minify: true }
-);
+    { minify: true }
+  ).code;
+};
 
 export const apiFrm = (req: Request, res: Response) => {
   // TODO: whitelist origin
