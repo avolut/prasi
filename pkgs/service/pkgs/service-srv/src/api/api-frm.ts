@@ -1,7 +1,7 @@
 import { Request, Response } from "hyper-express";
 import { transformSync } from "esbuild";
 
-const frm = { code: "" };
+const frm = { code: "", etag: "" };
 
 export const buildApiFrm = async () => {
   frm.code = transformSync(

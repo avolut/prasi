@@ -38046,13 +38046,15 @@ var init_dist = __esm({
 });
 
 // pkgs/service/pkgs/service-srv/src/api/api-frm.ts
-var import_esbuild, frm, apiFrm;
+var import_esbuild, frm, buildApiFrm, apiFrm;
 var init_api_frm = __esm({
   "pkgs/service/pkgs/service-srv/src/api/api-frm.ts"() {
     "use strict";
     import_esbuild = require("esbuild");
-    frm = (0, import_esbuild.transformSync)(
-      `  (BigInt.prototype).toJSON = function () {
+    frm = { code: "" };
+    buildApiFrm = async () => {
+      frm.code = (0, import_esbuild.transformSync)(
+        `  (BigInt.prototype).toJSON = function () {
     return "BigInt::" + this.toString();
   };
 
@@ -38098,8 +38100,9 @@ var init_api_frm = __esm({
       })
   })
   parent.postMessage('initialized', '*')`,
-      { minify: true }
-    );
+        { minify: true }
+      ).code;
+    };
     apiFrm = (req, res) => {
       const allowUrl = req.headers.origin || req.headers.referer;
       res.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT");
@@ -49005,6 +49008,7 @@ var init_server2 = __esm({
       server2.any("/", (_12, res) => {
         res.send("OK");
       });
+      await buildApiFrm();
       server2.any("/_api_frm", apiFrm);
       await session.init({ cookieKey });
       const api = apiEntry[name];
