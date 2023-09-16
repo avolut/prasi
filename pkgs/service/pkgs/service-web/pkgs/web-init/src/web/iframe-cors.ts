@@ -91,12 +91,14 @@ export const createFrameCors = async (url: string, win?: any) => {
       const headers = { ..._headers };
 
       let body = data;
+      let isFile = false;
 
       const formatSingle = async (data: any) => {
         if (!(data instanceof w.FormData || data instanceof w.File)) {
           headers["content-type"] = "application/json";
         } else {
           if (data instanceof w.File) {
+            isFile = true;
             let ab = await new Promise<ArrayBuffer | undefined>((resolve) => {
               const reader = new FileReader();
               reader.addEventListener("load", (e) => {
@@ -119,6 +121,9 @@ export const createFrameCors = async (url: string, win?: any) => {
         body = await Promise.all(data.map((e) => formatSingle(e)));
       } else {
         body = await formatSingle(data);
+      }
+      if (!isFile) {
+        body = JSON.stringify(body);
       }
 
       return await sendRaw(

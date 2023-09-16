@@ -20,12 +20,14 @@ const frm = transformSync(
 
     const url = new URL(msg.input);
 
-    if (init && init.body && init.body instanceof File) {
-      const body = new FormData();
-      body.append("file", msg.init.body);
-      init.body = body;
+    if (init && init.body && typeof init.body === 'object') {
+      if (Array.isArray(init.body)) {
+        const body = new FormData();
+        body.append("file", init.body[0]);
+        init.body = body;
+      }
     } 
-    
+     
     fetch(url.pathname, init) 
       .then(async (res) => {
         if (res) {
