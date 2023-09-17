@@ -102,6 +102,7 @@ export const editComp = (p: PG, _item: IContent) => {
             props: map.component.props,
           };
         } else {
+          if (!p.comp.last) p.comp.last = [];
           p.comp.last.push({
             active_id: p.item.active,
             comp_id: p.comp.id,

@@ -228,6 +228,8 @@ const RootComponentClose = ({ item }: { item: IContent }) => {
               } else {
                 p.comp = null;
               }
+            } else {
+              p.comp = null;
             }
 
             if (!p.comp) localStorage.removeItem(`prasi-comp-active-id`);

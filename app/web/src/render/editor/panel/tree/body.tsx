@@ -46,6 +46,7 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
     (node: NodeModel<NodeMeta>) => {
       p.preventTreeScroll = true;
       if (node.data) {
+        console.log(node.data.meta.item.id);
         if (meta.search) {
           meta.search = "";
           meta.render();
@@ -112,8 +113,22 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
   );
 
   useEffect(() => {
-    if (p.item.active) {
+    setTimeout(() => {
       let meta = p.treeMeta[p.item.active];
+      if (!meta) {
+        const root = p.treeFlat.filter((e) => e.parent === "root");
+        if (root.length === 1) {
+          const item = root[0].data.meta.item as any;
+          if (item) {
+            const open = [
+              item.data.meta.item.id,
+              ...item.childs.map((e: any) => e.id),
+            ];
+            local.method?.open(open);
+          }
+        }
+      }
+
       if (meta && meta.mitem) {
         let mitem = meta.mitem;
         if (mitem.parent) {
@@ -133,14 +148,14 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
             local.method?.open([mitem.get("id") || ""]);
           } else {
             walkParent(item);
-            if (open.size === 0) {
+            if (open.size === 0 && p.treeFlat.length === 1) {
               open.add(mitem.get("id") || "");
             }
             local.method?.open([...open]);
           }
         }
       }
-    }
+    }, 100);
   }, [p.item.active]);
 
   return (
