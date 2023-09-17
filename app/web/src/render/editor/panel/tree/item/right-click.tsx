@@ -43,7 +43,7 @@ export const ETreeRightClick: FC<{
         where: { component_site: { some: { id_site: p.site.id } } },
       })
       .then(async (comps) => {
-        if (comps.length === 0) {
+        if (comps && comps.length === 0) {
           const res = await db.component_group.create({
             data: {
               component_site: {

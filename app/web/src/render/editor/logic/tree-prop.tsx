@@ -28,6 +28,9 @@ export const treePropEval = async (
       const prop = props[name] || _prop;
 
       if (prop.meta?.type === "content-element") {
+        // todo: create EItem
+        meta.scope[name] = <>{JSON.stringify(meta.item)}</>;
+        continue;
       }
 
       if (prop.valueBuilt) {
