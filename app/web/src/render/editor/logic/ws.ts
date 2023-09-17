@@ -16,7 +16,7 @@ import {
 import { PRASI_COMPONENT } from "../../../utils/types/render";
 import { MPage } from "../../../utils/types/general";
 import { execSiteJS } from "./init";
-import { rebuildTree } from "./tree";
+import { rebuildTree } from "./tree-logic";
 
 const conf = {
   timeout: null as any,
@@ -142,6 +142,7 @@ export const editorWS = async (p: PG) => {
             break;
           case "svd_remote":
             svdRemote({ p, bin: extract(msg.diff_remote), msg });
+            rebuildTree(p);
             break;
           case "diff_local": {
             if (msg.mode === "page") {

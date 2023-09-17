@@ -1,27 +1,25 @@
-import { ReactElement } from "react";
+import { FC, ReactElement } from "react";
 import { TypedMap } from "yjs-types";
 import { CompDoc } from "../../../base/global/content-editor";
 import { IContent, MContent, MPage } from "../../../utils/types/general";
 import { IItem, MItem } from "../../../utils/types/item";
-import { FMCompDef } from "../../../utils/types/meta-fn";
+import { FMCompDef, FNCompDef } from "../../../utils/types/meta-fn";
 import { IRoot } from "../../../utils/types/root";
 
 export type NodeMeta = { meta: ItemMeta; idx: number };
 export type ItemMeta = {
-  mitem: MContent;
+  mitem?: MContent;
   item: IContent;
-  scope: any;
+  parent_id: string;
+  scope?: any;
+  memoize?: {
+    Local: FC<any>;
+  };
   comp?: {
     id: string;
-    mitem: MItem;
+    item: IItem;
     mcomp: MItem;
     mprops?: TypedMap<Record<string, FMCompDef>>;
-  };
-  script: {
-    passprop?: any;
-    local?: any;
-    passchild?: any;
-    js?: string;
   };
 };
 
@@ -51,7 +49,7 @@ export const EditorGlobal = {
     type: "js" as "js" | "css" | "html",
   },
   item: {
-    active: localStorage.getItem("prasi-item-active-id") || "",
+    active: "",
     hover: "",
     sideHover: false,
     selectMode: "single" as "single" | "multi",
@@ -113,8 +111,12 @@ export const EditorGlobal = {
   /** components */
   comp: null as null | {
     id: string;
-    item: IItem;
-    content_tree: IItem;
+    last: {
+      comp_id?: string;
+      active_id: string;
+      props?: Record<string, FNCompDef>;
+    }[];
+    props: Record<string, FNCompDef>;
   },
   comps: {
     pending: {} as Record<string, any>,
@@ -127,7 +129,6 @@ export const EditorGlobal = {
     inherit: true,
   },
   compDirectEdit: false,
-  compEdits: [] as IItem[],
   compLoading: {} as Record<string, true>,
   compInstance: {} as Record<string, Set<ItemMeta>>,
 

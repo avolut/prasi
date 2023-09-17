@@ -99,10 +99,6 @@ export const ScriptMonacoElement: FC<{
 
   let mitem = p.treeMeta[p.item.active]?.mitem;
 
-  if (p.item.active === p.comp?.item.id) {
-    mitem = p.comps.doc[p.comp.id].getMap("map").get("content_tree") as MItem;
-  }
-
   if (!mitem) {
     p.script.active = false;
     return <div>no mitem</div>;
@@ -412,14 +408,11 @@ export const ScriptMonacoElement: FC<{
 
             let propVal: any = {};
 
-            let nprops = null;
-            const item = p.treeMeta[p.item.active].item;
-
-            if (!nprops) nprops = item.nprops;
+            const meta = p.treeMeta[p.item.active];
 
             propVal = {
               ...(window.exports || {}),
-              ...nprops,
+              ...meta.scope,
             };
 
             const propTypes: any = p.script.siteTypes;

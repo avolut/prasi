@@ -1,4 +1,4 @@
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useEffect } from "react";
 import { useGlobal } from "web-utils";
 import { Loading } from "../../../utils/ui/loading";
 import { editorStyle } from "../elements/style";
@@ -35,6 +35,7 @@ const CompManager = lazy(async () => ({
 
 export const EMainEditor = () => {
   const p = useGlobal(EditorGlobal, "EDITOR");
+
   return (
     <div
       className={cx("editor flex-1 flex flex-col items-stretch", editorStyle)}

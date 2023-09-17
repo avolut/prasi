@@ -2,6 +2,7 @@ import get from "lodash.get";
 import { createAPI, createDB, initApi } from "../../../utils/script/init-api";
 import importModule from "../tools/dynamic-import";
 import { PG } from "./global";
+import { jscript } from "../panel/script/script-element";
 
 const w = window as unknown as {
   basepath: string;
@@ -25,6 +26,22 @@ export const initEditor = async (p: PG, site_id: string) => {
       if (_href.startsWith("/ed")) return _href;
       return "";
     };
+
+    p.item.active = localStorage.getItem("prasi-item-active-id") || "";
+    const comp: any = {
+      id: localStorage.getItem("prasi-comp-active-id"),
+      last: localStorage.getItem("prasi-comp-active-last"),
+      props: localStorage.getItem("prasi-comp-active-props"),
+    };
+    if (comp.last) {
+      comp.last = JSON.parse(comp.last);
+    }
+    if (comp.props) {
+      comp.props = JSON.parse(comp.props);
+    }
+    if (comp.id) {
+      p.comp = comp;
+    }
 
     let site = null as any;
     if (!p.site.id) {
@@ -63,7 +80,7 @@ export const initEditor = async (p: PG, site_id: string) => {
       } else {
         site = p.site;
       }
-      
+
       execSiteJS(p);
 
       p.status = "ready";
@@ -71,6 +88,9 @@ export const initEditor = async (p: PG, site_id: string) => {
     } else {
       p.status = "not-found";
       p.render();
+    }
+    if (!jscript.build) {
+      jscript.init();
     }
   }
 };

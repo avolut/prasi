@@ -6,7 +6,7 @@ import { PRASI_COMPONENT } from "../../../utils/types/render";
 import { IRoot } from "../../../utils/types/root";
 import { WS_MSG_GET_COMP } from "../../../utils/types/ws";
 import { PG } from "./global";
-import { updateComponentInTree } from "./tree";
+import { rebuildTree, updateComponentInTree } from "./tree-logic";
 import { wsend } from "./ws";
 
 export const scanComponent = (
@@ -95,23 +95,35 @@ export const editComp = (p: PG, _item: IContent) => {
           ...item.component.props,
         };
 
-        const foundIdx = p.compEdits.findIndex((c) => {
-          if (c.component?.id === item.component?.id) return true;
-        });
-
-        if (foundIdx < 0) {
-          p.compEdits.push(item);
+        if (!p.comp) {
+          p.comp = {
+            id: cid,
+            last: [{ active_id: item.id }],
+            props: map.component.props,
+          };
         } else {
-          p.compEdits[foundIdx] = item;
-        }
+          p.comp.last.push({
+            active_id: p.item.active,
+            comp_id: p.comp.id,
+            props: p.comp.props,
+          });
 
+          p.comp.id = cid;
+          p.comp.props = map.component.props;
+        }
         p.item.active = map.id;
-        p.comp = {
-          id: cid,
-          item,
-          content_tree: map,
-        };
-        p.render();
+        rebuildTree(p);
+
+        localStorage.setItem("prasi-item-active-id", p.item.active);
+        localStorage.setItem("prasi-comp-active-id", p.comp.id);
+        localStorage.setItem(
+          "prasi-comp-active-last",
+          JSON.stringify(p.comp.last)
+        );
+        localStorage.setItem(
+          "prasi-comp-active-props",
+          JSON.stringify(p.comp.props)
+        );
       }
     }
   }
@@ -122,11 +134,13 @@ export const instantiateComp = async (
   mitem: MItem,
   mcomp: MItem
 ) => {
-  const nitem = undefined as unknown as MItem;
+  const nitem = mcomp.toJSON() as unknown as IItem;
   if (item.component) {
     item.component.child_ids = {};
     const ids = item.component.child_ids;
   }
 
-  return nitem;
+  // todo
+
+  return { ...nitem, ...item, name: nitem.name };
 };

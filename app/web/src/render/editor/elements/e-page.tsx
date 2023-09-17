@@ -10,15 +10,6 @@ export const EPage = () => {
     if (!p.focused) local.render();
   };
 
-  useEffect(() => {
-    if (
-      p.item.active &&
-      localStorage.getItem("prasi-item-active-id") !== p.item.active
-    ) {
-      localStorage.setItem("prasi-item-active-id", p.item.active);
-    }
-  }, [p.item.active]);
-
   if (!p.page) return null;
   const mode = p.mode;
   return (

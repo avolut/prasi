@@ -12,6 +12,7 @@ import { Adv, ETreeItemAction, Rename } from "./action";
 import { ETreeItemIndent } from "./indent";
 import { ETreeItemName } from "./name";
 import { treeItemStyle } from "./style";
+import { rebuildTree } from "../../../logic/tree-logic";
 
 export const ETreeItem: FC<{
   node: NodeModel<NodeMeta>;
@@ -45,7 +46,9 @@ export const ETreeItem: FC<{
   const local = useLocal({ renaming: false, el: null as any });
   const dragOverProps = useDragOver(node.id, isOpen, onToggle);
 
-  const item = node.data.meta.item;
+  const item = node.data.meta.comp
+    ? node.data.meta.comp.item
+    : node.data.meta.item;
   const type = item.type;
   let childs = item.type === "text" ? [] : item.childs;
   let hasChilds = false;
@@ -103,7 +106,10 @@ export const ETreeItem: FC<{
     }
   }
   let isPropContent = false;
-  const mitem = p.treeMeta[item.id].mitem;
+  const meta = p.treeMeta[item.id];
+  if (!meta) return null;
+
+  const mitem = meta.mitem;
   if (mitem && (mitem.parent as any).get("content")) {
     isPropContent = true;
   }
@@ -193,42 +199,43 @@ const RootComponentClose = ({ item }: { item: IContent }) => {
 
   return (
     <>
-      {p.compEdits.length > 1 && (
-        <div
-          className="flex items-center border border-slate-500 bg-white rounded-sm text-[10px] space-x-1 px-[5px] m-1 mr-0 opacity-50 hover:opacity-100"
-          onClick={(e) => {
-            e.stopPropagation();
-
-            let comp = p.compEdits.pop();
-
-            if (comp && p.comp) {
-              if (comp.component?.id === p.comp.id) {
-                comp = p.compEdits[p.compEdits.length - 1];
-              }
-
-              if (comp) {
-                p.comp = {
-                  id: comp.component?.id || "",
-                  content_tree: comp,
-                  item: item as IItem,
-                };
-                p.item.active = comp.id;
-                p.render();
-              }
-            }
-          }}
-        >
-          <span>Back</span>
-        </div>
-      )}
       <div
         className="flex items-center border border-slate-500 bg-white rounded-sm text-[10px] px-[5px] m-1 opacity-50 hover:opacity-100"
         onClick={(e) => {
           e.stopPropagation();
-          p.item.active = p.compEdits[0].id;
-          p.comp = null;
-          p.compEdits = [];
-          p.render();
+          if (p.comp) {
+            const cur = p.comp.last ? p.comp.last.pop() : null;
+            if (cur) {
+              if (cur.props) {
+                p.comp.props = cur.props;
+              } else {
+                p.comp.props = {};
+              }
+              p.item.active = cur.active_id;
+              localStorage.setItem("prasi-item-active-id", p.item.active);
+
+              if (cur.comp_id) {
+                p.comp.id = cur.comp_id;
+                localStorage.setItem(`prasi-comp-active-id`, p.comp.id);
+                localStorage.setItem(
+                  `prasi-comp-active-last`,
+                  JSON.stringify(p.comp.last)
+                );
+                localStorage.setItem(
+                  `prasi-comp-active-props`,
+                  JSON.stringify(p.comp.props)
+                );
+              } else {
+                p.comp = null;
+              }
+            }
+
+            if (!p.comp) localStorage.removeItem(`prasi-comp-active-id`);
+            localStorage.removeItem(`prasi-comp-active-last`);
+            localStorage.removeItem(`prasi-comp-active-props`);
+          }
+
+          rebuildTree(p);
         }}
       >
         Close
