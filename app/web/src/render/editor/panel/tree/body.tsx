@@ -9,10 +9,11 @@ import {
 import { FC, useCallback, useEffect } from "react";
 import { useGlobal, useLocal } from "web-utils";
 import { MContent } from "../../../../utils/types/general";
-import { EditorGlobal } from "../../logic/global";
+import { IItem } from "../../../../utils/types/item";
+import { IText } from "../../../../utils/types/text";
+import { EditorGlobal, NodeMeta } from "../../logic/global";
 import { ETreeItem } from "./item/item";
 import { ETreeRightClick } from "./item/right-click";
-import { NodeContent } from "./utils/flatten";
 import {
   DragPreview,
   Placeholder,
@@ -22,20 +23,18 @@ import {
   onDrop,
   selectMultiple,
 } from "./utils/tree-utils";
-import { IItem, MItem } from "../../../../utils/types/item";
-import { IText } from "../../../../utils/types/text";
-export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[]; meta?: any }> = ({
+export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
   tree,
   meta,
 }) => {
   // console.log({ tree });
-  const TypedTree = DNDTree<NodeContent>;
+  const TypedTree = DNDTree<NodeMeta>;
   const p = useGlobal(EditorGlobal, "EDITOR");
   // const
   const local = useLocal({
     rightClick: {
       event: null as any,
-      node: null as null | NodeModel<NodeContent>,
+      node: null as null | NodeModel<NodeMeta>,
     },
     method: null as TreeMethods | null,
     id: [] as string[],
@@ -44,14 +43,14 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[]; meta?: any }> = ({
   p.softRender.tree = local.render;
 
   const onClick = useCallback(
-    (node: NodeModel<NodeContent>) => {
+    (node: NodeModel<NodeMeta>) => {
       p.preventTreeScroll = true;
       if (node.data) {
         if (meta.search) {
           meta.search = "";
           meta.render();
           p.item.selection = [];
-          p.item.active = node.data.content.id;
+          p.item.active = node.data.meta.item.id;
           if (p.treeMeta[p.item.active].item.type === "text") {
             setTimeout(() => {
               const text = document.getElementById(
@@ -74,7 +73,7 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[]; meta?: any }> = ({
             p.softRender.all();
           } else {
             p.item.selection = [];
-            p.item.active = node.data.content.id;
+            p.item.active = node.data.meta.item.id;
 
             if (p.treeMeta[p.item.active].item.type === "text") {
               setTimeout(() => {
@@ -100,9 +99,9 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[]; meta?: any }> = ({
   );
 
   const onHover = useCallback(
-    (node: NodeModel<NodeContent>) => {
+    (node: NodeModel<NodeMeta>) => {
       if (node.data) {
-        p.item.hover = node.data.content.id;
+        p.item.hover = node.data.meta.item.id;
         p.softRender.all();
       }
     },
@@ -222,8 +221,8 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeContent>[]; meta?: any }> = ({
                   onHover={onHover}
                   onClick={onClick}
                   editCompId={p.comp?.id}
-                  isActive={p.item.active === node.data?.content.id}
-                  isHover={p.item.hover === node.data?.content.id}
+                  isActive={p.item.active === node.data?.meta.item.id}
+                  isHover={p.item.hover === node.data?.meta.item.id}
                   onRightClick={(node, event) => {
                     local.rightClick.node = node;
                     local.rightClick.event = event;

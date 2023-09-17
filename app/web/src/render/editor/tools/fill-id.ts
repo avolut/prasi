@@ -3,13 +3,18 @@ import { IContent } from "../../../utils/types/general";
 
 export const fillID = (
   object: IContent,
-  modify?: (obj: IContent) => void,
+  modify?: (obj: IContent) => boolean,
   currentDepth?: number
 ) => {
   const _depth = (currentDepth || 0) + 1;
 
-  if (modify) modify(object);
-  object.id = cuid();
+  if (modify) {
+    if (modify(object)) {
+      object.id = cuid();
+    }
+  } else {
+    object.id = cuid();
+  }
 
   if (
     object.type === "item" &&

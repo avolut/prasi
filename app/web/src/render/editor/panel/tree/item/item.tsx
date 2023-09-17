@@ -4,26 +4,25 @@ import { FC, useEffect } from "react";
 import { useGlobal, useLocal } from "web-utils";
 import { IContent } from "../../../../../utils/types/general";
 import { IItem } from "../../../../../utils/types/item";
-import { EditorGlobal } from "../../../logic/global";
-import { NodeContent } from "../utils/flatten";
+import { Loading } from "../../../../../utils/ui/loading";
+import { Tooltip } from "../../../../../utils/ui/tooltip";
+import { loadComponent } from "../../../logic/comp";
+import { EditorGlobal, NodeMeta } from "../../../logic/global";
 import { Adv, ETreeItemAction, Rename } from "./action";
 import { ETreeItemIndent } from "./indent";
 import { ETreeItemName } from "./name";
 import { treeItemStyle } from "./style";
-import { Loading } from "../../../../../utils/ui/loading";
-import { loadComponent } from "../../../logic/comp";
-import { Tooltip } from "../../../../../utils/ui/tooltip";
 
 export const ETreeItem: FC<{
-  node: NodeModel<NodeContent>;
+  node: NodeModel<NodeMeta>;
   isOpen: boolean;
   depth: number;
   mode: "mobile" | "desktop";
   onToggle: () => void;
-  onClick: (node: NodeModel<NodeContent>) => void;
-  onHover: (node: NodeModel<NodeContent>) => void;
+  onClick: (node: NodeModel<NodeMeta>) => void;
+  onHover: (node: NodeModel<NodeMeta>) => void;
   onRightClick: (
-    node: NodeModel<NodeContent>,
+    node: NodeModel<NodeMeta>,
     event: React.MouseEvent<HTMLDivElement, MouseEvent>
   ) => void;
   isActive: boolean;
@@ -46,7 +45,7 @@ export const ETreeItem: FC<{
   const local = useLocal({ renaming: false, el: null as any });
   const dragOverProps = useDragOver(node.id, isOpen, onToggle);
 
-  const item = node.data.content;
+  const item = node.data.meta.item;
   const type = item.type;
   let childs = item.type === "text" ? [] : item.childs;
   let hasChilds = false;
@@ -108,7 +107,6 @@ export const ETreeItem: FC<{
   if (mitem && (mitem.parent as any).get("content")) {
     isPropContent = true;
   }
-
 
   return (
     <div

@@ -47,7 +47,7 @@ export const EComponent: FC<{
   if (!comp.content_tree) {
     return <Loading backdrop={false} />;
   }
-  const props = comp.content_tree.component?.props || {};
+  const cprops = comp.content_tree.component?.props || {};
 
   if (p.comp?.id === item.component.id) {
     const cid = pcomp.getMap("map").get("id");
@@ -55,15 +55,15 @@ export const EComponent: FC<{
     const instanceId = contentTree.get("id");
 
     if (contentTree && cid && instanceId) {
-      const citem = contentTree.toJSON() as IItem;
-      citem.id = item.id;
-      if (p.compProp.inherit && item.component && citem.component) {
-        for (const [k, v] of Object.entries(item.component.props)) {
-          citem.component.props[k] = v;
-        }
+      let citem = p.treeMeta[contentTree.get("id") || ""].item as IItem;
+
+      if (p.compProp.inherit) {
         citem.nprops = item.nprops;
+        citem.scope = item.scope;
+      } else {
+        citem = contentTree.toJSON() as IItem;
+        getRenderPropVal(cprops, citem, p, instance);
       }
-      getRenderPropVal(props, citem, p, instance);
 
       return (
         <>
@@ -95,16 +95,15 @@ export const EComponent: FC<{
   }
   const cid = item.component.id;
 
-  if (props) {
-    getRenderPropVal(props, item, p, instance);
+  if (cprops) {
+    getRenderPropVal(cprops, item, p, instance);
   }
 
-  const citem = comp.content_tree as IItem;
-  citem.id = item.id;
-  citem.component = item.component;
-  citem.nprops = item.nprops;
+  if (p.treeMeta[item.id]) {
+    p.treeMeta[item.id].item = item;
+  }
   return (
-    <ERender item={citem} instance={instance}>
+    <ERender item={item} instance={instance}>
       {(childs) => {
         return childs.map((e) => {
           if (e.type === "item")
@@ -122,7 +121,7 @@ export const EComponent: FC<{
 };
 
 export const getRenderPropVal = (
-  props: Record<string, FNCompDef>,
+  cprops: Record<string, FNCompDef>,
   item: IItem,
   p: PG,
   instance?: { cid: string; id: string }
@@ -151,7 +150,7 @@ export const getRenderPropVal = (
     return res;
   };
 
-  for (const [key, _prop] of Object.entries(props)) {
+  for (const [key, _prop] of Object.entries(cprops)) {
     const prop = item.component?.props[key] || _prop;
     const mprop = mitem.get("component")?.get("props")?.get(key);
 

@@ -59,7 +59,9 @@ export const ExternalAPI = () => {
             local.status = "valid";
           } else {
             try {
-              const res = await fetch(trim(val, "/") + "/_prasi/_");
+              const res = await fetch(trim(val, "/") + "/_prasi/_", {
+                mode: "no-cors",
+              });
               const json = await res.json();
               if (!!get(json, "prasi")) {
                 local.status = "valid";

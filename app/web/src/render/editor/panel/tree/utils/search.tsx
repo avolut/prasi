@@ -1,15 +1,13 @@
+import { NodeModel } from "@minoru/react-dnd-treeview";
 import get from "lodash.get";
 import uniqBy from "lodash.uniqby";
-import { PG } from "../../../logic/global";
-import { NodeContent, flattenTree } from "./flatten";
-import { MItem } from "../../../../../utils/types/item";
-import { NodeModel } from "@minoru/react-dnd-treeview";
+import { NodeMeta, PG } from "../../../logic/global";
 
 export const search = (
   p: PG,
   option: any,
   value: any,
-  tree: NodeModel<NodeContent>[]
+  tree: NodeModel<NodeMeta>[]
 ) => {
   const { searchDeep, Name, JS, CSS, HTML } = option;
   let compSearch = [] as any;
@@ -17,13 +15,13 @@ export const search = (
     let treeComponent: any = [];
     if (Object.entries(p.comps.doc).length) {
       for (let [k, v] of Object.entries(p.comps.doc)) {
-        const contentTree = v.getMap("map").get("content_tree") as MItem;
-        let treeComp = flattenTree(p, contentTree, true, k);
-        treeComponent = treeComponent.concat(treeComp);
-        treeComp = treeSearch(treeComp, option, value, compSearch);
-        if (treeComp.length) {
-          compSearch.push(k);
-        }
+        // const contentTree = v.getMap("map").get("content_tree") as MItem;
+        // let treeComp = flattenTree(p, contentTree, true, k);
+        // treeComponent = treeComponent.concat(treeComp);
+        // treeComp = treeSearch(treeComp, option, value, compSearch);
+        // if (treeComp.length) {
+        //   compSearch.push(k);
+        // }
       }
     }
     let result = flattenSearchComp(treeComponent, compSearch);

@@ -1,44 +1,13 @@
+import { TypedMap } from "yjs-types";
 import { IContent } from "../../../utils/types/general";
 import { IItem, MItem } from "../../../utils/types/item";
+import { FMCompDef } from "../../../utils/types/meta-fn";
 import { PRASI_COMPONENT } from "../../../utils/types/render";
 import { IRoot } from "../../../utils/types/root";
 import { WS_MSG_GET_COMP } from "../../../utils/types/ws";
-import { fillID } from "../tools/fill-id";
 import { PG } from "./global";
+import { updateComponentInTree } from "./tree";
 import { wsend } from "./ws";
-
-export const newPageComp = (p: PG, item: IItem) => {
-  if (item.component?.id) {
-    if (!p.comps.doc[item.component.id]) {
-      console.error("Component Not Found: ", item.component.id);
-      return null;
-    }
-
-    const map = p.comps.doc[item.component.id].getMap("map");
-    const comp = map.toJSON();
-    if (comp && comp.content_tree) {
-      const citem = fillID(comp.content_tree, (item) => {
-        item.originalId = item.id;
-      }) as IItem;
-
-      const nitem = {
-        ...item,
-        ...citem,
-        id: item.id,
-        component: {
-          id: citem.component?.id || "",
-          name: citem.component?.name || "",
-          props: {
-            ...citem.component?.props,
-            ...item.component?.props,
-          },
-        },
-      };
-
-      return nitem as IItem;
-    }
-  }
-};
 
 export const scanComponent = (
   item: IRoot | IContent,
@@ -99,7 +68,10 @@ export const loadComponent = async (
 
 const loadSingleComponent = (p: PG, comp_id: string) => {
   return new Promise<PRASI_COMPONENT>(async (resolve) => {
-    p.comps.pending[comp_id] = resolve;
+    p.comps.pending[comp_id] = (comp: PRASI_COMPONENT) => {
+      updateComponentInTree(p, comp.id);
+      resolve(comp);
+    };
     await wsend(
       p,
       JSON.stringify({
@@ -110,8 +82,9 @@ const loadSingleComponent = (p: PG, comp_id: string) => {
   });
 };
 
-export const editComp = (p: PG, item: IContent) => {
-  if (item.type === "item" && item.component) {
+export const editComp = (p: PG, _item: IContent) => {
+  const item = p.treeMeta[_item.id].item;
+  if (item && item.type === "item" && item.component) {
     const cid = item.component.id;
     let doc = p.comps.doc[cid];
     if (doc) {
@@ -142,4 +115,18 @@ export const editComp = (p: PG, item: IContent) => {
       }
     }
   }
+};
+
+export const instantiateComp = async (
+  item: IItem,
+  mitem: MItem,
+  mcomp: MItem
+) => {
+  const nitem = undefined as unknown as MItem;
+  if (item.component) {
+    item.component.child_ids = {};
+    const ids = item.component.child_ids;
+  }
+
+  return nitem;
 };

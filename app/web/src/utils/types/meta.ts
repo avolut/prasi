@@ -19,15 +19,10 @@ export type MetaItem = {
   id: string;
   type: "text" | "section" | "item";
   name: string;
-  expand?: boolean;
   field?: string;
   originalId?: string;
-  collapsed?: boolean;
-  deleted?: true;
   html?: string;
   text?: string;
-  nprops?: any;
-  scope?: any;
   hidden?: "only-editor" | "all" | false;
 };
 

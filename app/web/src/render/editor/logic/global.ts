@@ -1,8 +1,29 @@
 import { ReactElement } from "react";
+import { TypedMap } from "yjs-types";
 import { CompDoc } from "../../../base/global/content-editor";
 import { IContent, MContent, MPage } from "../../../utils/types/general";
-import { IItem } from "../../../utils/types/item";
+import { IItem, MItem } from "../../../utils/types/item";
+import { FMCompDef } from "../../../utils/types/meta-fn";
 import { IRoot } from "../../../utils/types/root";
+
+export type NodeMeta = { meta: ItemMeta; idx: number };
+export type ItemMeta = {
+  mitem: MContent;
+  item: IContent;
+  scope: any;
+  comp?: {
+    id: string;
+    mitem: MItem;
+    mcomp: MItem;
+    mprops?: TypedMap<Record<string, FMCompDef>>;
+  };
+  script: {
+    passprop?: any;
+    local?: any;
+    passchild?: any;
+    js?: string;
+  };
+};
 
 export const EditorGlobal = {
   /** ui */
@@ -13,7 +34,8 @@ export const EditorGlobal = {
     | "reload"
     | "ready"
     | "not-found"
-    | "error",
+    | "error"
+    | "tree-rebuild",
   focused: "",
   manager: {
     page: false,
@@ -78,10 +100,25 @@ export const EditorGlobal = {
     js: string;
     effects?: Record<string, boolean>;
   },
+
+  /** content tree */
+  treeFlat: [] as {
+    id: string;
+    parent: string;
+    text: string;
+    data: { meta: ItemMeta; idx: number };
+  }[],
+  treeMeta: {} as Record<string, ItemMeta>,
+
+  /** components */
   comp: null as null | {
     id: string;
     item: IItem;
     content_tree: IItem;
+  },
+  comps: {
+    pending: {} as Record<string, any>,
+    doc: {} as Record<string, CompDoc>,
   },
   compProp: {
     backTo: "",
@@ -92,26 +129,11 @@ export const EditorGlobal = {
   compDirectEdit: false,
   compEdits: [] as IItem[],
   compLoading: {} as Record<string, true>,
+  compInstance: {} as Record<string, Set<ItemMeta>>,
 
   /** write-only */
-  treeMeta: {} as Record<
-    string,
-    {
-      mitem: MContent;
-      item: IContent;
-      comp?: IItem;
-      passprop?: any;
-      local?: any;
-      passchild?: any;
-      js?: string;
-    }
-  >,
   mpage: null as null | MPage,
   mpageLoaded: null as null | ((mpage: MPage) => void),
-  comps: {
-    pending: {} as Record<string, any>,
-    doc: {} as Record<string, CompDoc>,
-  },
 
   /** connection */
   ws: null as null | WebSocket,

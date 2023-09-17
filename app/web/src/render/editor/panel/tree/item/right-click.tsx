@@ -11,17 +11,15 @@ import { FNComponent } from "../../../../../utils/types/meta-fn";
 import { IText } from "../../../../../utils/types/text";
 import { Menu, MenuItem } from "../../../../../utils/ui/context-menu";
 import { loadComponent } from "../../../logic/comp";
-import { EditorGlobal } from "../../../logic/global";
+import { EditorGlobal, NodeMeta } from "../../../logic/global";
 import { fillID } from "../../../tools/fill-id";
 import { flatTree } from "../../../tools/flat-tree";
 import { newMap } from "../../../tools/yjs-tools";
 import { jscript } from "../../script/script-element";
-import { NodeContent, flattenTree } from "../utils/flatten";
-import { filterFlatTree } from "../utils/tree-utils";
 import { detachComp } from "./action/detach";
 
 export const ETreeRightClick: FC<{
-  node: NodeModel<NodeContent>;
+  node: NodeModel<NodeMeta>;
   event: React.MouseEvent<HTMLDivElement, MouseEvent>;
   onClose: () => void;
 }> = ({ node, event, onClose }) => {
@@ -33,7 +31,7 @@ export const ETreeRightClick: FC<{
       choose: null as null | ((id: string) => void),
     },
   });
-  const item = node.data?.content;
+  const item = node.data?.meta.item;
   const type = item?.type;
   const comp = (item as IItem).component as FNComponent | undefined;
   const rootComp = p.comp;
@@ -310,10 +308,10 @@ export const ETreeRightClick: FC<{
                         type: "item",
                       });
 
-                      p.treeMeta[citem.id] = {
-                        item: citem,
-                        mitem,
-                      };
+                      // p.treeMeta[citem.id] = {
+                      //   item: citem,
+                      //   mitem,
+                      // };
                     }
 
                     delete p.compLoading[item.id];
@@ -732,17 +730,17 @@ export const ETreeRightClick: FC<{
           onClick={() => {
             mitem.doc?.transact(() => {
               if (p.item.selection.length) {
-                let tree: NodeModel<NodeContent>[] = [];
-                const comp: any = p.comps.doc[p.comp?.id || ""];
-                if (comp) {
-                  tree = flattenTree(p, comp.getMap("map").get("content_tree"));
-                } else if (p.mpage) {
-                  tree = flattenTree(
-                    p,
-                    p.mpage.getMap("map").get("content_tree")
-                  );
-                }
-                filterFlatTree(p.item.selection, tree, p);
+                // let tree: NodeModel<NodeMeta>[] = [];
+                // const comp: any = p.comps.doc[p.comp?.id || ""];
+                // if (comp) {
+                //   tree = flattenTree(p, comp.getMap("map").get("content_tree"));
+                // } else if (p.mpage) {
+                //   tree = flattenTree(
+                //     p,
+                //     p.mpage.getMap("map").get("content_tree")
+                //   );
+                // }
+                // filterFlatTree(p.item.selection, tree, p);
               } else {
                 mitem.parent.forEach((e, idx) => {
                   if (e.get("id") === item.id) {

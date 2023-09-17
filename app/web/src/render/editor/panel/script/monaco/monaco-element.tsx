@@ -412,10 +412,14 @@ export const ScriptMonacoElement: FC<{
 
             let propVal: any = {};
 
+            let nprops = null;
             const item = p.treeMeta[p.item.active].item;
+
+            if (!nprops) nprops = item.nprops;
+
             propVal = {
               ...(window.exports || {}),
-              ...item.nprops,
+              ...nprops,
             };
 
             const propTypes: any = p.script.siteTypes;

@@ -105,6 +105,7 @@ const produceEvalArgs = (
     }
   }
 
+  
   const result: any = {
     PassProp,
     Local,
@@ -123,25 +124,38 @@ const produceEvalArgs = (
       ...arg.elprop,
     },
     render: (jsx: ReactNode) => {
-      // output.jsx = (
-      //   <>
-      //     <pre className={"text-[9px] font-mono text-black"}>{item.name}</pre>
-      //     {jsx}
-      //   </>
-      // );
-      output.jsx = (
-        <ErrorBoundary>
-          <Suspense
-            fallback={
-              <div className="flex flex-1 items-center justify-center w-full h-full relative">
-                {p.ui.loading}
-              </div>
-            }
-          >
+      const debug = false;
+      if (debug) {
+        const out: any = {};
+        for (const [k, v] of Object.entries(item.nprops || {})) {
+          out[k] = typeof v;
+        }
+        output.jsx = (
+          <>
+            <pre
+              className={"text-[9px] font-mono text-black whitespace-pre-wrap"}
+            >
+              {item.id}-{item.name}
+              {JSON.stringify(out, null, 2)}
+            </pre>
             {jsx}
-          </Suspense>
-        </ErrorBoundary>
-      );
+          </>
+        );
+      } else {
+        output.jsx = (
+          <ErrorBoundary>
+            <Suspense
+              fallback={
+                <div className="flex flex-1 items-center justify-center w-full h-full relative">
+                  {p.ui.loading}
+                </div>
+              }
+            >
+              {jsx}
+            </Suspense>
+          </ErrorBoundary>
+        );
+      }
     },
     ...scopeProps,
   };
@@ -249,12 +263,14 @@ export const createLocal = (arg: {
             p.page.effects[item.id] = true;
 
             const res = effect(local);
+            // console.log(item.id, item.name, local, effect);
+
             if (res && res instanceof Promise) {
-              return () => {
-                res.then((e) => {
+              res
+                .catch((e) => {})
+                .then((e) => {
                   if (typeof e === "function") e();
                 });
-              };
             } else {
               return res;
             }

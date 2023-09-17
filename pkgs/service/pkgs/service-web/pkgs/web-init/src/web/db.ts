@@ -86,6 +86,8 @@ export const fetchSendDb = async (
   params: any,
   dburl?: string
 ) => {
+
+
   const w = typeof window === "object" ? window : (globalThis as any);
   let url = `/_dbs/${name}`;
   let frm: Awaited<ReturnType<typeof createFrameCors>>;
@@ -108,6 +110,7 @@ export const fetchSendDb = async (
   if (!w.frmapi) {
     w.frmapi = {};
   }
+
   if (!w.frmapi[_base]) {
     w.frmapi[_base] = await createFrameCors(_base);
   }

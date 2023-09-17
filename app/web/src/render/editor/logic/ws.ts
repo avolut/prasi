@@ -16,6 +16,7 @@ import {
 import { PRASI_COMPONENT } from "../../../utils/types/render";
 import { MPage } from "../../../utils/types/general";
 import { execSiteJS } from "./init";
+import { rebuildTree } from "./tree";
 
 const conf = {
   timeout: null as any,
@@ -130,8 +131,7 @@ export const editorWS = async (p: PG) => {
               })
             );
 
-            p.treeMeta = {};
-            render();
+            rebuildTree(p, render);
             if (p.mpageLoaded) {
               p.mpageLoaded(p.mpage);
               p.mpageLoaded = null;
@@ -142,10 +142,6 @@ export const editorWS = async (p: PG) => {
             break;
           case "svd_remote":
             svdRemote({ p, bin: extract(msg.diff_remote), msg });
-            for (const meta of Object.values(p.treeMeta)) {
-              if (meta.comp) delete meta.comp;
-            }
-            render();
             break;
           case "diff_local": {
             if (msg.mode === "page") {

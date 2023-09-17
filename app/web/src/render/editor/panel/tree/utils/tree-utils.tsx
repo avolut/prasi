@@ -9,23 +9,21 @@ import find from "lodash.find";
 import findIndex from "lodash.findindex";
 import get from "lodash.get";
 import set from "lodash.set";
-import slice from "lodash.slice";
 import uniqBy from "lodash.uniqby";
 import { FC } from "react";
 import { syncronize } from "y-pojo";
 import * as Y from "yjs";
 import { IContent, MContent } from "../../../../../utils/types/general";
 import { IItem, MItem } from "../../../../../utils/types/item";
-import { PG } from "../../../logic/global";
+import { NodeMeta, PG } from "../../../logic/global";
 import { fillID } from "../../../tools/fill-id";
-import { walk } from "../body";
-import { NodeContent } from "./flatten";
 import { newMap } from "../../../tools/yjs-tools";
+import { walk } from "../body";
 export const DEPTH_WIDTH = 8;
 
 export const Placeholder: FC<{
-  node: Parameters<PlaceholderRender<NodeContent>>[0];
-  params: Parameters<PlaceholderRender<NodeContent>>[1];
+  node: Parameters<PlaceholderRender<NodeMeta>>[0];
+  params: Parameters<PlaceholderRender<NodeMeta>>[1];
 }> = ({ params }) => {
   return (
     <div
@@ -54,7 +52,7 @@ export const Placeholder: FC<{
   );
 };
 
-export const DragPreview: DragPreviewRender<NodeContent> = (props) => {
+export const DragPreview: DragPreviewRender<NodeMeta> = (props) => {
   const item = props.item;
 
   return (
@@ -70,8 +68,8 @@ export const DragPreview: DragPreviewRender<NodeContent> = (props) => {
 
 export const onDrop = (
   p: PG,
-  tree: NodeModel<NodeContent>[],
-  options: DropOptions<NodeContent>,
+  tree: NodeModel<NodeMeta>[],
+  options: DropOptions<NodeMeta>,
   local: any
 ) => {
   const { dragSource, dropTargetId, dropTarget, relativeIndex } = options;
@@ -225,10 +223,10 @@ export const onDrop = (
         }
         if (map) {
           const item = map.toJSON();
-          p.treeMeta[item.id] = {
-            item,
-            mitem: map,
-          };
+          // p.treeMeta[item.id] = {
+          //   item,
+          //   mitem: map,
+          // };
           if (item) {
             p.item.active = item.id;
           }
@@ -239,26 +237,26 @@ export const onDrop = (
   }
 };
 
-export const canDrop = (p: PG, arg: DropOptions<NodeContent>, local: any) => {
+export const canDrop = (p: PG, arg: DropOptions<NodeMeta>, local: any) => {
   const { dragSource, dragSourceId, dropTargetId, dropTarget } = arg;
   try {
     const parentSource: MContent | undefined = get(
       dragSource,
-      "data.content.parent.parent"
+      "data.meta.item.parent.parent"
     ) as any;
     if (parentSource && parentSource.get && parentSource.get("id") === "root") {
       return false;
     }
 
     if (dropTargetId === "root") {
-      const ds = get(dragSource, "data.content");
+      const ds = get(dragSource, "data.meta.item");
       if (ds && ds.type === "section") {
         return true;
       }
       return false;
     } else if (dragSource?.data && dropTarget?.data) {
-      const from = dragSource.data.content.type;
-      const to = dropTarget.data.content.type;
+      const from = dragSource.data.meta.item.type;
+      const to = dropTarget.data.meta.item.type;
       let listItem = p.item.selection;
       if (listItem.length) {
         if (typeof dragSourceId === "string") {
@@ -281,11 +279,11 @@ export const canDrop = (p: PG, arg: DropOptions<NodeContent>, local: any) => {
       } else if (from === "item") {
         if (to === "section" || to === "item") {
           if (
-            dropTarget.data.content.type === "item" &&
-            dropTarget.data.content.component?.id
+            dropTarget.data.meta.item.type === "item" &&
+            dropTarget.data.meta.item.component?.id
           ) {
             if (p.comp) {
-              if (p.comp.content_tree.id === dropTarget.data.content.id) {
+              if (p.comp.content_tree.id === dropTarget.data.meta.item.id) {
                 return true;
               }
             }
@@ -298,11 +296,11 @@ export const canDrop = (p: PG, arg: DropOptions<NodeContent>, local: any) => {
       } else if (from === "text") {
         if (to === "item") {
           if (
-            dropTarget.data.content.type === "item" &&
-            dropTarget.data.content.component?.id
+            dropTarget.data.meta.item.type === "item" &&
+            dropTarget.data.meta.item.component?.id
           ) {
             if (p.comp) {
-              if (p.comp.content_tree.id === dropTarget.data.content.id) {
+              if (p.comp.content_tree.id === dropTarget.data.meta.item.id) {
                 return true;
               }
             }
@@ -320,10 +318,10 @@ export const canDrop = (p: PG, arg: DropOptions<NodeContent>, local: any) => {
   }
 };
 
-export const onDragEnd = (p: PG, node: NodeModel<NodeContent>) => {};
-export const onDragStart = (p: PG, node: NodeModel<NodeContent>) => {};
+export const onDragEnd = (p: PG, node: NodeModel<NodeMeta>) => {};
+export const onDragStart = (p: PG, node: NodeModel<NodeMeta>) => {};
 
-export const selectMultiple = (p: PG, node: NodeModel<NodeContent>) => {
+export const selectMultiple = (p: PG, node: NodeModel<NodeMeta>) => {
   console.clear();
   const comp = p.comps.doc[p.comp?.id || ""];
   let root: any = null;
@@ -381,7 +379,7 @@ export const flatTree = (item: Array<IContent>) => {
 
 export const filterFlatTree = (
   item: Array<string>,
-  root: NodeModel<NodeContent>[],
+  root: NodeModel<NodeMeta>[],
   p: PG
 ) => {
   item.map((e) => {

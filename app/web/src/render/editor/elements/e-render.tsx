@@ -5,12 +5,11 @@ import { IContent } from "../../../utils/types/general";
 import { IItem } from "../../../utils/types/item";
 import { FNAdv, FNCompDef } from "../../../utils/types/meta-fn";
 import { IText } from "../../../utils/types/text";
-import { newPageComp } from "../logic/comp";
+import { loadComponent } from "../logic/comp";
 import { EditorGlobal } from "../logic/global";
 import { ComponentOver, ElProp, createElProp } from "./e-relprop";
 import { ETextInternal } from "./e-text";
 import { scriptExec } from "./script-exec";
-import { loadComponent } from "../logic/comp";
 
 export const ERender: FC<{
   item: IContent;
@@ -21,7 +20,11 @@ export const ERender: FC<{
 
   let item = _item;
 
-  const childs = (item.type !== "text" ? item.childs || [] : [])
+  let childs = item.type !== "text" ? item.childs || [] : [];
+  if (_item.type === "item" && _item.component) {
+  }
+
+  childs = childs
     .filter((e) => {
       if (typeof e !== "object") return false;
       if (e.hidden === "all") return false;
@@ -30,22 +33,7 @@ export const ERender: FC<{
     .map((e) => {
       let meta = p.treeMeta[e.id];
 
-      if (e.type === "item" && e.component?.id && !meta) {
-        const mitem = p.comps.doc[e.component.id]
-          .getMap("map")
-          .get("content_tree");
-
-        if (mitem) {
-          p.treeMeta[e.id] = {
-            item: e,
-            mitem,
-          };
-          meta = p.treeMeta[e.id];
-        }
-      }
-
       if (meta) {
-        meta.item = e;
         if (e.type === "item" && e.component?.id) {
           if (!p.comps.doc[e.component.id]) {
             loadComponent(p, e.component.id);
@@ -57,18 +45,6 @@ export const ERender: FC<{
             if (mcomp && meta.mitem.get("name") !== mcomp.get("name")) {
               meta.mitem.set("name", mcomp.get("name") || "");
             }
-          }
-
-          if (!meta.comp) {
-            const comp = newPageComp(p, e);
-            if (comp) {
-              meta.comp = comp;
-            }
-          }
-
-          if (meta.comp) {
-            if (item.nprops) meta.comp.nprops = { ...item.nprops };
-            return meta.comp;
           }
         }
       }
@@ -93,7 +69,7 @@ export const ERender: FC<{
   let componentOver = null;
   if (item.type === "item" && item.component?.id) {
     const isCompEdit = p.compEdits.find(
-      (e) => e.component?.id === item.component?.id
+      (e) => item.type === "item" && e.component?.id === item.component?.id
     );
     if (p.comp && isCompEdit) {
       componentOver = null;
@@ -172,7 +148,9 @@ export const ERender: FC<{
 
   return (
     <div className={className} {...elprop}>
-      {/* <pre className={"text-[9px] font-mono text-black"}>{item.name}</pre> */}
+      {/* <pre className={"text-[9px] font-mono text-black"}>
+        {item.id}-{item.name}
+      </pre> */}
       {_children}
       {componentOver}
     </div>

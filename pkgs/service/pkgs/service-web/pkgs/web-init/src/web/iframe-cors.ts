@@ -14,11 +14,6 @@ export const createFrameCors = async (url: string, win?: any) => {
   const document = w.document;
 
   const id = `__` + url.replace(/\W/g, "");
-  while (
-    !(typeof document !== "undefined" && !document.querySelector(`#${id}`))
-  ) {
-    await new Promise<void>((e) => setTimeout(() => e(), 100));
-  }
 
   if (typeof document !== "undefined" && !document.querySelector(`#${id}`)) {
     const iframe = document.createElement("iframe");

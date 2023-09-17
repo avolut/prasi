@@ -77,7 +77,6 @@ export const initEditor = async (p: PG, site_id: string) => {
 
 export const execSiteJS = (p: PG) => {
   if (p) {
-    p.treeMeta = {};
     p.script.siteTypes = {};
     const scope: any = {
       types: p.script.siteTypes,

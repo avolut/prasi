@@ -1,11 +1,8 @@
 import { NodeModel } from "@minoru/react-dnd-treeview";
 import { useGlobal, useLocal } from "web-utils";
-import { MItem } from "../../../../utils/types/item";
 import { Tooltip } from "../../../../utils/ui/tooltip";
-import { EditorGlobal } from "../../logic/global";
+import { EditorGlobal, NodeMeta } from "../../logic/global";
 import { ETreeBody } from "./body";
-import { NodeContent, flattenTree } from "./utils/flatten";
-import { search } from "./utils/search";
 
 export const ETree = () => {
   const p = useGlobal(EditorGlobal, "EDITOR");
@@ -23,30 +20,8 @@ export const ETree = () => {
     searchRef: null as HTMLInputElement | null,
     searchHover: false,
   });
-  let tree: NodeModel<NodeContent>[] = [];
-  const comp = p.comps.doc[p.comp?.id || ""];
 
-  if (!local.search) {
-    if (comp) {
-      const contentTree = comp.getMap("map").get("content_tree") as MItem;
-      if (contentTree) tree = flattenTree(p, contentTree);
-    } else if (p.mpage) {
-      tree = flattenTree(p, p.mpage.getMap("map").get("content_tree"));
-    }
-  } else {
-    if (comp) {
-      const contentTree = comp.getMap("map").get("content_tree") as MItem;
-      if (contentTree) tree = flattenTree(p, contentTree);
-    } else if (p.mpage) {
-      tree = flattenTree(p, p.mpage.getMap("map").get("content_tree"));
-    }
-    tree = search(
-      p,
-      { ...local.searchTypes, searchDeep: local.searchDeep },
-      local.search,
-      tree
-    );
-  }
+  const tree: NodeModel<NodeMeta>[] = p.treeFlat;
 
   return (
     <div className={cx("tree flex flex-col")}>
@@ -172,7 +147,7 @@ export const ETree = () => {
                 );
               })}
             </div>
-            <div
+            {/* <div
               className={cx(
                 "px-1 cursor-pointer rounded-sm border-blue-500 border",
                 local.searchDeep
@@ -186,7 +161,7 @@ export const ETree = () => {
               }}
             >
               Deep Search
-            </div>
+            </div> */}
           </div>
         )}
       </div>

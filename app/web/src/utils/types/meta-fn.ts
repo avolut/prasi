@@ -19,11 +19,14 @@ export type FNAdv = {
 
 export type FMAdv = TypedMap<FNAdv>;
 
+type ORIGINAL_COMP_ID = string;
+type ITEM_INSTANCE_ID = string;
 export type FNComponent = {
   id: string;
   name: string;
   updated_at?: number;
   props: Record<string, FNCompDef>;
+  child_ids?: Record<ORIGINAL_COMP_ID, ITEM_INSTANCE_ID>;
 };
 
 export type FNCompDef = {
