@@ -80,7 +80,11 @@ export const ETreeItemIndent: FC<{
       <div
         className={cx(
           css`
-            padding-left: ${depth * DEPTH_WIDTH}px;
+            padding-left: ${Math.round(
+              depth <= 2
+                ? depth * DEPTH_WIDTH
+                : 2 * DEPTH_WIDTH + ((depth - 3) * DEPTH_WIDTH) / 2
+            )}px;
           `
         )}
         onClick={(e) => {

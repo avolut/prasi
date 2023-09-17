@@ -47,6 +47,8 @@ export const EditorGlobal = {
     siteTypes: {},
     active: false,
     type: "js" as "js" | "css" | "html",
+    db: null as any,
+    api: null as any,
   },
   item: {
     active: "",

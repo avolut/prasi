@@ -4,7 +4,7 @@ import { FNCompDef } from "../../../utils/types/meta-fn";
 import { newMap } from "../tools/yjs-tools";
 import { instantiateComp, loadComponent } from "./comp";
 import { ItemMeta, PG } from "./global";
-import { treeScopeEval } from "./tree-scope";
+import { treePropEval } from "./tree-prop";
 
 export const updateComponentInTree = async (p: PG, comp_id: string) => {
   const doc = p.comps.doc[comp_id];
@@ -142,7 +142,20 @@ const walk = async (
       comp,
     };
 
+    let cprops: [string, FNCompDef][] = [];
+
     if (comp) {
+      const props = comp.mcomp
+        .get("component")
+        ?.get("props")
+        ?.toJSON() as Record<string, FNCompDef>;
+
+      cprops = Object.entries(props).sort((a, b) => {
+        return a[1].idx - b[1].idx;
+      });
+
+      await treePropEval(p, meta, cprops);
+
       if (!p.compInstance[comp.id]) {
         p.compInstance[comp.id] = new Set();
       }
@@ -161,16 +174,11 @@ const walk = async (
 
     if (mitem) {
       if (comp) {
+        // jsx prop as child in tree
         const mprops = mitem.get("component")?.get("props");
         if (mprops) {
           let idx = 0;
-
-          const cprops = comp.mcomp
-            .get("component")
-            ?.get("props")
-            ?.toJSON() as Record<string, FNCompDef>;
-
-          for (const [key, prop] of Object.entries(cprops)) {
+          for (const [key, prop] of cprops) {
             let mprop = mprops.get(key);
             if (!mprop) {
               mprops.set(key, newMap(prop) as any);
@@ -191,6 +199,7 @@ const walk = async (
 
         if (comp.item) {
           for (const child of comp.item.childs) {
+            // only add to treeMeta, not treeFlat
             walk(p, { item: child, parent_id: comp.item.id });
           }
         }

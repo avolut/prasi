@@ -1,8 +1,9 @@
 import { ReactNode, Suspense, useEffect, useState } from "react";
+import { ErrorBoundary } from "web-init";
 import { deepClone } from "web-utils";
+import { createAPI, createDB } from "../../../utils/script/init-api";
 import { IContent } from "../../../utils/types/general";
 import { ItemMeta, PG } from "./global";
-import { ErrorBoundary } from "web-init";
 
 export const treeScopeEval = async (
   p: PG,
@@ -19,30 +20,18 @@ export const treeScopeEval = async (
         };
       }
 
-      // merge scope upwards
-      if (!meta.scope) {
-        meta.scope = {};
-      }
-      const scopes = [meta.scope];
-      let cur = meta;
-      while (cur) {
-        if (cur.scope) {
-          scopes.unshift(cur.scope);
-        }
-        cur = p.treeMeta[cur.parent_id];
-      }
-      const finalScope: any = {};
-      for (const scope of scopes) {
-        for (const [k, v] of Object.entries(scope)) {
-          finalScope[k] = v;
-        }
-      }
-
       // prepare args
+      if (!p.script.db) p.script.db = createDB(p.site.api_url);
+      if (!p.script.api) p.script.api = createAPI(p.site.api_url);
+      const w = window as any;
+      const finalScope = mergeScopeUpwards(p, meta);
       const output = { jsx: null as any };
       const args = {
+        ...w.exports,
         ...finalScope,
         ...meta.memoize,
+        db: p.script.db,
+        api: p.script.api,
         children,
         render: (jsx: ReactNode) => {
           output.jsx = (
@@ -73,6 +62,27 @@ export const treeScopeEval = async (
   }
 };
 
+export const mergeScopeUpwards = (p: PG, meta: ItemMeta) => {
+  // merge scope upwards
+  if (!meta.scope) {
+    meta.scope = {};
+  }
+  const scopes = [meta.scope];
+  let cur = meta;
+  while (cur) {
+    if (cur.scope) {
+      scopes.unshift(cur.scope);
+    }
+    cur = p.treeMeta[cur.parent_id];
+  }
+  const finalScope: any = {};
+  for (const scope of scopes) {
+    for (const [k, v] of Object.entries(scope)) {
+      finalScope[k] = v;
+    }
+  }
+  return finalScope;
+};
 const createLocal = (p: PG, meta: ItemMeta) => {
   return ({
     name,
