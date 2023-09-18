@@ -2,7 +2,7 @@ import { FC } from "react";
 import { useGlobal, useLocal } from "web-utils";
 import { EditorGlobal } from "../../../logic/global";
 import { EScriptCustom } from "../../script/script-custom";
-import { newPageComp } from "../../../logic/comp";
+import { mergeScopeUpwards } from "../../../logic/tree-scope";
 
 export const CPCodeEdit: FC<{
   value: string;
@@ -10,26 +10,12 @@ export const CPCodeEdit: FC<{
   args?: any;
 }> = ({ value, onChange, args }) => {
   const p = useGlobal(EditorGlobal, "EDITOR");
-  const local = useLocal({ comp: p.treeMeta[p.item.active].comp });
+  const meta = p.treeMeta[p.item.active];
 
-  const comp = local.comp;
-  if (!comp) {
-    const meta = p.treeMeta[p.item.active];
-
-    const comp = newPageComp(p, meta.item as any);
-    if (comp) {
-      if (comp.nprops) {
-        comp.nprops = comp.nprops;
-      }
-
-      meta.comp = comp;
-      local.comp = comp;
-    }
-  }
-
+  const scope = mergeScopeUpwards(p, meta);
   const props: any = {
     ...window.exports,
-    ...comp?.nprops,
+    ...scope,
     ...args,
   };
   for (const [k, v] of Object.entries(props)) {

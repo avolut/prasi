@@ -3,15 +3,15 @@ import { useGlobal, useLocal } from "web-utils";
 import { syncronize } from "y-pojo";
 import * as Y from "yjs";
 import { TypedMap } from "yjs-types";
-import { MItem } from "../../../../../utils/types/item";
+import { IItem, MItem } from "../../../../../utils/types/item";
 import { FMCompDef, FNCompDef } from "../../../../../utils/types/meta-fn";
 import { Popover } from "../../../../../utils/ui/popover";
 import { EditorGlobal } from "../../../logic/global";
+import { newMap } from "../../../tools/yjs-tools";
 import { jscript } from "../../script/script-element";
 import { AutoHeightTextarea } from "../panel/link";
-import { CPCoded } from "./CPCoded";
 import { CPCodeEdit } from "./CPCodeEdit";
-import { newMap } from "../../../tools/yjs-tools";
+import { CPCoded } from "./CPCoded";
 
 const popover = {
   name: "",
@@ -21,9 +21,11 @@ export const CPMaster: FC<{ mitem: MItem }> = ({ mitem }) => {
   const p = useGlobal(EditorGlobal, "EDITOR");
   const local = useLocal({ id: mitem.get("id") || "", ready: false });
 
+  const meta = p.treeMeta[p.comp?.instance_id || ""];
+  const pitem = meta.item as IItem;
   useEffect(() => {
     if (type === "text") {
-      p.item.active = p.comp?.content_tree.id || "";
+      p.item.active = pitem.id || "";
       if (document.activeElement) {
         (document.activeElement as HTMLInputElement).blur();
       }
@@ -37,12 +39,7 @@ export const CPMaster: FC<{ mitem: MItem }> = ({ mitem }) => {
   }, [mitem]);
 
   const type = mitem.get("type") as any;
-
-  const mprops = p.comps.doc[p.comp?.content_tree?.component?.id || ""]
-    .getMap("map")
-    ?.get("content_tree")
-    ?.get("component")
-    ?.get("props");
+  const mprops = meta.comp?.mprops;
   const props = (mprops?.toJSON() || {}) as Record<string, FNCompDef>;
 
   return (

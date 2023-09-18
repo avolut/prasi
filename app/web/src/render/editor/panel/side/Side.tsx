@@ -29,12 +29,6 @@ export const ESide = () => {
         const meta = p.treeMeta[p.item.active];
         let mitem = meta.mitem as TypedMap<any>;
 
-        if (p.comp?.item.id === p.item.active) {
-          mitem = p.comps.doc[p.comp?.id]
-            .getMap("map")
-            .get("content_tree") as MItem;
-        }
-
         if (p.mode === "mobile") {
           let mobile = mitem.get("mobile");
           if (!mobile) {
@@ -119,7 +113,7 @@ export const ESide = () => {
                   </>
                 ) : (
                   <>
-                    <SideLabel sep="bottom">
+                    {/* <SideLabel sep="bottom">
                       <div className="flex items-center justify-between">
                         {!rootComponentID ? (
                           <div>LAYOUT</div>
@@ -182,7 +176,7 @@ export const ESide = () => {
                     <SideBox>
                       <PanelLink value={active} mode={p.mode} update={update} />
                       <PanelAdv value={active} mode={p.mode} update={update} />
-                    </SideBox>
+                    </SideBox> */}
                   </>
                 )}
               </>
