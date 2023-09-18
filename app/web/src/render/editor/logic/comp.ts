@@ -176,5 +176,5 @@ export const instantiateComp = async (
     }
   }
 
-  return { ...nitem, ...item, name: nitem.name, childs: nitem.childs };
+  return { ...nitem, id: item.id, component: item.component };
 };

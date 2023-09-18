@@ -24,6 +24,13 @@ export const ERender: FC<{
 
   if (meta.comp?.item) {
     item = meta.comp.item;
+  }
+
+  if (item.hidden) {
+    return null;
+  }
+
+  if (meta.comp?.item) {
     const comp = meta.comp;
     const props = comp.mcomp.get("component")?.get("props")?.toJSON() as Record<
       string,
@@ -34,18 +41,13 @@ export const ERender: FC<{
       return a[1].idx - b[1].idx;
     });
 
-    if (!comp.propEvaled) {
-      treePropEval(p, meta, cprops).then(() => {
-        comp.propEvaled = true;
+    if (!comp.propval) {
+      treePropEval(p, meta, cprops).then((propval) => {
+        comp.propval = propval;
         local.render();
       });
-
       return null;
     }
-  }
-
-  if (item.hidden) {
-    return null;
   }
 
   let _children = null;

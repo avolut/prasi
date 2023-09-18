@@ -14,7 +14,6 @@ export const treePropEval = async (
 
     const props = meta.item.component.props;
 
-    meta.scope = {};
     const w = window as any;
     const finalScope = mergeScopeUpwards(p, meta);
     const args = {
@@ -24,12 +23,13 @@ export const treePropEval = async (
       api: p.script.api,
     };
 
+    const result: any = {};
     for (const [name, _prop] of cprops) {
       const prop = props[name] || _prop;
 
       if (prop.meta?.type === "content-element") {
         // todo: create EItem
-        meta.scope[name] = <>{JSON.stringify(meta.item)}</>;
+        result[name] = <>ini jsx</>;
         continue;
       }
 
@@ -39,7 +39,7 @@ export const treePropEval = async (
           `return ${prop.valueBuilt}`
         );
         try {
-          meta.scope[name] = await fn(...Object.values(args));
+          result[name] = await fn(...Object.values(args));
         } catch (e) {
           const cname = meta.item.name;
           console.log(args);
@@ -50,5 +50,6 @@ export const treePropEval = async (
         }
       }
     }
+    return result;
   }
 };

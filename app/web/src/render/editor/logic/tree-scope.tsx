@@ -10,6 +10,7 @@ export const treeScopeEval = (p: PG, meta: ItemMeta, children: ReactNode) => {
   const elprop = meta.elprop;
   if (item.adv && item.adv.jsBuilt) {
     const adv = item.adv;
+    let args = {};
     try {
       if (!meta.memoize) {
         meta.memoize = {
@@ -24,7 +25,7 @@ export const treeScopeEval = (p: PG, meta: ItemMeta, children: ReactNode) => {
       const w = window as any;
       const finalScope = mergeScopeUpwards(p, meta);
       const output = { jsx: null as any };
-      const args = {
+      args = {
         ...w.exports,
         ...finalScope,
         ...meta.memoize,
@@ -57,6 +58,7 @@ export const treeScopeEval = (p: PG, meta: ItemMeta, children: ReactNode) => {
         res.catch((e: any) => {
           console.warn(e);
           console.warn(`ERROR in ${item.type} [${item.name}]:\n ` + adv.js);
+          console.warn(`Available var:`, args);
         });
       }
 
@@ -64,6 +66,7 @@ export const treeScopeEval = (p: PG, meta: ItemMeta, children: ReactNode) => {
     } catch (e) {
       console.warn(e);
       console.warn(`ERROR in ${item.type} [${item.name}]:\n ` + adv.js);
+      console.warn(`Available var:`, args);
     }
   }
 };
@@ -77,7 +80,14 @@ export const mergeScopeUpwards = (p: PG, meta: ItemMeta) => {
   let cur = meta;
   while (cur) {
     if (cur.scope) {
-      scopes.unshift(cur.scope);
+      const scope = { ...cur.scope };
+      if (cur.comp?.propval) {
+        for (const [k, v] of Object.entries(cur.comp.propval)) {
+          scope[k] = v;
+        }
+      }
+
+      scopes.unshift(scope);
     }
     cur = p.treeMeta[cur.parent_id];
   }

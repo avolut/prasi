@@ -24,7 +24,7 @@ export type ItemMeta = {
     item: IItem;
     mcomp: MItem;
     mprops?: TypedMap<Record<string, FMCompDef>>;
-    propEvaled: boolean;
+    propval?: any;
   };
 };
 

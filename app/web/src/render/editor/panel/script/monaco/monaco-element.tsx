@@ -5,15 +5,15 @@ import { FC } from "react";
 import strDelta from "textdiff-create";
 import { useGlobal, useLocal } from "web-utils";
 import * as Y from "yjs";
-import { MItem } from "../../../../../utils/types/item";
+import { TypedMap } from "yjs-types";
+import { FNAdv } from "../../../../../utils/types/meta-fn";
 import { Button } from "../../../../../utils/ui/form/Button";
 import { Loading } from "../../../../../utils/ui/loading";
 import { EditorGlobal } from "../../../logic/global";
+import { newMap } from "../../../tools/yjs-tools";
 import { jsMount } from "./mount";
 import { monacoTypings } from "./typings";
-import { newMap } from "../../../tools/yjs-tools";
-import { TypedMap } from "yjs-types";
-import { FNAdv } from "../../../../../utils/types/meta-fn";
+import { mergeScopeUpwards } from "../../../logic/tree-scope";
 
 export type MonacoEditor = Parameters<OnMount>[0];
 export const DefaultScript = {
@@ -409,10 +409,10 @@ export const ScriptMonacoElement: FC<{
             let propVal: any = {};
 
             const meta = p.treeMeta[p.item.active];
-
+            const scope = mergeScopeUpwards(p, meta);
             propVal = {
               ...(window.exports || {}),
-              ...meta.scope,
+              ...scope,
             };
 
             const propTypes: any = p.script.siteTypes;

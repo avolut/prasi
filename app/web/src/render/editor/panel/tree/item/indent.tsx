@@ -83,7 +83,7 @@ export const ETreeItemIndent: FC<{
             padding-left: ${Math.round(
               depth < 3
                 ? depth * DEPTH_WIDTH
-                : 3 * DEPTH_WIDTH + ((depth - 3) * DEPTH_WIDTH * 2) / 2
+                : 3 * DEPTH_WIDTH + ((depth - 3) * DEPTH_WIDTH ) / 2
             )}px;
           `
         )}

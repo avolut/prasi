@@ -130,7 +130,6 @@ const walk = async (
           id: cid,
           mcomp,
           item: await instantiateComp(item, mitem as MItem, mcomp),
-          propEvaled: false,
         };
       }
     }
