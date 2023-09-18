@@ -240,7 +240,7 @@ const RootComponentClose = ({ item }: { item: IContent }) => {
           rebuildTree(p);
         }}
       >
-        Close
+        {p.comp?.last.length === 1 ? "Close" : "Back"}
       </div>
     </>
   );

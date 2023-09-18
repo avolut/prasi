@@ -20,7 +20,6 @@ export type MetaItem = {
   type: "text" | "section" | "item";
   name: string;
   field?: string;
-  originalId?: string;
   html?: string;
   text?: string;
   hidden?: "only-editor" | "all" | false;

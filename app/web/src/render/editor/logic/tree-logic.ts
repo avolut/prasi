@@ -21,7 +21,11 @@ export const updateComponentInTree = async (p: PG, comp_id: string) => {
         promises.push(
           new Promise<void>(async (done) => {
             if (meta.comp && meta.mitem && meta.item) {
-              meta.comp.item = await instantiateComp(meta.item as IItem, mcomp);
+              meta.comp.item = await instantiateComp(
+                meta.item as IItem,
+                meta.mitem as MItem,
+                mcomp
+              );
               const mprops = meta.mitem.get("component")?.get("props");
               if (mprops) {
                 let idx = 0;
@@ -78,14 +82,7 @@ export const rebuildTree = async (p: PG, render?: () => void) => {
   p.treeMeta = {};
   p.treeFlat = [];
 
-  if (p.comp?.id) {
-    const cid = p.comp?.id;
-    if (!p.comps.doc[cid]) {
-      await loadComponent(p, cid);
-    }
-    const mitem = p.comps.doc[cid].getMap("map").get("content_tree") as MItem;
-    await walk(p, { mitem, parent_id: "root" }, { parent_id: "root", idx: 0 });
-  } else if (p.mpage) {
+  if (p.mpage) {
     await Promise.all(
       p.mpage
         .getMap("map")
@@ -117,27 +114,22 @@ const walk = async (
     let comp: ItemMeta["comp"] = undefined;
     if (item.type === "item" && item.component?.id) {
       const cid = item.component.id;
-      if (cid !== p.comp?.id) {
-        let doc = p.comps.doc[cid];
 
-        if (!doc) {
-          if (!p.comps.pending[cid]) {
-            await loadComponent(p, cid);
-          }
+      let doc = p.comps.doc[cid];
 
-          if (p.comps.pending[cid]) await p.comps.pending[cid];
-          doc = p.comps.doc[cid];
-        }
+      if (!doc) {
+        await loadComponent(p, cid);
+        doc = p.comps.doc[cid];
+      }
 
-        if (doc) {
-          const mcomp = doc.getMap("map").get("content_tree") as MItem;
+      if (doc) {
+        const mcomp = doc.getMap("map").get("content_tree") as MItem;
 
-          comp = {
-            id: cid,
-            mcomp,
-            item: await instantiateComp(item, mcomp),
-          };
-        }
+        comp = {
+          id: cid,
+          mcomp,
+          item: await instantiateComp(item, mitem as MItem, mcomp),
+        };
       }
     }
 
@@ -170,12 +162,23 @@ const walk = async (
 
     p.treeMeta[meta.item.id] = meta;
     if (flat) {
-      p.treeFlat.push({
-        data: { meta, idx: flat.idx },
-        id: meta.item.id,
-        parent: flat.parent_id,
-        text: item.name,
-      });
+      if (p.comp?.id) {
+        if (comp && p.comp.instance_id === comp.item.id) {
+          p.treeFlat.push({
+            data: { meta, idx: flat.idx },
+            id: meta.item.id,
+            parent: "root",
+            text: item.name,
+          });
+        }
+      } else {
+        p.treeFlat.push({
+          data: { meta, idx: flat.idx },
+          id: meta.item.id,
+          parent: flat.parent_id,
+          text: item.name,
+        });
+      }
     }
 
     if (mitem) {

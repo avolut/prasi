@@ -159,7 +159,7 @@ export const editorWS = async (p: PG) => {
           }
           case "set_comp":
             {
-              const callback = p.comps.pending[msg.comp_id];
+              const callback = p.comps.resolve[msg.comp_id];
               if (callback) {
                 p.comps.doc[msg.comp_id] = new Y.Doc() as CompDoc;
                 Y.applyUpdate(
@@ -224,6 +224,7 @@ export const editorWS = async (p: PG) => {
                     .toJSON() as PRASI_COMPONENT
                 );
                 delete p.comps.pending[msg.comp_id];
+                delete p.comps.resolve[msg.comp_id];
               }
             }
             break;

@@ -46,8 +46,15 @@ export const loadComponent = async (
   if (typeof itemOrID !== "string") {
     tree = itemOrID;
   } else {
-    const res = await loadSingleComponent(p, itemOrID);
-    tree = res.content_tree;
+    if (p.comps.pending[itemOrID]) {
+      await p.comps.pending[itemOrID];
+    } else {
+      loadSingleComponent(p, itemOrID);
+      const res = await p.comps.pending[itemOrID];
+      console.log(itemOrID, res, !!p.comps.pending[itemOrID]);
+
+      tree = res.content_tree;
+    }
   }
 
   scanComponent(tree, compIds);
@@ -68,9 +75,11 @@ export const loadComponent = async (
 };
 
 const loadSingleComponent = (p: PG, comp_id: string) => {
-  return new Promise<PRASI_COMPONENT>(async (resolve) => {
-    p.comps.pending[comp_id] = (comp: PRASI_COMPONENT) => {
-      updateComponentInTree(p, comp.id);
+  p.comps.pending[comp_id] = new Promise<PRASI_COMPONENT>(async (resolve) => {
+    p.comps.resolve[comp_id] = async (comp: PRASI_COMPONENT) => {
+      if (p.status !== "tree-rebuild") {
+        await updateComponentInTree(p, comp.id);
+      }
       resolve(comp);
     };
     await wsend(
@@ -81,6 +90,7 @@ const loadSingleComponent = (p: PG, comp_id: string) => {
       } as WS_MSG_GET_COMP)
     );
   });
+  return p.comps.pending[comp_id];
 };
 
 export const editComp = (p: PG, _item: IContent) => {
@@ -99,6 +109,7 @@ export const editComp = (p: PG, _item: IContent) => {
         if (!p.comp) {
           p.comp = {
             id: cid,
+            instance_id: item.id,
             last: [{ active_id: item.id }],
             props: map.component.props,
           };
@@ -111,12 +122,14 @@ export const editComp = (p: PG, _item: IContent) => {
           });
 
           p.comp.id = cid;
+          p.comp.instance_id = item.id;
           p.comp.props = map.component.props;
         }
         p.item.active = map.id;
         rebuildTree(p);
 
         localStorage.setItem("prasi-item-active-id", p.item.active);
+        localStorage.setItem("prasi-comp-instance-id", item.id);
         localStorage.setItem("prasi-comp-active-id", p.comp.id);
         localStorage.setItem(
           "prasi-comp-active-last",
@@ -131,25 +144,38 @@ export const editComp = (p: PG, _item: IContent) => {
   }
 };
 
-export const instantiateComp = async (item: IItem, mcomp: MItem) => {
+export const instantiateComp = async (
+  item: IItem,
+  mitem: MItem,
+  mcomp: MItem
+) => {
   const comp = item.component as FNComponent;
-  
+
   if (!comp.child_ids) {
     comp.child_ids = {};
   }
 
   const ids = comp.child_ids;
 
+  let changed = false;
   const nitem = fillID(mcomp.toJSON() as any, (i) => {
     if (ids[i.id]) {
       i.id = ids[i.id];
     } else {
+      changed = true;
       const newid = createId();
       ids[i.id] = newid;
       i.id = newid;
     }
     return false;
   }) as IItem;
+
+  if (changed) {
+    const comp = mitem.get("component");
+    if (comp) {
+      comp.set("child_ids", ids);
+    }
+  }
 
   return { ...nitem, ...item, name: nitem.name, childs: nitem.childs };
 };

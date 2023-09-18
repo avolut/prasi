@@ -51,9 +51,12 @@ export const createElProp = (item: IContent, p: PG) => {
         (document.activeElement as any)?.blur();
       }
 
+      if (p.comp) {}
+
       if (p.item.active !== item.id) {
-        p.item.active = item.originalId || item.id;
+        p.item.active = item.id;
         p.softRender.all();
+        localStorage.setItem("prasi-item-active-id", p.item.active);
       }
     },
   };

@@ -30,6 +30,7 @@ export const initEditor = async (p: PG, site_id: string) => {
     p.item.active = localStorage.getItem("prasi-item-active-id") || "";
     const comp: any = {
       id: localStorage.getItem("prasi-comp-active-id"),
+      instance_id: localStorage.getItem("prasi-comp-instance-id"),
       last: localStorage.getItem("prasi-comp-active-last"),
       props: localStorage.getItem("prasi-comp-active-props"),
     };

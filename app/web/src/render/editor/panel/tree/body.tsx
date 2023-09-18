@@ -119,7 +119,7 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
         const root = p.treeFlat.filter((e) => e.parent === "root");
         if (root.length === 1) {
           const item = root[0].data.meta.item as any;
-          if (item) {
+          if (item && item.data && item.data.meta) {
             const open = [
               item.data.meta.item.id,
               ...item.childs.map((e: any) => e.id),

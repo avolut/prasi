@@ -4,6 +4,7 @@ import { CompDoc } from "../../../base/global/content-editor";
 import { IContent, MContent, MPage } from "../../../utils/types/general";
 import { IItem, MItem } from "../../../utils/types/item";
 import { FMCompDef, FNCompDef } from "../../../utils/types/meta-fn";
+import { PRASI_COMPONENT } from "../../../utils/types/render";
 import { IRoot } from "../../../utils/types/root";
 
 export type NodeMeta = { meta: ItemMeta; idx: number };
@@ -115,6 +116,7 @@ export const EditorGlobal = {
   /** components */
   comp: null as null | {
     id: string;
+    instance_id: string;
     last: {
       comp_id?: string;
       active_id: string;
@@ -123,7 +125,8 @@ export const EditorGlobal = {
     props: Record<string, FNCompDef>;
   },
   comps: {
-    pending: {} as Record<string, any>,
+    pending: {} as Record<string, Promise<PRASI_COMPONENT>>,
+    resolve: {} as Record<string, (comp: PRASI_COMPONENT) => void>,
     doc: {} as Record<string, CompDoc>,
   },
   compProp: {

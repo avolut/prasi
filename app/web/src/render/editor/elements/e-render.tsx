@@ -16,11 +16,14 @@ export const ERender: FC<{
   const meta = p.treeMeta[id];
 
   if (!meta) {
-    console.log(id);
     return null;
   }
+  let item = meta.item;
 
-  const item = meta.item;
+  if (meta.comp?.item) {
+    item = meta.comp.item;
+  }
+
   let _children = null;
 
   if (children) {
@@ -69,9 +72,9 @@ export const ERender: FC<{
 
   return (
     <div className={className} {...elprop}>
-      {/* <pre className={"text-[9px] font-mono text-black"}>
+      <pre className={"text-[9px] font-mono text-black"}>
         {item.id}-{item.name}
-      </pre> */}
+      </pre>
       {_children}
       {componentOver}
     </div>
