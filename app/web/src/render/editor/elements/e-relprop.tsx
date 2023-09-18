@@ -40,59 +40,59 @@ export const createElProp = (item: IContent, p: PG) => {
           let found = false;
           let last_idx = p.comp.last.length - 1;
 
-          const compid = p.comps.doc[p.comp.id]
-            .getMap("map")
-            .get("content_tree")
-            ?.get("id");
+          const doc = p.comps.doc[p.comp.id];
+          if (doc) {
+            const compid = doc.getMap("map").get("content_tree")?.get("id");
 
-          while (cur) {
-            const curid = cur.get("id");
-            if (p.comp.instance_id === curid || curid === compid) {
-              found = true;
-              break;
+            while (cur) {
+              const curid = cur.get("id");
+              if (p.comp.instance_id === curid || curid === compid) {
+                found = true;
+                break;
+              }
+
+              const idx = p.comp.last.findIndex((e) => e.instance_id === curid);
+              if (idx >= 0) {
+                last_idx = idx;
+                found = true;
+                break;
+              }
+
+              if (cur.parent && cur.parent.parent) {
+                cur = cur.parent.parent as any;
+              } else {
+                cur = cur.parent as any;
+              }
             }
 
-            const idx = p.comp.last.findIndex((e) => e.instance_id === curid);
-            if (idx >= 0) {
-              last_idx = idx;
-              found = true;
-              break;
-            }
+            if (!found) {
+              p.comp = null;
+              localStorage.removeItem(`prasi-comp-active-id`);
+              localStorage.removeItem(`prasi-comp-instance-id`);
+              localStorage.removeItem(`prasi-comp-active-last`);
+              localStorage.removeItem(`prasi-comp-active-props`);
+              rebuildTree(p);
+            } else if (last_idx !== p.comp.last.length - 1) {
+              const last = p.comp.last[last_idx];
+              p.comp.last.splice(0, last_idx - 1);
+              if (last) {
+                p.comp.id = last.comp_id || "";
+                p.comp.instance_id = last.instance_id || "";
+                p.comp.props = last.props || {};
+                p.item.active = last.active_id;
 
-            if (cur.parent && cur.parent.parent) {
-              cur = cur.parent.parent as any;
-            } else {
-              cur = cur.parent as any;
-            }
-          }
-
-          if (!found) {
-            p.comp = null;
-            localStorage.removeItem(`prasi-comp-active-id`);
-            localStorage.removeItem(`prasi-comp-instance-id`);
-            localStorage.removeItem(`prasi-comp-active-last`);
-            localStorage.removeItem(`prasi-comp-active-props`);
-            rebuildTree(p);
-          } else if (last_idx !== p.comp.last.length - 1) {
-            const last = p.comp.last[last_idx];
-            p.comp.last.splice(0, last_idx - 1);
-            if (last) {
-              p.comp.id = last.comp_id || "";
-              p.comp.instance_id = last.instance_id || "";
-              p.comp.props = last.props || {};
-              p.item.active = last.active_id;
-
-              localStorage.setItem("prasi-item-active-id", p.item.active);
-              localStorage.setItem("prasi-comp-instance-id", item.id);
-              localStorage.setItem("prasi-comp-active-id", p.comp.id);
-              localStorage.setItem(
-                "prasi-comp-active-last",
-                JSON.stringify(p.comp.last)
-              );
-              localStorage.setItem(
-                "prasi-comp-active-props",
-                JSON.stringify(p.comp.props)
-              );
+                localStorage.setItem("prasi-item-active-id", p.item.active);
+                localStorage.setItem("prasi-comp-instance-id", item.id);
+                localStorage.setItem("prasi-comp-active-id", p.comp.id);
+                localStorage.setItem(
+                  "prasi-comp-active-last",
+                  JSON.stringify(p.comp.last)
+                );
+                localStorage.setItem(
+                  "prasi-comp-active-props",
+                  JSON.stringify(p.comp.props)
+                );
+              }
             }
           }
         }
