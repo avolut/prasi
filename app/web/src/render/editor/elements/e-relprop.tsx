@@ -6,11 +6,7 @@ import { PG } from "../logic/global";
 const hoverAttempt: { id: string; ts: number }[] = [];
 
 export type ElProp = ReturnType<typeof createElProp>;
-export const createElProp = (
-  item: IContent,
-  p: PG,
-  instance?: { id: string; cid: string }
-) => {
+export const createElProp = (item: IContent, p: PG) => {
   return {
     onPointerEnter: (e: React.PointerEvent<HTMLDivElement>) => {
       if (p.item.sideHover) {
@@ -40,11 +36,6 @@ export const createElProp = (
         return;
       }
 
-      if (p.comp?.id && !instance?.cid) {
-        p.item.hover = item.id;
-        p.softRender.all();
-        return;
-      }
       if (p.item.hover !== item.id) {
         e.stopPropagation();
         e.preventDefault();
@@ -58,42 +49,6 @@ export const createElProp = (
       if (item.type !== "text") {
         e.preventDefault();
         (document.activeElement as any)?.blur();
-      }
-
-      if (instance) {
-        if (p.compDirectEdit) {
-          if (p.treeMeta[instance.id]) {
-            editComp(p, p.treeMeta[instance.id].item);
-          } else {
-            const found = p.compEdits.find(
-              (e) => e.component?.id === instance.cid && e.id === instance.id
-            );
-            if (found) {
-              editComp(p, found);
-            }
-          }
-        } else if (p.comp) {
-          if (p.comp.item.id !== instance.id) {
-            p.item.active = instance.id;
-            p.render();
-          } else {
-            p.item.active = item.id;
-            p.softRender.all();
-          }
-          return;
-        }
-
-        if (p.treeMeta[instance.id]) {
-          p.item.active = instance.id;
-          p.render();
-          return;
-        }
-      } else if (p.comp?.id) {
-        p.comp = null;
-        p.compEdits = [];
-        p.item.active = item.originalId || item.id;
-        p.render();
-        return;
       }
 
       if (p.item.active !== item.id) {

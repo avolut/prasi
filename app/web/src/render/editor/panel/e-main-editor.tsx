@@ -48,7 +48,8 @@ export const EMainEditor = () => {
           <>
             <Suspense fallback={<Loading note={`editor-lazy`} />}>
               <ETree />
-              {/* <EPage />
+              <EPage />
+              {/* 
               <ESide /> */}
             </Suspense>
           </>

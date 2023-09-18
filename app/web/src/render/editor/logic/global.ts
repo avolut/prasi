@@ -14,6 +14,7 @@ export type ItemMeta = {
   scope?: any;
   memoize?: {
     Local: FC<any>;
+    PassProp: FC<any>;
   };
   comp?: {
     id: string;
@@ -35,6 +36,7 @@ export const EditorGlobal = {
     | "error"
     | "tree-rebuild",
   focused: "",
+  pendingRebuild: false,
   manager: {
     page: false,
     site: false,

@@ -1,64 +1,34 @@
 import { FC, ReactNode } from "react";
 import { useGlobal } from "web-utils";
 import { produceCSS } from "../../../utils/css/gen";
-import { IContent } from "../../../utils/types/general";
-import { IItem } from "../../../utils/types/item";
-import { FNAdv, FNCompDef } from "../../../utils/types/meta-fn";
-import { IText } from "../../../utils/types/text";
-import { loadComponent } from "../logic/comp";
+import { FNAdv } from "../../../utils/types/meta-fn";
 import { EditorGlobal } from "../logic/global";
+import { treeScopeEval } from "../logic/tree-scope";
 import { ComponentOver, ElProp, createElProp } from "./e-relprop";
 import { ETextInternal } from "./e-text";
-import { scriptExec } from "./script-exec";
+import { IContent } from "../../../utils/types/general";
 
 export const ERender: FC<{
-  item: IContent;
-  children?: (childs: (IItem | IText)[]) => ReactNode;
-  instance?: { id: string; cid: string };
-}> = ({ item: _item, children, instance }) => {
+  id: string;
+  children?: (childs: IContent[]) => ReactNode;
+}> = ({ id, children }) => {
   const p = useGlobal(EditorGlobal, "EDITOR");
+  const meta = p.treeMeta[id];
 
-  let item = _item;
-
-  let childs = item.type !== "text" ? item.childs || [] : [];
-  if (_item.type === "item" && _item.component) {
+  if (!meta) {
+    console.log(id);
+    return null;
   }
 
-  childs = childs
-    .filter((e) => {
-      if (typeof e !== "object") return false;
-      if (e.hidden === "all") return false;
-      return true;
-    })
-    .map((e) => {
-      let meta = p.treeMeta[e.id];
+  const item = meta.item;
+  let _children = null;
 
-      if (meta) {
-        if (e.type === "item" && e.component?.id) {
-          if (!p.comps.doc[e.component.id]) {
-            loadComponent(p, e.component.id);
-          } else {
-            const mcomp = p.comps.doc[e.component.id]
-              .getMap("map")
-              .get("content_tree");
+  if (children) {
+    if (item.type === "text") _children = children([]);
+    else _children = children(item.childs);
+  }
 
-            if (mcomp && meta.mitem.get("name") !== mcomp.get("name")) {
-              meta.mitem.set("name", mcomp.get("name") || "");
-            }
-          }
-        }
-      }
-
-      if (item.nprops) {
-        e.nprops = item.nprops;
-      }
-      return e;
-    })
-    .filter((e) => e);
-
-  let _children = children ? children(childs) : undefined;
-
-  const elprop = createElProp(item, p, instance);
+  const elprop = createElProp(item, p);
   const className = produceCSS(item, {
     mode: p.mode,
     hover: p.item.sideHover ? false : p.item.hover === item.id,
@@ -68,43 +38,7 @@ export const ERender: FC<{
 
   let componentOver = null;
   if (item.type === "item" && item.component?.id) {
-    const isCompEdit = p.compEdits.find(
-      (e) => item.type === "item" && e.component?.id === item.component?.id
-    );
-    if (p.comp && isCompEdit) {
-      componentOver = null;
-    } else {
-      let hasChilds = false;
-      const id = (item as IItem).component?.id;
-      if (id) {
-        const props = p.comps.doc[id]
-          .getMap("map")
-          .get("content_tree")
-          ?.get("component")
-          ?.get("props")
-          ?.toJSON() as Record<string, FNCompDef>;
-
-        if (props) {
-          if (
-            Object.values(props).filter(
-              (e) => e.meta?.type === "content-element"
-            ).length > 0
-          ) {
-            hasChilds = true;
-          }
-        }
-      }
-      if (!hasChilds) {
-        componentOver = (
-          <ComponentOver
-            item={item}
-            p={p}
-            elprop={elprop}
-            instance={instance}
-          />
-        );
-      }
-    }
+    componentOver = <ComponentOver item={item} p={p} elprop={elprop} />;
   }
 
   if (item.hidden) {
@@ -116,20 +50,7 @@ export const ERender: FC<{
 
     if (html) return html;
     else if (adv.jsBuilt && adv.js) {
-      const el = scriptExec(
-        {
-          item,
-          children: _children,
-          p,
-          className,
-          render: p.render,
-          elprop,
-          componentOver,
-        },
-        p.site.api_url
-      );
-
-      return el;
+      return treeScopeEval(p, meta, _children);
     }
   }
 

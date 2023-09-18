@@ -105,7 +105,15 @@ export const ETreeRightClick: FC<{
   }
 
   const mitem = p.treeMeta[item.id].mitem;
-  const mcomp = mitem.get("component");
+  const mcomp = mitem ? mitem.get("component") : null;
+
+  if (!mitem) {
+    return (
+      <Menu mouseEvent={event} onClose={onClose}>
+        <MenuItem label={<div className="text-gray-400">Unavailable</div>} />
+      </Menu>
+    );
+  }
 
   let canDelete = true;
   let isPropContent = false;
@@ -134,7 +142,7 @@ export const ETreeRightClick: FC<{
         )
       }
       onClick={() => {
-        if (type === "item" || type === "section") {
+        if (mitem && (type === "item" || type === "section")) {
           let _mitem = mitem;
           if (comp?.id && rootComp && comp.id === rootComp.id) {
             _mitem = p.comps.doc[comp.id]
@@ -400,16 +408,16 @@ export const ETreeRightClick: FC<{
             if (listItem.length) {
               // hidden multiple
               const listContent: any = listItem.map((e) => {
-                let item = p.treeMeta[e];
-                if (item) {
-                  return item.mitem.toJSON();
+                let meta = p.treeMeta[e];
+                if (meta && meta.mitem) {
+                  return meta.mitem.toJSON();
                 }
               });
               let res = flatTree(listContent);
               res.map((e: IContent) => {
-                const item = p.treeMeta[e.id];
-                if (item) {
-                  item.mitem.set("hidden", "only-editor");
+                const meta = p.treeMeta[e.id];
+                if (meta && meta.mitem) {
+                  meta.mitem.set("hidden", "only-editor");
                   p.render();
                 }
               });
@@ -428,16 +436,16 @@ export const ETreeRightClick: FC<{
             if (listItem.length) {
               // hidden multiple
               const listContent: any = listItem.map((e) => {
-                let item = p.treeMeta[e];
-                if (item) {
-                  return item.mitem.toJSON();
+                let meta = p.treeMeta[e];
+                if (meta && meta.mitem) {
+                  return meta.mitem.toJSON();
                 }
               });
               let res = flatTree(listContent);
               res.map((e: IContent) => {
-                const item = p.treeMeta[e.id];
-                if (item) {
-                  item.mitem.set("hidden", false);
+                const meta = p.treeMeta[e.id];
+                if (meta && meta.mitem) {
+                  meta.mitem.set("hidden", false);
                 }
               });
               p.item.selectMode = "single";
@@ -457,16 +465,16 @@ export const ETreeRightClick: FC<{
           let listItem = p.item.selection;
           if (listItem.length) {
             const listContent: any = listItem.map((e) => {
-              let item = p.treeMeta[e];
-              if (item) {
-                return item.mitem.toJSON();
+              let meta = p.treeMeta[e];
+              if (meta && meta.mitem) {
+                return meta.mitem.toJSON();
               }
             });
             let res = flatTree(listContent);
             res.forEach((e: any) => {
-              let item = p.treeMeta[e.id];
-              if (item) {
-                const mitem = item.mitem;
+              let meta = p.treeMeta[e.id];
+              if (meta && meta.mitem) {
+                const mitem = meta.mitem;
                 mitem.parent.forEach((e: MContent, idx) => {
                   if (e.get("id") === mitem.get("id")) {
                     const json = e.toJSON() as IContent;
@@ -500,9 +508,9 @@ export const ETreeRightClick: FC<{
             let clipboardText = "";
             if (p.item.selection.length) {
               let data = p.item.selection.map((id) => {
-                const e = p.treeMeta[id];
-                if (e) {
-                  let jso = e.mitem.toJSON();
+                const meta = p.treeMeta[id];
+                if (meta && meta.mitem) {
+                  let jso = meta.mitem.toJSON();
                   if (jso.type === "section") {
                     const newItem = {
                       id: jso.id,
@@ -546,9 +554,9 @@ export const ETreeRightClick: FC<{
           let clipboardText = "";
           if (p.item.selection.length) {
             let data = p.item.selection.map((id) => {
-              const e = p.treeMeta[id];
-              if (e) {
-                let jso = e.mitem.toJSON();
+              const meta = p.treeMeta[id];
+              if (meta && meta.mitem) {
+                let jso = meta.mitem.toJSON();
                 if (jso.type === "section") {
                   const newItem = {
                     id: jso.id,
@@ -589,10 +597,10 @@ export const ETreeRightClick: FC<{
               let listItem = p.item.selection;
               if (listItem.length) {
                 const listContent: any = listItem.map((e) => {
-                  let item = p.treeMeta[e];
-                  if (item) {
-                    if (item.mitem.get("type") === "section") {
-                      const json = item.mitem.toJSON();
+                  let meta = p.treeMeta[e];
+                  if (meta && meta.mitem) {
+                    if (meta.mitem.get("type") === "section") {
+                      const json = meta.mitem.toJSON();
                       const newItem = {
                         id: json.id,
                         name: json.name,
@@ -604,15 +612,15 @@ export const ETreeRightClick: FC<{
                       } as IItem;
                       return newItem;
                     }
-                    return item.mitem.toJSON();
+                    return meta.mitem.toJSON();
                   }
                 });
 
                 let targetIdx = -1;
                 listItem.map((e) => {
-                  let mitem = p.treeMeta[e];
-                  if (mitem) {
-                    const jso = mitem.mitem;
+                  let meta = p.treeMeta[e];
+                  if (meta && meta.mitem) {
+                    const jso = meta.mitem;
                     jso.parent.forEach((e, idx) => {
                       if (e === jso) {
                         targetIdx = idx;
@@ -623,7 +631,7 @@ export const ETreeRightClick: FC<{
                 });
 
                 let to = p.treeMeta[node.parent];
-                if (to) {
+                if (to && to.mitem) {
                   const titem = to.mitem;
                   const childs = titem.get("childs");
                   let res = flatTree(listContent);
@@ -672,16 +680,16 @@ export const ETreeRightClick: FC<{
               let listItem = p.item.selection;
               if (listItem.length) {
                 const listContent: any = listItem.map((e) => {
-                  let item = p.treeMeta[e];
-                  if (item) {
-                    return item.mitem.toJSON();
+                  let meta = p.treeMeta[e];
+                  if (meta && meta.mitem) {
+                    return meta.mitem.toJSON();
                   }
                 });
                 let res = flatTree(listContent);
                 res.forEach((e: any) => {
-                  let item = p.treeMeta[e.id];
-                  if (item) {
-                    const mitem = item.mitem;
+                  let meta = p.treeMeta[e.id];
+                  if (meta && meta.mitem) {
+                    const mitem = meta.mitem;
                     mitem.parent.forEach((e: MContent, idx) => {
                       if (e.get("id") === mitem.get("id")) {
                         const json = e.toJSON() as IContent;

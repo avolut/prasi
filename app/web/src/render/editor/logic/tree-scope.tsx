@@ -2,21 +2,17 @@ import { ReactNode, Suspense, useEffect, useState } from "react";
 import { ErrorBoundary } from "web-init";
 import { deepClone } from "web-utils";
 import { createAPI, createDB } from "../../../utils/script/init-api";
-import { IContent } from "../../../utils/types/general";
 import { ItemMeta, PG } from "./global";
 
-export const treeScopeEval = async (
-  p: PG,
-  item: IContent,
-  meta: ItemMeta,
-  children: ReactNode
-) => {
+export const treeScopeEval = (p: PG, meta: ItemMeta, children: ReactNode) => {
+  const item = meta.item;
   if (item.adv && item.adv.jsBuilt) {
     const adv = item.adv;
     try {
       if (!meta.memoize) {
         meta.memoize = {
           Local: createLocal(p, meta),
+          PassProp: createPassProp(p, meta),
         };
       }
 
@@ -33,6 +29,7 @@ export const treeScopeEval = async (
         db: p.script.db,
         api: p.script.api,
         children,
+        props: {},
         render: (jsx: ReactNode) => {
           output.jsx = (
             <ErrorBoundary>
@@ -52,7 +49,7 @@ export const treeScopeEval = async (
 
       // execute
       const fn = new Function(...Object.keys(args), item.adv.jsBuilt);
-      await fn(...Object.values(args));
+      fn(...Object.values(args));
 
       return output.jsx;
     } catch (e) {
@@ -83,6 +80,21 @@ export const mergeScopeUpwards = (p: PG, meta: ItemMeta) => {
   }
   return finalScope;
 };
+
+const createPassProp = (p: PG, meta: ItemMeta) => {
+  return (arg: Record<string, any> & { children: ReactNode }) => {
+    if (!meta.scope) {
+      meta.scope = {};
+    }
+    for (const [k, v] of Object.entries(arg)) {
+      if (k === "children") continue;
+      meta.scope[k] = v;
+    }
+
+    return arg.children;
+  };
+};
+
 const createLocal = (p: PG, meta: ItemMeta) => {
   return ({
     name,

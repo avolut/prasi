@@ -1,10 +1,11 @@
-import { TypedMap } from "yjs-types";
+import { createId } from "@paralleldrive/cuid2";
 import { IContent } from "../../../utils/types/general";
 import { IItem, MItem } from "../../../utils/types/item";
-import { FMCompDef } from "../../../utils/types/meta-fn";
+import { FNComponent } from "../../../utils/types/meta-fn";
 import { PRASI_COMPONENT } from "../../../utils/types/render";
 import { IRoot } from "../../../utils/types/root";
 import { WS_MSG_GET_COMP } from "../../../utils/types/ws";
+import { fillID } from "../tools/fill-id";
 import { PG } from "./global";
 import { rebuildTree, updateComponentInTree } from "./tree-logic";
 import { wsend } from "./ws";
@@ -130,18 +131,25 @@ export const editComp = (p: PG, _item: IContent) => {
   }
 };
 
-export const instantiateComp = async (
-  item: IItem,
-  mitem: MItem,
-  mcomp: MItem
-) => {
-  const nitem = mcomp.toJSON() as unknown as IItem;
-  if (item.component) {
-    item.component.child_ids = {};
-    const ids = item.component.child_ids;
+export const instantiateComp = async (item: IItem, mcomp: MItem) => {
+  const comp = item.component as FNComponent;
+  
+  if (!comp.child_ids) {
+    comp.child_ids = {};
   }
 
-  // todo
+  const ids = comp.child_ids;
 
-  return { ...nitem, ...item, name: nitem.name };
+  const nitem = fillID(mcomp.toJSON() as any, (i) => {
+    if (ids[i.id]) {
+      i.id = ids[i.id];
+    } else {
+      const newid = createId();
+      ids[i.id] = newid;
+      i.id = newid;
+    }
+    return false;
+  }) as IItem;
+
+  return { ...nitem, ...item, name: nitem.name, childs: nitem.childs };
 };

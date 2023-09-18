@@ -7,6 +7,11 @@ import { ItemMeta, PG } from "./global";
 import { treePropEval } from "./tree-prop";
 
 export const updateComponentInTree = async (p: PG, comp_id: string) => {
+  if (p.focused) {
+    p.pendingRebuild = true;
+    return;
+  }
+
   const doc = p.comps.doc[comp_id];
   if (p.compInstance[comp_id] && doc) {
     const mcomp = doc.getMap("map").get("content_tree");
@@ -16,11 +21,7 @@ export const updateComponentInTree = async (p: PG, comp_id: string) => {
         promises.push(
           new Promise<void>(async (done) => {
             if (meta.comp && meta.mitem && meta.item) {
-              meta.comp.item = await instantiateComp(
-                meta.item as IItem,
-                meta.mitem as MItem,
-                mcomp
-              );
+              meta.comp.item = await instantiateComp(meta.item as IItem, mcomp);
               const mprops = meta.mitem.get("component")?.get("props");
               if (mprops) {
                 let idx = 0;
@@ -58,6 +59,11 @@ export const updateComponentInTree = async (p: PG, comp_id: string) => {
 };
 
 export const rebuildTree = async (p: PG, render?: () => void) => {
+  if (p.focused) {
+    p.pendingRebuild = true;
+    return;
+  }
+
   p.status = "tree-rebuild";
   const _render = () => {
     if (render) {
@@ -129,7 +135,7 @@ const walk = async (
           comp = {
             id: cid,
             mcomp,
-            item: await instantiateComp(item, mitem as MItem, mcomp),
+            item: await instantiateComp(item, mcomp),
           };
         }
       }

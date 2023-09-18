@@ -42,6 +42,8 @@ export const ETreeItemAction: FC<{
     canDelete = false;
   }
 
+  if (!mitem) canDelete = false;
+
   return (
     <div className="flex action pl-3 items-center w-[100px] justify-end">
       {!!link && (
@@ -129,13 +131,14 @@ export const ETreeItemAction: FC<{
             content="Duplicate"
             className="flex items-center p-1 pr-[2px] h-full text-green-700"
             onClick={() => {
-              mitem.parent.forEach((e: MContent, idx) => {
-                if (e.get("id") === mitem.get("id")) {
-                  const json = e.toJSON() as IContent;
-                  const map = newMap(fillID(json)) as MContent;
-                  mitem.parent.insert(idx, [map]);
-                }
-              });
+              if (mitem)
+                mitem.parent.forEach((e: MContent, idx) => {
+                  if (e.get("id") === mitem.get("id")) {
+                    const json = e.toJSON() as IContent;
+                    const map = newMap(fillID(json)) as MContent;
+                    mitem.parent.insert(idx, [map]);
+                  }
+                });
             }}
           >
             <Copy />
@@ -149,13 +152,14 @@ export const ETreeItemAction: FC<{
             content="Delete"
             className="flex items-center p-1 h-full text-red-700"
             onClick={() => {
-              mitem.parent.forEach((e: MContent, idx) => {
-                if (e.get("id") === mitem.get("id")) {
-                  const json = e.toJSON() as IContent;
-                  const map = newMap(fillID(json)) as MContent;
-                  mitem.parent.delete(idx);
-                }
-              });
+              if (mitem)
+                mitem.parent.forEach((e: MContent, idx) => {
+                  if (e.get("id") === mitem.get("id")) {
+                    const json = e.toJSON() as IContent;
+                    const map = newMap(fillID(json)) as MContent;
+                    mitem.parent.delete(idx);
+                  }
+                });
             }}
           >
             <Trash />

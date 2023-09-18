@@ -3,12 +3,12 @@ import { useLocal } from "web-utils";
 import { IText } from "../../../utils/types/text";
 import { PG } from "../logic/global";
 import { ERender } from "./e-render";
+import { rebuildTree } from "../logic/tree-logic";
 
 export const EText: FC<{
-  item: IText;
-  instance?: { id: string; cid: string };
-}> = ({ item, instance }) => {
-  return <ERender item={item} instance={instance} />;
+  id: string;
+}> = ({ id }) => {
+  return <ERender id={id} />;
 };
 const currentFocus = {
   id: "",
@@ -60,8 +60,12 @@ export const ETextInternal: FC<{
       dangerouslySetInnerHTML={{ __html: _children || "" }}
       contentEditable
       spellCheck={false}
-      onBlur={(e) => {
+      onBlur={async (e) => {
         p.focused = "";
+        if (p.pendingRebuild) {
+          p.pendingRebuild = false;
+          await rebuildTree(p, () => {});
+        }
         p.render();
       }}
       onInput={(e) => {
