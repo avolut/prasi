@@ -40,6 +40,7 @@ export const CPMaster: FC<{ mitem: MItem }> = ({ mitem }) => {
 
   const type = mitem.get("type") as any;
   const mprops = meta.comp?.mprops;
+  console.log(mprops);
   const props = (mprops?.toJSON() || {}) as Record<string, FNCompDef>;
 
   return (

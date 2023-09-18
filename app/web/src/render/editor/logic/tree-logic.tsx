@@ -109,6 +109,16 @@ export const rebuildTree = async (
           );
         }) || []
     );
+
+    console.log(p.comp && p.treeFlat.length === 0);
+    if (p.comp && p.treeFlat.length === 0) {
+      p.comp = null;
+      localStorage.removeItem(`prasi-comp-active-id`);
+      localStorage.removeItem(`prasi-comp-instance-id`);
+      localStorage.removeItem(`prasi-comp-active-last`);
+      localStorage.removeItem(`prasi-comp-active-props`);
+      await rebuildTree(p, opt);
+    }
   }
 
   p.status = "ready";
