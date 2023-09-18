@@ -46,6 +46,7 @@ export const updateComponentInTree = async (p: PG, comp_id: string) => {
                     if (content) {
                       walk(
                         p,
+                        "reset",
                         { mitem: content, parent_id: meta.item.id },
                         { idx: idx++, parent_id: meta.item.id }
                       );
@@ -64,11 +65,12 @@ export const updateComponentInTree = async (p: PG, comp_id: string) => {
   }
 };
 
-export const flattenTree = async (p: PG) => {
-  p.treeFlat = [];
-};
+export type REBUILD_MODE = "update" | "reset";
 
-export const rebuildTree = async (p: PG, render?: () => void) => {
+export const rebuildTree = async (
+  p: PG,
+  opt?: { render?: () => void; mode?: REBUILD_MODE }
+) => {
   if (p.focused) {
     p.pendingRebuild = true;
     return;
@@ -76,17 +78,21 @@ export const rebuildTree = async (p: PG, render?: () => void) => {
 
   p.status = "tree-rebuild";
   const _render = () => {
-    if (render) {
-      render();
+    if (opt?.render) {
+      opt?.render();
     } else {
       p.render();
     }
   };
-  _render();
 
-  p.compInstance = {};
-  p.treeMeta = {};
-  p.treeFlat = [];
+  const mode = opt?.mode || "reset";
+  if (mode === "reset") {
+    p.compInstance = {};
+    p.treeMeta = {};
+    p.treeFlat = [];
+  } else if (mode === "update") {
+    p.treeFlat = [];
+  }
 
   if (p.mpage) {
     await Promise.all(
@@ -97,6 +103,7 @@ export const rebuildTree = async (p: PG, render?: () => void) => {
         ?.map(async (mitem, idx) => {
           await walk(
             p,
+            mode,
             { mitem, parent_id: "root" },
             { parent_id: "root", idx }
           );
@@ -110,6 +117,7 @@ export const rebuildTree = async (p: PG, render?: () => void) => {
 
 const walk = async (
   p: PG,
+  mode: REBUILD_MODE,
   val: { mitem?: MContent; item?: IContent; parent_id: string },
   _flat?: { idx: number; parent_id: string }
 ) => {
@@ -168,9 +176,6 @@ const walk = async (
           ) {
             delete _item.adv.css;
             adv?.delete("css");
-          }
-          if (_item.name === "popup") {
-            console.log(_item.adv);
           }
         }
       }
@@ -251,6 +256,7 @@ const walk = async (
               if (content) {
                 walk(
                   p,
+                  mode,
                   { mitem: content, parent_id: item.id },
                   flat ? { idx: idx++, parent_id: item.id } : undefined
                 );
@@ -267,6 +273,7 @@ const walk = async (
               if (comp) {
                 walk(
                   p,
+                  mode,
                   { mitem: child, parent_id: comp.item.id },
                   { idx: idx, parent_id: comp.item.id }
                 );
@@ -274,7 +281,7 @@ const walk = async (
             });
           } else {
             for (const child of comp.item.childs) {
-              walk(p, { item: child, parent_id: comp.item.id });
+              walk(p, mode, { item: child, parent_id: comp.item.id });
             }
           }
         }
@@ -282,6 +289,8 @@ const walk = async (
         mitem.get("childs")?.forEach((child, idx) => {
           walk(
             p,
+
+            mode,
             { mitem: child, parent_id: item.id },
             flat ? { idx, parent_id: item.id } : undefined
           );
@@ -289,7 +298,7 @@ const walk = async (
       }
     } else if (item && item.type !== "text") {
       for (const child of item.childs) {
-        walk(p, { item: child, parent_id: item.id });
+        walk(p, mode, { item: child, parent_id: item.id });
       }
     }
   }

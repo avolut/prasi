@@ -115,6 +115,8 @@ export const ETreeItem: FC<{
     isPropContent = true;
   }
 
+  if (!mitem) return null;
+
   return (
     <div
       className={treeItemStyle({
@@ -249,7 +251,7 @@ const RootComponentClose = ({ item }: { item: IContent }) => {
             }
           }
 
-          rebuildTree(p);
+          rebuildTree(p, { mode: "update" });
         }}
       >
         {p.comp?.last && p.comp?.last.length === 1 ? "Close" : "Back"}

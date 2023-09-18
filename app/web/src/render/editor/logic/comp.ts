@@ -125,7 +125,7 @@ export const editComp = (p: PG, _item: IContent) => {
           p.comp.props = map.component.props;
         }
         p.item.active = map.id;
-        rebuildTree(p);
+        rebuildTree(p, { mode: "update" });
 
         localStorage.setItem("prasi-item-active-id", p.item.active);
         localStorage.setItem("prasi-comp-instance-id", item.id);

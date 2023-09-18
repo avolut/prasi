@@ -131,7 +131,7 @@ export const editorWS = async (p: PG) => {
               })
             );
 
-            rebuildTree(p, render);
+            rebuildTree(p, { render });
             if (p.mpageLoaded) {
               p.mpageLoaded(p.mpage);
               p.mpageLoaded = null;

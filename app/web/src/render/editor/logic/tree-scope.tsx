@@ -29,6 +29,7 @@ export const treeScopeEval = (p: PG, meta: ItemMeta, children: ReactNode) => {
       if (!p.script.api) p.script.api = createAPI(p.site.api_url);
       const w = window as any;
       const finalScope = mergeScopeUpwards(p, meta);
+
       const output = { jsx: null as any };
       args = {
         ...w.exports,

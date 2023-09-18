@@ -38,10 +38,9 @@ export const EPage = () => {
           `
         )}
       >
-        {p.status !== "tree-rebuild" &&
-          p.page.content_tree.childs.map((e) => (
-            <ESection key={e.id} id={e.id} />
-          ))}
+        {p.page.content_tree.childs.map((e) => (
+          <ESection key={e.id} id={e.id} />
+        ))}
       </div>
     </div>
   );

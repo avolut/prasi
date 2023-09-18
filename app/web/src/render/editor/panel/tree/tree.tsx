@@ -1,6 +1,5 @@
 import { NodeModel } from "@minoru/react-dnd-treeview";
 import { useGlobal, useLocal } from "web-utils";
-import { Tooltip } from "../../../../utils/ui/tooltip";
 import { EditorGlobal, NodeMeta } from "../../logic/global";
 import { ETreeBody } from "./body";
 
