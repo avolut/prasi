@@ -63,6 +63,7 @@ export const reloadDBAPI = async (url: string, useCache: boolean = true) => {
     }
     if (useCache === false) {
       delete w.prasiApi[url];
+      localStorage.removeItem(`prasi-api-${url}`);
     }
     if (w.prasiApi[url]) return;
 

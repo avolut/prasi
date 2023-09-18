@@ -15,6 +15,7 @@ export const InternalAPI: FC<{
     status: "...",
     loading: false,
     prasiApiDbPull: false,
+    clearingCache: false,
   });
   const p = useGlobal(EditorGlobal, "EDITOR");
   const config = p.site;
@@ -178,6 +179,21 @@ export const InternalAPI: FC<{
               </div>
             )}
           </div>
+
+          <div
+            className={cx("cursor-pointer hover:underline")}
+            onClick={async () => {
+              local.clearingCache = true;
+              local.render();
+              await reloadDBAPI(p.site.api_url, false);
+              local.clearingCache = false;
+              local.render();
+              alert("API Cache Cleared");
+            }}
+          >
+            {local.clearingCache ? "Clearing Cache..." : "Clear API Cache"}
+          </div>
+
           <div
             className="border border-slate-500 hover:bg-red-100 hover:border-red-500 px-2 rounded cursor-pointer"
             onClick={async () => {

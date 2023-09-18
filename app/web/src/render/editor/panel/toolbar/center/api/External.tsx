@@ -2,9 +2,11 @@ import get from "lodash.get";
 import trim from "lodash.trim";
 import { useGlobal, useLocal } from "web-utils";
 import { EditorGlobal } from "../../../../logic/global";
+import { reloadDBAPI } from "../../../../../../utils/script/init-api";
 
 export const ExternalAPI = () => {
   const local = useLocal({
+    clearingCache: false,
     status: "ready" as "ready" | "loading" | "valid" | "invalid",
   });
 
@@ -89,6 +91,25 @@ export const ExternalAPI = () => {
           local.render();
         }}
       />
+
+      <div
+        className={cx(
+          "cursor-pointer hover:underline",
+          css`
+            padding: 10px 0px 0px 0px;
+          `
+        )}
+        onClick={async () => {
+          local.clearingCache = true;
+          local.render();
+          await reloadDBAPI(p.site.api_url, false);
+          local.clearingCache = false;
+          local.render();
+          alert("API Cache Cleared");
+        }}
+      >
+        {local.clearingCache ? "Clearing Cache..." : "Clear API Cache"}
+      </div>
     </div>
   );
 };
