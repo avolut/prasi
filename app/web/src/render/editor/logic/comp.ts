@@ -46,13 +46,11 @@ export const loadComponent = async (
   if (typeof itemOrID !== "string") {
     tree = itemOrID;
   } else {
-    if (p.comps.pending[itemOrID]) {
+    if (!!p.comps.pending[itemOrID]) {
       await p.comps.pending[itemOrID];
     } else {
       loadSingleComponent(p, itemOrID);
       const res = await p.comps.pending[itemOrID];
-      console.log(itemOrID, res, !!p.comps.pending[itemOrID]);
-
       tree = res.content_tree;
     }
   }
@@ -117,6 +115,7 @@ export const editComp = (p: PG, _item: IContent) => {
           if (!p.comp.last) p.comp.last = [];
           p.comp.last.push({
             active_id: p.item.active,
+            instance_id: p.comp.instance_id,
             comp_id: p.comp.id,
             props: p.comp.props,
           });

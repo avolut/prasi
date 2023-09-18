@@ -27,7 +27,6 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
   tree,
   meta,
 }) => {
-  // console.log({ tree });
   const TypedTree = DNDTree<NodeMeta>;
   const p = useGlobal(EditorGlobal, "EDITOR");
   // const
@@ -46,7 +45,6 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
     (node: NodeModel<NodeMeta>) => {
       p.preventTreeScroll = true;
       if (node.data) {
-        console.log(node.data.meta.item.id);
         if (meta.search) {
           meta.search = "";
           meta.render();
@@ -129,8 +127,9 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
         }
       }
 
-      if (meta && meta.mitem) {
-        let mitem = meta.mitem;
+      let mitem = meta?.mitem;
+
+      if (mitem) {
         if (mitem.parent) {
           let item = mitem.parent.parent as any;
           const open = new Set<string>();
@@ -150,6 +149,9 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
             walkParent(item);
             if (open.size === 0 && p.treeFlat.length === 1) {
               open.add(mitem.get("id") || "");
+            }
+            if (p.comp) {
+              open.add(p.comp.instance_id);
             }
             local.method?.open([...open]);
           }
@@ -238,7 +240,9 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
             placeholderRender={(node, params) => (
               <Placeholder node={node} params={params} />
             )}
-            sort={false}
+            sort={(a, b) => {
+              return (a.data?.idx || 0) - (b.data?.idx || 0);
+            }}
             onDragStart={(node) => onDragStart(p, node)}
             onDragEnd={(node) => onDragEnd(p, node)}
             canDrop={(_, args) => {

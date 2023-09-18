@@ -6,6 +6,8 @@ import { ItemMeta, PG } from "./global";
 
 export const treeScopeEval = (p: PG, meta: ItemMeta, children: ReactNode) => {
   const item = meta.item;
+  const className = meta.className;
+  const elprop = meta.elprop;
   if (item.adv && item.adv.jsBuilt) {
     const adv = item.adv;
     try {
@@ -29,8 +31,9 @@ export const treeScopeEval = (p: PG, meta: ItemMeta, children: ReactNode) => {
         db: p.script.db,
         api: p.script.api,
         children,
-        props: {},
+        props: { ...elprop, className },
         render: (jsx: ReactNode) => {
+          // output.jsx = jsx;
           output.jsx = (
             <ErrorBoundary>
               <Suspense
@@ -49,7 +52,13 @@ export const treeScopeEval = (p: PG, meta: ItemMeta, children: ReactNode) => {
 
       // execute
       const fn = new Function(...Object.keys(args), item.adv.jsBuilt);
-      fn(...Object.values(args));
+      const res = fn(...Object.values(args));
+      if (res instanceof Promise) {
+        res.catch((e: any) => {
+          console.warn(e);
+          console.warn(`ERROR in ${item.type} [${item.name}]:\n ` + adv.js);
+        });
+      }
 
       return output.jsx;
     } catch (e) {
@@ -72,12 +81,14 @@ export const mergeScopeUpwards = (p: PG, meta: ItemMeta) => {
     }
     cur = p.treeMeta[cur.parent_id];
   }
+
   const finalScope: any = {};
   for (const scope of scopes) {
     for (const [k, v] of Object.entries(scope)) {
       finalScope[k] = v;
     }
   }
+
   return finalScope;
 };
 
@@ -107,18 +118,19 @@ const createLocal = (p: PG, meta: ItemMeta) => {
     effect?: (value: any) => void | Promise<void>;
     children: ReactNode;
   }) => {
-    const [_, set] = useState({});
-    meta.scope = {
-      ...meta.scope,
-      [name]: {
+    if (!meta.scope) {
+      meta.scope = {};
+    }
+    if (!meta.scope[name]) {
+      meta.scope[name] = {
         ...deepClone(value),
         render: () => {
           if (!p.focused) {
-            set({});
+            p.render();
           }
         },
-      },
-    };
+      };
+    }
 
     useEffect(() => {
       if (effect) {

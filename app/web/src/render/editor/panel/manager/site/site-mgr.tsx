@@ -62,7 +62,7 @@ export const SiteManager = () => {
 
   const site_id = p.site.id;
 
-  if (local.sites.length === 0) {
+  if (!local.sites || (local.sites && local.sites.length === 0)) {
     reloadSites();
   }
 

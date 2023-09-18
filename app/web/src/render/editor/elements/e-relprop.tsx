@@ -3,6 +3,7 @@ import { IContent } from "../../../utils/types/general";
 import { IItem } from "../../../utils/types/item";
 import { editComp } from "../logic/comp";
 import { PG } from "../logic/global";
+import { rebuildTree } from "../logic/tree-logic";
 const hoverAttempt: { id: string; ts: number }[] = [];
 
 export type ElProp = ReturnType<typeof createElProp>;
@@ -11,29 +12,7 @@ export const createElProp = (item: IContent, p: PG) => {
     onPointerEnter: (e: React.PointerEvent<HTMLDivElement>) => {
       if (p.item.sideHover) {
         p.item.sideHover = false;
-        p.render();
-      }
-      hoverAttempt.unshift({ id: item.id, ts: Date.now() });
-      if (hoverAttempt.length > 6) {
-        hoverAttempt.pop();
-      }
-
-      const hoverCounts: Record<string, { count: number; ts: number }> = {};
-      for (const a of hoverAttempt) {
-        if (!hoverCounts[a.id]) {
-          hoverCounts[a.id] = { count: 1, ts: a.ts };
-        } else {
-          hoverCounts[a.id].count++;
-        }
-      }
-
-      if (
-        hoverCounts[item.id].count > 1 &&
-        Date.now() - hoverCounts[item.id].ts < 1000
-      ) {
-        e.stopPropagation();
-        e.preventDefault();
-        return;
+        p.softRender.all();
       }
 
       if (p.item.hover !== item.id) {
@@ -51,10 +30,80 @@ export const createElProp = (item: IContent, p: PG) => {
         (document.activeElement as any)?.blur();
       }
 
-      if (p.comp) {}
+      let _item = item;
+      if (p.comp) {
+        const meta = p.treeMeta[_item.id];
 
-      if (p.item.active !== item.id) {
-        p.item.active = item.id;
+        if (meta.mitem) {
+          let cur = meta.mitem;
+
+          let found = false;
+          let last_idx = p.comp.last.length - 1;
+
+          const compid = p.comps.doc[p.comp.id]
+            .getMap("map")
+            .get("content_tree")
+            ?.get("id");
+
+          while (cur) {
+            const curid = cur.get("id");
+            if (p.comp.instance_id === curid || curid === compid) {
+              found = true;
+              break;
+            }
+
+            const idx = p.comp.last.findIndex((e) => e.instance_id === curid);
+            if (idx >= 0) {
+              last_idx = idx;
+              found = true;
+              break;
+            }
+
+            if (cur.parent && cur.parent.parent) {
+              cur = cur.parent.parent as any;
+            } else {
+              cur = cur.parent as any;
+            }
+          }
+
+          if (!found) {
+            p.comp = null;
+            localStorage.removeItem(`prasi-comp-active-id`);
+            localStorage.removeItem(`prasi-comp-instance-id`);
+            localStorage.removeItem(`prasi-comp-active-last`);
+            localStorage.removeItem(`prasi-comp-active-props`);
+            rebuildTree(p);
+          } else if (last_idx !== p.comp.last.length - 1) {
+            const last = p.comp.last[last_idx];
+            p.comp.last.splice(0, last_idx - 1);
+            if (last) {
+              p.comp.id = last.comp_id || "";
+              p.comp.instance_id = last.instance_id || "";
+              p.comp.props = last.props || {};
+              p.item.active = last.active_id;
+
+              localStorage.setItem("prasi-item-active-id", p.item.active);
+              localStorage.setItem("prasi-comp-instance-id", item.id);
+              localStorage.setItem("prasi-comp-active-id", p.comp.id);
+              localStorage.setItem(
+                "prasi-comp-active-last",
+                JSON.stringify(p.comp.last)
+              );
+              localStorage.setItem(
+                "prasi-comp-active-props",
+                JSON.stringify(p.comp.props)
+              );
+            }
+          }
+        }
+
+        if (p.comp && meta.comp && meta.comp.id === p.comp.id) {
+          _item = meta.comp.item;
+        }
+      }
+
+      if (p.item.active !== _item.id) {
+        p.item.active = _item.id;
         p.softRender.all();
         localStorage.setItem("prasi-item-active-id", p.item.active);
       }
@@ -66,8 +115,7 @@ export const ComponentOver: FC<{
   item: IItem;
   p: PG;
   elprop: ElProp;
-  instance?: { id: string; cid: string };
-}> = ({ item, p, elprop, instance }) => {
+}> = ({ item, p, elprop }) => {
   if (p.compDirectEdit) {
     return <></>;
   }
@@ -94,20 +142,7 @@ export const ComponentOver: FC<{
       )}
       {...elprop}
       onPointerDown={async (e) => {
-        e.stopPropagation();
-
-        if (instance) {
-          if (instance.cid && p.comp?.id !== instance.cid) {
-            const citem = p.treeMeta[instance.id].item;
-            editComp(p, citem);
-            return;
-          }
-        }
-
-        if (p.item.active !== item.id) {
-          p.item.active = item.id;
-          p.softRender.all();
-        }
+        elprop.onPointerDown(e);
       }}
     >
       <div

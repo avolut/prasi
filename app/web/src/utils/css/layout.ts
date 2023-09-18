@@ -33,11 +33,7 @@ export const cssLayout = (
         if (layout.align === "right")
           result.push("align-items:end; justify-content: space-between;");
       } else {
-        result.push(
-          `
-            gap: ${layout.gap}px;
-          `
-        );
+        result.push(`gap: ${layout.gap}px;`);
 
         if (layout.align === "top-left")
           result.push("align-items:start; justify-content: start;");
@@ -106,5 +102,5 @@ export const cssLayout = (
   } else {
     return "flex-direction:column; align-items:start; justify-content: start;";
   }
-  return result.join("\n").trim();
+  return result.join("\n\t").trim();
 };

@@ -1,7 +1,6 @@
 import { useGlobal, useLocal } from "web-utils";
 import { EditorGlobal } from "../logic/global";
 import { ESection } from "./e-section";
-import { useEffect } from "react";
 
 export const EPage = () => {
   const p = useGlobal(EditorGlobal, "EDITOR");

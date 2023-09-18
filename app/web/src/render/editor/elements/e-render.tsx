@@ -1,12 +1,13 @@
 import { FC, ReactNode } from "react";
-import { useGlobal } from "web-utils";
+import { useGlobal, useLocal } from "web-utils";
 import { produceCSS } from "../../../utils/css/gen";
-import { FNAdv } from "../../../utils/types/meta-fn";
+import { IContent } from "../../../utils/types/general";
+import { FNAdv, FNCompDef } from "../../../utils/types/meta-fn";
 import { EditorGlobal } from "../logic/global";
-import { treeScopeEval } from "../logic/tree-scope";
 import { ComponentOver, ElProp, createElProp } from "./e-relprop";
 import { ETextInternal } from "./e-text";
-import { IContent } from "../../../utils/types/general";
+import { treeScopeEval } from "../logic/tree-scope";
+import { treePropEval } from "../logic/tree-prop";
 
 export const ERender: FC<{
   id: string;
@@ -14,6 +15,7 @@ export const ERender: FC<{
 }> = ({ id, children }) => {
   const p = useGlobal(EditorGlobal, "EDITOR");
   const meta = p.treeMeta[id];
+  const local = useLocal({});
 
   if (!meta) {
     return null;
@@ -22,37 +24,66 @@ export const ERender: FC<{
 
   if (meta.comp?.item) {
     item = meta.comp.item;
-  }
+    const comp = meta.comp;
+    const props = comp.mcomp.get("component")?.get("props")?.toJSON() as Record<
+      string,
+      FNCompDef
+    >;
 
-  let _children = null;
+    const cprops = Object.entries(props).sort((a, b) => {
+      return a[1].idx - b[1].idx;
+    });
 
-  if (children) {
-    if (item.type === "text") _children = children([]);
-    else _children = children(item.childs);
-  }
+    if (!comp.propEvaled) {
+      treePropEval(p, meta, cprops).then(() => {
+        comp.propEvaled = true;
+        local.render();
+      });
 
-  const elprop = createElProp(item, p);
-  const className = produceCSS(item, {
-    mode: p.mode,
-    hover: p.item.sideHover ? false : p.item.hover === item.id,
-    active: p.item.sideHover ? false : p.item.active === item.id,
-  });
-  const adv = item.adv;
-
-  let componentOver = null;
-  if (item.type === "item" && item.component?.id) {
-    componentOver = <ComponentOver item={item} p={p} elprop={elprop} />;
+      return null;
+    }
   }
 
   if (item.hidden) {
     return null;
   }
 
-  if (adv) {
-    const html = renderHTML(item.id, className, adv, elprop);
+  let _children = null;
 
-    if (html) return html;
-    else if (adv.jsBuilt && adv.js) {
+  if (children) {
+    if (item.type === "text") _children = children([]);
+    else {
+      if (item.id === p.comp?.instance_id && meta.comp) {
+        _children = children(meta.comp.mcomp.get("childs")?.toJSON() as any);
+      } else {
+        _children = children(item.childs);
+      }
+    }
+  }
+
+  meta.elprop = createElProp(item, p);
+  meta.className = produceCSS(item, {
+    mode: p.mode,
+    hover: p.item.sideHover ? false : p.item.hover === item.id,
+    active: p.item.sideHover ? false : p.item.active === item.id,
+  });
+
+  const elprop = meta.elprop;
+  const className = meta.className;
+  const adv = item.adv;
+
+  let componentOver = null;
+  if (item.type === "item" && item.component?.id) {
+    if (item.id !== p.comp?.instance_id) {
+      componentOver = <ComponentOver item={item} p={p} elprop={elprop} />;
+    }
+  }
+
+  if (adv) {
+    if (adv.html) {
+      const html = renderHTML(className, adv, elprop);
+      if (html) return html;
+    } else if (adv.jsBuilt) {
       return treeScopeEval(p, meta, _children);
     }
   }
@@ -72,21 +103,16 @@ export const ERender: FC<{
 
   return (
     <div className={className} {...elprop}>
-      <pre className={"text-[9px] font-mono text-black"}>
+      {/* <pre className={"text-[9px] font-mono text-black"}>
         {item.id}-{item.name}
-      </pre>
+      </pre> */}
       {_children}
       {componentOver}
     </div>
   );
 };
 
-export const renderHTML = (
-  id: string,
-  className: string,
-  adv: FNAdv,
-  elprop: ElProp
-) => {
+export const renderHTML = (className: string, adv: FNAdv, elprop: ElProp) => {
   if (adv.html) {
     return (
       <div

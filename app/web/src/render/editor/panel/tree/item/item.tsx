@@ -214,8 +214,16 @@ const RootComponentClose = ({ item }: { item: IContent }) => {
               p.item.active = cur.active_id;
               localStorage.setItem("prasi-item-active-id", p.item.active);
 
+              if (cur.instance_id) {
+                p.comp.instance_id = cur.instance_id;
+              }
+
               if (cur.comp_id) {
                 p.comp.id = cur.comp_id;
+                localStorage.setItem(
+                  "prasi-comp-instance-id",
+                  p.comp.instance_id
+                );
                 localStorage.setItem(`prasi-comp-active-id`, p.comp.id);
                 localStorage.setItem(
                   `prasi-comp-active-last`,
@@ -232,15 +240,18 @@ const RootComponentClose = ({ item }: { item: IContent }) => {
               p.comp = null;
             }
 
-            if (!p.comp) localStorage.removeItem(`prasi-comp-active-id`);
-            localStorage.removeItem(`prasi-comp-active-last`);
-            localStorage.removeItem(`prasi-comp-active-props`);
+            if (!p.comp) {
+              localStorage.removeItem(`prasi-comp-active-id`);
+              localStorage.removeItem(`prasi-comp-instance-id`);
+              localStorage.removeItem(`prasi-comp-active-last`);
+              localStorage.removeItem(`prasi-comp-active-props`);
+            }
           }
 
           rebuildTree(p);
         }}
       >
-        {p.comp?.last.length === 1 ? "Close" : "Back"}
+        {p.comp?.last && p.comp?.last.length === 1 ? "Close" : "Back"}
       </div>
     </>
   );

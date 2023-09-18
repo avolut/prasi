@@ -1,10 +1,11 @@
+import { produceCSS } from "../../../utils/css/gen";
 import { IContent, MContent } from "../../../utils/types/general";
 import { IItem, MItem } from "../../../utils/types/item";
 import { FNCompDef } from "../../../utils/types/meta-fn";
+import { createElProp } from "../elements/e-relprop";
 import { newMap } from "../tools/yjs-tools";
 import { instantiateComp, loadComponent } from "./comp";
 import { ItemMeta, PG } from "./global";
-import { treePropEval } from "./tree-prop";
 
 export const updateComponentInTree = async (p: PG, comp_id: string) => {
   if (p.focused) {
@@ -105,14 +106,14 @@ export const rebuildTree = async (p: PG, render?: () => void) => {
 const walk = async (
   p: PG,
   val: { mitem?: MContent; item?: IContent; parent_id: string },
-  flat?: { idx: number; parent_id: string }
+  _flat?: { idx: number; parent_id: string }
 ) => {
   const item = val.mitem ? (val.mitem.toJSON() as IContent) : val.item;
   if (item) {
     const mitem = val.mitem;
 
     let comp: ItemMeta["comp"] = undefined;
-    if (item.type === "item" && item.component?.id) {
+    if (mitem && item.type === "item" && item.component?.id) {
       const cid = item.component.id;
 
       let doc = p.comps.doc[cid];
@@ -129,6 +130,7 @@ const walk = async (
           id: cid,
           mcomp,
           item: await instantiateComp(item, mitem as MItem, mcomp),
+          propEvaled: false,
         };
       }
     }
@@ -137,6 +139,12 @@ const walk = async (
       mitem: mitem,
       item,
       parent_id: val.parent_id,
+      elprop: createElProp(comp ? comp.item : item, p),
+      className: produceCSS(comp ? comp.item : item, {
+        mode: p.mode,
+        hover: p.item.sideHover ? false : p.item.hover === item.id,
+        active: p.item.sideHover ? false : p.item.active === item.id,
+      }),
       comp,
     };
 
@@ -152,8 +160,6 @@ const walk = async (
         return a[1].idx - b[1].idx;
       });
 
-      await treePropEval(p, meta, cprops);
-
       if (!p.compInstance[comp.id]) {
         p.compInstance[comp.id] = new Set();
       }
@@ -161,24 +167,30 @@ const walk = async (
     }
 
     p.treeMeta[meta.item.id] = meta;
-    if (flat) {
-      if (p.comp?.id) {
+
+    let flat = _flat;
+    if (p.comp?.id) {
+      if (p.treeFlat.length === 0) {
+        flat = undefined;
         if (comp && p.comp.instance_id === comp.item.id) {
           p.treeFlat.push({
-            data: { meta, idx: flat.idx },
+            data: { meta, idx: 0 },
             id: meta.item.id,
             parent: "root",
             text: item.name,
           });
         }
       } else {
-        p.treeFlat.push({
-          data: { meta, idx: flat.idx },
-          id: meta.item.id,
-          parent: flat.parent_id,
-          text: item.name,
-        });
       }
+    }
+
+    if (flat) {
+      p.treeFlat.push({
+        data: { meta, idx: flat.idx },
+        id: meta.item.id,
+        parent: flat.parent_id,
+        text: item.name,
+      });
     }
 
     if (mitem) {
@@ -199,7 +211,7 @@ const walk = async (
                 walk(
                   p,
                   { mitem: content, parent_id: item.id },
-                  { idx: idx++, parent_id: item.id }
+                  flat ? { idx: idx++, parent_id: item.id } : undefined
                 );
               }
             }
@@ -207,9 +219,22 @@ const walk = async (
         }
 
         if (comp.item) {
-          for (const child of comp.item.childs) {
-            // only add to treeMeta, not treeFlat
-            walk(p, { item: child, parent_id: comp.item.id });
+          const isEditing = p.comp?.instance_id === item.id;
+
+          if (isEditing) {
+            comp.mcomp.get("childs")?.forEach((child, idx) => {
+              if (comp) {
+                walk(
+                  p,
+                  { mitem: child, parent_id: comp.item.id },
+                  { idx: idx, parent_id: comp.item.id }
+                );
+              }
+            });
+          } else {
+            for (const child of comp.item.childs) {
+              walk(p, { item: child, parent_id: comp.item.id });
+            }
           }
         }
       } else {
@@ -217,7 +242,7 @@ const walk = async (
           walk(
             p,
             { mitem: child, parent_id: item.id },
-            { idx, parent_id: item.id }
+            flat ? { idx, parent_id: item.id } : undefined
           );
         });
       }

@@ -13,6 +13,8 @@ export type ItemMeta = {
   item: IContent;
   parent_id: string;
   scope?: any;
+  className: string;
+  elprop: any;
   memoize?: {
     Local: FC<any>;
     PassProp: FC<any>;
@@ -22,6 +24,7 @@ export type ItemMeta = {
     item: IItem;
     mcomp: MItem;
     mprops?: TypedMap<Record<string, FMCompDef>>;
+    propEvaled: boolean;
   };
 };
 
@@ -120,6 +123,7 @@ export const EditorGlobal = {
     last: {
       comp_id?: string;
       active_id: string;
+      instance_id?: string;
       props?: Record<string, FNCompDef>;
     }[];
     props: Record<string, FNCompDef>;

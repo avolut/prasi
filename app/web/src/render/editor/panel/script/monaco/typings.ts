@@ -19,7 +19,7 @@ export const monacoTypings = async (
     return;
   }
 
-  if (w.prasiApi[p.site.api_url]) {
+  if (w.prasiApi[p.site.api_url] && w.prasiApi[p.site.api_url].prismaTypes) {
     for (const [k, v] of Object.entries(
       w.prasiApi[p.site.api_url].prismaTypes
     )) {
@@ -64,7 +64,7 @@ export const monacoTypings = async (
     : "";
 
   let apiPath = "app/gen/srv/api/srv";
-  if (apiTypes.includes(`export * as srv from "gen/srv/api/srv"`)) {
+  if (apiTypes && apiTypes.includes(`export * as srv from "gen/srv/api/srv"`)) {
     apiPath = "gen/srv/api/srv";
   }
 

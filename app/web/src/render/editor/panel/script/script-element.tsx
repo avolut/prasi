@@ -70,15 +70,11 @@ export const EScriptElement: FC<{}> = ({}) => {
       onOpenChange={(open) => {
         if (p.script.active) {
           let mitem = p.treeMeta[p.item.active]?.mitem;
-
-          if (p.item.active === p.comp?.item.id) {
-            mitem = p.comps.doc[p.comp.id]
-              .getMap("map")
-              .get("content_tree") as MItem;
-          }
           if (!mitem) return;
 
           mitem.doc?.transact(() => {
+            if (!mitem) return;
+
             const adv = mitem.get("adv");
             if (adv) {
               const src = adv.get(p.script.type) as any;

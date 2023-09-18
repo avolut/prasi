@@ -1,5 +1,4 @@
 import { FC } from "react";
-import { IItem } from "../../../utils/types/item";
 import { EItem } from "./e-item";
 import { ERender } from "./e-render";
 

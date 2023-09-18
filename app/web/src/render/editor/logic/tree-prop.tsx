@@ -34,8 +34,20 @@ export const treePropEval = async (
       }
 
       if (prop.valueBuilt) {
-        const fn = new Function(...Object.keys(args), prop.valueBuilt);
-        meta.scope[name] = await fn(...Object.values(args));
+        const fn = new Function(
+          ...Object.keys(args),
+          `return ${prop.valueBuilt}`
+        );
+        try {
+          meta.scope[name] = await fn(...Object.values(args));
+        } catch (e) {
+          const cname = meta.item.name;
+          console.log(args);
+          console.warn(e);
+          console.warn(
+            `ERROR in Component [${cname}], in prop [${name}]:\n ` + prop.value
+          );
+        }
       }
     }
   }
