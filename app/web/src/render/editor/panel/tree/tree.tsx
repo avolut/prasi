@@ -36,7 +36,7 @@ export const ETree = () => {
           local.render();
         }}
       >
-        <div className="flex items-stretch h-[24px]">
+        {/* <div className="flex items-stretch h-[24px]">
           <input
             name="search"
             ref={(ref) => {
@@ -124,7 +124,7 @@ export const ETree = () => {
               ></path>
             </svg>
           </Tooltip>
-        </div>
+        </div> */}
         {local.searchFocus && (
           <div className="p-1 bg-white text-xs border-t flex space-x-1 justify-between">
             <div className="flex space-x-1">

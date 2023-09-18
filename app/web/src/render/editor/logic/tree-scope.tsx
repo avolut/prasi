@@ -1,8 +1,10 @@
-import { ReactNode, Suspense, useEffect, useState } from "react";
+import { FC, ReactNode, Suspense, useEffect, useState } from "react";
 import { ErrorBoundary } from "web-init";
 import { deepClone } from "web-utils";
 import { createAPI, createDB } from "../../../utils/script/init-api";
 import { ItemMeta, PG } from "./global";
+import { IItem } from "../../../utils/types/item";
+import { EItem } from "../elements/e-item";
 
 export const treeScopeEval = (p: PG, meta: ItemMeta, children: ReactNode) => {
   const item = meta.item;
@@ -95,7 +97,14 @@ export const mergeScopeUpwards = (p: PG, meta: ItemMeta) => {
   const finalScope: any = {};
   for (const scope of scopes) {
     for (const [k, v] of Object.entries(scope)) {
-      finalScope[k] = v;
+      let val = v;
+      if (v && typeof v === "object") {
+        const t: { _jsx: true; Comp: FC<{ from_item_id: string }> } = v as any;
+        if (t._jsx && t.Comp) {
+          val = <t.Comp from_item_id={meta.item.id} />;
+        }
+      }
+      finalScope[k] = val;
     }
   }
 

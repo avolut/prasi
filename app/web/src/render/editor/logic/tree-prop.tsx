@@ -1,5 +1,6 @@
 import { createAPI, createDB } from "../../../utils/script/init-api";
 import { FNCompDef } from "../../../utils/types/meta-fn";
+import { EItem } from "../elements/e-item";
 import { ItemMeta, PG } from "./global";
 import { mergeScopeUpwards } from "./tree-scope";
 
@@ -28,8 +29,21 @@ export const treePropEval = async (
       const prop = props[name] || _prop;
 
       if (prop.meta?.type === "content-element") {
-        // todo: create EItem
-        result[name] = <>ini jsx</>;
+        result[name] = {
+          _jsx: true,
+          Comp: ({ from_item_id }: { from_item_id: string }) => {
+            if (prop.content) {
+              const childMeta = p.treeMeta[prop.content.id];
+              const fromMeta = p.treeMeta[from_item_id];
+              if (childMeta) {
+                childMeta.scope = mergeScopeUpwards(p, fromMeta);
+              }
+
+              return <EItem id={prop.content.id} />;
+            }
+            return null;
+          },
+        };
         continue;
       }
 
