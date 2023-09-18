@@ -49,6 +49,7 @@ export const ETreeItem: FC<{
   const item = node.data.meta.comp
     ? node.data.meta.comp.item
     : node.data.meta.item;
+
   const type = item.type;
   let childs = item.type === "text" ? [] : item.childs;
   let hasChilds = false;

@@ -1,15 +1,18 @@
-import { FC, ReactNode, Suspense, useEffect, useState } from "react";
+import { FC, ReactNode, Suspense, useEffect } from "react";
 import { ErrorBoundary } from "web-init";
 import { deepClone } from "web-utils";
 import { createAPI, createDB } from "../../../utils/script/init-api";
 import { ItemMeta, PG } from "./global";
-import { IItem } from "../../../utils/types/item";
-import { EItem } from "../elements/e-item";
 
 export const treeScopeEval = (p: PG, meta: ItemMeta, children: ReactNode) => {
-  const item = meta.item;
   const className = meta.className;
   const elprop = meta.elprop;
+
+  let item = meta.item;
+  if (meta.comp?.item) {
+    item = meta.comp.item;
+  }
+
   if (item.adv && item.adv.jsBuilt) {
     const adv = item.adv;
     let args = {};
@@ -46,6 +49,9 @@ export const treeScopeEval = (p: PG, meta: ItemMeta, children: ReactNode) => {
                   </div>
                 }
               >
+                {/* <pre className={"text-[9px] font-mono text-black"}>
+                  {item.id}-{item.name}
+                </pre> */}
                 {jsx}
               </Suspense>
             </ErrorBoundary>

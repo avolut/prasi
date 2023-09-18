@@ -82,7 +82,7 @@ export const createElProp = (item: IContent, p: PG) => {
                 p.item.active = last.active_id;
 
                 localStorage.setItem("prasi-item-active-id", p.item.active);
-                localStorage.setItem("prasi-comp-instance-id", item.id);
+              localStorage.setItem("prasi-comp-instance-id", item.id);
                 localStorage.setItem("prasi-comp-active-id", p.comp.id);
                 localStorage.setItem(
                   "prasi-comp-active-last",

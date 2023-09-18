@@ -3,6 +3,7 @@ import { IContent, MContent } from "../../../utils/types/general";
 import { IItem, MItem } from "../../../utils/types/item";
 import { FNCompDef } from "../../../utils/types/meta-fn";
 import { createElProp } from "../elements/e-relprop";
+import { DefaultScript } from "../panel/script/monaco/monaco-element";
 import { newMap } from "../tools/yjs-tools";
 import { instantiateComp, loadComponent } from "./comp";
 import { ItemMeta, PG } from "./global";
@@ -61,6 +62,10 @@ export const updateComponentInTree = async (p: PG, comp_id: string) => {
       p.render();
     }
   }
+};
+
+export const flattenTree = async (p: PG) => {
+  p.treeFlat = [];
 };
 
 export const rebuildTree = async (p: PG, render?: () => void) => {
@@ -131,6 +136,43 @@ const walk = async (
           mcomp,
           item: await instantiateComp(item, mitem as MItem, mcomp),
         };
+      }
+    }
+
+    if (item.adv) {
+      let m = mitem;
+      let _item = item as IItem;
+      if (comp && p.comp?.id === comp.item.id) {
+        m = comp.mcomp;
+        _item = comp.item;
+      }
+
+      if (m) {
+        const adv = m.get("adv");
+        if (adv && _item.adv) {
+          if (
+            typeof _item.adv.js === "string" &&
+            _item.adv.js.replace(/\W/gi, "") ===
+              DefaultScript.js.replace(/\W/gi, "")
+          ) {
+            delete _item.adv.js;
+            delete _item.adv.jsBuilt;
+            adv?.delete("js");
+            adv?.delete("jsBuilt");
+          }
+
+          if (
+            typeof _item.adv.css === "string" &&
+            _item.adv.css.replace(/\W/gi, "") ===
+              DefaultScript.css.replace(/\W/gi, "")
+          ) {
+            delete _item.adv.css;
+            adv?.delete("css");
+          }
+          if (_item.name === "popup") {
+            console.log(_item.adv);
+          }
+        }
       }
     }
 

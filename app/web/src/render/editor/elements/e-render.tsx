@@ -86,7 +86,15 @@ export const ERender: FC<{
       const html = renderHTML(className, adv, elprop);
       if (html) return html;
     } else if (adv.jsBuilt) {
-      return treeScopeEval(p, meta, _children);
+      const el = treeScopeEval(
+        p,
+        meta,
+        <>
+          {_children}
+          {componentOver}
+        </>
+      );
+      return el;
     }
   }
 

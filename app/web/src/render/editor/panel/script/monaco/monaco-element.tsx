@@ -97,7 +97,12 @@ export const ScriptMonacoElement: FC<{
     }
   };
 
-  let mitem = p.treeMeta[p.item.active]?.mitem;
+  const meta = p.treeMeta[p.item.active];
+  let mitem = meta.mitem;
+
+  if (p.comp && p.comp.id === meta.comp?.id) {
+    mitem = meta.comp.mcomp;
+  }
 
   if (!mitem) {
     p.script.active = false;

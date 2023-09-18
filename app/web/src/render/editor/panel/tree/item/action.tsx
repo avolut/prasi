@@ -177,13 +177,10 @@ export const Adv: FC<{
   const adv = { ...item.adv } as FNAdv;
 
   const openEditor = (mode: "css" | "js" | "html") => {
-    const mitem = p.treeMeta[item.id]?.mitem;
-    if (mitem) {
-      p.item.active = item.id;
-      p.script.active = true;
-      p.script.type = mode;
-      p.render();
-    }
+    p.item.active = item.id;
+    p.script.active = true;
+    p.script.type = mode;
+    p.render();
   };
 
   return (
