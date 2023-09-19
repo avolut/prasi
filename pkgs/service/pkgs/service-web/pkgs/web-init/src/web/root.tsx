@@ -24,6 +24,7 @@ export const Root: FC<{
     Page: (() => <>{loading}</>) as
       | React.LazyExoticComponent<FC<any>>
       | FC<any>,
+    timeout: null as any,
   });
 
   if (!isSSR) {
@@ -114,6 +115,7 @@ export const Root: FC<{
 
           component
             .then((e) => {
+              clearTimeout(local.timeout);
               local.Page = e.default.component;
               local.pageLoaded = true;
               local.render();
@@ -165,7 +167,20 @@ export const Root: FC<{
         </Suspense>
       ) : (
         <>
-          <Suspense fallback={loading}>
+          <Suspense
+            fallback={
+              <>
+                {() => {
+                  local.timeout = setTimeout(() => {
+                    console.warn("Page timed out:");
+                    console.warn(local, page);
+                    local.render();
+                  }, 2000);
+                }}
+                loading
+              </>
+            }
+          >
             <ErrorBoundary>
               <local.Page {...props} res={res} />
             </ErrorBoundary>
