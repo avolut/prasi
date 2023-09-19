@@ -96,7 +96,7 @@ export const SiteManager = () => {
                   <div className="flex flex-col" key={org.id}>
                     <div className="p-1 text-base capitalize">{org.name}</div>
                     <div className="flex items-start flex-wrap">
-                      {local.sites.map((e) => {
+                      {(local.sites || []).map((e) => {
                         if (e.id_org !== org.id) return null;
 
                         return (
