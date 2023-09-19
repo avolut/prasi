@@ -210,6 +210,38 @@ const walk = async (
     }
 
     if (comp && comp.item) {
+      let cprops: [string, FNCompDef][] = Object.entries(
+        comp.item.component?.props || {}
+      );
+      const mcomp = p.comps.doc[comp.id].getMap("map").get("content_tree");
+      if (mcomp) {
+        const mprops = mcomp.get("component")?.get("props");
+        const iprops = mitem?.get("component")?.get("props");
+        if (mprops && iprops) {
+          for (const [key, cprop] of cprops) {
+            let mp = mprops.get(key);
+            if (!mp) {
+              mprops.set(key, newMap(cprop) as any);
+              mp = mprops.get(key);
+            }
+            const mprop = mp?.toJSON() as FNCompDef;
+
+            const icontent = iprops.get(key)?.get("content");
+
+            if (mprop.meta?.type === "content-element" && icontent) {
+              await walk(p, mode, {
+                item: cprop.content,
+                mitem: icontent,
+                parent_id: item.id,
+                idx: mprop.idx,
+                depth: (val.depth || 0) + 1,
+                includeTree: true,
+              });
+            }
+          }
+        }
+      }
+
       if (!val.includeTree && p.comp && p.comp.instance_id === comp.item.id) {
         p.treeFlat.push({
           parent: "root",
@@ -268,55 +300,6 @@ const walk = async (
     }
   }
 };
-
-// let cprops: [string, FNCompDef][] = [];
-// const mcomp = p.comps.doc[comp.id].getMap("map").get("content_tree");
-// if (mcomp) {
-//   const mprops = mcomp.get("component")?.get("props");
-//   if (mprops) {
-//     let idx = 0;
-//     for (const [key, prop] of cprops) {
-//       let mprop = mprops.get(key);
-//       if (!mprop) {
-//         mprops.set(key, newMap(prop) as any);
-//         mprop = mprops.get(key);
-//       }
-//       if (mprop && prop.meta?.type === "content-element") {
-//         let content = mprop.get("content");
-
-//         if (!content) {
-//           mprop.set(
-//             "content",
-//             newMap({
-//               id: createId(),
-//               name: key,
-//               type: "item",
-//               dim: { w: "full", h: "full" },
-//               childs: [],
-//               adv: {
-//                 css: "",
-//               },
-//             }) as any
-//           );
-//           content = mprop.get("content");
-//         }
-
-//         if (content) {
-//           await walk(
-//             p,
-//             mode,
-//             {
-//               mitem: content,
-//               parent_id: item.id,
-//               depth: (val.depth || 0) + 1,
-//             },
-//             flat ? { idx: idx++, parent_id: item.id } : undefined
-//           );
-//         }
-//       }
-//     }
-//   }
-// }
 
 export const updateComponentInTree = async (p: PG, comp_id: string) => {
   if (p.focused) {

@@ -1,10 +1,9 @@
-import { createId } from "@paralleldrive/cuid2";
 import { createAPI, createDB } from "../../../utils/script/init-api";
 import { IItem } from "../../../utils/types/item";
 import { FNCompDef } from "../../../utils/types/meta-fn";
 import { EItem } from "../elements/e-item";
 import { ItemMeta, PG } from "./global";
-import { JS_DEBUG, mergeScopeUpwards } from "./tree-scope";
+import { mergeScopeUpwards } from "./tree-scope";
 
 export const treePropEval = (
   p: PG,
