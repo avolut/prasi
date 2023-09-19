@@ -10,10 +10,10 @@ import { FNAdv } from "../../../../../utils/types/meta-fn";
 import { Button } from "../../../../../utils/ui/form/Button";
 import { Loading } from "../../../../../utils/ui/loading";
 import { EditorGlobal } from "../../../logic/global";
+import { mergeScopeUpwards } from "../../../logic/tree-scope";
 import { newMap } from "../../../tools/yjs-tools";
 import { jsMount } from "./mount";
 import { monacoTypings } from "./typings";
-import { mergeScopeUpwards } from "../../../logic/tree-scope";
 
 export type MonacoEditor = Parameters<OnMount>[0];
 export const DefaultScript = {
@@ -50,6 +50,7 @@ export const ScriptMonacoElement: FC<{
   const local = useLocal({
     editor: null as null | MonacoEditor,
     reloading: false,
+    changeTimeout: 0 as any,
   });
 
   const script = p.script;
@@ -431,33 +432,37 @@ export const ScriptMonacoElement: FC<{
             { css: "scss", js: "typescript", html: "html" }[script.type]
           }
           onChange={(newsrc) => {
-            if (ytext && ytext.doc) {
-              ytext.doc.transact(async () => {
-                const delta = new Delta();
+            clearTimeout(local.changeTimeout);
+            local.changeTimeout = setTimeout(() => {
+              console.log("running");
+              if (ytext && ytext.doc) {
+                ytext.doc.transact(async () => {
+                  const delta = new Delta();
 
-                const sd = strDelta(ytext.toString(), newsrc || "");
-                for (const change of sd) {
-                  const operation = change[0];
-                  const value = change[1];
-                  if (operation == -1 && typeof value === "number") {
-                    delta.delete(value);
-                  } else if (operation === 0 && typeof value === "number") {
-                    delta.retain(value);
-                  } else if (typeof value === "string") {
-                    delta.insert(value);
+                  const sd = strDelta(ytext.toString(), newsrc || "");
+                  for (const change of sd) {
+                    const operation = change[0];
+                    const value = change[1];
+                    if (operation == -1 && typeof value === "number") {
+                      delta.delete(value);
+                    } else if (operation === 0 && typeof value === "number") {
+                      delta.retain(value);
+                    } else if (typeof value === "string") {
+                      delta.insert(value);
+                    }
                   }
-                }
-                ytext.applyDelta(delta.ops);
+                  ytext.applyDelta(delta.ops);
 
-                if (script.type === "js") {
-                  const compiled = await build(
-                    "element.tsx",
-                    `render(${trim((newsrc || "").trim(), ";")})`
-                  );
-                  adv.set("jsBuilt", compiled);
-                }
-              });
-            }
+                  if (script.type === "js") {
+                    const compiled = await build(
+                      "element.tsx",
+                      `render(${trim((newsrc || "").trim(), ";")})`
+                    );
+                    adv.set("jsBuilt", compiled);
+                  }
+                });
+              }
+            }, 1000);
           }}
         />
       </div>

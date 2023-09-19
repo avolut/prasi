@@ -42,7 +42,7 @@ export const CPMaster: FC<{ mitem: MItem }> = ({ mitem }) => {
   if (!p.comp)
     return <div className="flex flex-col flex-1 p-3">No Active Component</div>;
 
-  const meta = p.treeMeta[p.comp.instance_id];
+  const meta = p.treeMeta[p.comp.instance_id || ""];
 
   if (!meta)
     return <div className="flex flex-col flex-1 p-3">Meta Not Found</div>;

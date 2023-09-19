@@ -1,4 +1,3 @@
-import { NodeModel } from "@minoru/react-dnd-treeview";
 import { createId } from "@paralleldrive/cuid2";
 import { FC } from "react";
 import { useGlobal, useLocal } from "web-utils";
@@ -9,9 +8,9 @@ import { IItem } from "../../../../../utils/types/item";
 import { ISection } from "../../../../../utils/types/section";
 import { IText } from "../../../../../utils/types/text";
 import { ToolbarBox } from "../../../../../utils/ui/box";
+import { loadComponent } from "../../../logic/comp";
 import { EditorGlobal, PG } from "../../../logic/global";
 import { fillID } from "../../../tools/fill-id";
-import { loadComponent } from "../../../logic/comp";
 
 export const AddElement: FC<{}> = ({}) => {
   const p = useGlobal(EditorGlobal, "EDITOR");
@@ -126,7 +125,7 @@ export const AddElement: FC<{}> = ({}) => {
                   css: "",
                 },
               } as IItem;
-              const { item, mitem } = getActive(p);
+              const { mitem } = getActive(p);
               if (p.item.active && mitem) {
                 if (type !== "text") {
                   const map = new Y.Map() as MContent;

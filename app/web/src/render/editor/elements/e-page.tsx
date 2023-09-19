@@ -1,6 +1,8 @@
 import { useGlobal, useLocal } from "web-utils";
 import { EditorGlobal } from "../logic/global";
 import { ESection } from "./e-section";
+import { JS_DEBUG } from "../logic/tree-scope";
+
 
 export const EPage = () => {
   const p = useGlobal(EditorGlobal, "EDITOR");
@@ -9,6 +11,9 @@ export const EPage = () => {
     if (!p.focused) local.render();
   };
 
+  if (JS_DEBUG) {
+    console.clear();
+  }
   if (!p.page) return null;
   const mode = p.mode;
   return (

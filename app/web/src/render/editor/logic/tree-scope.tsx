@@ -1,8 +1,9 @@
-import { FC, ReactNode, Suspense, useEffect } from "react";
-import { ErrorBoundary } from "web-init";
+import { FC, ReactNode, useEffect } from "react";
 import { deepClone } from "web-utils";
 import { createAPI, createDB } from "../../../utils/script/init-api";
 import { ItemMeta, PG } from "./global";
+
+export const JS_DEBUG = false;
 
 export const treeScopeEval = (p: PG, meta: ItemMeta, children: ReactNode) => {
   const className = meta.className;
@@ -30,6 +31,20 @@ export const treeScopeEval = (p: PG, meta: ItemMeta, children: ReactNode) => {
       const w = window as any;
       const finalScope = mergeScopeUpwards(p, meta);
 
+      if (JS_DEBUG) {
+        const args = [
+          (".".repeat(meta.depth || 0) + meta.item.name).padEnd(30, "_") +
+            " " +
+            meta.item.id,
+        ].join(" ");
+
+        if (meta.comp) {
+          console.log("%c" + args, "color:red", finalScope);
+        } else {
+          console.log(args, finalScope);
+        }
+      }
+
       const output = { jsx: null as any };
       args = {
         ...w.exports,
@@ -41,6 +56,14 @@ export const treeScopeEval = (p: PG, meta: ItemMeta, children: ReactNode) => {
         props: { ...elprop, className },
         render: (jsx: ReactNode) => {
           output.jsx = jsx;
+          // output.jsx = (
+          //   <>
+          //     <pre className={"text-[9px] font-mono text-black"}>
+          //       {item.originalId}-{item.name}
+          //     </pre>
+          //     {jsx}
+          //   </>
+          // );
           // output.jsx = (
           //   <ErrorBoundary>
           //     <Suspense
@@ -105,9 +128,6 @@ export const mergeScopeUpwards = (p: PG, meta: ItemMeta) => {
       scopes.unshift(scope);
     }
 
-    if (meta.item.id === "lhbebj5irgn10waaupkot8z5") {
-      console.log(cur.item.id, cur.parent_id, cur.item.name, scope);
-    }
     cur = p.treeMeta[cur.parent_id];
   }
 

@@ -1,10 +1,12 @@
+import { createId } from "@paralleldrive/cuid2";
 import { createAPI, createDB } from "../../../utils/script/init-api";
+import { IItem } from "../../../utils/types/item";
 import { FNCompDef } from "../../../utils/types/meta-fn";
 import { EItem } from "../elements/e-item";
 import { ItemMeta, PG } from "./global";
-import { mergeScopeUpwards } from "./tree-scope";
+import { JS_DEBUG, mergeScopeUpwards } from "./tree-scope";
 
-export const treePropEval = async (
+export const treePropEval = (
   p: PG,
   meta: ItemMeta,
   cprops: [string, FNCompDef][]
@@ -33,13 +35,13 @@ export const treePropEval = async (
           _jsx: true,
           Comp: ({ from_item_id }: { from_item_id: string }) => {
             if (prop.content) {
-              const childMeta = p.treeMeta[prop.content.id];
               const fromMeta = p.treeMeta[from_item_id];
-              if (childMeta) {
-                childMeta.scope = mergeScopeUpwards(p, fromMeta);
-              }
+              const item = fromMeta.item as IItem;
 
-              return <EItem id={prop.content.id} />;
+              item.type = "item";
+              item.childs = [prop.content];
+
+              return <EItem id={prop.content.id} fromProp={true} />;
             }
             return null;
           },
@@ -53,7 +55,7 @@ export const treePropEval = async (
           `return ${prop.valueBuilt}`
         );
         try {
-          result[name] = await fn(...Object.values(args));
+          result[name] = fn(...Object.values(args));
         } catch (e) {
           const cname = meta.item.name;
           console.log(args);
@@ -65,7 +67,6 @@ export const treePropEval = async (
       }
     }
 
-  
     return result;
   }
 };

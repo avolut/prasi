@@ -7,10 +7,8 @@ import {
   getBackendOptions,
 } from "@minoru/react-dnd-treeview";
 import { FC, useCallback, useEffect } from "react";
-import { useGlobal, useLocal } from "web-utils";
-import { MContent } from "../../../../utils/types/general";
-import { IItem } from "../../../../utils/types/item";
-import { IText } from "../../../../utils/types/text";
+import { useGlobal, useLocal, waitUntil } from "web-utils";
+import { IContent, MContent } from "../../../../utils/types/general";
 import { EditorGlobal, NodeMeta } from "../../logic/global";
 import { ETreeItem } from "./item/item";
 import { ETreeRightClick } from "./item/right-click";
@@ -23,6 +21,7 @@ import {
   onDrop,
   selectMultiple,
 } from "./utils/tree-utils";
+import { IItem } from "../../../../utils/types/item";
 export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
   tree,
   meta,
@@ -50,6 +49,7 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
           meta.render();
           p.item.selection = [];
           p.item.active = node.data.meta.item.id;
+
           localStorage.setItem("prasi-item-active-id", p.item.active);
 
           if (p.treeMeta[p.item.active].item.type === "text") {
@@ -75,6 +75,13 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
           } else {
             p.item.selection = [];
             p.item.active = node.data.meta.item.id;
+            if (node.data.meta.item.originalId) {
+              p.item.activeOriginalId = node.data.meta.item.originalId;
+            }
+            localStorage.setItem(
+              "prasi-item-active-oid",
+              p.item.activeOriginalId
+            );
             localStorage.setItem("prasi-item-active-id", p.item.active);
 
             if (p.treeMeta[p.item.active].item.type === "text") {
@@ -111,54 +118,41 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
   );
 
   useEffect(() => {
-    setTimeout(() => {
-      let meta = p.treeMeta[p.item.active];
-      if (!meta) {
-        const root = p.treeFlat.filter((e) => e.parent === "root");
-        if (root.length === 1) {
-          const item = root[0].data.meta.item as any;
-          if (item && item.data && item.data.meta) {
-            const open = [
-              item.data.meta.item.id,
-              ...item.childs.map((e: any) => e.id),
-            ];
-            local.method?.open(open);
+    if (!local.method) return;
+    let active = p.treeMeta[p.item.active];
+    if (!active && p.comp?.instance_id) {
+      const doc = p.comps.doc[p.comp.id];
+      if (doc) {
+        const walk = (item: IContent) => {
+          if (item.originalId === p.item.activeOriginalId) {
+            p.item.active = item.id;
+            active = p.treeMeta[p.item.active];
+            return;
           }
-        }
-      }
 
-      let mitem = meta?.mitem;
-
-      if (mitem) {
-        if (mitem.parent) {
-          let item = mitem.parent.parent as any;
-          const open = new Set<string>();
-          const walkParent = (item: any) => {
-            if (!item) return;
-            const id = item.get("id");
-            if (id) {
-              if (id !== "root") open.add(id);
+          if (item.type !== "text") {
+            for (const c of item.childs) {
+              walk(c);
             }
-            if (item.parent && item.parent.parent) {
-              walkParent(item.parent.parent);
-            }
-          };
-          if (!item) {
-            local.method?.open([mitem.get("id") || ""]);
-          } else {
-            walkParent(item);
-            if (open.size === 0 && p.treeFlat.length === 1) {
-              open.add(mitem.get("id") || "");
-            }
-            if (p.comp) {
-              open.add(p.comp.instance_id);
-            }
-            local.method?.open([...open]);
           }
-        }
+        };
+
+        p.compInstance[p.comp.id].forEach((meta) => {
+          if (meta.comp?.item && meta.comp.item.id === p.comp?.instance_id) {
+            walk(meta.comp.item);
+          }
+        });
       }
-    }, 100);
-  }, [p.item.active]);
+    }
+
+    const open: string[] = [];
+    while (active) {
+      open.push(active.item.id);
+      active = p.treeMeta[active.parent_id];
+    }
+
+    local.method.open(open);
+  }, [p.item.active, p.comp]);
 
   return (
     <div

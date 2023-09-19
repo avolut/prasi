@@ -101,7 +101,9 @@ export const closeEditComp = (p: PG) => {
         p.comp.props = {};
       }
       p.item.active = cur.active_id;
+      p.item.activeOriginalId = cur.active_oid || "";
       localStorage.setItem("prasi-item-active-id", p.item.active);
+      localStorage.setItem("prasi-item-active-oid", p.item.activeOriginalId);
 
       if (cur.instance_id) {
         p.comp.instance_id = cur.instance_id;
@@ -109,7 +111,10 @@ export const closeEditComp = (p: PG) => {
 
       if (cur.comp_id) {
         p.comp.id = cur.comp_id;
-        localStorage.setItem("prasi-comp-instance-id", p.comp.instance_id);
+        localStorage.setItem(
+          "prasi-comp-instance-id",
+          p.comp.instance_id || ""
+        );
         localStorage.setItem(`prasi-comp-active-id`, p.comp.id);
         localStorage.setItem(
           `prasi-comp-active-last`,
@@ -154,13 +159,14 @@ export const editComp = (p: PG, id: string) => {
           p.comp = {
             id: cid,
             instance_id: item.id,
-            last: [{ active_id: item.id }],
+            last: [{ active_id: item.id, active_oid: item.originalId }],
             props: map.component.props,
           };
         } else {
           if (!p.comp.last) p.comp.last = [];
           p.comp.last.push({
             active_id: p.item.active,
+            active_oid: p.item.activeOriginalId,
             instance_id: p.comp.instance_id,
             comp_id: p.comp.id,
             props: p.comp.props,
@@ -170,10 +176,11 @@ export const editComp = (p: PG, id: string) => {
           p.comp.instance_id = item.id;
           p.comp.props = map.component.props;
         }
-        p.item.active = p.comp.instance_id;
+        p.item.active = p.comp.instance_id || "";
         rebuildTree(p, { mode: "update" });
 
         localStorage.setItem("prasi-item-active-id", p.item.active);
+        localStorage.setItem("prasi-item-active-oid", p.item.activeOriginalId);
         localStorage.setItem("prasi-comp-instance-id", item.id);
         localStorage.setItem("prasi-comp-active-id", p.comp.id);
         localStorage.setItem(
@@ -190,6 +197,7 @@ export const editComp = (p: PG, id: string) => {
 };
 
 export const instantiateComp = async (
+  p: PG,
   item: IItem,
   mcomp: MItem,
   child_ids: Record<string, string>
@@ -198,13 +206,17 @@ export const instantiateComp = async (
 
   let nitem = {};
   nitem = fillID(mcomp.toJSON() as any, (i) => {
-    if (child_ids[i.id]) {
-      i.id = child_ids[i.id];
-    } else {
-      const newid = createId();
-      child_ids[i.id] = newid;
-      i.id = newid;
+    if (!i.originalId) {
+      i.originalId = i.id;
     }
+    const newid = createId();
+    child_ids[i.id] = newid;
+    i.id = newid;
+
+    if (p.item.activeOriginalId === i.originalId) {
+      p.item.active = newid;
+    }
+
     return false;
   }) as IItem;
   return { ...nitem, id: item.id, component: comp } as IItem;

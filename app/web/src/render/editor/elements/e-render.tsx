@@ -6,7 +6,7 @@ import { FNAdv, FNCompDef } from "../../../utils/types/meta-fn";
 import { Loading } from "../../../utils/ui/loading";
 import { EditorGlobal } from "../logic/global";
 import { treePropEval } from "../logic/tree-prop";
-import { treeScopeEval } from "../logic/tree-scope";
+import { JS_DEBUG, treeScopeEval } from "../logic/tree-scope";
 import { ComponentOver, ElProp, createElProp } from "./e-relprop";
 import { ETextInternal } from "./e-text";
 
@@ -42,17 +42,19 @@ export const ERender: FC<{
       return a[1].idx - b[1].idx;
     });
 
+    if (JS_DEBUG) {
+      const args = [
+        ("~".repeat(meta.depth || 0) + meta.item.name).padEnd(30, "_") +
+          " " +
+          meta.item.id,
+      ].join(" ");
+
+      if (meta.comp) {
+        console.log("%c" + args, "color:red", "prop: ", comp.propval);
+      }
+    }
     if (!comp.propval) {
-      treePropEval(p, meta, cprops).then((propval) => {
-        comp.propval = propval;
-        local.render();
-        setTimeout(() => {
-          if (!comp.propval) {
-            local.render();
-          }
-        }, 2000);
-      });
-      return <Loading backdrop={false} />;
+      comp.propval = treePropEval(p, meta, cprops);
     }
   }
 
@@ -61,11 +63,7 @@ export const ERender: FC<{
   if (children) {
     if (item.type === "text") _children = children([]);
     else {
-      if (item.id === p.comp?.instance_id && meta.comp) {
-        _children = children(meta.comp.mcomp.get("childs")?.toJSON() as any);
-      } else {
-        _children = children(item.childs);
-      }
+      _children = children(item.childs);
     }
   }
 
@@ -84,7 +82,10 @@ export const ERender: FC<{
   if (item.type === "item" && item.component?.id) {
     if (!p.comps.doc[item.component.id]) {
       componentOver = <Loading backdrop={false} />;
-    } else if (item.id !== p.comp?.instance_id) {
+    } else if (
+      item.id !== p.comp?.instance_id &&
+      !p.comp?.last.find((e) => e.instance_id === item.id)
+    ) {
       componentOver = <ComponentOver item={item} p={p} elprop={elprop} />;
     }
   }

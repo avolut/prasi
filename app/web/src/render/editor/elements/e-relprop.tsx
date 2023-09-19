@@ -23,7 +23,7 @@ export const createElProp = (item: IContent, p: PG) => {
       }
     },
 
-    onPointerDown: (e: React.PointerEvent<HTMLDivElement>) => {
+    onPointerDown: async (e: React.PointerEvent<HTMLDivElement>) => {
       e.stopPropagation();
       if (item.type !== "text") {
         e.preventDefault();
@@ -32,79 +32,91 @@ export const createElProp = (item: IContent, p: PG) => {
 
       let _item = item;
       if (p.comp) {
-        const meta = p.treeMeta[_item.id];
+        const cur = p.treeMeta[_item.id].item;
 
-        if (meta.mitem) {
-          let cur = meta.mitem;
+        let found = false;
+        let last_idx = p.comp.last.length - 1;
 
-          let found = false;
-          let last_idx = p.comp.last.length - 1;
+        let i = 0;
+        const comp_ids: string[] = [
+          ...(p.comp.last.map((e) => e.comp_id) as string[]),
+          p.comp.id || "",
+        ]
+          .filter((e) => e)
+          .reverse();
+        const walk = async (e: IContent) => {
+          if (e.id === cur.originalId) {
+            found = true;
+            last_idx = (p.comp?.last.length || 1) - i;
+          }
+          if (e.type !== "text") {
+            for (const c of e.childs) {
+              await walk(c);
+            }
+          }
+        };
 
-          const doc = p.comps.doc[p.comp.id];
+        for (const id of comp_ids) {
+          const doc = p.comps.doc[id];
           if (doc) {
-            const compid = doc.getMap("map").get("content_tree")?.get("id");
+            const root = doc
+              .getMap("map")
+              .get("content_tree")
+              ?.toJSON() as IItem;
 
-            while (cur) {
-              const curid = cur.get("id");
-              if (p.comp.instance_id === curid || curid === compid) {
-                found = true;
-                break;
-              }
-
-              const idx = p.comp.last.findIndex((e) => e.instance_id === curid);
-              if (idx >= 0) {
-                last_idx = idx;
-                found = true;
-                break;
-              }
-
-              if (cur.parent && cur.parent.parent) {
-                cur = cur.parent.parent as any;
-              } else {
-                cur = cur.parent as any;
-              }
-            }
-
-            if (!found) {
-              p.comp = null;
-              localStorage.removeItem(`prasi-comp-active-id`);
-              localStorage.removeItem(`prasi-comp-instance-id`);
-              localStorage.removeItem(`prasi-comp-active-last`);
-              localStorage.removeItem(`prasi-comp-active-props`);
-              rebuildTree(p);
-            } else if (last_idx !== p.comp.last.length - 1) {
-              const last = p.comp.last[last_idx];
-              p.comp.last.splice(0, last_idx - 1);
-              if (last) {
-                p.comp.id = last.comp_id || "";
-                p.comp.instance_id = last.instance_id || "";
-                p.comp.props = last.props || {};
-                p.item.active = last.active_id;
-
-                localStorage.setItem("prasi-item-active-id", p.item.active);
-                localStorage.setItem("prasi-comp-instance-id", item.id);
-                localStorage.setItem("prasi-comp-active-id", p.comp.id);
-                localStorage.setItem(
-                  "prasi-comp-active-last",
-                  JSON.stringify(p.comp.last)
-                );
-                localStorage.setItem(
-                  "prasi-comp-active-props",
-                  JSON.stringify(p.comp.props)
-                );
-              }
-            }
+            await walk(root);
+            i++;
           }
         }
 
-        if (p.comp && meta.comp && meta.comp.id === p.comp.id) {
-          _item = meta.comp.item;
+        if (!found) {
+          p.comp = null;
+          localStorage.removeItem(`prasi-comp-active-id`);
+          localStorage.removeItem(`prasi-comp-instance-id`);
+          localStorage.removeItem(`prasi-comp-active-last`);
+          localStorage.removeItem(`prasi-comp-active-props`);
+          rebuildTree(p, { mode: "update" });
+        } else if (p.comp.last.length >= last_idx + 1) {
+          const last = p.comp.last[last_idx];
+          p.comp.last = p.comp.last.slice(0, last_idx);
+          if (last) {
+            p.comp.id = last.comp_id || "";
+            p.comp.instance_id = last.instance_id || "";
+            p.comp.props = last.props || {};
+            localStorage.setItem("prasi-comp-instance-id", item.id);
+            localStorage.setItem("prasi-comp-active-id", p.comp.id);
+            localStorage.setItem(
+              "prasi-comp-active-last",
+              JSON.stringify(p.comp.last)
+            );
+            localStorage.setItem(
+              "prasi-comp-active-props",
+              JSON.stringify(p.comp.props)
+            );
+
+            p.item.active = cur.id;
+            if (_item.originalId) {
+              p.item.activeOriginalId = cur.originalId || "";
+            }
+            localStorage.setItem(
+              "prasi-item-active-oid",
+              p.item.activeOriginalId
+            );
+            localStorage.setItem("prasi-item-active-id", p.item.active);
+            rebuildTree(p, { mode: "update" });
+            return;
+          }
         }
       }
 
       if (p.item.active !== _item.id) {
         p.item.active = _item.id;
+        if (_item.originalId) {
+          p.item.activeOriginalId = _item.originalId;
+        }
+
         p.softRender.all();
+        localStorage.setItem("prasi-item-active-oid", p.item.activeOriginalId);
         localStorage.setItem("prasi-item-active-id", p.item.active);
       }
     },

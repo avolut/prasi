@@ -5,8 +5,6 @@ import { EItem } from "./e-item";
 import { ERender } from "./e-render";
 
 export const ESection: FC<{ id: string }> = ({ id }) => {
-  const p = useGlobal(EditorGlobal, "EDITOR");
-
   return (
     <ERender id={id}>
       {(childs) =>

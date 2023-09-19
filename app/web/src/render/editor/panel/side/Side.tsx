@@ -63,9 +63,7 @@ export const ESide = () => {
     [p.item.active]
   );
   let meta = p.item.active ? p.treeMeta[p.item.active] : null;
-  if (p.comp && p.comp.instance_id) {
-    meta = p.treeMeta[p.comp.instance_id];
-  }
+
   if (!meta)
     return (
       <div

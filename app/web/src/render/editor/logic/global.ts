@@ -19,7 +19,6 @@ export type ItemMeta = {
     Local: FC<any>;
     PassProp: FC<any>;
   };
-  parent_comp?: ItemMeta;
   comp?: {
     id: string;
     item: IItem;
@@ -59,6 +58,7 @@ export const EditorGlobal = {
   },
   item: {
     active: "",
+    activeOriginalId: "",
     hover: "",
     sideHover: false,
     selectMode: "single" as "single" | "multi",
@@ -120,10 +120,11 @@ export const EditorGlobal = {
   /** components */
   comp: null as null | {
     id: string;
-    instance_id: string;
+    instance_id?: string;
     last: {
       comp_id?: string;
       active_id: string;
+      active_oid?: string;
       instance_id?: string;
       props?: Record<string, FNCompDef>;
     }[];

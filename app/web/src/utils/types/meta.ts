@@ -17,6 +17,7 @@ import {
 
 export type MetaItem = {
   id: string;
+  originalId?: string;
   type: "text" | "section" | "item";
   name: string;
   field?: string;

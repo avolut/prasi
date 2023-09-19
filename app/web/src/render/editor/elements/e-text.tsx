@@ -8,7 +8,6 @@ import { rebuildTree } from "../logic/tree-logic";
 export const EText: FC<{
   id: string;
 }> = ({ id }) => {
-
   return <ERender id={id} />;
 };
 const currentFocus = {
@@ -65,7 +64,7 @@ export const ETextInternal: FC<{
         p.focused = "";
         if (p.pendingRebuild) {
           p.pendingRebuild = false;
-          await rebuildTree(p, () => {});
+          await rebuildTree(p, { mode: "update" });
         }
         p.render();
       }}

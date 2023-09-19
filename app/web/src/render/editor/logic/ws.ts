@@ -142,7 +142,7 @@ export const editorWS = async (p: PG) => {
             break;
           case "svd_remote":
             svdRemote({ p, bin: extract(msg.diff_remote), msg });
-            rebuildTree(p);
+            rebuildTree(p, { render });
             break;
           case "diff_local": {
             if (msg.mode === "page") {

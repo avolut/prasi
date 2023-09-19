@@ -26,7 +26,6 @@ export const CPInstance: FC<{ mitem: MItem }> = ({ mitem }) => {
     visibles: {} as Record<string, string>,
     jsx: false,
   });
-  const meta = p.treeMeta[mitem.get("id") || ""];
   const comp = p.comps.doc[mitem.get("component")?.get("id") || ""];
 
   useEffect(() => {
