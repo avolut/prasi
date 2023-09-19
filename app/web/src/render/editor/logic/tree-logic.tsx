@@ -98,7 +98,9 @@ export const rebuildTree = async (
   }
 
   if (p.mpage) {
-    console.clear();
+    if (DEBUG) {
+      console.clear();
+    }
     const mpage = p.mpage.getMap("map").get("content_tree");
     await Promise.all(
       mpage?.get("childs")?.map(async (mitem, idx) => {
