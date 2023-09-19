@@ -8,6 +8,9 @@ import { newMap } from "../tools/yjs-tools";
 import { instantiateComp, loadComponent } from "./comp";
 import { ItemMeta, PG } from "./global";
 import * as Y from "yjs";
+
+const DEBUG = false;
+
 export const updateComponentInTree = async (p: PG, comp_id: string) => {
   if (p.focused) {
     p.pendingRebuild = true;
@@ -25,8 +28,8 @@ export const updateComponentInTree = async (p: PG, comp_id: string) => {
             if (meta.comp && meta.mitem && meta.item) {
               meta.comp.item = await instantiateComp(
                 meta.item as IItem,
-                meta.mitem as MItem,
-                mcomp
+                mcomp,
+                meta.mitem as MItem
               );
               const mprops = meta.mitem.get("component")?.get("props");
               if (mprops) {
@@ -95,13 +98,14 @@ export const rebuildTree = async (
   }
 
   if (p.mpage) {
+    console.clear();
     const mpage = p.mpage.getMap("map").get("content_tree");
     await Promise.all(
       mpage?.get("childs")?.map(async (mitem, idx) => {
         await walk(
           p,
           mode,
-          { mitem, parent_id: "root" },
+          { mitem, parent_id: "root", depth: 0 },
           { parent_id: "root", idx }
         );
       }) || []
@@ -126,15 +130,19 @@ export const rebuildTree = async (
 const walk = async (
   p: PG,
   mode: REBUILD_MODE,
-  val: { mitem?: MContent; item?: IContent; parent_id: string },
+  val: { mitem?: MContent; item?: IContent; parent_id: string; depth?: number },
   _flat?: { idx: number; parent_id: string }
 ) => {
-  const item = val.mitem ? (val.mitem.toJSON() as IContent) : val.item;
-  if (item) {
-    const mitem = val.mitem;
+  let item = val.item as IContent;
+  if (val.mitem && !val.item) {
+    item = val.mitem.toJSON() as any;
+  }
+  let mitem = val.mitem;
 
+  if (item) {
     let comp: ItemMeta["comp"] = undefined;
-    if (mitem && item.type === "item" && item.component?.id) {
+
+    if (item.type === "item" && item.component?.id) {
       const cid = item.component.id;
 
       let doc = p.comps.doc[cid];
@@ -146,12 +154,13 @@ const walk = async (
 
       if (doc) {
         const mcomp = doc.getMap("map").get("content_tree") as MItem;
-
-        comp = {
-          id: cid,
-          mcomp,
-          item: await instantiateComp(item, mitem as MItem, mcomp),
-        };
+        if (mcomp) {
+          comp = {
+            id: cid,
+            mcomp,
+            item: await instantiateComp(item, mcomp, mitem as MItem),
+          };
+        }
       }
     }
 
@@ -206,6 +215,7 @@ const walk = async (
 
     if (comp) {
       const ccomp = comp.mcomp.get("component");
+
       if (ccomp) {
         let props = ccomp.get("props")?.toJSON() as Record<string, FNCompDef>;
 
@@ -226,19 +236,49 @@ const walk = async (
 
     p.treeMeta[meta.item.id] = meta;
 
+    if (DEBUG) {
+      const args = [
+        (".".repeat(val.depth || 0) + item.name).padEnd(30, "_") +
+          " " +
+          item.id,
+      ].join(" ");
+      if (comp) {
+        console.log("%c" + args, "color:red");
+      } else {
+        console.log(args);
+      }
+    }
+
     let flat = _flat;
+    let isDeepEditing = false;
     if (p.comp?.id) {
       if (p.treeFlat.length === 0) {
         flat = undefined;
-        if (comp && p.comp.instance_id === comp.item.id) {
-          p.treeFlat.push({
-            data: { meta, idx: 0 },
-            id: meta.item.id,
-            parent: "root",
-            text: item.name,
-          });
+
+        if (comp) {
+          if (mitem) {
+            if (p.comp.instance_id === comp.item.id) {
+              p.treeFlat.push({
+                data: { meta, idx: 0 },
+                id: meta.item.id,
+                parent: "root",
+                text: item.name,
+              });
+            }
+          } else {
+            if (p.comp.id === comp.id) {
+              isDeepEditing = true;
+              mitem = comp.mcomp;
+              meta.mitem = mitem;
+              p.treeFlat.push({
+                data: { meta, idx: 0 },
+                id: meta.item.id,
+                parent: "root",
+                text: item.name,
+              });
+            }
+          }
         }
-      } else {
       }
     }
 
@@ -250,11 +290,12 @@ const walk = async (
         text: item.name,
       });
     }
+    let mcomp = mitem;
 
-    if (mitem) {
+    if (mcomp) {
       if (comp) {
         // jsx prop as child in tree
-        const mprops = mitem.get("component")?.get("props");
+        const mprops = mcomp.get("component")?.get("props");
         if (mprops) {
           let idx = 0;
           for (const [key, prop] of cprops) {
@@ -269,7 +310,11 @@ const walk = async (
                 await walk(
                   p,
                   mode,
-                  { mitem: content, parent_id: item.id },
+                  {
+                    mitem: content,
+                    parent_id: item.id,
+                    depth: (val.depth || 0) + 1,
+                  },
                   flat ? { idx: idx++, parent_id: item.id } : undefined
                 );
               }
@@ -280,14 +325,18 @@ const walk = async (
         if (comp.item) {
           const isEditing = p.comp?.instance_id === item.id;
 
-          if (isEditing) {
+          if (isEditing || isDeepEditing) {
             await Promise.all(
               comp.mcomp.get("childs")?.map(async (child, idx) => {
                 if (comp) {
                   await walk(
                     p,
                     mode,
-                    { mitem: child, parent_id: comp.item.id },
+                    {
+                      mitem: child,
+                      parent_id: comp.item.id,
+                      depth: (val.depth || 0) + 1,
+                    },
                     { idx: idx, parent_id: comp.item.id }
                   );
                 }
@@ -295,19 +344,24 @@ const walk = async (
             );
           } else {
             await Promise.all(
-              comp.item.childs.map((child) =>
-                walk(p, mode, { item: child, parent_id: comp?.item.id || "" })
-              )
+              comp.mcomp.get("childs")?.map((child, idx) => {
+                if (comp)
+                  return walk(p, mode, {
+                    item: comp.item.childs[idx],
+                    parent_id: item.id,
+                    depth: (val.depth || 0) + 1,
+                  });
+              }) || []
             );
           }
         }
       } else {
         await Promise.all(
-          mitem.get("childs")?.map((child, idx) => {
+          mcomp.get("childs")?.map((child, idx) => {
             return walk(
               p,
               mode,
-              { mitem: child, parent_id: item.id },
+              { mitem: child, parent_id: item.id, depth: (val.depth || 0) + 1 },
               flat ? { idx, parent_id: item.id } : undefined
             );
           }) || []
@@ -316,7 +370,11 @@ const walk = async (
     } else if (item && item.type !== "text") {
       await Promise.all(
         item.childs.map((child) =>
-          walk(p, mode, { item: child, parent_id: item.id || "" })
+          walk(p, mode, {
+            item: child,
+            parent_id: item.id || "",
+            depth: (val.depth || 0) + 1,
+          })
         )
       );
     }

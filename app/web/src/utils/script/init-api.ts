@@ -99,12 +99,9 @@ export const reloadDBAPI = async (url: string, useCache: boolean = true) => {
           },
           apiTypes: await apiTypes.text(),
         };
-
-        localStorage.setItem(
-          `prasi-api-${url}`,
-          JSON.stringify(w.prasiApi[url])
-        );
       }
+
+      localStorage.setItem(`prasi-api-${url}`, JSON.stringify(w.prasiApi[url]));
     }
   } catch (e) {}
 };

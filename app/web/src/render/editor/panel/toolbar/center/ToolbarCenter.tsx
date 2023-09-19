@@ -89,8 +89,10 @@ export const ToolbarCenter = () => {
                 p.render();
                 clearTimeout(local.siteJS.timeout);
                 local.siteJS.timeout = setTimeout(async () => {
-                  const res = await api.site_edit_js(p.site.id, src, compiled);
-                  p.site_dts = res.dts;
+                  api.site_dts(p.site.id).then((e) => {
+                    p.site_dts = e || "";
+                    p.render();
+                  });
 
                   p.render();
                   wsend(

@@ -229,11 +229,15 @@ export const editorWS = async (p: PG) => {
             }
             break;
           case "sitejs_reload":
-            p.site_dts = (await api.site_dts(p.site.id)) || "";
             p.site.js = msg.js || "";
             execSiteJS(p);
             console.log(`🔥 Site JS Reloaded: ${new Date().toLocaleString()}`);
             render();
+            api.site_dts(p.site.id).then((e) => {
+              p.site_dts = e || "";
+              p.render();
+            });
+
             break;
           case "undo":
           case "redo":

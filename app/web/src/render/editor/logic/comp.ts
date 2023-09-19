@@ -191,36 +191,38 @@ export const editComp = (p: PG, id: string) => {
 
 export const instantiateComp = async (
   item: IItem,
-  mitem: MItem,
-  mcomp: MItem
+  mcomp: MItem,
+  mitem?: MItem
 ) => {
   const comp = item.component as FNComponent;
 
-  if (!comp.child_ids) {
-    comp.child_ids = {};
-  }
-
-  const ids = comp.child_ids;
-
-  let changed = false;
-  const nitem = fillID(mcomp.toJSON() as any, (i) => {
-    if (ids[i.id]) {
-      i.id = ids[i.id];
-    } else {
-      changed = true;
-      const newid = createId();
-      ids[i.id] = newid;
-      i.id = newid;
+  let nitem = {};
+  if (mitem) {
+    if (!comp.child_ids) {
+      comp.child_ids = {};
     }
-    return false;
-  }) as IItem;
+    const ids = comp.child_ids;
+    let changed = false;
+    nitem = fillID(mcomp.toJSON() as any, (i) => {
+      if (ids[i.id]) {
+        i.id = ids[i.id];
+      } else {
+        changed = true;
+        const newid = createId();
+        ids[i.id] = newid;
+        i.id = newid;
+      }
+      return false;
+    }) as IItem;
 
-  if (changed) {
-    const comp = mitem.get("component");
-    if (comp) {
-      comp.set("child_ids", ids);
+    if (changed) {
+      const comp = mitem.get("component");
+      if (comp) {
+        comp.set("child_ids", ids);
+      }
     }
+  } else {
+    nitem = fillID(mcomp.toJSON() as any);
   }
-
-  return { ...nitem, id: item.id, component: item.component };
+  return { ...nitem, id: item.id, component: comp } as IItem;
 };

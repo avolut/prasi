@@ -46,7 +46,7 @@ export const EPage = () => {
   );
 };
 
-const mobileCSS = css`
+export const mobileCSS = css`
   background-color: white;
   background-image: linear-gradient(45deg, #fafafa 25%, transparent 25%),
     linear-gradient(-45deg, #fafafa 25%, transparent 25%),

@@ -4,6 +4,7 @@ import { Loading } from "../../../utils/ui/loading";
 import { editorStyle } from "../elements/style";
 import { EditorGlobal } from "../logic/global";
 import { Toolbar } from "./toolbar/Toolbar";
+import { mobileCSS } from "../elements/e-page";
 
 const ETree = lazy(async () => ({
   default: (await import("./tree/tree")).ETree,
@@ -48,7 +49,11 @@ export const EMainEditor = () => {
           <>
             <Suspense fallback={<Loading note={`editor-lazy`} />}>
               <ETree />
-              <EPage />
+              {location.search === "?norender" ? (
+                <div className={cx("flex-1", mobileCSS)}></div>
+              ) : (
+                <EPage />
+              )}
               <ESide />
             </Suspense>
           </>

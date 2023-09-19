@@ -23,6 +23,8 @@ export const ETree = () => {
 
   const tree: NodeModel<NodeMeta>[] = p.treeFlat;
 
+  console.log(tree);
+
   useEffect(() => {
     p.render();
   }, []);
