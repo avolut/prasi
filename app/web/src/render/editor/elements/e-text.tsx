@@ -8,6 +8,7 @@ import { rebuildTree } from "../logic/tree-logic";
 export const EText: FC<{
   id: string;
 }> = ({ id }) => {
+
   return <ERender id={id} />;
 };
 const currentFocus = {

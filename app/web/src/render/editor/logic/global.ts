@@ -1,9 +1,8 @@
 import { FC, ReactElement } from "react";
-import { TypedMap } from "yjs-types";
 import { CompDoc } from "../../../base/global/content-editor";
 import { IContent, MContent, MPage } from "../../../utils/types/general";
 import { IItem, MItem } from "../../../utils/types/item";
-import { FMCompDef, FNCompDef } from "../../../utils/types/meta-fn";
+import { FNCompDef } from "../../../utils/types/meta-fn";
 import { PRASI_COMPONENT } from "../../../utils/types/render";
 import { IRoot } from "../../../utils/types/root";
 
@@ -15,15 +14,18 @@ export type ItemMeta = {
   scope?: any;
   className: string;
   elprop: any;
+  depth: number;
   memoize?: {
     Local: FC<any>;
     PassProp: FC<any>;
   };
+  parent_comp?: ItemMeta;
   comp?: {
     id: string;
     item: IItem;
     mcomp: MItem;
     propval?: any;
+    child_ids: Record<string, string>;
   };
 };
 

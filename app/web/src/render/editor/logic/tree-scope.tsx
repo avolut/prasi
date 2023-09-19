@@ -40,23 +40,23 @@ export const treeScopeEval = (p: PG, meta: ItemMeta, children: ReactNode) => {
         children,
         props: { ...elprop, className },
         render: (jsx: ReactNode) => {
-          // output.jsx = jsx;
-          output.jsx = (
-            <ErrorBoundary>
-              <Suspense
-                fallback={
-                  <div className="flex flex-1 items-center justify-center w-full h-full relative">
-                    {p.ui.loading}
-                  </div>
-                }
-              >
-                {/* <pre className={"text-[9px] font-mono text-black"}>
-                  {item.id}-{item.name}
-                </pre> */}
-                {jsx}
-              </Suspense>
-            </ErrorBoundary>
-          );
+          output.jsx = jsx;
+          // output.jsx = (
+          //   <ErrorBoundary>
+          //     <Suspense
+          //       fallback={
+          //         <div className="flex flex-1 items-center justify-center w-full h-full relative">
+          //           {p.ui.loading}
+          //         </div>
+          //       }
+          //     >
+          //       {/* <pre className={"text-[9px] font-mono text-black"}>
+          //         {item.id}-{item.name}
+          //       </pre> */}
+          //       {jsx}
+          //     </Suspense>
+          //   </ErrorBoundary>
+          // );
         },
       };
 
@@ -73,7 +73,7 @@ export const treeScopeEval = (p: PG, meta: ItemMeta, children: ReactNode) => {
             ).trim()
           );
           console.warn(`Available var:`, args);
-          console.log("\n\n\n")
+          console.log("\n\n\n");
         });
       }
 
@@ -86,8 +86,7 @@ export const treeScopeEval = (p: PG, meta: ItemMeta, children: ReactNode) => {
         ).trim()
       );
       console.warn(`Available var:`, args);
-      console.log("\n\n\n")
-
+      console.log("\n\n\n");
     }
   }
 };
@@ -100,15 +99,14 @@ export const mergeScopeUpwards = (p: PG, meta: ItemMeta) => {
   const scopes = [meta.scope];
   let cur = meta;
   while (cur) {
-    if (cur.scope) {
-      const scope = { ...cur.scope };
-      if (cur.comp?.propval) {
-        for (const [k, v] of Object.entries(cur.comp.propval)) {
-          scope[k] = v;
-        }
-      }
-
+    let scope = null;
+    if (cur.scope || cur.comp?.propval) {
+      scope = { ...cur.scope, ...cur.comp?.propval };
       scopes.unshift(scope);
+    }
+
+    if (meta.item.id === "lhbebj5irgn10waaupkot8z5") {
+      console.log(cur.item.id, cur.parent_id, cur.item.name, scope);
     }
     cur = p.treeMeta[cur.parent_id];
   }
@@ -159,6 +157,7 @@ const createLocal = (p: PG, meta: ItemMeta) => {
     if (!meta.scope) {
       meta.scope = {};
     }
+
     if (!meta.scope[name]) {
       meta.scope[name] = {
         ...deepClone(value),

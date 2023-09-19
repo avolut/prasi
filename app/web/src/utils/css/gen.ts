@@ -21,7 +21,6 @@ export const produceCSS = (
 ): string => {
   try {
     return cx([
-      item.name,
       css`
         display: flex;
         position: relative;

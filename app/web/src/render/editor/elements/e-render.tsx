@@ -3,12 +3,12 @@ import { useGlobal, useLocal } from "web-utils";
 import { produceCSS } from "../../../utils/css/gen";
 import { IContent } from "../../../utils/types/general";
 import { FNAdv, FNCompDef } from "../../../utils/types/meta-fn";
+import { Loading } from "../../../utils/ui/loading";
 import { EditorGlobal } from "../logic/global";
+import { treePropEval } from "../logic/tree-prop";
+import { treeScopeEval } from "../logic/tree-scope";
 import { ComponentOver, ElProp, createElProp } from "./e-relprop";
 import { ETextInternal } from "./e-text";
-import { treeScopeEval } from "../logic/tree-scope";
-import { treePropEval } from "../logic/tree-prop";
-import { Loading } from "../../../utils/ui/loading";
 
 export const ERender: FC<{
   id: string;
@@ -46,8 +46,13 @@ export const ERender: FC<{
       treePropEval(p, meta, cprops).then((propval) => {
         comp.propval = propval;
         local.render();
+        setTimeout(() => {
+          if (!comp.propval) {
+            local.render();
+          }
+        }, 2000);
       });
-      return null;
+      return <Loading backdrop={false} />;
     }
   }
 
@@ -97,6 +102,7 @@ export const ERender: FC<{
           {componentOver}
         </>
       );
+
       return el;
     }
   }

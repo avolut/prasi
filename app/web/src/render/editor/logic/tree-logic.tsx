@@ -4,12 +4,16 @@ import { IItem, MItem } from "../../../utils/types/item";
 import { FNCompDef } from "../../../utils/types/meta-fn";
 import { createElProp } from "../elements/e-relprop";
 import { DefaultScript } from "../panel/script/monaco/monaco-element";
+import { fillID } from "../tools/fill-id";
 import { newMap } from "../tools/yjs-tools";
 import { instantiateComp, loadComponent } from "./comp";
 import { ItemMeta, PG } from "./global";
 import * as Y from "yjs";
+export type REBUILD_MODE = "update" | "reset";
 
 const DEBUG = false;
+const DEBUG_MAX_ITEM: number = 9999;
+const DEBUG_MIN_ITEM: number = 0;
 
 export const updateComponentInTree = async (p: PG, comp_id: string) => {
   if (p.focused) {
@@ -29,7 +33,7 @@ export const updateComponentInTree = async (p: PG, comp_id: string) => {
               meta.comp.item = await instantiateComp(
                 meta.item as IItem,
                 mcomp,
-                meta.mitem as MItem
+                meta.comp.child_ids
               );
               const mprops = meta.mitem.get("component")?.get("props");
               if (mprops) {
@@ -68,8 +72,7 @@ export const updateComponentInTree = async (p: PG, comp_id: string) => {
   }
 };
 
-export type REBUILD_MODE = "update" | "reset";
-
+let DEBUG_CUR_IDX = 0;
 export const rebuildTree = async (
   p: PG,
   opt?: { render?: () => void; mode?: REBUILD_MODE }
@@ -99,19 +102,22 @@ export const rebuildTree = async (
 
   if (p.mpage) {
     if (DEBUG) {
+      DEBUG_CUR_IDX = 0;
       console.clear();
     }
     const mpage = p.mpage.getMap("map").get("content_tree");
-    await Promise.all(
-      mpage?.get("childs")?.map(async (mitem, idx) => {
-        await walk(
-          p,
-          mode,
-          { mitem, parent_id: "root", depth: 0 },
-          { parent_id: "root", idx }
-        );
-      }) || []
-    );
+    await mpage?.doc?.transact(async () => {
+      await Promise.all(
+        mpage?.get("childs")?.map(async (mitem, idx) => {
+          await walk(
+            p,
+            mode,
+            { mitem, parent_id: "root", depth: 0 },
+            { parent_id: "root", idx }
+          );
+        }) || []
+      );
+    });
 
     if (p.comp && p.treeFlat.length === 0) {
       if (!p.comps.pending[p.comp.id]) {
@@ -132,14 +138,43 @@ export const rebuildTree = async (
 const walk = async (
   p: PG,
   mode: REBUILD_MODE,
-  val: { mitem?: MContent; item?: IContent; parent_id: string; depth?: number },
+  val: {
+    mitem?: MContent;
+    cmeta?: ItemMeta;
+    item?: IContent;
+    minstance?: MItem;
+    parent_id: string;
+    depth?: number;
+  },
   _flat?: { idx: number; parent_id: string }
 ) => {
   let item = val.item as IContent;
+  let mitem = val.mitem;
+
   if (val.mitem && !val.item) {
     item = val.mitem.toJSON() as any;
   }
-  let mitem = val.mitem;
+
+  if (mitem) {
+    const mcomp = mitem.get("component");
+    if (mcomp) {
+      if ((mcomp as any).get("child_ids")) {
+        (mcomp as any).delete("child_ids");
+      }
+    }
+  }
+
+  if (val.cmeta && val.cmeta.item.type === "item") {
+    const child_ids = val.cmeta.comp?.child_ids;
+    if (child_ids) {
+      item = fillID(item, (e) => {
+        if (child_ids[e.id]) {
+          e.id = child_ids[e.id];
+        }
+        return false;
+      });
+    }
+  }
 
   if (item) {
     let comp: ItemMeta["comp"] = undefined;
@@ -157,10 +192,14 @@ const walk = async (
       if (doc) {
         const mcomp = doc.getMap("map").get("content_tree") as MItem;
         if (mcomp) {
+          const child_ids: any = {};
+          const icomps = await instantiateComp(item, mcomp, child_ids);
+
           comp = {
             id: cid,
             mcomp,
-            item: await instantiateComp(item, mcomp, mitem as MItem),
+            item: icomps,
+            child_ids,
           };
         }
       }
@@ -204,6 +243,8 @@ const walk = async (
       mitem: mitem,
       item,
       parent_id: val.parent_id,
+      depth: val.depth || 0,
+      parent_comp: val.cmeta,
       elprop: createElProp(comp ? comp.item : item, p),
       className: produceCSS(comp ? comp.item : item, {
         mode: p.mode,
@@ -239,15 +280,18 @@ const walk = async (
     p.treeMeta[meta.item.id] = meta;
 
     if (DEBUG) {
-      const args = [
-        (".".repeat(val.depth || 0) + item.name).padEnd(30, "_") +
-          " " +
-          item.id,
-      ].join(" ");
-      if (comp) {
-        console.log("%c" + args, "color:red");
-      } else {
-        console.log(args);
+      DEBUG_CUR_IDX++;
+      if (DEBUG_CUR_IDX >= DEBUG_MIN_ITEM && DEBUG_CUR_IDX <= DEBUG_MAX_ITEM) {
+        const args = [
+          (".".repeat(val.depth || 0) + item.name).padEnd(30, "_") +
+            " " +
+            item.id,
+        ].join(" ");
+        if (comp) {
+          console.log("%c" + args, "color:red");
+        } else {
+          console.log(args);
+        }
       }
     }
 
@@ -292,7 +336,7 @@ const walk = async (
         text: item.name,
       });
     }
-    let mcomp = mitem;
+    let mcomp = mitem || val.minstance;
 
     if (mcomp) {
       if (comp) {
@@ -337,6 +381,7 @@ const walk = async (
                     {
                       mitem: child,
                       parent_id: comp.item.id,
+                      cmeta: val.cmeta,
                       depth: (val.depth || 0) + 1,
                     },
                     { idx: idx, parent_id: comp.item.id }
@@ -347,12 +392,15 @@ const walk = async (
           } else {
             await Promise.all(
               comp.mcomp.get("childs")?.map((child, idx) => {
-                if (comp)
+                if (comp) {
                   return walk(p, mode, {
                     item: comp.item.childs[idx],
+                    cmeta: meta,
+                    minstance: child,
                     parent_id: item.id,
                     depth: (val.depth || 0) + 1,
                   });
+                }
               }) || []
             );
           }
@@ -363,7 +411,12 @@ const walk = async (
             return walk(
               p,
               mode,
-              { mitem: child, parent_id: item.id, depth: (val.depth || 0) + 1 },
+              {
+                mitem: child,
+                parent_id: item.id,
+                cmeta: val.cmeta,
+                depth: (val.depth || 0) + 1,
+              },
               flat ? { idx, parent_id: item.id } : undefined
             );
           }) || []
@@ -375,6 +428,7 @@ const walk = async (
           walk(p, mode, {
             item: child,
             parent_id: item.id || "",
+            cmeta: val.cmeta,
             depth: (val.depth || 0) + 1,
           })
         )
