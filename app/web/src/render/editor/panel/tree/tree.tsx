@@ -2,6 +2,7 @@ import { NodeModel } from "@minoru/react-dnd-treeview";
 import { useGlobal, useLocal } from "web-utils";
 import { EditorGlobal, NodeMeta } from "../../logic/global";
 import { ETreeBody } from "./body";
+import { useEffect } from "react";
 
 export const ETree = () => {
   const p = useGlobal(EditorGlobal, "EDITOR");
@@ -21,6 +22,10 @@ export const ETree = () => {
   });
 
   const tree: NodeModel<NodeMeta>[] = p.treeFlat;
+
+  useEffect(() => {
+    p.render();
+  }, []);
 
   return (
     <div className={cx("tree flex flex-col")}>

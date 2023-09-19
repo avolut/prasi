@@ -7,7 +7,7 @@ import { DefaultScript } from "../panel/script/monaco/monaco-element";
 import { newMap } from "../tools/yjs-tools";
 import { instantiateComp, loadComponent } from "./comp";
 import { ItemMeta, PG } from "./global";
-
+import * as Y from "yjs";
 export const updateComponentInTree = async (p: PG, comp_id: string) => {
   if (p.focused) {
     p.pendingRebuild = true;
@@ -95,19 +95,16 @@ export const rebuildTree = async (
   }
 
   if (p.mpage) {
+    const mpage = p.mpage.getMap("map").get("content_tree");
     await Promise.all(
-      p.mpage
-        .getMap("map")
-        .get("content_tree")
-        ?.get("childs")
-        ?.map(async (mitem, idx) => {
-          await walk(
-            p,
-            mode,
-            { mitem, parent_id: "root" },
-            { parent_id: "root", idx }
-          );
-        }) || []
+      mpage?.get("childs")?.map(async (mitem, idx) => {
+        await walk(
+          p,
+          mode,
+          { mitem, parent_id: "root" },
+          { parent_id: "root", idx }
+        );
+      }) || []
     );
 
     if (p.comp && p.treeFlat.length === 0) {
@@ -208,15 +205,19 @@ const walk = async (
     let cprops: [string, FNCompDef][] = [];
 
     if (comp) {
-      const props = comp.mcomp
-        .get("component")
-        ?.get("props")
-        ?.toJSON() as Record<string, FNCompDef>;
+      const ccomp = comp.mcomp.get("component");
+      if (ccomp) {
+        let props = ccomp.get("props")?.toJSON() as Record<string, FNCompDef>;
 
-      cprops = Object.entries(props).sort((a, b) => {
-        return a[1].idx - b[1].idx;
-      });
+        if (!props) {
+          ccomp.set("props", new Y.Map() as any);
+          props = {};
+        }
 
+        cprops = Object.entries(props).sort((a, b) => {
+          return a[1].idx - b[1].idx;
+        });
+      }
       if (!p.compInstance[comp.id]) {
         p.compInstance[comp.id] = new Set();
       }
@@ -265,7 +266,7 @@ const walk = async (
             if (mprop && prop.meta?.type === "content-element") {
               const content = mprop.get("content");
               if (content) {
-                walk(
+                await walk(
                   p,
                   mode,
                   { mitem: content, parent_id: item.id },
@@ -280,37 +281,44 @@ const walk = async (
           const isEditing = p.comp?.instance_id === item.id;
 
           if (isEditing) {
-            comp.mcomp.get("childs")?.forEach((child, idx) => {
-              if (comp) {
-                walk(
-                  p,
-                  mode,
-                  { mitem: child, parent_id: comp.item.id },
-                  { idx: idx, parent_id: comp.item.id }
-                );
-              }
-            });
+            await Promise.all(
+              comp.mcomp.get("childs")?.map(async (child, idx) => {
+                if (comp) {
+                  await walk(
+                    p,
+                    mode,
+                    { mitem: child, parent_id: comp.item.id },
+                    { idx: idx, parent_id: comp.item.id }
+                  );
+                }
+              }) || []
+            );
           } else {
-            for (const child of comp.item.childs) {
-              walk(p, mode, { item: child, parent_id: comp.item.id });
-            }
+            await Promise.all(
+              comp.item.childs.map((child) =>
+                walk(p, mode, { item: child, parent_id: comp?.item.id || "" })
+              )
+            );
           }
         }
       } else {
-        mitem.get("childs")?.forEach((child, idx) => {
-          walk(
-            p,
-
-            mode,
-            { mitem: child, parent_id: item.id },
-            flat ? { idx, parent_id: item.id } : undefined
-          );
-        });
+        await Promise.all(
+          mitem.get("childs")?.map((child, idx) => {
+            return walk(
+              p,
+              mode,
+              { mitem: child, parent_id: item.id },
+              flat ? { idx, parent_id: item.id } : undefined
+            );
+          }) || []
+        );
       }
     } else if (item && item.type !== "text") {
-      for (const child of item.childs) {
-        walk(p, mode, { item: child, parent_id: item.id });
-      }
+      await Promise.all(
+        item.childs.map((child) =>
+          walk(p, mode, { item: child, parent_id: item.id || "" })
+        )
+      );
     }
   }
 };

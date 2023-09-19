@@ -170,7 +170,7 @@ export const editComp = (p: PG, id: string) => {
           p.comp.instance_id = item.id;
           p.comp.props = map.component.props;
         }
-        p.item.active = map.id;
+        p.item.active = p.comp.instance_id;
         rebuildTree(p, { mode: "update" });
 
         localStorage.setItem("prasi-item-active-id", p.item.active);

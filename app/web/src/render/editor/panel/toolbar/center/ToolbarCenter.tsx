@@ -3,28 +3,18 @@ import { ToolbarBox } from "../../../../../utils/ui/box";
 import { Modal } from "../../../../../utils/ui/modal";
 import { EditorGlobal } from "../../../logic/global";
 import { MonacoEditor } from "../../script/monaco/typings";
-// import { customMonacoState } from "../../script/monaco/monaco-custom";
+import { useEffect } from "react";
+import { reloadDBAPI } from "../../../../../utils/script/init-api";
+import { w } from "../../../../../utils/types/general";
 import { Popover } from "../../../../../utils/ui/popover";
 import { execSiteJS } from "../../../logic/init";
 import { wsend } from "../../../logic/ws";
 import { customMonacoState } from "../../script/monaco/monaco-custom";
 import { EScriptCustom } from "../../script/script-custom";
 import { AddElement } from "./AddElement";
+import { Export } from "./Export";
 import { NPMImport } from "./NPMImport";
 import { APIConfig } from "./api/APIConfig";
-import { useEffect } from "react";
-import { reloadDBAPI } from "../../../../../utils/script/init-api";
-import { w } from "../../../../../utils/types/general";
-import { Export } from "./Export";
-const ua = navigator.userAgent.toLowerCase();
-const isMac =
-  ua.indexOf("mac") > -1 &&
-  ua.indexOf("os") > -1 &&
-  !(
-    ua.indexOf("iphone") > -1 ||
-    ua.indexOf("ipad") > -1 ||
-    ua.indexOf("windows") > -1
-  );
 
 export const ToolbarCenter = () => {
   const p = useGlobal(EditorGlobal, "EDITOR");

@@ -56,6 +56,7 @@ export const ETreeItem: FC<{
   if (childs && childs.length > 0) {
     hasChilds = true;
   }
+
   let itemName = item.name;
   let isComponent = !!(item as IItem).component?.id;
   let isRootComponent = false;
@@ -77,6 +78,7 @@ export const ETreeItem: FC<{
 
   let loading = !!p.compLoading[item.id];
   if (isComponent) {
+    hasChilds = false;
     const id = (item as IItem).component?.id;
     if (id) {
       const comp = p.comps.doc[id];

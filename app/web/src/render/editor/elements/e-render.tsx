@@ -8,6 +8,7 @@ import { ComponentOver, ElProp, createElProp } from "./e-relprop";
 import { ETextInternal } from "./e-text";
 import { treeScopeEval } from "../logic/tree-scope";
 import { treePropEval } from "../logic/tree-prop";
+import { Loading } from "../../../utils/ui/loading";
 
 export const ERender: FC<{
   id: string;
@@ -76,7 +77,9 @@ export const ERender: FC<{
 
   let componentOver = null;
   if (item.type === "item" && item.component?.id) {
-    if (item.id !== p.comp?.instance_id) {
+    if (!p.comps.doc[item.component.id]) {
+      componentOver = <Loading backdrop={false} />;
+    } else if (item.id !== p.comp?.instance_id) {
       componentOver = <ComponentOver item={item} p={p} elprop={elprop} />;
     }
   }

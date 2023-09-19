@@ -18,6 +18,7 @@ export const Root: FC<{
     global: {},
     pathname: "",
     pathLoaded: false,
+    pageLoaded: false,
     pageUrl: "",
     firstRender: true,
     Page: (() => <>{loading}</>) as
@@ -95,16 +96,35 @@ export const Root: FC<{
       }
     }
 
-    if (!local.pathLoaded && typeof page.component !== "undefined") {
+    if (
+      (!local.pathLoaded || !local.pageLoaded) &&
+      typeof page.component !== "undefined"
+    ) {
+      setTimeout(() => {
+        if (!local.pageLoaded) {
+          local.render();
+        }
+      }, 2000);
+
       const component = (page.component as PromisedComponent)();
       if (typeof component === "object" && component instanceof Promise) {
         local.pathLoaded = true;
         if (!page.ssr) {
           local.Page = () => <>{loading}</>;
-          component.then((e) => {
-            local.Page = e.default.component;
-            local.render();
-          });
+
+          component
+            .then((e) => {
+              local.Page = e.default.component;
+              local.pageLoaded = true;
+              local.render();
+            })
+            .catch((e) => {
+              console.warn(
+                `Page [${found?.name || "-not-found-"}] failed to load`,
+                e
+              );
+              local.render();
+            });
         } else {
           local.Page = lazy(async () => {
             return {

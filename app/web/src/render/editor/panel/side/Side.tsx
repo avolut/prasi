@@ -70,10 +70,10 @@ export const ESide = () => {
     return (
       <div
         className={cx(
-          "side flex select-none relative overflow-x-hidden overflow-y-auto p-3"
+          "side flex select-none relative overflow-x-hidden overflow-y-auto p-3 text-sm items-center justify-center text-slate-500"
         )}
       >
-        Item Not Found
+        Please select an item
       </div>
     );
 

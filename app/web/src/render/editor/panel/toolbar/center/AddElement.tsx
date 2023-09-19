@@ -4,12 +4,12 @@ import { FC } from "react";
 import { useGlobal, useLocal } from "web-utils";
 import { syncronize } from "y-pojo";
 import * as Y from "yjs";
-import { MContent } from "../../../../../utils/types/general";
+import { IContent, MContent } from "../../../../../utils/types/general";
 import { IItem } from "../../../../../utils/types/item";
 import { ISection } from "../../../../../utils/types/section";
 import { IText } from "../../../../../utils/types/text";
 import { ToolbarBox } from "../../../../../utils/ui/box";
-import { EditorGlobal } from "../../../logic/global";
+import { EditorGlobal, PG } from "../../../logic/global";
 import { fillID } from "../../../tools/fill-id";
 import { loadComponent } from "../../../logic/comp";
 
@@ -17,7 +17,6 @@ export const AddElement: FC<{}> = ({}) => {
   const p = useGlobal(EditorGlobal, "EDITOR");
   const local = useLocal({});
   p.softRender.addEl = local.render;
-
 
   let canAdd = true;
   if (!p.item.active) {
@@ -60,8 +59,7 @@ export const AddElement: FC<{}> = ({}) => {
                   css: "",
                 },
               } as IText;
-              const item = p.item.active ? p.treeMeta[p.item.active] : null;
-              const mitem = item ? item.mitem : null;
+              const { item, mitem } = getActive(p);
               const type = mitem?.get("type");
               if (p.item.active && mitem) {
                 if (type === "item") {
@@ -128,8 +126,7 @@ export const AddElement: FC<{}> = ({}) => {
                   css: "",
                 },
               } as IItem;
-              const item = p.item.active ? p.treeMeta[p.item.active] : null;
-              const mitem = item ? item.mitem : null;
+              const { item, mitem } = getActive(p);
               if (p.item.active && mitem) {
                 if (type !== "text") {
                   const map = new Y.Map() as MContent;
@@ -254,8 +251,7 @@ export const AddElement: FC<{}> = ({}) => {
                   ...comp,
                   id: createId(),
                 } as IItem;
-                const item = p.item.active ? p.treeMeta[p.item.active] : null;
-                const mitem = item ? item.mitem : null;
+                const { item, mitem } = getActive(p);
                 if (p.item.active && mitem) {
                   if (type !== "text") {
                     const map = new Y.Map() as MContent;
@@ -315,6 +311,31 @@ export const AddElement: FC<{}> = ({}) => {
       />
     </>
   );
+};
+
+const getActive = (p: PG) => {
+  let mitem = null as any;
+  let item = null as any;
+  if (p.comp && p.item.active === p.comp.instance_id) {
+    mitem = p.treeMeta[p.comp.instance_id].comp?.mcomp;
+    item = p.treeMeta[p.comp.instance_id].comp?.item;
+  } else {
+    let meta = p.treeMeta[p.item.active];
+
+    if (!meta) {
+      const flat = p.treeFlat.find((e) => e.parent === "root");
+      if (flat) {
+        meta = flat.data.meta;
+      }
+    }
+
+    if (meta) {
+      mitem = meta.mitem;
+      item = meta.item;
+    }
+  }
+
+  return { mitem: mitem as MContent, item: item as IContent };
 };
 
 const IconPlus = () => (
