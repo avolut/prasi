@@ -1,7 +1,5 @@
 import { FC, useEffect } from "react";
 import { useGlobal, useLocal } from "web-utils";
-import { syncronize } from "y-pojo";
-import * as Y from "yjs";
 import { TypedMap } from "yjs-types";
 import { CompDoc } from "../../../../../base/global/content-editor";
 import { IItem, MItem } from "../../../../../utils/types/item";
@@ -9,61 +7,74 @@ import { FMCompDef, FNCompDef } from "../../../../../utils/types/meta-fn";
 import { Menu, MenuItem } from "../../../../../utils/ui/context-menu";
 import { Loading } from "../../../../../utils/ui/loading";
 import { Popover } from "../../../../../utils/ui/popover";
-import { editComp, loadComponent, newPageComp } from "../../../logic/comp";
+import { editComp, loadComponent } from "../../../logic/comp";
 import { EditorGlobal, PG } from "../../../logic/global";
 import { jscript } from "../../script/script-element";
 import { CPCodeEdit } from "./CPCodeEdit";
+import { CPJsx } from "./CPJsx";
 import { CPOption } from "./CPOption";
 import { CPText } from "./CPText";
-import { CPJsx } from "./CPJsx";
+import { newMap } from "../../../tools/yjs-tools";
+import { Tooltip } from "../../../../../utils/ui/tooltip";
 
 export const CPInstance: FC<{ mitem: MItem }> = ({ mitem }) => {
   const p = useGlobal(EditorGlobal, "EDITOR");
   const local = useLocal({
-    ready: false,
+    status: "loading",
     mprops: null as unknown as TypedMap<Record<string, FMCompDef>>,
     props: {} as Record<string, FNCompDef>,
     visibles: {} as Record<string, string>,
     jsx: false,
   });
+  const meta = p.treeMeta[mitem.get("id") || ""];
+  const comp = p.comps.doc[mitem.get("component")?.get("id") || ""];
 
   useEffect(() => {
     (async () => {
+      local.status = "loading";
+      local.render();
       if (comp) {
-        const mcomp = mitem.get("component");
-        if (cprops && mcomp) {
-          local.mprops = mcomp.get("props") as any;
-          const newprops: any = {};
-          cprops.forEach((e, k) => {
-            const prop = local.mprops.get(k);
-            newprops[k] = e.toJSON();
-            local.visibles[k] = e.get("visible") || "";
-            if (prop) {
-              newprops[k].value = prop.get("value");
-              newprops[k].valueBuilt = prop.get("valueBuilt");
-            } else {
-              local.mprops.set(k, new Y.Map() as any);
-              const mprop = local.mprops.get(k);
-              syncronize(mprop as any, newprops[k]);
+        const cprops = comp
+          .getMap("map")
+          .get("content_tree")
+          ?.get("component")
+          ?.get("props")
+          ?.toJSON() as Record<string, FNCompDef>;
+        const mprops = mitem.get("component")?.get("props");
+        if (!mprops) {
+          local.status = "ERROR: Item not found.";
+          local.render();
+          return;
+        } else {
+          mprops.forEach((e, name) => {
+            const cmeta = cprops[name] && cprops[name].meta;
+            const mmeta = e.get("meta");
+            if (cmeta) {
+              if (!mmeta) {
+                e.set("meta", newMap(cmeta) as any);
+              } else if (mmeta.get("type") !== cmeta.type) {
+                mmeta.set("type", cmeta.type);
+              }
             }
           });
-          local.props = newprops;
+
+          local.mprops = mprops;
+          local.props = local.props = mprops.toJSON();
+          local.render();
         }
       }
 
       if (!jscript.build) {
         jscript.init().then(() => {
-          local.ready = true;
+          local.status = "ready";
           local.render();
         });
       } else {
-        local.ready = true;
+        local.status = "ready";
         local.render();
       }
     })();
   }, [mitem]);
-
-  const comp = p.comps.doc[mitem.get("component")?.get("id") || ""];
 
   if (!comp) {
     loadComponent(p, mitem.get("component")?.get("id") || "").then(
@@ -73,13 +84,12 @@ export const CPInstance: FC<{ mitem: MItem }> = ({ mitem }) => {
     return <Loading note="cp-comp" backdrop={false} />;
   }
 
-  const cprops = comp
-    .getMap("map")
-    .get("content_tree")
-    ?.get("component")
-    ?.get("props");
+  if (local.status === "loading")
+    return <Loading note="cp-instance" backdrop={false} />;
 
-  if (!local.ready) return <Loading note="cp-instance" backdrop={false} />;
+  if (local.status !== "ready") {
+    <div className="flex flex-col flex-1">{local.status}</div>;
+  }
 
   return (
     <div className="flex flex-col flex-1">
@@ -91,9 +101,8 @@ export const CPInstance: FC<{ mitem: MItem }> = ({ mitem }) => {
           className="flex mr-1 px-2 bg-white text-xs border rounded-sm cursor-pointer hover:bg-blue-50 hover:border-blue-500 text-blue-700"
           onClick={() => {
             p.compProp.edit = true;
-            p.compProp.backTo = mitem.get("id") || "";
-            p.compProp.backToComp = p.comp;
-            editComp(p, mitem.toJSON() as IItem);
+            p.compProp.backToInstance = true;
+            editComp(p, mitem.get("id") || "");
           }}
         >
           Edit Master Props
@@ -122,7 +131,6 @@ export const CPInstance: FC<{ mitem: MItem }> = ({ mitem }) => {
                     const comp = p.treeMeta[p.item.active].comp;
                     const args = {
                       ...window.exports,
-                      ...comp?.nprops,
                     };
                     const fn = new Function(
                       ...Object.keys(args),
@@ -142,6 +150,7 @@ export const CPInstance: FC<{ mitem: MItem }> = ({ mitem }) => {
                       name={k}
                       prop={prop}
                       mprop={mprop}
+                      mprops={local.mprops}
                       comp={comp}
                       render={p.render}
                       p={p}
@@ -172,10 +181,11 @@ const SingleProp: FC<{
   name: string;
   prop: FNCompDef;
   mprop: FMCompDef;
+  mprops: TypedMap<Record<string, FMCompDef>>;
   render: () => void;
   comp: CompDoc;
   p: PG;
-}> = ({ name, prop: _prop, mprop, render, comp, p }) => {
+}> = ({ name, prop: _prop, mprop, mprops, render, comp, p }) => {
   const local = useLocal({
     clickEvent: null as any,
     editCode: false,
@@ -198,12 +208,12 @@ const SingleProp: FC<{
       if (meta.item.type === "item" && meta.item.component) {
         meta.item.component.props[name].value = js;
         meta.item.component.props[name].valueBuilt = jsBuilt;
-        const comp = newPageComp(p, meta.item as any);
-        if (comp) {
-          if (comp.nprops) {
-            comp.nprops = comp.nprops;
+        if (meta.comp?.item) {
+          const item = meta.comp?.item;
+          if (item.component) {
+            item.component.props[name].value = js;
+            item.component.props[name].valueBuilt = jsBuilt;
           }
-          meta.comp = comp;
         }
       }
       render();
@@ -236,7 +246,7 @@ const SingleProp: FC<{
     }
   };
 
-  const prop = comp
+  let prop = comp
     .getMap("map")
     .get("content_tree")
     ?.get("component")
@@ -244,10 +254,14 @@ const SingleProp: FC<{
     ?.get(name)
     ?.toJSON() as FNCompDef;
 
-  if (!prop) return <>Missing Prop</>;
-
-  prop.value = _prop.value;
-  prop.valueBuilt = _prop.valueBuilt;
+  let notExists = false;
+  if (prop) {
+    prop.value = _prop.value;
+    prop.valueBuilt = _prop.valueBuilt;
+  } else {
+    prop = _prop;
+    notExists = true;
+  }
 
   return (
     <div
@@ -400,6 +414,30 @@ const SingleProp: FC<{
                 }}
                 reset={reset}
               />
+            )}
+            {notExists && (
+              <Tooltip
+                content="Not exist in Master Prop"
+                className="cursor-pointer flex items-center px-1 border-l text-red-400"
+                onClick={() => {
+                  mprops.delete(name);
+                }}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="15"
+                  height="15"
+                  fill="none"
+                  viewBox="0 0 15 15"
+                >
+                  <path
+                    fill="currentColor"
+                    fillRule="evenodd"
+                    d="M5.5 1a.5.5 0 000 1h4a.5.5 0 000-1h-4zM3 3.5a.5.5 0 01.5-.5h8a.5.5 0 010 1H11v8a1 1 0 01-1 1H5a1 1 0 01-1-1V4h-.5a.5.5 0 01-.5-.5zM5 4h5v8H5V4z"
+                    clipRule="evenodd"
+                  ></path>
+                </svg>
+              </Tooltip>
             )}
           </div>
         )}

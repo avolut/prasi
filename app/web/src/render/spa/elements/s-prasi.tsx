@@ -16,8 +16,8 @@ export const SPrasi: FC<PrasiOpt> = (opt) => {
     if (p.site.responsive === "all") {
       const parsed = parseUA();
       p.mode = parsed.device.type === "mobile" ? "mobile" : "desktop";
-      if (localStorage.getItem("editor-mode")) {
-        p.mode = localStorage.getItem("editor-mode") as any;
+      if (localStorage.getItem("prasi-editor-mode")) {
+        p.mode = localStorage.getItem("prasi-editor-mode") as any;
       }
     } else if (p.site.responsive === "mobile-only") {
       p.mode = "mobile";

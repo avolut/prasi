@@ -46,18 +46,27 @@ export const initEditor = async (p: PG, site_id: string) => {
 
     let site = null as any;
     if (!p.site.id) {
-      site = await db.site.findFirst({
-        where: site_id ? { id: site_id } : { id_user: p.session.data.user.id },
-        select: {
-          id: true,
-          config: true,
-          domain: true,
-          name: true,
-          js: true,
-          responsive: true,
-          js_compiled: true,
-        },
-      });
+      try {
+        site = JSON.parse(localStorage.getItem(`prasi-site-${site_id}`) || "");
+      } catch (e) {}
+
+      if (!site) {
+        site = await db.site.findFirst({
+          where: site_id
+            ? { id: site_id }
+            : { id_user: p.session.data.user.id },
+          select: {
+            id: true,
+            config: true,
+            domain: true,
+            name: true,
+            js: true,
+            responsive: true,
+            js_compiled: true,
+          },
+        });
+        localStorage.setItem(`prasi-site-${site_id}`, JSON.stringify(site));
+      }
 
       if (site) {
         w.exports = {};

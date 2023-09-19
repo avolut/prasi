@@ -82,7 +82,7 @@ export const Editor: FC<{ site_id: string; page_id: string; session: any }> = ({
     } else if (p.site.responsive === "desktop-only") {
       p.mode = "desktop";
     } else {
-      p.mode = (localStorage.getItem("editor-mode") || "desktop") as any;
+      p.mode = (localStorage.getItem("prasi-editor-mode") || "desktop") as any;
     }
   }
 

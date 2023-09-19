@@ -48,10 +48,27 @@ export const initPreview = async (p: PG, domain: string) => {
       return _href;
     };
 
-    const site = await db.site.findFirst({
-      where: validate(domain) ? { id: domain } : { domain },
-      select: { id: true, config: true, js_compiled: true, responsive: true },
-    });
+    let site = null as any;
+
+    try {
+      site = JSON.parse(localStorage.getItem(`prasi-site-${domain}`) || "");
+    } catch (e) {}
+
+    if (!site) {
+      site = await db.site.findFirst({
+        where: validate(domain) ? { id: domain } : { domain },
+        select: {
+          id: true,
+          config: true,
+          domain: true,
+          name: true,
+          js: true,
+          responsive: true,
+          js_compiled: true,
+        },
+      });
+      localStorage.setItem(`prasi-site-${domain}`, JSON.stringify(site));
+    }
 
     if (site) {
       w.exports = {};

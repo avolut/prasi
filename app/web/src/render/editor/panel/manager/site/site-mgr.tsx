@@ -119,6 +119,7 @@ export const SiteManager = () => {
                               `
                             )}
                             onClick={() => {
+                              localStorage.removeItem(`prasi-site-${e.id}`);
                               location.href = `/editor/${e.id}`;
                             }}
                           >

@@ -6,7 +6,7 @@ import { IContent } from "../../../../../utils/types/general";
 import { IItem } from "../../../../../utils/types/item";
 import { Loading } from "../../../../../utils/ui/loading";
 import { Tooltip } from "../../../../../utils/ui/tooltip";
-import { loadComponent } from "../../../logic/comp";
+import { closeEditComp, loadComponent } from "../../../logic/comp";
 import { EditorGlobal, NodeMeta } from "../../../logic/global";
 import { Adv, ETreeItemAction, Rename } from "./action";
 import { ETreeItemIndent } from "./indent";
@@ -206,52 +206,7 @@ const RootComponentClose = ({ item }: { item: IContent }) => {
         className="flex items-center border border-slate-500 bg-white rounded-sm text-[10px] px-[5px] m-1 opacity-50 hover:opacity-100"
         onClick={(e) => {
           e.stopPropagation();
-          if (p.comp) {
-            const cur = p.comp.last ? p.comp.last.pop() : null;
-            if (cur) {
-              if (cur.props) {
-                p.comp.props = cur.props;
-              } else {
-                p.comp.props = {};
-              }
-              p.item.active = cur.active_id;
-              localStorage.setItem("prasi-item-active-id", p.item.active);
-
-              if (cur.instance_id) {
-                p.comp.instance_id = cur.instance_id;
-              }
-
-              if (cur.comp_id) {
-                p.comp.id = cur.comp_id;
-                localStorage.setItem(
-                  "prasi-comp-instance-id",
-                  p.comp.instance_id
-                );
-                localStorage.setItem(`prasi-comp-active-id`, p.comp.id);
-                localStorage.setItem(
-                  `prasi-comp-active-last`,
-                  JSON.stringify(p.comp.last)
-                );
-                localStorage.setItem(
-                  `prasi-comp-active-props`,
-                  JSON.stringify(p.comp.props)
-                );
-              } else {
-                p.comp = null;
-              }
-            } else {
-              p.comp = null;
-            }
-
-            if (!p.comp) {
-              localStorage.removeItem(`prasi-comp-active-id`);
-              localStorage.removeItem(`prasi-comp-instance-id`);
-              localStorage.removeItem(`prasi-comp-active-last`);
-              localStorage.removeItem(`prasi-comp-active-props`);
-            }
-          }
-
-          rebuildTree(p, { mode: "update" });
+          closeEditComp(p);
         }}
       >
         {p.comp?.last && p.comp?.last.length === 1 ? "Close" : "Back"}

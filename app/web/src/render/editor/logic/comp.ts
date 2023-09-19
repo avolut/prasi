@@ -91,8 +91,54 @@ const loadSingleComponent = (p: PG, comp_id: string) => {
   return p.comps.pending[comp_id];
 };
 
-export const editComp = (p: PG, _item: IContent) => {
-  const item = p.treeMeta[_item.id].item;
+export const closeEditComp = (p: PG) => {
+  if (p.comp) {
+    const cur = p.comp.last ? p.comp.last.pop() : null;
+    if (cur) {
+      if (cur.props) {
+        p.comp.props = cur.props;
+      } else {
+        p.comp.props = {};
+      }
+      p.item.active = cur.active_id;
+      localStorage.setItem("prasi-item-active-id", p.item.active);
+
+      if (cur.instance_id) {
+        p.comp.instance_id = cur.instance_id;
+      }
+
+      if (cur.comp_id) {
+        p.comp.id = cur.comp_id;
+        localStorage.setItem("prasi-comp-instance-id", p.comp.instance_id);
+        localStorage.setItem(`prasi-comp-active-id`, p.comp.id);
+        localStorage.setItem(
+          `prasi-comp-active-last`,
+          JSON.stringify(p.comp.last)
+        );
+        localStorage.setItem(
+          `prasi-comp-active-props`,
+          JSON.stringify(p.comp.props)
+        );
+      } else {
+        p.comp = null;
+      }
+    } else {
+      p.comp = null;
+    }
+
+    if (!p.comp) {
+      localStorage.removeItem(`prasi-comp-active-id`);
+      localStorage.removeItem(`prasi-comp-instance-id`);
+      localStorage.removeItem(`prasi-comp-active-last`);
+      localStorage.removeItem(`prasi-comp-active-props`);
+    }
+  }
+
+  rebuildTree(p, { mode: "update" });
+};
+
+export const editComp = (p: PG, id: string) => {
+  const item = p.treeMeta[id].item;
   if (item && item.type === "item" && item.component) {
     const cid = item.component.id;
     let doc = p.comps.doc[cid];

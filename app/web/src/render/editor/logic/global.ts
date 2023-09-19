@@ -23,7 +23,6 @@ export type ItemMeta = {
     id: string;
     item: IItem;
     mcomp: MItem;
-    mprops?: TypedMap<Record<string, FMCompDef>>;
     propval?: any;
   };
 };
@@ -134,8 +133,7 @@ export const EditorGlobal = {
     doc: {} as Record<string, CompDoc>,
   },
   compProp: {
-    backTo: "",
-    backToComp: null as any,
+    backToInstance: false,
     edit: false,
     inherit: true,
   },

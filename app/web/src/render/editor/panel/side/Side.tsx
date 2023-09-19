@@ -5,6 +5,8 @@ import * as Y from "yjs";
 import { TypedMap } from "yjs-types";
 import { IItem, MItem } from "../../../../utils/types/item";
 import { EditorGlobal } from "../../logic/global";
+import { CPInstance } from "./props/CPInstance";
+import { CPMaster, PreviewItemProp } from "./props/CPMaster";
 import { PanelAdv } from "./panel/advanced";
 import { PanelAutoLayout } from "./panel/auto-layout";
 import { PanelBackground } from "./panel/background";
@@ -13,8 +15,6 @@ import { PanelDimension } from "./panel/dimension";
 import { PanelFont } from "./panel/font";
 import { PanelLink } from "./panel/link";
 import { PanelPadding } from "./panel/padding";
-import { CPInstance } from "./props/CPInstance";
-import { CPMaster, PreviewItemProp } from "./props/CPMaster";
 import { SideBox } from "./ui/SideBox";
 import { SideLabel } from "./ui/SideLabel";
 
@@ -62,17 +62,35 @@ export const ESide = () => {
     },
     [p.item.active]
   );
-  const item = p.item.active ? p.treeMeta[p.item.active] : null;
-  const mitem = item ? item.mitem : null;
-  const active: any = mitem ? mitem.toJSON() : null;
+  let meta = p.item.active ? p.treeMeta[p.item.active] : null;
+  if (p.comp && p.comp.instance_id) {
+    meta = p.treeMeta[p.comp.instance_id];
+  }
+  if (!meta)
+    return (
+      <div
+        className={cx(
+          "side flex select-none relative overflow-x-hidden overflow-y-auto p-3"
+        )}
+      >
+        Item Not Found
+      </div>
+    );
 
+  const item = meta.item as IItem;
   const rootComponentID = p.comp?.id;
-  let compItem = (active as IItem)?.component;
+  let compItem = item.component;
   let isComponentRoot = false;
   if (rootComponentID && rootComponentID === compItem?.id) {
     compItem = undefined;
     isComponentRoot = true;
   }
+
+  let mitem = meta ? meta.mitem : null;
+  if (isComponentRoot && meta.comp) {
+    mitem = meta.comp.mcomp;
+  }
+
   if (!isComponentRoot) {
     local.rootEditingProps = false;
     local.lastActive = null;
@@ -83,6 +101,8 @@ export const ESide = () => {
       comp.set("props", new Y.Map() as any);
     }
   }
+
+  let active = item;
 
   return (
     <div
@@ -113,7 +133,7 @@ export const ESide = () => {
                   </>
                 ) : (
                   <>
-                    {/* <SideLabel sep="bottom">
+                    <SideLabel sep="bottom">
                       <div className="flex items-center justify-between">
                         {!rootComponentID ? (
                           <div>LAYOUT</div>
@@ -176,7 +196,7 @@ export const ESide = () => {
                     <SideBox>
                       <PanelLink value={active} mode={p.mode} update={update} />
                       <PanelAdv value={active} mode={p.mode} update={update} />
-                    </SideBox> */}
+                    </SideBox>
                   </>
                 )}
               </>

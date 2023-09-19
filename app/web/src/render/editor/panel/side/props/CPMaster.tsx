@@ -12,6 +12,8 @@ import { jscript } from "../../script/script-element";
 import { AutoHeightTextarea } from "../panel/link";
 import { CPCodeEdit } from "./CPCodeEdit";
 import { CPCoded } from "./CPCoded";
+import { IContent } from "../../../../../utils/types/general";
+import { closeEditComp } from "../../../logic/comp";
 
 const popover = {
   name: "",
@@ -21,10 +23,9 @@ export const CPMaster: FC<{ mitem: MItem }> = ({ mitem }) => {
   const p = useGlobal(EditorGlobal, "EDITOR");
   const local = useLocal({ id: mitem.get("id") || "", ready: false });
 
-  const meta = p.treeMeta[p.comp?.instance_id || ""];
-  const pitem = meta.item as IItem;
   useEffect(() => {
-    if (type === "text") {
+    const pitem = mitem.toJSON() as IContent;
+    if (pitem.type === "text") {
       p.item.active = pitem.id || "";
       if (document.activeElement) {
         (document.activeElement as HTMLInputElement).blur();
@@ -38,10 +39,28 @@ export const CPMaster: FC<{ mitem: MItem }> = ({ mitem }) => {
     }
   }, [mitem]);
 
-  const type = mitem.get("type") as any;
-  const mprops = meta.comp?.mprops;
-  console.log(mprops);
-  const props = (mprops?.toJSON() || {}) as Record<string, FNCompDef>;
+  if (!p.comp)
+    return <div className="flex flex-col flex-1 p-3">No Active Component</div>;
+
+  const meta = p.treeMeta[p.comp.instance_id];
+
+  if (!meta)
+    return <div className="flex flex-col flex-1 p-3">Meta Not Found</div>;
+  if (!meta.comp) {
+    return (
+      <div className="flex flex-col flex-1 p-3">Meta Component Not Found</div>
+    );
+  }
+  if (!meta.comp.mcomp) {
+    return <div className="flex flex-col flex-1 p-3">MComponent Not Found</div>;
+  }
+  const mprops = meta.comp.mcomp.get("component")?.get("props");
+
+  if (!mprops) {
+    return <div className="flex flex-col flex-1 p-3">MProps Not Found</div>;
+  }
+
+  const props = mprops.toJSON();
 
   return (
     <div className="flex flex-col flex-1">
@@ -50,12 +69,9 @@ export const CPMaster: FC<{ mitem: MItem }> = ({ mitem }) => {
           <div
             className="text-[11px] cursor-pointer select-none text-slate-400 pl-1 flex items-center"
             onClick={() => {
-              if (p.compProp.backTo) {
-                p.item.active = p.compProp.backTo;
-                p.comp = p.compProp.backToComp;
-
-                p.compProp.backTo = "";
-                p.compProp.backToComp = null;
+              if (p.compProp.backToInstance) {
+                p.compProp.backToInstance = false;
+                closeEditComp(p);
               }
               p.compProp.edit = false;
               p.render();
@@ -141,7 +157,6 @@ export const CPMaster: FC<{ mitem: MItem }> = ({ mitem }) => {
                     ?.get("component")
                     ?.get("props")
                     ?.toJSON();
-                  console.log(props);
 
                   const str = JSON.stringify(props) + `_prasiprop`;
                   navigator.clipboard.writeText(str);

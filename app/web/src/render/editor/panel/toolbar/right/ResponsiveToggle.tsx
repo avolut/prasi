@@ -15,7 +15,7 @@ export const ResponsiveToggle = () => {
             c.mode = "mobile";
             w.isMobile = true;
             w.isDesktop = false;
-            localStorage.setItem("editor-mode", "mobile");
+            localStorage.setItem("prasi-editor-mode", "mobile");
             c.render();
           },
           className: cx(mode === "mobile" && activeModeClassName),
@@ -41,7 +41,7 @@ export const ResponsiveToggle = () => {
             c.mode = "desktop";
             w.isMobile = false;
             w.isDesktop = true;
-            localStorage.setItem("editor-mode", "desktop");
+            localStorage.setItem("prasi-editor-mode", "desktop");
             c.render();
           },
           className: cx(mode === "desktop" && activeModeClassName),

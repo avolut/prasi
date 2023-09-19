@@ -66,16 +66,28 @@ export const treeScopeEval = (p: PG, meta: ItemMeta, children: ReactNode) => {
       if (res instanceof Promise) {
         res.catch((e: any) => {
           console.warn(e);
-          console.warn(`ERROR in ${item.type} [${item.name}]:\n ` + adv.js);
+          console.warn(
+            (
+              `ERROR in ${item.type} [${item.name}]:\n ` +
+              ((adv.js || "") as any)
+            ).trim()
+          );
           console.warn(`Available var:`, args);
+          console.log("\n\n\n")
         });
       }
 
       return output.jsx;
     } catch (e) {
       console.warn(e);
-      console.warn(`ERROR in ${item.type} [${item.name}]:\n ` + adv.js);
+      console.warn(
+        (
+          `ERROR in ${item.type} [${item.name}]:\n ` + ((adv.js || "") as any)
+        ).trim()
+      );
       console.warn(`Available var:`, args);
+      console.log("\n\n\n")
+
     }
   }
 };
