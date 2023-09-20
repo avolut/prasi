@@ -1,7 +1,8 @@
-import { FC, ReactNode, useEffect } from "react";
+import { FC, ReactNode, Suspense, useEffect } from "react";
 import { deepClone } from "web-utils";
 import { createAPI, createDB } from "../../../utils/script/init-api";
 import { ItemMeta, PG } from "./global";
+import { ErrorBoundary } from "web-init";
 
 export const JS_DEBUG = false;
 
@@ -55,31 +56,31 @@ export const treeScopeEval = (p: PG, meta: ItemMeta, children: ReactNode) => {
         children,
         props: { ...elprop, className },
         render: (jsx: ReactNode) => {
-          output.jsx = jsx;
-          // output.jsx = (
-          //   <>
-          //     <pre className={"text-[9px] font-mono text-black"}>
-          //       {item.originalId}-{item.name}
-          //     </pre>
-          //     {jsx}
-          //   </>
-          // );
-          // output.jsx = (
-          //   <ErrorBoundary>
-          //     <Suspense
-          //       fallback={
-          //         <div className="flex flex-1 items-center justify-center w-full h-full relative">
-          //           {p.ui.loading}
-          //         </div>
-          //       }
-          //     >
-          //       {/* <pre className={"text-[9px] font-mono text-black"}>
-          //         {item.id}-{item.name}
-          //       </pre> */}
-          //       {jsx}
-          //     </Suspense>
-          //   </ErrorBoundary>
-          // );
+          // output.jsx = jsx;
+          output.jsx = (
+            <>
+              <pre className={"text-[9px] font-mono text-black"}>
+                {item.originalId}-{item.name}
+              </pre>
+              {jsx}
+            </>
+          );
+          output.jsx = (
+            <ErrorBoundary>
+              <Suspense
+                fallback={
+                  <div className="flex flex-1 items-center justify-center w-full h-full relative">
+                    {p.ui.loading}
+                  </div>
+                }
+              >
+                {/* <pre className={"text-[9px] font-mono text-black"}>
+                  {item.id}-{item.name}
+                </pre> */}
+                {jsx}
+              </Suspense>
+            </ErrorBoundary>
+          );
         },
       };
 
