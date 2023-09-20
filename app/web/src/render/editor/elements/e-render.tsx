@@ -62,7 +62,7 @@ export const ERender: FC<{
   if (children) {
     if (item.type === "text") _children = children([]);
     else {
-      _children = children(item.childs);
+      _children = children(item.childs || []);
     }
   }
 

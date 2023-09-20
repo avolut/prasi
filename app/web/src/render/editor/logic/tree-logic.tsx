@@ -312,7 +312,7 @@ const walk = async (
         });
       }
 
-      if (item.type !== "text") {
+      if (item.type !== "text" && Array.isArray(item.childs)) {
         await Promise.all(
           item.childs.map((child, idx) =>
             walk(p, mode, {
