@@ -207,6 +207,8 @@ export const editorWS = async (p: PG) => {
                             wsend(p, JSON.stringify(sendmsg));
                           }
                         }
+
+                        rebuildTree(p, { mode: "update", note: "comp-update" });
                       }
                     })
                   );

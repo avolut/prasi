@@ -6,7 +6,7 @@ import { TypedMap } from "yjs-types";
 import { IItem, MItem } from "../../../../../utils/types/item";
 import { FMCompDef, FNCompDef } from "../../../../../utils/types/meta-fn";
 import { Popover } from "../../../../../utils/ui/popover";
-import { EditorGlobal } from "../../../logic/global";
+import { EditorGlobal, PG } from "../../../logic/global";
 import { newMap } from "../../../tools/yjs-tools";
 import { jscript } from "../../script/script-element";
 import { AutoHeightTextarea } from "../panel/link";
@@ -14,6 +14,7 @@ import { CPCodeEdit } from "./CPCodeEdit";
 import { CPCoded } from "./CPCoded";
 import { IContent } from "../../../../../utils/types/general";
 import { closeEditComp } from "../../../logic/comp";
+import { rebuildTree } from "../../../logic/tree-logic";
 
 const popover = {
   name: "",
@@ -117,6 +118,8 @@ export const CPMaster: FC<{ mitem: MItem }> = ({ mitem }) => {
                   } as FNCompDef
                 );
               });
+
+              rebuildTree(p, { mode: "reset", note: "add-prop" });
             }}
           >
             Add
@@ -136,6 +139,7 @@ export const CPMaster: FC<{ mitem: MItem }> = ({ mitem }) => {
               if (mprop) {
                 return (
                   <SingleProp
+                    p={p}
                     key={name}
                     name={name}
                     prop={prop}
@@ -246,17 +250,19 @@ export const PreviewItemProp = () => {
 };
 
 const SingleProp: FC<{
+  p: PG;
   name: string;
   prop: FNCompDef;
   mprop: FMCompDef;
   props: Record<string, FNCompDef>;
-}> = ({ name, prop, mprop, props }) => {
+}> = ({ p, name, prop, mprop, props }) => {
   const local = useLocal({ name });
   const type = prop.meta?.type || "text";
 
   return (
     <SinglePopover
       name={name}
+      p={p}
       prop={prop}
       mprop={mprop}
       local={local}
@@ -339,7 +345,8 @@ const SinglePopover: FC<{
   children: any;
   local: { name: string; render: () => void };
   props: Record<string, FNCompDef>;
-}> = ({ name, prop, mprop, children, local, props }) => {
+  p: PG;
+}> = ({ p, name, prop, mprop, children, local, props }) => {
   const type = prop.meta?.type || "text";
   const mmeta = mprop.get("meta");
   const meta = prop.meta;

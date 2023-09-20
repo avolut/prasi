@@ -61,6 +61,16 @@ export const rebuildTree = async (
       );
     });
 
+    // if (p.treeFlat.length > 0 && !p.treeFlat.find((e) => e.parent === "root")) {
+    //   const parents = {} as Record<string, string[]>;
+
+    //   for (const i of p.treeFlat) {
+    //     if (!parents[i.parent]) parents[i.parent] = [];
+    //     parents[i.parent].push(i.id);
+    //   }
+    //   console.log(parents);
+    // }
+
     if (p.comp && p.treeFlat.length === 0) {
       if (!p.comps.pending[p.comp.id]) {
         p.comp = null;
@@ -237,45 +247,64 @@ const walk = async (
     p.treeMeta[meta.item.id] = meta;
 
     if (comp && comp.item) {
-      let cprops: [string, FNCompDef][] = Object.entries(
-        comp.item.component?.props || {}
-      );
-      const mcomp = p.comps.doc[comp.id].getMap("map").get("content_tree");
-      if (mcomp) {
-        const mprops = mcomp.get("component")?.get("props");
-        const iprops = mitem?.get("component")?.get("props");
-        if (mprops && iprops) {
-          for (const [key, cprop] of cprops) {
-            let mp = mprops.get(key);
-            if (mp) {
-              const mprop = mp?.toJSON() as FNCompDef;
+      if (p.comp?.id !== comp.id) {
+        let cprops: [string, FNCompDef][] = Object.entries(
+          comp.item.component?.props || {}
+        );
+        const mcomp = p.comps.doc[comp.id].getMap("map").get("content_tree");
+        if (mcomp) {
+          const mprops = mcomp.get("component")?.get("props");
+          const iprops = mitem?.get("component")?.get("props");
+          if (mprops && iprops) {
+            for (const [key, cprop] of cprops) {
+              let mp = mprops.get(key);
+              if (mp) {
+                const mprop = mp?.toJSON() as FNCompDef;
 
-              const icontent = iprops.get(key)?.get("content");
-              if (mprop.meta?.type === "content-element" && icontent) {
-                await walk(p, mode, {
-                  item: cprop.content,
-                  mitem: icontent,
-                  parent_id: item.id,
-                  parent_comp: meta.comp,
-                  idx: mprop.idx,
-                  depth: (val.depth || 0) + 1,
-                  includeTree: true,
-                });
+                const icontent = iprops.get(key)?.get("content");
+                if (mprop.meta?.type === "content-element" && icontent) {
+                  await walk(p, mode, {
+                    item: cprop.content,
+                    mitem: icontent,
+                    parent_id: item.id,
+                    parent_comp: meta.comp,
+                    idx: mprop.idx,
+                    depth: (val.depth || 0) + 1,
+                    includeTree: true,
+                  });
+                }
               }
             }
           }
         }
       }
 
-      if (!val.includeTree && p.comp && p.comp.instance_id === comp.item.id) {
-        p.treeFlat.push({
-          parent: "root",
-          data: { meta, idx: 0 },
-          id: meta.item.id,
-          text: item.name,
-        });
-        val.includeTree = true;
-      } else if (val.includeTree) {
+      let isRoot = false;
+      if (p.comp) {
+        if (p.comp.id === comp.id) {
+          p.treeFlat.push({
+            parent: "root",
+            data: { meta, idx: 0 },
+            id: meta.item.id,
+            text: item.name,
+          });
+          isRoot = true;
+          val.includeTree = true;
+        }
+        if (p.comp.instance_id === comp.item.id) {
+          p.treeFlat.length = 0;
+          p.treeFlat.push({
+            parent: "root",
+            data: { meta, idx: 0 },
+            id: meta.item.id,
+            text: item.name,
+          });
+          isRoot = true;
+          val.includeTree = true;
+        }
+      }
+
+      if (val.includeTree && !isRoot) {
         val.includeTree = false;
         p.treeFlat.push({
           parent: val.parent_id,
