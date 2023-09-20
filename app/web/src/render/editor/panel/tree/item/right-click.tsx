@@ -17,6 +17,7 @@ import { flatTree } from "../../../tools/flat-tree";
 import { newMap } from "../../../tools/yjs-tools";
 import { jscript } from "../../script/script-element";
 import { detachComp } from "./action/detach";
+import { rebuildTree } from "../../../logic/tree-logic";
 
 export const ETreeRightClick: FC<{
   node: NodeModel<NodeMeta>;
@@ -218,7 +219,8 @@ export const ETreeRightClick: FC<{
                       p.item.selection = walkId;
                     });
                   }
-                  p.render();
+
+                  rebuildTree(p, { mode: "update", note: "paste" });
                 });
               } catch (error) {}
             }
@@ -504,7 +506,6 @@ export const ETreeRightClick: FC<{
         <MenuItem
           label="Cut"
           onClick={() => {
-            let mode = p.item.selection;
             let clipboardText = "";
             if (p.item.selection.length) {
               let data = p.item.selection.map((id) => {
@@ -544,7 +545,7 @@ export const ETreeRightClick: FC<{
             });
             p.item.selectMode = "single";
             p.item.selection = [];
-            p.render();
+            rebuildTree(p, { mode: "update", note: "cut" });
           }}
         />
       )}
