@@ -106,9 +106,6 @@ const walk = async (
     const pchild_ids = val.parent_comp.child_ids;
 
     if (pchild_ids && item.originalId) {
-      // if (val.parent_comp.item.name === "list-logbook") {
-      //   console.log(item.name, item.id, pchild_ids[item.originalId]);
-      // }
       if (pchild_ids[item.originalId]) {
         item.id = pchild_ids[item.originalId];
       }
@@ -140,23 +137,25 @@ const walk = async (
       if (doc) {
         const mcomp = doc.getMap("map").get("content_tree") as MItem;
         if (mcomp) {
+          let child_ids = {};
+
           if (
             mode === "update" &&
             p.treeMeta[item.id] &&
             p.treeMeta[item.id].comp
           ) {
-            comp = p.treeMeta[item.id].comp;
-          } else {
-            const child_ids = {};
-            const icomps = await instantiateComp(p, item, mcomp, child_ids);
-
-            comp = {
-              id: cid,
-              mcomp,
-              item: icomps,
-              child_ids,
-            };
+            const ecomp = p.treeMeta[item.id].comp;
+            if (ecomp) child_ids = ecomp.child_ids;
           }
+
+          const icomps = await instantiateComp(p, item, mcomp, child_ids);
+
+          comp = {
+            id: cid,
+            mcomp,
+            item: icomps,
+            child_ids,
+          };
         }
       }
     }
@@ -332,57 +331,57 @@ const walk = async (
   }
 };
 
-export const updateComponentInTree = async (p: PG, comp_id: string) => {
-  if (p.focused) {
-    p.pendingRebuild = true;
-    return;
-  }
+// export const updateComponentInTree = async (p: PG, comp_id: string) => {
+//   if (p.focused) {
+//     p.pendingRebuild = true;
+//     return;
+//   }
 
-  const doc = p.comps.doc[comp_id];
-  if (p.compInstance[comp_id] && doc) {
-    const mcomp = doc.getMap("map").get("content_tree");
-    if (mcomp) {
-      const promises: Promise<void>[] = [];
-      p.compInstance[comp_id].forEach((meta) => {
-        promises.push(
-          new Promise<void>(async (done) => {
-            if (meta.comp && meta.mitem && meta.item) {
-              meta.comp.item = await instantiateComp(
-                p,
-                meta.item as IItem,
-                mcomp,
-                meta.comp.child_ids
-              );
-              const mprops = meta.mitem.get("component")?.get("props");
-              if (mprops) {
-                const cprops = mcomp
-                  .get("component")
-                  ?.get("props")
-                  ?.toJSON() as Record<string, FNCompDef>;
-                for (const [key, prop] of Object.entries(cprops)) {
-                  let mprop = mprops.get(key);
-                  if (!mprop) {
-                    mprops.set(key, newMap(prop) as any);
-                    mprop = mprops.get(key);
-                  }
-                  if (mprop && prop.meta?.type === "content-element") {
-                    const content = mprop.get("content");
-                    if (content) {
-                      walk(p, "reset", {
-                        mitem: content,
-                        parent_id: meta.item.id,
-                      });
-                    }
-                  }
-                }
-              }
-            }
-            done();
-          })
-        );
-      });
-      await Promise.all(promises);
-      p.render();
-    }
-  }
-};
+//   const doc = p.comps.doc[comp_id];
+//   if (p.compInstance[comp_id] && doc) {
+//     const mcomp = doc.getMap("map").get("content_tree");
+//     if (mcomp) {
+//       const promises: Promise<void>[] = [];
+//       p.compInstance[comp_id].forEach((meta) => {
+//         promises.push(
+//           new Promise<void>(async (done) => {
+//             if (meta.comp && meta.mitem && meta.item) {
+//               meta.comp.item = await instantiateComp(
+//                 p,
+//                 meta.item as IItem,
+//                 mcomp,
+//                 meta.comp.child_ids
+//               );
+//               const mprops = meta.mitem.get("component")?.get("props");
+//               if (mprops) {
+//                 const cprops = mcomp
+//                   .get("component")
+//                   ?.get("props")
+//                   ?.toJSON() as Record<string, FNCompDef>;
+//                 for (const [key, prop] of Object.entries(cprops)) {
+//                   let mprop = mprops.get(key);
+//                   if (!mprop) {
+//                     mprops.set(key, newMap(prop) as any);
+//                     mprop = mprops.get(key);
+//                   }
+//                   if (mprop && prop.meta?.type === "content-element") {
+//                     const content = mprop.get("content");
+//                     if (content) {
+//                       walk(p, "reset", {
+//                         mitem: content,
+//                         parent_id: meta.item.id,
+//                       });
+//                     }
+//                   }
+//                 }
+//               }
+//             }
+//             done();
+//           })
+//         );
+//       });
+//       await Promise.all(promises);
+//       p.render();
+//     }
+//   }
+// };

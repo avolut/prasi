@@ -4,8 +4,9 @@ import throttle from "lodash.throttle";
 import { compress, decompress } from "lz-string";
 import * as Y from "yjs";
 import { CompDoc } from "../../../base/global/content-editor";
+import { MPage } from "../../../utils/types/general";
 import { IItem } from "../../../utils/types/item";
-import { scanComponent } from "./comp";
+import { PRASI_COMPONENT } from "../../../utils/types/render";
 import {
   WS_MSG,
   WS_MSG_DIFF_LOCAL,
@@ -13,14 +14,14 @@ import {
   WS_MSG_SVDIFF_REMOTE,
   WS_MSG_SV_LOCAL,
 } from "../../../utils/types/ws";
-import { PRASI_COMPONENT } from "../../../utils/types/render";
-import { MPage } from "../../../utils/types/general";
+import { scanComponent } from "./comp";
 import { execSiteJS } from "./init";
-import { rebuildTree, updateComponentInTree } from "./tree-logic";
+import { rebuildTree } from "./tree-logic";
 
-const conf = {
-  timeout: null as any,
-  svdtimeout: null as any,
+const timeout = {
+  reconnect: null as any,
+  svd: null as any,
+  setpage: null as any,
 };
 export const editorWS = async (p: PG) => {
   if (p.ws && p.ws.readyState === p.ws.OPEN) {
@@ -45,7 +46,7 @@ export const editorWS = async (p: PG) => {
     }
 
     wsurl.pathname = "/edit";
-    clearTimeout(conf.timeout);
+    clearTimeout(timeout.reconnect);
 
     p.ws = new WebSocket(wsurl);
     const ws = p.ws;
@@ -59,9 +60,9 @@ export const editorWS = async (p: PG) => {
         if (p.wsRetry.fast) {
           editorWS(p);
         } else {
-          clearTimeout(conf.timeout);
+          clearTimeout(timeout.reconnect);
 
-          conf.timeout = setTimeout(() => {
+          timeout.reconnect = setTimeout(() => {
             console.log("Reconnecting...");
             editorWS(p);
           }, 5000);
@@ -106,9 +107,9 @@ export const editorWS = async (p: PG) => {
             break;
           case "set_page":
             p.mpage = await setPage(msg);
-            p.mpage.on(
-              "update",
-              throttle((e, origin) => {
+            p.mpage.on("update", (e, origin) => {
+              clearTimeout(timeout.setpage);
+              timeout.setpage = setTimeout(() => {
                 const doc = p.mpage;
                 if (doc) {
                   if (!origin) {
@@ -129,8 +130,8 @@ export const editorWS = async (p: PG) => {
                     render();
                   }
                 }
-              })
-            );
+              }, 200);
+            });
 
             rebuildTree(p, { render, mode: "reset", note: "page-load" });
             if (p.mpageLoaded) {
@@ -143,10 +144,12 @@ export const editorWS = async (p: PG) => {
             break;
           case "svd_remote":
             svdRemote({ p, bin: extract(msg.diff_remote), msg });
-            clearTimeout(conf.svdtimeout);
-            conf.svdtimeout = setTimeout(() => {
-              rebuildTree(p, { render, mode: "update", note: "svd-remote" });
-            }, 150);
+            if (!timeout.setpage) {
+              clearTimeout(timeout.svd);
+              timeout.svd = setTimeout(() => {
+                rebuildTree(p, { render, mode: "update", note: "svd-remote" });
+              }, 100);
+            }
             break;
           case "diff_local": {
             if (msg.mode === "page") {
@@ -189,7 +192,6 @@ export const editorWS = async (p: PG) => {
                                 .getMap("map")
                                 .set("updated_at", new Date().toISOString());
                             }, "updated_at");
-                            updateComponentInTree(p, comp.id);
 
                             const sendmsg: WS_MSG_SV_LOCAL = {
                               type: "sv_local",
