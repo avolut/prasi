@@ -247,18 +247,20 @@ const walk = async (
         if (mprops && iprops) {
           for (const [key, cprop] of cprops) {
             let mp = mprops.get(key);
-            const mprop = mp?.toJSON() as FNCompDef;
-            const icontent = iprops.get(key)?.get("content");
-            if (mprop.meta?.type === "content-element" && icontent) {
-              await walk(p, mode, {
-                item: cprop.content,
-                mitem: icontent,
-                parent_id: item.id,
-                parent_comp: meta.comp,
-                idx: mprop.idx,
-                depth: (val.depth || 0) + 1,
-                includeTree: true,
-              });
+            if (mp) {
+              const mprop = mp?.toJSON() as FNCompDef;
+              const icontent = iprops.get(key)?.get("content");
+              if (mprop.meta?.type === "content-element" && icontent) {
+                await walk(p, mode, {
+                  item: cprop.content,
+                  mitem: icontent,
+                  parent_id: item.id,
+                  parent_comp: meta.comp,
+                  idx: mprop.idx,
+                  depth: (val.depth || 0) + 1,
+                  includeTree: true,
+                });
+              }
             }
           }
         }
