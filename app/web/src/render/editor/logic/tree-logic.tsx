@@ -249,6 +249,10 @@ const walk = async (
             let mp = mprops.get(key);
             if (mp) {
               const mprop = mp?.toJSON() as FNCompDef;
+              if (comp.item.name === "list-logbook") {
+                console.log(key, mprop);
+              }
+
               const icontent = iprops.get(key)?.get("content");
               if (mprop.meta?.type === "content-element" && icontent) {
                 await walk(p, mode, {
@@ -275,6 +279,7 @@ const walk = async (
         });
         val.includeTree = true;
       } else if (val.includeTree) {
+        val.includeTree = false;
         p.treeFlat.push({
           parent: val.parent_id,
           data: { meta, idx: val.idx || 0 },
