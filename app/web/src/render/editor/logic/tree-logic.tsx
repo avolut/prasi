@@ -249,9 +249,6 @@ const walk = async (
             let mp = mprops.get(key);
             if (mp) {
               const mprop = mp?.toJSON() as FNCompDef;
-              if (comp.item.name === "list-logbook") {
-                console.log(key, mprop);
-              }
 
               const icontent = iprops.get(key)?.get("content");
               if (mprop.meta?.type === "content-element" && icontent) {
