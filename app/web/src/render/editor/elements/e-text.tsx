@@ -64,7 +64,7 @@ export const ETextInternal: FC<{
         p.focused = "";
         if (p.pendingRebuild) {
           p.pendingRebuild = false;
-          await rebuildTree(p, { mode: "update" });
+          await rebuildTree(p, { mode: "update", note: "blur-text" });
         }
         p.render();
       }}

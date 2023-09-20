@@ -16,10 +16,11 @@ import {
 import { PRASI_COMPONENT } from "../../../utils/types/render";
 import { MPage } from "../../../utils/types/general";
 import { execSiteJS } from "./init";
-import { rebuildTree } from "./tree-logic";
+import { rebuildTree, updateComponentInTree } from "./tree-logic";
 
 const conf = {
   timeout: null as any,
+  svdtimeout: null as any,
 };
 export const editorWS = async (p: PG) => {
   if (p.ws && p.ws.readyState === p.ws.OPEN) {
@@ -131,7 +132,7 @@ export const editorWS = async (p: PG) => {
               })
             );
 
-            rebuildTree(p, { render });
+            rebuildTree(p, { render, mode: "reset", note: "page-load" });
             if (p.mpageLoaded) {
               p.mpageLoaded(p.mpage);
               p.mpageLoaded = null;
@@ -142,7 +143,10 @@ export const editorWS = async (p: PG) => {
             break;
           case "svd_remote":
             svdRemote({ p, bin: extract(msg.diff_remote), msg });
-            rebuildTree(p, { render });
+            clearTimeout(conf.svdtimeout);
+            conf.svdtimeout = setTimeout(() => {
+              rebuildTree(p, { render, mode: "update", note: "svd-remote" });
+            }, 150);
             break;
           case "diff_local": {
             if (msg.mode === "page") {
@@ -171,15 +175,6 @@ export const editorWS = async (p: PG) => {
                   p.comps.doc[msg.comp_id].on(
                     "update",
                     throttle((e, origin) => {
-                      for (const meta of Object.values(p.treeMeta)) {
-                        if (
-                          meta.item.type === "item" &&
-                          meta.item.component?.id === msg.comp_id
-                        ) {
-                          delete meta.comp;
-                        }
-                      }
-                      render();
                       if (origin === "remote") {
                         return;
                       }
@@ -194,6 +189,7 @@ export const editorWS = async (p: PG) => {
                                 .getMap("map")
                                 .set("updated_at", new Date().toISOString());
                             }, "updated_at");
+                            updateComponentInTree(p, comp.id);
 
                             const sendmsg: WS_MSG_SV_LOCAL = {
                               type: "sv_local",

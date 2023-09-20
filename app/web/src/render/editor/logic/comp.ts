@@ -139,7 +139,7 @@ export const closeEditComp = (p: PG) => {
     }
   }
 
-  rebuildTree(p, { mode: "update" });
+  rebuildTree(p, { mode: "update", note: "close-edit-comp" });
 };
 
 export const editComp = (p: PG, id: string) => {
@@ -177,7 +177,7 @@ export const editComp = (p: PG, id: string) => {
           p.comp.props = map.component.props;
         }
         p.item.active = p.comp.instance_id || "";
-        rebuildTree(p, { mode: "update" });
+        rebuildTree(p, { mode: "update", note: "edit-comp" });
 
         localStorage.setItem("prasi-item-active-id", p.item.active);
         localStorage.setItem("prasi-item-active-oid", p.item.activeOriginalId);
@@ -209,9 +209,15 @@ export const instantiateComp = async (
     if (!i.originalId) {
       i.originalId = i.id;
     }
-    const newid = createId();
-    child_ids[i.id] = newid;
+    let newid = i.id;
+    if (child_ids[i.originalId]) {
+      newid = child_ids[i.originalId];
+    } else {
+      newid = createId();
+    }
+
     i.id = newid;
+    child_ids[i.originalId] = newid;
 
     if (p.item.activeOriginalId === i.originalId) {
       p.item.active = newid;
@@ -219,5 +225,10 @@ export const instantiateComp = async (
 
     return false;
   }) as IItem;
-  return { ...nitem, id: item.id, component: comp } as IItem;
+  return {
+    ...nitem,
+    id: item.id,
+    originalId: item.originalId,
+    component: comp,
+  } as IItem;
 };

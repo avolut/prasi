@@ -137,11 +137,13 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
           }
         };
 
-        p.compInstance[p.comp.id].forEach((meta) => {
-          if (meta.comp?.item && meta.comp.item.id === p.comp?.instance_id) {
-            walk(meta.comp.item);
-          }
-        });
+        if (p.compInstance[p.comp.id]) {
+          p.compInstance[p.comp.id].forEach((meta) => {
+            if (meta.comp?.item && meta.comp.item.id === p.comp?.instance_id) {
+              walk(meta.comp.item);
+            }
+          });
+        }
       }
     }
 

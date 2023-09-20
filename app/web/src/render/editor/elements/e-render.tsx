@@ -16,7 +16,6 @@ export const ERender: FC<{
 }> = ({ id, children }) => {
   const p = useGlobal(EditorGlobal, "EDITOR");
   const meta = p.treeMeta[id];
-  const local = useLocal({});
 
   if (!meta) {
     return null;

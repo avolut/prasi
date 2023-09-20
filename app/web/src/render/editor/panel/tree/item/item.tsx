@@ -12,7 +12,6 @@ import { Adv, ETreeItemAction, Rename } from "./action";
 import { ETreeItemIndent } from "./indent";
 import { ETreeItemName } from "./name";
 import { treeItemStyle } from "./style";
-import { rebuildTree } from "../../../logic/tree-logic";
 
 export const ETreeItem: FC<{
   node: NodeModel<NodeMeta>;

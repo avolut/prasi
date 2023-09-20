@@ -75,7 +75,7 @@ export const createElProp = (item: IContent, p: PG) => {
           localStorage.removeItem(`prasi-comp-instance-id`);
           localStorage.removeItem(`prasi-comp-active-last`);
           localStorage.removeItem(`prasi-comp-active-props`);
-          rebuildTree(p, { mode: "update" });
+          rebuildTree(p, { mode: "update", note: "click-not-found" });
         } else if (p.comp.last.length >= last_idx + 1) {
           const last = p.comp.last[last_idx];
           p.comp.last = p.comp.last.slice(0, last_idx);
@@ -103,7 +103,7 @@ export const createElProp = (item: IContent, p: PG) => {
               p.item.activeOriginalId
             );
             localStorage.setItem("prasi-item-active-id", p.item.active);
-            rebuildTree(p, { mode: "update" });
+            rebuildTree(p, { mode: "update", note: "click-found" });
             return;
           }
         }
