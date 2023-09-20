@@ -236,9 +236,10 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
             placeholderRender={(node, params) => (
               <Placeholder node={node} params={params} />
             )}
-            sort={(a, b) => {
-              return (a.data?.idx || 0) - (b.data?.idx || 0);
-            }}
+            sort={false}
+            // sort={(a, b) => {
+            //   return (a.data?.idx || 0) - (b.data?.idx || 0);
+            // }}
             onDragStart={(node) => onDragStart(p, node)}
             onDragEnd={(node) => onDragEnd(p, node)}
             canDrop={(_, args) => {

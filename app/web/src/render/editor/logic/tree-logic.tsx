@@ -286,9 +286,9 @@ const walk = async (
       }
 
       await Promise.all(
-        comp.item.childs.map((child, idx) => {
+        comp.item.childs.map(async (child, idx) => {
           if (comp) {
-            walk(p, mode, {
+            return await walk(p, mode, {
               item: child,
               parent_comp: meta.comp,
               mitem: comp.mcomp.get("childs")?.get(idx),
@@ -311,8 +311,8 @@ const walk = async (
 
       if (item.type !== "text" && Array.isArray(item.childs)) {
         await Promise.all(
-          item.childs.map((child, idx) =>
-            walk(p, mode, {
+          item.childs.map(async (child, idx) => {
+            return await walk(p, mode, {
               idx,
               item: child,
               parent_comp: val.parent_comp,
@@ -320,8 +320,8 @@ const walk = async (
               parent_id: item.id || "",
               depth: (val.depth || 0) + 1,
               includeTree: val.includeTree,
-            })
-          )
+            });
+          })
         );
       }
     }
@@ -364,7 +364,7 @@ export const updateComponentInTree = async (p: PG, comp_id: string) => {
                   if (mprop && prop.meta?.type === "content-element") {
                     const content = mprop.get("content");
                     if (content) {
-                      walk(p, "reset", {
+                      await walk(p, "reset", {
                         mitem: content,
                         parent_id: meta.item.id,
                       });
