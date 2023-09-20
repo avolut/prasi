@@ -30,7 +30,9 @@ export const editorWS = async (p: PG) => {
     return;
   }
   const render = () => {
-    if (!p.focused) p.render();
+    if (!p.focused) {
+      p.render();
+    }
   };
 
   return new Promise<void>(async (resolve) => {
@@ -108,6 +110,12 @@ export const editorWS = async (p: PG) => {
           case "set_page":
             p.mpage = await setPage(msg);
             p.mpage.on("update", (e, origin) => {
+              rebuildTree(p, {
+                render,
+                mode: "reset",
+                note: "ws-render",
+              });
+
               clearTimeout(timeout.setpage);
               timeout.setpage = setTimeout(() => {
                 const doc = p.mpage;
@@ -130,7 +138,7 @@ export const editorWS = async (p: PG) => {
                     render();
                   }
                 }
-              }, 200);
+              }, 150);
             });
 
             rebuildTree(p, { render, mode: "reset", note: "page-load" });
@@ -144,12 +152,6 @@ export const editorWS = async (p: PG) => {
             break;
           case "svd_remote":
             svdRemote({ p, bin: extract(msg.diff_remote), msg });
-            if (!timeout.setpage) {
-              clearTimeout(timeout.svd);
-              timeout.svd = setTimeout(() => {
-                rebuildTree(p, { render, mode: "update", note: "svd-remote" });
-              }, 100);
-            }
             break;
           case "diff_local": {
             if (msg.mode === "page") {
@@ -162,6 +164,7 @@ export const editorWS = async (p: PG) => {
                 "remote"
               );
             }
+
             break;
           }
           case "set_comp":

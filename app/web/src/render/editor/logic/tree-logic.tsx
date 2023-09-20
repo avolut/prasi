@@ -16,7 +16,7 @@ const DEBUG_MIN_ITEM: number = 0;
 let DEBUG_CUR_IDX = 0;
 export const rebuildTree = async (
   p: PG,
-  opt?: { render?: () => void; mode: REBUILD_MODE; note: string }
+  opt?: { render?: () => void; mode?: REBUILD_MODE; note: string }
 ) => {
   if (p.focused) {
     p.pendingRebuild = true;

@@ -52,7 +52,7 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
 
           localStorage.setItem("prasi-item-active-id", p.item.active);
 
-          if (p.treeMeta[p.item.active].item.type === "text") {
+          if (node.data.meta.item.type === "text") {
             setTimeout(() => {
               const text = document.getElementById(
                 `text-${p.item.active}`
@@ -84,7 +84,7 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
             );
             localStorage.setItem("prasi-item-active-id", p.item.active);
 
-            if (p.treeMeta[p.item.active].item.type === "text") {
+            if (node.data.meta.item.type === "text") {
               setTimeout(() => {
                 const text = document.getElementById(
                   `text-${p.item.active}`
