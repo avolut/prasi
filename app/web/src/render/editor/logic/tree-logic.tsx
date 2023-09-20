@@ -247,14 +247,8 @@ const walk = async (
         if (mprops && iprops) {
           for (const [key, cprop] of cprops) {
             let mp = mprops.get(key);
-            if (!mp) {
-              mprops.set(key, newMap(cprop) as any);
-              mp = mprops.get(key);
-            }
             const mprop = mp?.toJSON() as FNCompDef;
-
             const icontent = iprops.get(key)?.get("content");
-
             if (mprop.meta?.type === "content-element" && icontent) {
               await walk(p, mode, {
                 item: cprop.content,
