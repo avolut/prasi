@@ -23,7 +23,6 @@ export const rebuildTree = async (
     return;
   }
 
-  p.status = "tree-rebuild";
   const _render = () => {
     if (opt?.render) {
       opt?.render();
@@ -76,8 +75,6 @@ export const rebuildTree = async (
       }
     }
   }
-
-  p.status = "ready";
   _render();
 };
 

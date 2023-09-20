@@ -17,6 +17,7 @@ import { PanelLink } from "./panel/link";
 import { PanelPadding } from "./panel/padding";
 import { SideBox } from "./ui/SideBox";
 import { SideLabel } from "./ui/SideLabel";
+import { rebuildTree } from "../../logic/tree-logic";
 
 export const ESide = () => {
   const p = useGlobal(EditorGlobal, "EDITOR");
@@ -56,7 +57,6 @@ export const ESide = () => {
 
         if (prop) {
           syncronize(prop, value);
-          p.render();
         }
       }
     },
