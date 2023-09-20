@@ -250,7 +250,9 @@ const walk = async (
       if (p.comp?.id !== comp.id) {
         let cprops: [string, FNCompDef][] = Object.entries(
           comp.item.component?.props || {}
-        );
+        ).sort((a, b) => {
+          return a[1].idx - b[1].idx;
+        });
         const mcomp = p.comps.doc[comp.id].getMap("map").get("content_tree");
         if (mcomp) {
           const mprops = mcomp.get("component")?.get("props");

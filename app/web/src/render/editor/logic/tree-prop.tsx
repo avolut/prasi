@@ -57,7 +57,6 @@ export const treePropEval = (
           result[name] = fn(...Object.values(args));
         } catch (e) {
           const cname = meta.item.name;
-          console.log(args);
           console.warn(e);
           console.warn(
             `ERROR in Component [${cname}], in prop [${name}]:\n ` + prop.value
