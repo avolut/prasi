@@ -7,7 +7,7 @@ import {
   getBackendOptions,
 } from "@minoru/react-dnd-treeview";
 import { FC, useCallback, useEffect } from "react";
-import { useGlobal, useLocal, waitUntil } from "web-utils";
+import { useGlobal, useLocal } from "web-utils";
 import { IContent, MContent } from "../../../../utils/types/general";
 import { EditorGlobal, NodeMeta } from "../../logic/global";
 import { ETreeItem } from "./item/item";
@@ -21,7 +21,7 @@ import {
   onDrop,
   selectMultiple,
 } from "./utils/tree-utils";
-import { IItem } from "../../../../utils/types/item";
+import { editComp } from "../../logic/comp";
 export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
   tree,
   meta,
@@ -47,12 +47,40 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
         if (meta.search) {
           meta.search = "";
           meta.render();
+          const nmeta = node.data.meta;
           p.item.selection = [];
-          p.item.active = node.data.meta.item.id;
+          p.item.active = nmeta.item.id;
+
+          if (nmeta.parent_comp) {
+            const originalId = nmeta.item.originalId;
+            editComp(p, nmeta.parent_comp.item.id);
+            if (originalId) {
+              const instances = p.compInstance[nmeta.parent_comp.id];
+              if (instances) {
+                instances.forEach((e) => {
+                  if (e.item.id === p.comp?.instance_id) {
+                    const walk = (item: IContent) => {
+                      if (item.originalId === originalId) {
+                        p.item.active = item.id;
+                        return;
+                      }
+
+                      if (item.type !== "text") {
+                        for (const c of item.childs) {
+                          walk(c);
+                        }
+                      }
+                    };
+                    walk(e.item);
+                  }
+                });
+              }
+            }
+          }
 
           localStorage.setItem("prasi-item-active-id", p.item.active);
 
-          if (node.data.meta.item.type === "text") {
+          if (nmeta.item.type === "text") {
             setTimeout(() => {
               const text = document.getElementById(
                 `text-${p.item.active}`

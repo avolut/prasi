@@ -3,6 +3,7 @@ import { useGlobal, useLocal } from "web-utils";
 import { EditorGlobal, NodeMeta } from "../../logic/global";
 import { ETreeBody } from "./body";
 import { useEffect } from "react";
+import { editComp } from "../../logic/comp";
 
 export const ETree = () => {
   const p = useGlobal(EditorGlobal, "EDITOR");
@@ -21,7 +22,52 @@ export const ETree = () => {
     searchHover: false,
   });
 
-  const tree: NodeModel<NodeMeta>[] = p.treeFlat;
+  let tree: NodeModel<NodeMeta>[] = p.treeFlat;
+
+  if (local.search) {
+    tree = [];
+    const search = local.search.toLowerCase();
+    const type = local.searchTypes;
+    p.treeFlat.forEach((e) => {
+      const item = e.data.meta.item;
+      const found = () => {
+        tree.push({ ...e, parent: "root" });
+      };
+
+      if (type.Name) {
+        if (item.name.toLowerCase().includes(search)) {
+          return found();
+        }
+      }
+
+      if (type.JS) {
+        if (
+          typeof item.adv?.js === "string" &&
+          item.adv.js.toLowerCase().includes(search)
+        ) {
+          return found();
+        }
+      }
+
+      if (type.CSS) {
+        if (
+          typeof item.adv?.css === "string" &&
+          item.adv.css.toLowerCase().includes(search)
+        ) {
+          return found();
+        }
+      }
+
+      if (type.HTML) {
+        if (
+          typeof item.adv?.html === "string" &&
+          item.adv.html.toLowerCase().includes(search)
+        ) {
+          return found();
+        }
+      }
+    });
+  }
 
   useEffect(() => {
     p.render();
@@ -40,7 +86,7 @@ export const ETree = () => {
           local.render();
         }}
       >
-        {/* <div className="flex items-stretch h-[24px]">
+        <div className="flex items-stretch h-[24px]">
           <input
             name="search"
             ref={(ref) => {
@@ -51,6 +97,7 @@ export const ETree = () => {
             className={cx("flex-1 outline-none px-2 text-[13px] ")}
             placeholder="Search..."
             value={local.search}
+            spellCheck={false}
             onInput={(e) => {
               local.search = e.currentTarget.value;
               local.render();
@@ -66,7 +113,7 @@ export const ETree = () => {
               }
             }}
           />
-          <Tooltip
+          {/* <Tooltip
             content="Multi Select"
             placement="top"
             className={cx(
@@ -127,8 +174,8 @@ export const ETree = () => {
                 clipRule="evenodd"
               ></path>
             </svg>
-          </Tooltip>
-        </div> */}
+          </Tooltip> */}
+        </div>
         {local.searchFocus && (
           <div className="p-1 bg-white text-xs border-t flex space-x-1 justify-between">
             <div className="flex space-x-1">

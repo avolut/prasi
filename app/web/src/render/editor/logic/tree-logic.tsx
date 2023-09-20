@@ -204,6 +204,7 @@ const walk = async (
       mitem: mitem,
       item,
       parent_id: val.parent_id,
+      parent_comp: val.parent_comp,
       depth: val.depth || 0,
       elprop: createElProp(comp ? comp.item : item, p),
       className: produceCSS(comp ? comp.item : item, {

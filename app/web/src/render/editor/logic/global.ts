@@ -11,6 +11,7 @@ export type ItemMeta = {
   mitem?: MContent;
   item: IContent;
   parent_id: string;
+  parent_comp?: ItemMeta["comp"];
   scope?: any;
   className: string;
   elprop: any;
