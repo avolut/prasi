@@ -18,10 +18,10 @@ export const rebuildTree = async (
   p: PG,
   opt?: { render?: () => void; mode?: REBUILD_MODE; note: string }
 ) => {
-  if (p.focused) {
-    p.pendingRebuild = true;
+  if (p.pendingRebuild) {
     return;
   }
+  p.pendingRebuild = true;
 
   const _render = () => {
     if (opt?.render) {
@@ -31,14 +31,15 @@ export const rebuildTree = async (
     }
   };
 
-  // console.log("rebuild", opt?.note);
-
   const mode = opt?.mode || "update";
+
   if (mode === "reset") {
     p.compInstance = {};
     p.treeMeta = {};
   }
-  p.treeFlat = [];
+  if (p.treeFlat.length > 0) {
+    p.treeFlat.length = 0;
+  }
 
   if (p.mpage) {
     if (DEBUG) {
@@ -75,6 +76,8 @@ export const rebuildTree = async (
       }
     }
   }
+
+  p.pendingRebuild = false;
   _render();
 };
 
@@ -279,10 +282,9 @@ const walk = async (
         p.treeFlat.push({
           parent: val.parent_id,
           data: { meta, idx: val.idx || 0 },
-          id: meta.item.id,
-          text: item.name,
+          id: comp.item.id,
+          text: comp.item.name,
         });
-        val.includeTree = false;
       }
 
       await Promise.all(
