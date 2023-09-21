@@ -213,7 +213,7 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
   useEffect(() => {
     (async () => {
       if (p.pendingRebuild) {
-        await waitUntil(() => !p.pendingRebuild)
+        await waitUntil(() => !p.pendingRebuild);
       }
 
       let active = p.treeMeta[p.item.active];
@@ -354,6 +354,7 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
               local.method = el;
             }}
             render={(node, { depth, isOpen, onToggle }) => {
+              if (!node) return <></>;
               if (meta.search && node.data) {
                 const meta = node.data.meta;
                 return (
