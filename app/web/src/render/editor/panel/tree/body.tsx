@@ -247,22 +247,22 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
             }
           };
 
-          if (p.compInstance[p.comp.id]) {
-            let found = false;
-            let first: ItemMeta = undefined as any;
-            p.compInstance[p.comp.id].forEach((meta) => {
-              if (!first) {
-                first = meta;
-              }
-              if (meta.item && meta.item.id === p.comp?.instance_id) {
-                found = true;
-                walk(meta.item);
-              }
-            });
-            if (!found && !!first && first.comp) {
-              walk(first.item);
-            }
-          }
+          // if (p.compInstance[p.comp.id]) {
+          //   let found = false;
+          //   let first: ItemMeta = undefined as any;
+          //   p.compInstance[p.comp.id].forEach((meta) => {
+          //     if (!first) {
+          //       first = meta;
+          //     }
+          //     if (meta.item && meta.item.id === p.comp?.instance_id) {
+          //       found = true;
+          //       walk(meta.item);
+          //     }
+          //   });
+          //   if (!found && !!first && first.comp) {
+          //     walk(first.item);
+          //   }
+          // }
         }
       }
 

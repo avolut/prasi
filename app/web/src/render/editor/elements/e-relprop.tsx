@@ -1,10 +1,8 @@
 import { FC } from "react";
 import { IContent } from "../../../utils/types/general";
 import { IItem } from "../../../utils/types/item";
-import { closeEditComp, editComp, editCompByMeta } from "../logic/comp";
+import { closeEditComp, editComp } from "../logic/comp";
 import { PG } from "../logic/global";
-import { rebuildTree } from "../logic/tree-logic";
-const hoverAttempt: { id: string; ts: number }[] = [];
 
 export type ElProp = ReturnType<typeof createElProp>;
 export const createElProp = (item: IContent, p: PG) => {
@@ -32,7 +30,10 @@ export const createElProp = (item: IContent, p: PG) => {
 
       let _item = item;
 
-      const meta = p.treeMeta[_item.originalId || _item.id];
+      let meta = p.treeMeta[_item.id];
+      if (!meta && _item.originalId) {
+        meta = p.treeMeta[_item.originalId];
+      }
 
       const regularSelectActive = () => {
         p.item.active = _item.id;
@@ -57,17 +58,29 @@ export const createElProp = (item: IContent, p: PG) => {
           if (comp_id === p.comp?.id) {
             regularSelectActive();
           } else {
-            p.item.active = meta.parent_comp.item.id;
-            if (meta.parent_comp.item.originalId) {
-              p.item.activeOriginalId = meta.parent_comp.item.originalId;
-            }
+            let cur = meta.parent_comp;
 
-            p.softRender.all();
-            localStorage.setItem(
-              "prasi-item-active-oid",
-              p.item.activeOriginalId
-            );
-            localStorage.setItem("prasi-item-active-id", p.item.active);
+            while (cur) {
+              if (cur.parent_comp?.comp.id === p.comp?.id) {
+                break;
+              }
+              cur = cur.parent_comp as any;
+            }
+            if (cur) {
+              p.item.active = cur.item.id;
+              if (cur.item.originalId) {
+                p.item.activeOriginalId = cur.item.originalId;
+              }
+
+              p.softRender.all();
+              localStorage.setItem(
+                "prasi-item-active-oid",
+                p.item.activeOriginalId
+              );
+              localStorage.setItem("prasi-item-active-id", p.item.active);
+            } else {
+              closeEditComp(p);
+            }
           }
           return;
         }

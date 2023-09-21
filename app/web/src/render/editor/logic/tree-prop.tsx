@@ -54,9 +54,8 @@ export const treePropEval = (
           value = {
             _jsx: true,
             Comp: ({ parent_id }: { parent_id: string }) => {
-              const meta = intantiateJSXPropMeta({ p, parent_id, name, prop });
-              if (meta) {
-                return <EItem id={meta.item.id} fromProp={true} />;
+              if (prop.content) {
+                return <EItem id={prop.content.id} fromProp={true} />;
               }
               return <></>;
             },

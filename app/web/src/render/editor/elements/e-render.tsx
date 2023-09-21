@@ -63,7 +63,6 @@ export const ERender: FC<{
     }
   }
 
-
   meta.elprop = createElProp(item, p);
   meta.className = produceCSS(item, {
     mode: p.mode,
@@ -84,12 +83,16 @@ export const ERender: FC<{
     ) {
       if (!p.comps.doc[item.component.id]) {
         componentOver = <Loading backdrop={false} />;
-      } else if (
-        item.id !== p.comp?.instance_id &&
-        !p.comp?.last.find((e) => e.instance_id === item.id)
-      ) {
+      } else if (item.id !== p.comp?.instance_id) {
         componentOver = <ComponentOver item={item} p={p} elprop={elprop} />;
       }
+    }
+    if (
+      meta.comp &&
+      (p.comp?.id === meta.comp.id ||
+        p.comp?.last.find((e) => e.comp_id === meta.comp?.id))
+    ) {
+      componentOver = null;
     }
   }
 
@@ -129,9 +132,9 @@ export const ERender: FC<{
 
   return (
     <div className={className} {...elprop}>
-      {/* <pre className={"text-[9px] font-mono text-black"}>
+      <pre className={"text-[9px] font-mono text-black"}>
         {item.id}-{item.name}
-      </pre> */}
+      </pre>
       {_children}
       {componentOver}
     </div>

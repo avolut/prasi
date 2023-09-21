@@ -37,8 +37,8 @@ export const rebuildTree = async (
   if (mode === "reset") {
     p.treeMeta = {};
     p.compInstance = {};
-    p.treeJSXProp = {};
   }
+  p.treeJSXProp = {};
 
   p.treeFlatTemp = [];
 
@@ -77,7 +77,6 @@ export const walk = async (
     minstance?: MItem;
     parent_id: string;
     parent_comp?: WithRequired<ItemMeta, "comp"> & { item: IItem };
-    jsx_prop?: { name: string; called_by: Set<string>; mprop: FMCompDef };
     depth?: number;
     idx?: number;
     includeTree?: boolean;
@@ -154,7 +153,6 @@ export const walk = async (
       item,
       parent_id: val.parent_id,
       parent_comp: val.parent_comp as any,
-      parent_jsxprop: val.jsx_prop,
       depth: val.depth || 0,
       elprop: createElProp(item, p),
       className: produceCSS(item, {
@@ -197,7 +195,13 @@ export const walk = async (
     }
 
     if (!val.skip) {
-      p.treeMeta[meta.item.id] = meta;
+      if (p.treeMeta[meta.item.id]) {
+        for (const [k, v] of Object.entries(meta)) {
+          (p.treeMeta[meta.item.id] as any)[k] = v;
+        }
+      } else {
+        p.treeMeta[meta.item.id] = meta;
+      }
     }
 
     if (item.type === "item" && item.component?.id) {
@@ -258,19 +262,15 @@ export const walk = async (
         if (doc) {
           const mcomp = doc.getMap("map").get("content_tree") as MItem;
           if (mcomp) {
-            let child_ids = {};
-
-            if (
-              mode === "update" &&
-              p.treeMeta[item.id] &&
-              p.treeMeta[item.id].comp
-            ) {
-              const ecomp = p.treeMeta[item.id].comp;
-              if (ecomp) child_ids = ecomp.child_ids;
+            if (!p.compInstance[item.id]) {
+              p.compInstance[item.id] = {};
+            }
+            const child_ids = p.compInstance[item.id];
+            const itemnew = instantiateComp(p, item, mcomp, child_ids);
+            for (const [k, v] of Object.entries(itemnew)) {
+              (meta.item as any)[k] = v;
             }
 
-            meta.item = await instantiateComp(p, item, mcomp, child_ids);
-            item = meta.item;
             meta.comp = {
               id: cid,
               mcomp,
@@ -279,49 +279,44 @@ export const walk = async (
           }
         }
       }
-      if (p.comp && item.component?.id) {
-        if (p.comp?.id !== item.component.id) {
-          let cprops: [string, FNCompDef][] = Object.entries(
-            item.component?.props || {}
-          ).sort((a, b) => {
-            return a[1].idx - b[1].idx;
-          });
-          const mcomp = p.comps.doc[item.component.id]
-            .getMap("map")
-            .get("content_tree");
-          if (mcomp) {
-            const mprops = mcomp.get("component")?.get("props");
-            const iprops = mitem?.get("component")?.get("props");
-            if (mprops && iprops) {
-              for (const [key, cprop] of cprops) {
-                let mp = mprops.get(key);
-                if (mp) {
-                  const mprop = mp?.toJSON() as FNCompDef;
+      if (item.component?.id) {
+        let cprops: [string, FNCompDef][] = Object.entries(
+          item.component?.props || {}
+        ).sort((a, b) => {
+          return a[1].idx - b[1].idx;
+        });
+        const mcomp = p.comps.doc[item.component.id]
+          .getMap("map")
+          .get("content_tree");
+        if (mcomp) {
+          const mprops = mcomp.get("component")?.get("props");
+          const iprops = mitem?.get("component")?.get("props");
 
-                  if (!iprops.get(key)) {
-                    iprops.set(key, mp);
-                  }
+          if (mprops && iprops) {
+            for (const [name, cprop] of cprops) {
+              let mp = mprops.get(name);
+              if (mp) {
+                const mprop = mp?.toJSON() as FNCompDef;
 
-                  const jsx_prop = iprops.get(key);
-                  if (jsx_prop) {
-                    const icontent = jsx_prop?.get("content");
-                    if (mprop.meta?.type === "content-element" && icontent) {
-                      await walk(p, mode, {
-                        item: cprop.content,
-                        mitem: icontent,
-                        parent_id: item.id,
-                        parent_comp: val.parent_comp,
-                        jsx_prop: {
-                          name: key,
-                          called_by: new Set(),
-                          mprop: jsx_prop,
-                        },
-                        idx: mprop.idx,
-                        depth: (val.depth || 0) + 1,
-                        includeTree: true,
-                        instanceFound: val.instanceFound,
-                      });
-                    }
+                if (!iprops.get(name)) {
+                  iprops.set(name, mp);
+                }
+
+                const jsx_prop = iprops.get(name);
+
+                if (jsx_prop) {
+                  const icontent = jsx_prop?.get("content");
+                  if (mprop.meta?.type === "content-element" && icontent) {
+                    await walk(p, mode, {
+                      item: cprop.content,
+                      mitem: icontent,
+                      parent_id: item.id,
+                      parent_comp: val.parent_comp,
+                      idx: mprop.idx,
+                      depth: (val.depth || 0) + 1,
+                      includeTree: true,
+                      instanceFound: val.instanceFound,
+                    });
                   }
                 }
               }
@@ -337,7 +332,6 @@ export const walk = async (
               parent_comp: meta as any,
               mitem: meta.comp.mcomp.get("childs")?.get(idx),
               parent_id: item.id,
-              jsx_prop: val.jsx_prop,
               depth: (val.depth || 0) + 1,
               includeTree: val.includeTree,
               instanceFound: val.instanceFound,
@@ -369,7 +363,6 @@ export const walk = async (
               parent_comp: val.parent_comp,
               mitem: mitem?.get("childs")?.get(idx) as MContent,
               parent_id: item.id || "",
-              jsx_prop: val.jsx_prop,
               depth: (val.depth || 0) + 1,
               includeTree: val.includeTree,
               instanceFound: val.instanceFound,

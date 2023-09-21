@@ -13,7 +13,6 @@ export type ItemMeta = {
   item: IContent;
   parent_id: string;
   parent_comp?: WithRequired<ItemMeta, "comp"> & { item: IItem };
-  parent_jsxprop?: { name: string; called_by: Set<string>; mprop: FMCompDef };
   scope?: any;
   className: string;
   elprop: any;
@@ -151,7 +150,7 @@ export const EditorGlobal = {
   },
   compDirectEdit: false,
   compLoading: {} as Record<string, true>,
-  compInstance: {} as Record<string, Set<ItemMeta>>,
+  compInstance: {} as Record<string, Record<string, string>>,
 
   /** write-only */
   mpage: null as null | MPage,

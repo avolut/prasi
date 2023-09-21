@@ -113,7 +113,7 @@ export const editorWS = async (p: PG) => {
               rebuildTree(p, {
                 render,
                 mode: "update",
-                note: "ws-render",
+                note: "ws-update-page",
               });
 
               clearTimeout(timeout.setpage);
@@ -138,7 +138,7 @@ export const editorWS = async (p: PG) => {
                     render();
                   }
                 }
-              }, 150);
+              }, 200);
             });
 
             rebuildTree(p, { render, mode: "reset", note: "page-load" });
@@ -208,9 +208,12 @@ export const editorWS = async (p: PG) => {
                           }
                         }
 
-                        rebuildTree(p, { mode: "update", note: "comp-update" });
+                        rebuildTree(p, {
+                          mode: "update",
+                          note: "ws-update-comp",
+                        });
                       }
-                    })
+                    }, 200)
                   );
                 }, 500);
                 const comp = p.comps.doc[msg.comp_id]

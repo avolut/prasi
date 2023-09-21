@@ -223,7 +223,7 @@ export const editComp = (p: PG, id: string) => {
   }
 };
 
-export const instantiateComp = async (
+export const instantiateComp = (
   p: PG,
   item: IItem,
   mcomp: MItem,
@@ -264,6 +264,7 @@ export const instantiateComp = async (
     if (comp.props[k]) {
       props[k].value = comp.props[k].value;
       props[k].valueBuilt = comp.props[k].valueBuilt;
+      props[k].content = comp.props[k].content;
     }
   }
 

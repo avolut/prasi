@@ -12,7 +12,6 @@ export const treeScopeEval = (p: PG, meta: ItemMeta, children: ReactNode) => {
 
   let item = meta.item;
 
-
   if (item.adv && item.adv.jsBuilt) {
     const adv = item.adv;
     let args = {};
@@ -94,8 +93,7 @@ export const treeScopeEval = (p: PG, meta: ItemMeta, children: ReactNode) => {
               ((adv.js || "") as any)
             ).trim()
           );
-          console.warn(`Available var:`, args);
-          console.log("\n\n\n");
+          console.warn(`Available var:`, args, `\n\n`);
         });
       }
 
@@ -107,8 +105,7 @@ export const treeScopeEval = (p: PG, meta: ItemMeta, children: ReactNode) => {
           `ERROR in ${item.type} [${item.name}]:\n ` + ((adv.js || "") as any)
         ).trim()
       );
-      console.warn(`Available var:`, args);
-      console.log("\n\n\n");
+      console.warn(`Available var:`, args, `\n\n`);
     }
   }
 };
