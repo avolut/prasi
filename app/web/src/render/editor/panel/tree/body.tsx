@@ -244,16 +244,22 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
     }
 
     const doOpen = () => {
-      if (local.method) local.method.open([...open]);
+      if (local.method) {
+        const method = local.method;
+        local.method.open([...open]);
+        setTimeout(() => method.open([...open]), 50);
+        setTimeout(() => method.open([...open]), 100);
+        setTimeout(() => method.open([...open]), 200);
+      }
     };
 
     doOpen();
     if (p.treeFlat.length === 0 || !local.method) {
       waitUntil(() => p.treeFlat.length > 0 && local.method).then(() => {
-        setTimeout(doOpen, 300);
+        doOpen();
       });
     } else {
-      setTimeout(doOpen, 300);
+      doOpen();
     }
   }, [p.item.active]);
 
