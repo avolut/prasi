@@ -25,18 +25,29 @@ export const ETree = () => {
   let tree: NodeModel<NodeMeta>[] = p.treeFlat;
 
   if (local.search) {
+    const foundset = new Set<string>();
     tree = [];
     const search = local.search.toLowerCase();
     const type = local.searchTypes;
-    p.treeFlat.forEach((e) => {
-      const item = e.data.meta.item;
+
+    for (const [_, meta] of Object.entries(p.treeMeta)) {
+      const item = meta.comp?.item || meta.item;
       const found = () => {
-        tree.push({ ...e, parent: "root" });
+        if (!foundset.has(item.id)) {
+          foundset.add(item.id);
+          tree.push({
+            parent: "root",
+            data: { meta, idx: tree.length },
+            id: meta.item.id,
+            text: item.name,
+          });
+        }
       };
 
       if (type.Name) {
         if (item.name.toLowerCase().includes(search)) {
-          return found();
+          found();
+          continue;
         }
       }
 
@@ -45,7 +56,8 @@ export const ETree = () => {
           typeof item.adv?.js === "string" &&
           item.adv.js.toLowerCase().includes(search)
         ) {
-          return found();
+          found();
+          continue;
         }
       }
 
@@ -54,7 +66,8 @@ export const ETree = () => {
           typeof item.adv?.css === "string" &&
           item.adv.css.toLowerCase().includes(search)
         ) {
-          return found();
+          found();
+          continue;
         }
       }
 
@@ -63,10 +76,11 @@ export const ETree = () => {
           typeof item.adv?.html === "string" &&
           item.adv.html.toLowerCase().includes(search)
         ) {
-          return found();
+          found();
+          continue;
         }
       }
-    });
+    }
   }
 
   useEffect(() => {

@@ -7,11 +7,15 @@ import {
   getBackendOptions,
 } from "@minoru/react-dnd-treeview";
 import { FC, useCallback, useEffect } from "react";
-import { useGlobal, useLocal } from "web-utils";
+import { useGlobal, useLocal, waitUntil } from "web-utils";
 import { IContent, MContent } from "../../../../utils/types/general";
 import { EditorGlobal, NodeMeta } from "../../logic/global";
+import { rebuildTree } from "../../logic/tree-logic";
+import { Adv } from "./item/action";
 import { ETreeItem } from "./item/item";
+import { ETreeItemName } from "./item/name";
 import { ETreeRightClick } from "./item/right-click";
+import { treeItemStyle } from "./item/style";
 import {
   DragPreview,
   Placeholder,
@@ -21,7 +25,6 @@ import {
   onDrop,
   selectMultiple,
 } from "./utils/tree-utils";
-import { editComp } from "../../logic/comp";
 export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
   tree,
   meta,
@@ -49,19 +52,47 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
           meta.render();
           const nmeta = node.data.meta;
           p.item.selection = [];
-          p.item.active = nmeta.item.id;
 
           if (nmeta.parent_comp) {
             const originalId = nmeta.item.originalId;
-            editComp(p, nmeta.parent_comp.item.id);
+            p.comp = {
+              id: nmeta.parent_comp.id,
+              instance_id: nmeta.parent_comp.item.id,
+              last: [{ active_id: "", active_oid: "" }],
+              props: nmeta.parent_comp.item.component?.props || {},
+            };
+
+            localStorage.setItem(
+              "prasi-item-active-oid",
+              p.item.activeOriginalId
+            );
+            localStorage.setItem(
+              "prasi-comp-instance-id",
+              nmeta.parent_comp.item.id
+            );
+            localStorage.setItem("prasi-comp-active-id", p.comp.id);
+            localStorage.setItem(
+              "prasi-comp-active-last",
+              JSON.stringify(p.comp.last)
+            );
+            localStorage.setItem(
+              "prasi-comp-active-props",
+              JSON.stringify(p.comp.props)
+            );
+
+            rebuildTree(p, { mode: "update", note: "search" });
+
             if (originalId) {
+              let found: undefined | IContent;
               const instances = p.compInstance[nmeta.parent_comp.id];
               if (instances) {
                 instances.forEach((e) => {
+                  if (found) return;
                   if (e.item.id === p.comp?.instance_id) {
                     const walk = (item: IContent) => {
+                      if (found) return;
                       if (item.originalId === originalId) {
-                        p.item.active = item.id;
+                        found = item;
                         return;
                       }
 
@@ -71,11 +102,23 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
                         }
                       }
                     };
-                    walk(e.item);
+                    if (e.comp) walk(e.comp.item);
                   }
                 });
               }
+              if (found) {
+                p.item.active = found.id;
+              }
             }
+          } else {
+            p.comp = null;
+            p.item.active = nmeta.item.id;
+            rebuildTree(p, { mode: "update", note: "search" });
+
+            localStorage.removeItem(`prasi-comp-active-id`);
+            localStorage.removeItem(`prasi-comp-instance-id`);
+            localStorage.removeItem(`prasi-comp-active-last`);
+            localStorage.removeItem(`prasi-comp-active-props`);
           }
 
           localStorage.setItem("prasi-item-active-id", p.item.active);
@@ -94,7 +137,6 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
           if (p.compProp.edit) {
             p.compProp.edit = false;
           }
-
           p.softRender.all();
         } else {
           if (p.item.selectMode === "multi") {
@@ -175,14 +217,30 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
       }
     }
 
-    const open: string[] = [];
-    while (active) {
-      open.push(active.item.id);
-      active = p.treeMeta[active.parent_id];
+    const open = new Set<string>();
+    let cur = active;
+    while (cur) {
+      let item = cur.comp?.item || cur.item;
+      open.add(item.id);
+      if (cur.parent_comp) {
+        open.add(cur.parent_comp.item.id);
+      }
+      cur = p.treeMeta[cur.parent_id];
     }
 
-    local.method.open(open);
-  }, [p.item.active, p.comp]);
+    const doOpen = () => {
+      if (local.method) local.method.open([...open]);
+    };
+
+    doOpen();
+    if (p.treeFlat.length === 0 || !local.method) {
+      waitUntil(() => p.treeFlat.length > 0 && local.method).then(() => {
+        setTimeout(doOpen, 300);
+      });
+    } else {
+      setTimeout(doOpen, 300);
+    }
+  }, [p.item.active]);
 
   return (
     <div
@@ -237,6 +295,84 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
               local.method = el;
             }}
             render={(node, { depth, isOpen, onToggle }) => {
+              if (meta.search && node.data) {
+                const meta = node.data.meta;
+                return (
+                  <div
+                    className={cx(
+                      treeItemStyle({
+                        isActive: p.item.active === meta.item.id,
+                        isHover: p.item.hover === meta.item.id,
+                        isComponent: false,
+                        isSelect: false,
+                      }),
+                      "flex-col items-stretch cursor-pointer"
+                    )}
+                    onClick={() => onClick(node)}
+                    onPointerOver={() => onHover(node)}
+                  >
+                    {meta.parent_comp ? (
+                      <div
+                        className={cx(
+                          "text-purple-500 text-xs flex space-x-1 pl-1"
+                        )}
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width={10}
+                          height={10}
+                          fill="none"
+                          viewBox="0 0 15 15"
+                        >
+                          <path
+                            fill="currentColor"
+                            fillRule="evenodd"
+                            d="M7.289.797a.5.5 0 01.422 0l6 2.8A.5.5 0 0114 4.05v6.9a.5.5 0 01-.289.453l-6 2.8a.5.5 0 01-.422 0l-6-2.8A.5.5 0 011 10.95v-6.9a.5.5 0 01.289-.453l6-2.8zM2 4.806L7 6.93v6.034l-5-2.333V4.806zm6 8.159l5-2.333V4.806L8 6.93v6.034zm-.5-6.908l4.772-2.028L7.5 1.802 2.728 4.029 7.5 6.057z"
+                            clipRule="evenodd"
+                          ></path>
+                        </svg>
+                        <span>{meta.parent_comp?.item.name}</span>
+                      </div>
+                    ) : (
+                      <div></div>
+                    )}
+                    <div
+                      className={cx(
+                        "pl-5 flex items-center space-x-1",
+                        meta.comp && "text-purple-500",
+                        !meta.parent_comp ? "py-1" : ""
+                      )}
+                    >
+                      {meta.comp && (
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          width={10}
+                          height={10}
+                          fill="none"
+                          viewBox="0 0 15 15"
+                        >
+                          <path
+                            fill="currentColor"
+                            fillRule="evenodd"
+                            d="M7.289.797a.5.5 0 01.422 0l6 2.8A.5.5 0 0114 4.05v6.9a.5.5 0 01-.289.453l-6 2.8a.5.5 0 01-.422 0l-6-2.8A.5.5 0 011 10.95v-6.9a.5.5 0 01.289-.453l6-2.8zM2 4.806L7 6.93v6.034l-5-2.333V4.806zm6 8.159l5-2.333V4.806L8 6.93v6.034zm-.5-6.908l4.772-2.028L7.5 1.802 2.728 4.029 7.5 6.057z"
+                            clipRule="evenodd"
+                          ></path>
+                        </svg>
+                      )}
+                      <ETreeItemName
+                        item={meta.item}
+                        name={meta.item.name}
+                        renaming={false}
+                        isComponent={false}
+                        doneRenaming={() => {}}
+                      />
+                      <div className="pr-[2px] space-x-[1px] flex">
+                        <Adv p={p} item={meta.comp?.item || meta.item} />
+                      </div>
+                    </div>
+                  </div>
+                );
+              }
               return (
                 <ETreeItem
                   node={node}

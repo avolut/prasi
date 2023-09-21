@@ -219,10 +219,6 @@ export const instantiateComp = async (
     i.id = newid;
     child_ids[i.originalId] = newid;
 
-    if (p.item.activeOriginalId === i.originalId) {
-      p.item.active = newid;
-    }
-
     return false;
   }) as IItem;
   return {
