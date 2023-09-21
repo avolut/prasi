@@ -184,10 +184,6 @@ export const walk = async (
       comp,
     };
 
-    if (item.name === "marku") {
-      console.log(item.adv);
-    }
-
     if (DEBUG) {
       DEBUG_CUR_IDX++;
       if (DEBUG_CUR_IDX >= DEBUG_MIN_ITEM && DEBUG_CUR_IDX <= DEBUG_MAX_ITEM) {

@@ -105,7 +105,7 @@ export const CPMaster: FC<{ mitem: MItem }> = ({ mitem }) => {
                 mprops.set(
                   name,
                   newMap({
-                    idx: Object.keys(mprops.toJSON()).length - 1,
+                    idx: Object.keys(mprops.toJSON()).length + 1,
                     name,
                     type: "string",
                     value: '"hello"',
