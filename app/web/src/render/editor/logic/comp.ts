@@ -1,4 +1,5 @@
 import { createId } from "@paralleldrive/cuid2";
+import * as Y from "yjs";
 import { IContent } from "../../../utils/types/general";
 import { IItem, MItem } from "../../../utils/types/item";
 import { FNCompDef, FNComponent } from "../../../utils/types/meta-fn";
@@ -7,9 +8,8 @@ import { IRoot } from "../../../utils/types/root";
 import { WS_MSG_GET_COMP } from "../../../utils/types/ws";
 import { fillID } from "../tools/fill-id";
 import { ItemMeta, PG } from "./global";
-import { rebuildTree, updateComponentInTree } from "./tree-logic";
+import { rebuildTree } from "./tree-logic";
 import { wsend } from "./ws";
-import * as Y from "yjs";
 
 export const scanComponent = (
   item: IRoot | IContent,
@@ -76,9 +76,6 @@ export const loadComponent = async (
 const loadSingleComponent = (p: PG, comp_id: string) => {
   p.comps.pending[comp_id] = new Promise<PRASI_COMPONENT>(async (resolve) => {
     p.comps.resolve[comp_id] = async (comp: PRASI_COMPONENT) => {
-      if (p.status !== "tree-rebuild") {
-        await updateComponentInTree(p, comp.id);
-      }
       resolve(comp);
     };
     await wsend(

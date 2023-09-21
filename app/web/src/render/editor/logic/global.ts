@@ -23,7 +23,7 @@ export type ItemMeta = {
   };
   comp?: {
     id: string;
-    mcomp: MItem;
+    mcomp?: MItem;
     propval?: any;
     child_ids: Record<string, string>;
   };

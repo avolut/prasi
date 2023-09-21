@@ -94,19 +94,17 @@ export const CPMaster: FC<{ mitem: MItem }> = ({ mitem }) => {
           <div
             className="flex cursor-pointer items-center border border-slate-500 bg-white rounded-sm text-[10px] px-[5px] m-1 opacity-50 hover:opacity-100"
             onClick={() => {
-              let idx: any = "";
-              let name = "prop";
-              while (mprops?.get(name)) {
-                idx = idx === "" ? 1 : idx + 1;
-                name = `prop_${idx}`;
-              }
+              if (mprops) {
+                let idx: any = "";
+                let name = "prop";
+                while (mprops?.get(name)) {
+                  idx = idx === "" ? 1 : idx + 1;
+                  name = `prop_${idx}`;
+                }
 
-              mprops?.doc?.transact(() => {
-                mprops?.set(name, new Y.Map() as any);
-                const prop = mprops.get(name);
-                syncronize(
-                  prop as any,
-                  {
+                mprops.set(
+                  name,
+                  newMap({
                     idx: Object.keys(mprops.toJSON()).length - 1,
                     name,
                     type: "string",
@@ -115,11 +113,9 @@ export const CPMaster: FC<{ mitem: MItem }> = ({ mitem }) => {
                     meta: {
                       type: "text",
                     },
-                  } as FNCompDef
+                  }) as FMCompDef
                 );
-              });
-
-              rebuildTree(p, { mode: "update", note: "add-prop" });
+              }
             }}
           >
             Add

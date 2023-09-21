@@ -119,18 +119,11 @@ export const CPInstance: FC<{ mitem: MItem }> = ({ mitem }) => {
             .map(([k, v]) => {
               let mprop = local.mprops.get(k);
               if (mprop) {
-                if (
-                  !local.jsx &&
-                  mprop.get("meta")?.get("type") === "content-element"
-                )
-                  return;
-
-                const prop = mprop.toJSON() as FNCompDef;
+                if (!local.jsx && v.meta?.type === "content-element") return;
 
                 let visible = true;
                 if (local.visibles[k]) {
                   try {
-                    const comp = p.treeMeta[p.item.active].comp;
                     const args = {
                       ...window.exports,
                     };
@@ -150,7 +143,7 @@ export const CPInstance: FC<{ mitem: MItem }> = ({ mitem }) => {
                     <SingleProp
                       key={k}
                       name={k}
-                      prop={prop}
+                      prop={v}
                       mprop={mprop}
                       mprops={local.mprops}
                       comp={comp}

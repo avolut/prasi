@@ -27,12 +27,12 @@ export const ERender: FC<{
     return null;
   }
 
-  if (meta.comp) {
+  if (meta.comp && meta.comp.mcomp) {
     const comp = meta.comp;
-    const props = comp.mcomp.get("component")?.get("props")?.toJSON() as Record<
-      string,
-      FNCompDef
-    >;
+    const props = meta.comp.mcomp
+      .get("component")
+      ?.get("props")
+      ?.toJSON() as Record<string, FNCompDef>;
 
     const cprops = Object.entries(props).sort((a, b) => {
       return a[1].idx - b[1].idx;
@@ -49,9 +49,8 @@ export const ERender: FC<{
         console.log("%c" + args, "color:red", "prop: ", comp.propval);
       }
     }
-    if (!comp.propval) {
-      comp.propval = treePropEval(p, meta, cprops);
-    }
+
+    comp.propval = treePropEval(p, meta, cprops);
   }
 
   let _children = null;
