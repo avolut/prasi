@@ -5,7 +5,7 @@ import { FMCompDef, FNCompDef } from "../../../utils/types/meta-fn";
 import { createElProp } from "../elements/e-relprop";
 import { DefaultScript } from "../panel/script/monaco/monaco-element";
 import { newMap } from "../tools/yjs-tools";
-import { instantiateComp, loadComponent } from "./comp";
+import { closeEditComp, instantiateComp, loadComponent } from "./comp";
 import { ItemMeta, PG } from "./global";
 export type REBUILD_MODE = "update" | "reset";
 
@@ -60,21 +60,6 @@ export const rebuildTree = async (
         }) || []
       );
     });
-
-    if (p.comp && p.treeFlat.length === 0) {
-      if (!p.comps.pending[p.comp.id]) {
-        p.comp = null;
-        localStorage.removeItem(`prasi-comp-active-id`);
-        localStorage.removeItem(`prasi-comp-instance-id`);
-        localStorage.removeItem(`prasi-comp-active-last`);
-        localStorage.removeItem(`prasi-comp-active-props`);
-        await rebuildTree(p, {
-          ...opt,
-          mode: "reset",
-          note: "tree-logic-empty",
-        });
-      }
-    }
   }
 
   p.pendingRebuild = false;
@@ -310,13 +295,18 @@ const walk = async (
       }
 
       if (val.includeTree && !isRoot) {
-        val.includeTree = false;
-        p.treeFlat.push({
-          parent: val.parent_id,
-          data: { meta, idx: val.idx || 0 },
-          id: comp.item.id,
-          text: comp.item.name,
-        });
+        if (
+          p.treeFlat.length > 0 ||
+          (p.treeFlat.length === 0 && val.parent_id === "root")
+        ) {
+          val.includeTree = false;
+          p.treeFlat.push({
+            parent: val.parent_id,
+            data: { meta, idx: val.idx || 0 },
+            id: comp.item.id,
+            text: comp.item.name,
+          });
+        }
       }
 
       await Promise.all(
@@ -337,12 +327,17 @@ const walk = async (
       );
     } else if (item) {
       if (val.includeTree) {
-        p.treeFlat.push({
-          parent: val.parent_id,
-          data: { meta, idx: val.idx || 0 },
-          id: meta.item.id,
-          text: item.name,
-        });
+        if (
+          p.treeFlat.length > 0 ||
+          (p.treeFlat.length === 0 && val.parent_id === "root")
+        ) {
+          p.treeFlat.push({
+            parent: val.parent_id,
+            data: { meta, idx: val.idx || 0 },
+            id: meta.item.id,
+            text: item.name,
+          });
+        }
       }
 
       if (item.type !== "text" && Array.isArray(item.childs)) {

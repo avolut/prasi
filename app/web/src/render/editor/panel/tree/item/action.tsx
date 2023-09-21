@@ -190,6 +190,8 @@ export const Adv: FC<{
           <div
             className="bg-green-700 w-[7px] h-[7px] mr-[3px] hover:bg-green-900"
             onClick={() => {
+              e.stopPropagation();
+              e.preventDefault();
               openEditor("css");
             }}
           ></div>
@@ -200,6 +202,8 @@ export const Adv: FC<{
             <div
               className="bg-green-500 w-[7px] h-[7px] mr-[3px] hover:bg-green-800 opacity-50 hover:opacity-100"
               onClick={() => {
+                e.stopPropagation();
+                e.preventDefault();
                 openEditor("css");
               }}
             ></div>
@@ -211,7 +215,9 @@ export const Adv: FC<{
         <Tooltip content="Has JS">
           <div
             className="bg-orange-600 w-[7px] h-[7px] mr-[3px] hover:bg-orange-800"
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
               openEditor("js");
             }}
           ></div>

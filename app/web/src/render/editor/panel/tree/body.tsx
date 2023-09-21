@@ -9,7 +9,7 @@ import {
 import { FC, useCallback, useEffect } from "react";
 import { useGlobal, useLocal, waitUntil } from "web-utils";
 import { IContent, MContent } from "../../../../utils/types/general";
-import { EditorGlobal, NodeMeta } from "../../logic/global";
+import { EditorGlobal, ItemMeta, NodeMeta } from "../../logic/global";
 import { rebuildTree } from "../../logic/tree-logic";
 import { Adv } from "./item/action";
 import { ETreeItem } from "./item/item";
@@ -123,11 +123,15 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
               }
               if (found) {
                 p.item.active = found.id;
+                if (found.originalId)
+                  p.item.activeOriginalId = found.originalId;
               }
             }
           } else {
             p.comp = null;
             p.item.active = nmeta.item.id;
+            if (nmeta.item.originalId)
+              p.item.activeOriginalId = nmeta.item.originalId;
             rebuildTree(p, { mode: "update", note: "search" });
 
             localStorage.removeItem(`prasi-comp-active-id`);
@@ -137,6 +141,10 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
           }
 
           localStorage.setItem("prasi-item-active-id", p.item.active);
+          localStorage.setItem(
+            "prasi-item-active-oid",
+            p.item.activeOriginalId
+          );
 
           if (nmeta.item.type === "text") {
             setTimeout(() => {
@@ -216,6 +224,19 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
           }
 
           if (item.type !== "text") {
+            if (item.type === "item" && item.component) {
+              for (const prop of Object.values(item.component.props)) {
+                if (
+                  prop &&
+                  prop.meta &&
+                  prop.meta.type === "content-element" &&
+                  prop.content
+                ) {
+                  walk(prop.content);
+                }
+              }
+            }
+
             for (const c of item.childs) {
               walk(c);
             }
@@ -223,11 +244,20 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
         };
 
         if (p.compInstance[p.comp.id]) {
+          let found = false;
+          let first: ItemMeta = undefined as any;
           p.compInstance[p.comp.id].forEach((meta) => {
+            if (!first) {
+              first = meta;
+            }
             if (meta.comp?.item && meta.comp.item.id === p.comp?.instance_id) {
+              found = true;
               walk(meta.comp.item);
             }
           });
+          if (!found && !!first && first.comp) {
+            walk(first.comp.item);
+          }
         }
       }
     }
