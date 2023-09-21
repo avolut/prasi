@@ -179,7 +179,7 @@ const createLocal = (p: PG, meta: ItemMeta) => {
       meta.scope = {};
     }
 
-    if (!meta.scope[name]) {
+    if (!meta.scope[name] || meta.item.id === p.item.active) {
       meta.scope[name] = {
         ...deepClone(value),
         render: () => {

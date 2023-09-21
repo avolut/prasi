@@ -434,7 +434,6 @@ export const ScriptMonacoElement: FC<{
           onChange={(newsrc) => {
             clearTimeout(local.changeTimeout);
             local.changeTimeout = setTimeout(() => {
-              console.log("running");
               if (ytext && ytext.doc) {
                 ytext.doc.transact(async () => {
                   const delta = new Delta();
@@ -462,7 +461,7 @@ export const ScriptMonacoElement: FC<{
                   }
                 });
               }
-            }, 1000);
+            }, 200);
           }}
         />
       </div>
