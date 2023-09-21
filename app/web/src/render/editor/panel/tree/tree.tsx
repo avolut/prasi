@@ -1,9 +1,8 @@
 import { NodeModel } from "@minoru/react-dnd-treeview";
+import { useEffect } from "react";
 import { useGlobal, useLocal } from "web-utils";
 import { EditorGlobal, NodeMeta } from "../../logic/global";
 import { ETreeBody } from "./body";
-import { useEffect } from "react";
-import { editComp } from "../../logic/comp";
 
 export const ETree = () => {
   const p = useGlobal(EditorGlobal, "EDITOR");

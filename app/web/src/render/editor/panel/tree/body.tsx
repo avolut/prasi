@@ -211,86 +211,94 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
   );
 
   useEffect(() => {
-    if (!local.method) return;
-    let active = p.treeMeta[p.item.active];
-    if (!active && p.comp?.instance_id) {
-      const doc = p.comps.doc[p.comp.id];
-      if (doc) {
-        const walk = (item: IContent) => {
-          if (item.originalId === p.item.activeOriginalId) {
-            p.item.active = item.id;
-            active = p.treeMeta[p.item.active];
-            return;
-          }
+    (async () => {
+      if (p.pendingRebuild) {
+        await waitUntil(() => !p.pendingRebuild)
+      }
 
-          if (item.type !== "text") {
-            if (item.type === "item" && item.component) {
-              for (const prop of Object.values(item.component.props)) {
-                if (
-                  prop &&
-                  prop.meta &&
-                  prop.meta.type === "content-element" &&
-                  prop.content
-                ) {
-                  walk(prop.content);
+      let active = p.treeMeta[p.item.active];
+      if (!active && p.comp?.instance_id) {
+        const doc = p.comps.doc[p.comp.id];
+        if (doc) {
+          const walk = (item: IContent) => {
+            if (item.originalId === p.item.activeOriginalId) {
+              p.item.active = item.id;
+              active = p.treeMeta[p.item.active];
+              return;
+            }
+
+            if (item.type !== "text") {
+              if (item.type === "item" && item.component) {
+                for (const prop of Object.values(item.component.props)) {
+                  if (
+                    prop &&
+                    prop.meta &&
+                    prop.meta.type === "content-element" &&
+                    prop.content
+                  ) {
+                    walk(prop.content);
+                  }
                 }
               }
-            }
 
-            for (const c of item.childs) {
-              walk(c);
+              for (const c of item.childs) {
+                walk(c);
+              }
             }
-          }
-        };
+          };
 
-        if (p.compInstance[p.comp.id]) {
-          let found = false;
-          let first: ItemMeta = undefined as any;
-          p.compInstance[p.comp.id].forEach((meta) => {
-            if (!first) {
-              first = meta;
+          if (p.compInstance[p.comp.id]) {
+            let found = false;
+            let first: ItemMeta = undefined as any;
+            p.compInstance[p.comp.id].forEach((meta) => {
+              if (!first) {
+                first = meta;
+              }
+              if (
+                meta.comp?.item &&
+                meta.comp.item.id === p.comp?.instance_id
+              ) {
+                found = true;
+                walk(meta.comp.item);
+              }
+            });
+            if (!found && !!first && first.comp) {
+              walk(first.comp.item);
             }
-            if (meta.comp?.item && meta.comp.item.id === p.comp?.instance_id) {
-              found = true;
-              walk(meta.comp.item);
-            }
-          });
-          if (!found && !!first && first.comp) {
-            walk(first.comp.item);
           }
         }
       }
-    }
 
-    const open = new Set<string>();
-    let cur = active;
-    while (cur) {
-      let item = cur.comp?.item || cur.item;
-      open.add(item.id);
-      if (cur.parent_comp) {
-        open.add(cur.parent_comp.item.id);
+      const open = new Set<string>();
+      let cur = active;
+      while (cur) {
+        let item = cur.comp?.item || cur.item;
+        open.add(item.id);
+        if (cur.parent_comp) {
+          open.add(cur.parent_comp.item.id);
+        }
+        cur = p.treeMeta[cur.parent_id];
       }
-      cur = p.treeMeta[cur.parent_id];
-    }
 
-    const doOpen = () => {
-      if (local.method) {
-        const method = local.method;
-        local.method.open([...open]);
-        setTimeout(() => method.open([...open]), 50);
-        setTimeout(() => method.open([...open]), 100);
-        setTimeout(() => method.open([...open]), 200);
-      }
-    };
+      const doOpen = async () => {
+        if (local.method) {
+          const method = local.method;
+          local.method.open([...open]);
+          setTimeout(() => method.open([...open]), 50);
+          setTimeout(() => method.open([...open]), 100);
+          setTimeout(() => method.open([...open]), 200);
+        }
+      };
 
-    doOpen();
-    if (p.treeFlat.length === 0 || !local.method) {
-      waitUntil(() => p.treeFlat.length > 0 && local.method).then(() => {
-        doOpen();
-      });
-    } else {
       doOpen();
-    }
+      if (p.treeFlat.length === 0 || !local.method) {
+        waitUntil(() => p.treeFlat.length > 0 && local.method).then(() => {
+          doOpen();
+        });
+      } else {
+        doOpen();
+      }
+    })();
   }, [p.item.active]);
 
   return (
