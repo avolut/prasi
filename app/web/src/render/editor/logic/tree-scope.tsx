@@ -125,8 +125,13 @@ export const mergeScopeUpwards = (p: PG, meta: ItemMeta) => {
 
   let cur = meta;
 
+  
   while (cur) {
     let scope = null;
+
+    if (meta.item.name === "item") {
+      console.log(cur.item.name, cur);
+    }
 
     if (cur.scope || cur.comp?.propval) {
       scope = { ...cur.scope, ...cur.comp?.propval };

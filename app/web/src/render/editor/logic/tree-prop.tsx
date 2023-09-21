@@ -34,8 +34,11 @@ export const treePropEval = (
           _jsx: true,
           Comp: ({ from_item_id }: { from_item_id: string }) => {
             if (prop.content) {
-              // const meta = p.treeMeta[from_item_id];
-              return <EItem id={prop.content.id}  />;
+              const meta = p.treeMeta[prop.content.id];
+              if (meta.jsx_prop) {
+                meta.jsx_prop.called_by.add(from_item_id);
+              }
+              return <EItem id={prop.content.id} />;
             }
             return null;
           },

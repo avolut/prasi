@@ -189,7 +189,7 @@ export const Adv: FC<{
         <Tooltip content="Has CSS">
           <div
             className="bg-green-700 w-[7px] h-[7px] mr-[3px] hover:bg-green-900"
-            onClick={() => {
+            onClick={(e) => {
               e.stopPropagation();
               e.preventDefault();
               openEditor("css");
@@ -201,7 +201,7 @@ export const Adv: FC<{
           <div className="pre-action flex items-center">
             <div
               className="bg-green-500 w-[7px] h-[7px] mr-[3px] hover:bg-green-800 opacity-50 hover:opacity-100"
-              onClick={() => {
+              onClick={(e) => {
                 e.stopPropagation();
                 e.preventDefault();
                 openEditor("css");
@@ -227,7 +227,9 @@ export const Adv: FC<{
           <div className="pre-action flex items-center">
             <div
               className=" bg-orange-500 w-[7px] h-[7px] mr-[3px] hover:bg-orange-800 opacity-50 hover:opacity-100 self-center"
-              onClick={() => {
+              onClick={(e) => {
+                e.stopPropagation();
+                e.preventDefault();
                 openEditor("js");
               }}
             ></div>
@@ -239,7 +241,9 @@ export const Adv: FC<{
         <Tooltip content="Has HTML">
           <div
             className="bg-blue-600 w-[7px] h-[7px] mr-[3px] hover:bg-blue-800"
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
               openEditor("html");
             }}
           ></div>
