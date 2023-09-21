@@ -1,14 +1,14 @@
 import { FC, useEffect } from "react";
-import { FieldNumUnit } from "../ui/FieldNumUnit";
-import { Button } from "../ui/Button";
-import { useGlobal, useLocal } from "web-utils";
+import { useLocal } from "web-utils";
+import { IItem } from "../../../../../utils/types/item";
 import { FNDimension } from "../../../../../utils/types/meta-fn";
 import { ISection } from "../../../../../utils/types/section";
-import { IItem } from "../../../../../utils/types/item";
 import { IText } from "../../../../../utils/types/text";
-import { responsiveVal } from "../../../tools/responsive-val";
-import { Tooltip } from "../../../../../utils/ui/tooltip";
 import { Menu, MenuItem } from "../../../../../utils/ui/context-menu";
+import { Tooltip } from "../../../../../utils/ui/tooltip";
+import { responsiveVal } from "../../../tools/responsive-val";
+import { Button } from "../ui/Button";
+import { FieldNumUnit } from "../ui/FieldNumUnit";
 
 type DimensionUpdate = {
   dim: FNDimension;
@@ -123,29 +123,12 @@ export const PanelDimension: FC<{
                 _val = nval + "";
                 setVal(nval);
               }
-
-              if (false) {
-                let res: any = calculateAspectRatioFit({
-                  srcWidth: dim.w,
-                  srcHeight: dim.h,
-                  maxWidth: parseInt(_val),
-                  maxHeight: dim.h,
-                });
-                update("dim", {
-                  ...dim,
-                  h: res.height,
-                  w: parseInt(_val),
-                });
-                local.dim.h = res.height;
-                local.dim.w = parseInt(_val);
-              } else {
-                local.dim.w = parseInt(_val);
-                update("dim", {
-                  ...dim,
-                  w: local.dim.w,
-                  h: local.dim.h,
-                });
-              }
+              local.dim.w = parseInt(_val);
+              update("dim", {
+                ...dim,
+                w: local.dim.w,
+                h: local.dim.h,
+              });
               local.render();
             }}
           />

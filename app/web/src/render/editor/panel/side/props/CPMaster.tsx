@@ -119,7 +119,7 @@ export const CPMaster: FC<{ mitem: MItem }> = ({ mitem }) => {
                 );
               });
 
-              rebuildTree(p, { mode: "reset", note: "add-prop" });
+              rebuildTree(p, { mode: "update", note: "add-prop" });
             }}
           >
             Add

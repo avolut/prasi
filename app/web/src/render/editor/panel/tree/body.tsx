@@ -56,7 +56,7 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
           if (nmeta.parent_comp) {
             const originalId = nmeta.item.originalId;
             p.comp = {
-              id: nmeta.parent_comp.id,
+              id: nmeta.parent_comp.comp.id,
               instance_id: nmeta.parent_comp.item.id,
               last: [{ active_id: "", active_oid: "" }],
               props: nmeta.parent_comp.item.component?.props || {},
@@ -84,7 +84,7 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
 
             if (originalId) {
               let found: undefined | IContent;
-              const instances = p.compInstance[nmeta.parent_comp.id];
+              const instances = p.compInstance[nmeta.parent_comp.item.id];
               if (instances) {
                 instances.forEach((e) => {
                   if (found) return;
@@ -117,7 +117,7 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
                         }
                       }
                     };
-                    if (e.comp) walk(e.comp.item);
+                    if (e.comp) walk(e.item);
                   }
                 });
               }
@@ -254,16 +254,13 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
               if (!first) {
                 first = meta;
               }
-              if (
-                meta.comp?.item &&
-                meta.comp.item.id === p.comp?.instance_id
-              ) {
+              if (meta.item && meta.item.id === p.comp?.instance_id) {
                 found = true;
-                walk(meta.comp.item);
+                walk(meta.item);
               }
             });
             if (!found && !!first && first.comp) {
-              walk(first.comp.item);
+              walk(first.item);
             }
           }
         }
@@ -272,7 +269,7 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
       const open = new Set<string>();
       let cur = active;
       while (cur) {
-        let item = cur.comp?.item || cur.item;
+        let item = cur.item;
         open.add(item.id);
         if (cur.parent_comp) {
           open.add(cur.parent_comp.item.id);
@@ -427,7 +424,7 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
                         doneRenaming={() => {}}
                       />
                       <div className="pr-[2px] space-x-[1px] flex">
-                        <Adv p={p} item={meta.comp?.item || meta.item} />
+                        <Adv p={p} item={meta.item} />
                       </div>
                     </div>
                   </div>

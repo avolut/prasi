@@ -34,12 +34,12 @@ export const rebuildTree = async (
   const mode = opt?.mode || "update";
 
   if (mode === "reset") {
-    p.compInstance = {};
     p.treeMeta = {};
+    p.compInstance = {};
+    p.treeJSXProp = {};
   }
-  if (p.treeFlat.length > 0) {
-    p.treeFlat.length = 0;
-  }
+
+  p.treeFlatTemp = [];
 
   if (p.mpage) {
     if (DEBUG) {
@@ -60,13 +60,14 @@ export const rebuildTree = async (
         }) || []
       );
     });
+    p.treeFlat = p.treeFlatTemp;
   }
 
   p.pendingRebuild = false;
   _render();
 };
 
-const walk = async (
+export const walk = async (
   p: PG,
   mode: REBUILD_MODE,
   val: {
@@ -74,23 +75,24 @@ const walk = async (
     item?: IContent;
     minstance?: MItem;
     parent_id: string;
-    parent_comp?: ItemMeta["comp"];
+    parent_comp?: ItemMeta;
     jsx_prop?: { name: string; called_by: Set<string>; mprop: FMCompDef };
     depth?: number;
     idx?: number;
     includeTree?: boolean;
     instanceFound?: boolean;
+    skip?: boolean;
   }
 ) => {
   let item = val.item as IContent;
   let mitem = val.mitem;
 
-  if (val.mitem && !val.item) {
+  if (val.mitem) {
     item = val.mitem.toJSON() as any;
   }
 
   if (val.parent_comp) {
-    const pchild_ids = val.parent_comp.child_ids;
+    const pchild_ids = val.parent_comp.comp?.child_ids;
 
     if (pchild_ids && item.originalId) {
       if (pchild_ids[item.originalId]) {
@@ -135,12 +137,11 @@ const walk = async (
             if (ecomp) child_ids = ecomp.child_ids;
           }
 
-          const icomps = await instantiateComp(p, item, mcomp, child_ids);
+          item = await instantiateComp(p, item, mcomp, child_ids);
 
           comp = {
             id: cid,
             mcomp,
-            item: icomps,
             child_ids,
           };
         }
@@ -181,11 +182,11 @@ const walk = async (
       mitem: mitem,
       item,
       parent_id: val.parent_id,
-      parent_comp: val.parent_comp,
-      jsx_prop: val.jsx_prop,
+      parent_comp: val.parent_comp as any,
+      parent_jsxprop: val.jsx_prop,
       depth: val.depth || 0,
-      elprop: createElProp(comp ? comp.item : item, p),
-      className: produceCSS(comp ? comp.item : item, {
+      elprop: createElProp(item, p),
+      className: produceCSS(item, {
         mode: p.mode,
         hover: p.item.sideHover ? false : p.item.hover === item.id,
         active: p.item.sideHover ? false : p.item.active === item.id,
@@ -223,12 +224,15 @@ const walk = async (
         );
       }
     }
-    p.treeMeta[meta.item.id] = meta;
 
-    if (comp && comp.item) {
+    if (!val.skip) {
+      p.treeMeta[meta.item.id] = meta;
+    }
+
+    if (comp && item.type === "item" && item.component) {
       if (p.comp?.id !== comp.id) {
         let cprops: [string, FNCompDef][] = Object.entries(
-          comp.item.component?.props || {}
+          item.component?.props || {}
         ).sort((a, b) => {
           return a[1].idx - b[1].idx;
         });
@@ -276,8 +280,8 @@ const walk = async (
       let isRoot = false;
       if (p.comp) {
         if (p.comp.id === comp.id) {
-          if (!val.instanceFound && p.treeFlat.length === 0) {
-            p.treeFlat.push({
+          if (!val.instanceFound && p.treeFlatTemp.length === 0) {
+            p.treeFlatTemp.push({
               parent: "root",
               data: { meta, idx: 0 },
               id: meta.item.id,
@@ -287,9 +291,9 @@ const walk = async (
             val.includeTree = true;
           }
 
-          if (p.comp.instance_id === comp.item.id) {
-            p.treeFlat.length = 0;
-            p.treeFlat.push({
+          if (p.comp.instance_id === item.id) {
+            p.treeFlatTemp.length = 0;
+            p.treeFlatTemp.push({
               parent: "root",
               data: { meta, idx: 0 },
               id: meta.item.id,
@@ -304,27 +308,27 @@ const walk = async (
 
       if (val.includeTree && !isRoot) {
         if (
-          p.treeFlat.length > 0 ||
-          (p.treeFlat.length === 0 && val.parent_id === "root")
+          p.treeFlatTemp.length > 0 ||
+          (p.treeFlatTemp.length === 0 && val.parent_id === "root")
         ) {
           val.includeTree = false;
-          p.treeFlat.push({
+          p.treeFlatTemp.push({
             parent: val.parent_id,
             data: { meta, idx: val.idx || 0 },
-            id: comp.item.id,
-            text: comp.item.name,
+            id: item.id,
+            text: item.name,
           });
         }
       }
 
       await Promise.all(
-        comp.item.childs.map(async (child, idx) => {
+        item.childs.map(async (child, idx) => {
           if (comp) {
             return await walk(p, mode, {
               item: child,
-              parent_comp: meta.comp,
+              parent_comp: meta,
               mitem: comp.mcomp.get("childs")?.get(idx),
-              parent_id: comp.item.id,
+              parent_id: item.id,
               jsx_prop: val.jsx_prop,
               depth: (val.depth || 0) + 1,
               includeTree: val.includeTree,
@@ -336,10 +340,10 @@ const walk = async (
     } else if (item) {
       if (val.includeTree) {
         if (
-          p.treeFlat.length > 0 ||
-          (p.treeFlat.length === 0 && val.parent_id === "root")
+          p.treeFlatTemp.length > 0 ||
+          (p.treeFlatTemp.length === 0 && val.parent_id === "root")
         ) {
-          p.treeFlat.push({
+          p.treeFlatTemp.push({
             parent: val.parent_id,
             data: { meta, idx: val.idx || 0 },
             id: meta.item.id,
@@ -384,7 +388,7 @@ export const updateComponentInTree = async (p: PG, comp_id: string) => {
         promises.push(
           new Promise<void>(async (done) => {
             if (meta.comp && meta.mitem && meta.item) {
-              meta.comp.item = await instantiateComp(
+              meta.item = await instantiateComp(
                 p,
                 meta.item as IItem,
                 mcomp,

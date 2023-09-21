@@ -1,19 +1,19 @@
 import { FC } from "react";
 import { ERender } from "./e-render";
 import { EText } from "./e-text";
-import { ItemMeta } from "../logic/global";
 
 export const EItem: FC<{
   id: string;
-}> = ({ id }) => {
+  fromProp?: boolean;
+}> = ({ id, fromProp }) => {
   return (
-    <ERender id={id}>
+    <ERender id={id} fromProp={fromProp}>
       {(childs) => {
         return childs.map((e) => {
           if (e.type === "item") {
-            return <EItem id={e.id} key={e.id} />;
+            return <EItem id={e.id} key={e.id} fromProp={fromProp} />;
           } else {
-            return <EText id={e.id} key={e.id} />;
+            return <EText id={e.id} key={e.id} fromProp={fromProp} />;
           }
         });
       }}

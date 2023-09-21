@@ -28,35 +28,41 @@ export const ESide = () => {
     (key: string, value: any) => {
       if (p.item.active) {
         const meta = p.treeMeta[p.item.active];
-        let mitem = meta.mitem as TypedMap<any>;
+        if (meta) {
+          let mitem = (
+            meta.comp ? meta.comp.mcomp : meta.mitem
+          ) as TypedMap<any>;
 
-        if (p.mode === "mobile") {
-          let mobile = mitem.get("mobile");
-          if (!mobile) {
-            mitem.set("mobile", new Y.Map() as any);
-            mobile = mitem.get("mobile");
-          }
-          mitem = mobile as any;
-        }
-        let prop = mitem?.get(key);
-
-        if (!prop) {
-          let nprop = null;
-          if (typeof value === "object") {
-            if (Array.isArray(value)) {
-              nprop = new Y.Array();
-            } else {
-              nprop = new Y.Map();
+          mitem.doc?.transact(() => {
+            if (p.mode === "mobile") {
+              let mobile = mitem.get("mobile");
+              if (!mobile) {
+                mitem.set("mobile", new Y.Map() as any);
+                mobile = mitem.get("mobile");
+              }
+              mitem = mobile as any;
             }
-          }
-          if (mitem) {
-            mitem.set(key, nprop);
-            prop = mitem.get(key);
-          }
-        }
+            let prop = mitem?.get(key);
 
-        if (prop) {
-          syncronize(prop, value);
+            if (!prop) {
+              let nprop = null;
+              if (typeof value === "object") {
+                if (Array.isArray(value)) {
+                  nprop = new Y.Array();
+                } else {
+                  nprop = new Y.Map();
+                }
+              }
+              if (mitem) {
+                mitem.set(key, nprop);
+                prop = mitem.get(key);
+              }
+            }
+
+            if (prop) {
+              syncronize(prop, value);
+            }
+          });
         }
       }
     },

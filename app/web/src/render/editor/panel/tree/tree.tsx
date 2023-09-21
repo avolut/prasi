@@ -30,7 +30,7 @@ export const ETree = () => {
     const type = local.searchTypes;
 
     for (const [_, meta] of Object.entries(p.treeMeta)) {
-      const item = meta.comp?.item || meta.item;
+      const item = meta.item;
       const found = () => {
         if (!foundset.has(item.id)) {
           foundset.add(item.id);

@@ -1,14 +1,15 @@
 import { FC, useEffect } from "react";
 import { useLocal } from "web-utils";
 import { IText } from "../../../utils/types/text";
-import { ItemMeta, PG } from "../logic/global";
-import { ERender } from "./e-render";
+import { PG } from "../logic/global";
 import { rebuildTree } from "../logic/tree-logic";
+import { ERender } from "./e-render";
 
 export const EText: FC<{
   id: string;
-}> = ({ id }) => {
-  return <ERender id={id} />;
+  fromProp?: boolean;
+}> = ({ id, fromProp }) => {
+  return <ERender id={id} fromProp={fromProp} />;
 };
 const currentFocus = {
   id: "",

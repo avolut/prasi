@@ -317,7 +317,7 @@ const getActive = (p: PG) => {
   let item = null as any;
   if (p.comp && p.item.active === p.comp.instance_id) {
     mitem = p.treeMeta[p.comp.instance_id].comp?.mcomp;
-    item = p.treeMeta[p.comp.instance_id].comp?.item;
+    item = p.treeMeta[p.comp.instance_id].item;
   } else {
     let meta = p.treeMeta[p.item.active];
 

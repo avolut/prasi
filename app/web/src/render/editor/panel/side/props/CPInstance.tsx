@@ -45,20 +45,20 @@ export const CPInstance: FC<{ mitem: MItem }> = ({ mitem }) => {
           local.render();
           return;
         } else {
-          mprops.forEach((e, name) => {
-            const cmeta = cprops[name] && cprops[name].meta;
-            const mmeta = e.get("meta");
-            if (cmeta) {
-              if (!mmeta) {
-                e.set("meta", newMap(cmeta) as any);
-              } else if (mmeta.get("type") !== cmeta.type) {
-                mmeta.set("type", cmeta.type);
-              }
-            }
-          });
-
           local.mprops = mprops;
-          local.props = local.props = mprops.toJSON();
+          const props: any = {};
+          for (const [k, v] of Object.entries(cprops)) {
+            props[k] = v;
+            const prop = mprops.get(k);
+            if (prop) {
+              props[k].value = prop.get("value");
+              props[k].valueBuilt = prop.get("valueBuilt");
+            } else {
+              mprops.set(k, newMap(v) as any);
+            }
+          }
+          local.props = props;
+
           local.render();
         }
       }
@@ -210,13 +210,6 @@ const SingleProp: FC<{
       if (meta.item.type === "item" && meta.item.component) {
         meta.item.component.props[name].value = js;
         meta.item.component.props[name].valueBuilt = jsBuilt;
-        if (meta.comp?.item) {
-          const item = meta.comp?.item;
-          if (item.component) {
-            item.component.props[name].value = js;
-            item.component.props[name].valueBuilt = jsBuilt;
-          }
-        }
       }
       render();
     }

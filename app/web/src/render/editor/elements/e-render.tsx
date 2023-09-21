@@ -13,7 +13,8 @@ import { ETextInternal } from "./e-text";
 export const ERender: FC<{
   id: string;
   children?: (childs: IContent[]) => ReactNode;
-}> = ({ id, children }) => {
+  fromProp?: boolean;
+}> = ({ id, children, fromProp }) => {
   const p = useGlobal(EditorGlobal, "EDITOR");
   const meta = p.treeMeta[id];
 
@@ -22,15 +23,11 @@ export const ERender: FC<{
   }
   let item = meta.item;
 
-  if (meta.comp?.item) {
-    item = meta.comp.item;
-  }
-
   if (item.hidden) {
     return null;
   }
 
-  if (meta.comp?.item) {
+  if (meta.comp) {
     const comp = meta.comp;
     const props = comp.mcomp.get("component")?.get("props")?.toJSON() as Record<
       string,
@@ -79,13 +76,19 @@ export const ERender: FC<{
 
   let componentOver = null;
   if (item.type === "item" && item.component?.id) {
-    if (!p.comps.doc[item.component.id]) {
-      componentOver = <Loading backdrop={false} />;
-    } else if (
-      item.id !== p.comp?.instance_id &&
-      !p.comp?.last.find((e) => e.instance_id === item.id)
+    if (
+      !Object.values(item.component.props).find(
+        (e) => e.meta?.type === "content-element"
+      )
     ) {
-      componentOver = <ComponentOver item={item} p={p} elprop={elprop} />;
+      if (!p.comps.doc[item.component.id]) {
+        componentOver = <Loading backdrop={false} />;
+      } else if (
+        item.id !== p.comp?.instance_id &&
+        !p.comp?.last.find((e) => e.instance_id === item.id)
+      ) {
+        componentOver = <ComponentOver item={item} p={p} elprop={elprop} />;
+      }
     }
   }
 

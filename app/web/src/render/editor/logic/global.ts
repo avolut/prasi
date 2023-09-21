@@ -6,13 +6,14 @@ import { FMCompDef, FNCompDef } from "../../../utils/types/meta-fn";
 import { PRASI_COMPONENT } from "../../../utils/types/render";
 import { IRoot } from "../../../utils/types/root";
 
+type WithRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] };
 export type NodeMeta = { meta: ItemMeta; idx: number };
 export type ItemMeta = {
   mitem?: MContent;
   item: IContent;
   parent_id: string;
-  parent_comp?: ItemMeta["comp"];
-  jsx_prop?: { name: string; called_by: Set<string>; mprop: FMCompDef };
+  parent_comp?: WithRequired<ItemMeta, "comp"> & { item: IItem };
+  parent_jsxprop?: { name: string; called_by: Set<string>; mprop: FMCompDef };
   scope?: any;
   className: string;
   elprop: any;
@@ -23,7 +24,6 @@ export type ItemMeta = {
   };
   comp?: {
     id: string;
-    item: IItem;
     mcomp: MItem;
     propval?: any;
     child_ids: Record<string, string>;
@@ -117,7 +117,14 @@ export const EditorGlobal = {
     text: string;
     data: { meta: ItemMeta; idx: number };
   }[],
+  treeFlatTemp: [] as {
+    id: string;
+    parent: string;
+    text: string;
+    data: { meta: ItemMeta; idx: number };
+  }[],
   treeMeta: {} as Record<string, ItemMeta>,
+  treeJSXProp: {} as Record<string, Record<string, IItem>>,
 
   /** components */
   comp: null as null | {

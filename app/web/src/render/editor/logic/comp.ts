@@ -1,7 +1,7 @@
 import { createId } from "@paralleldrive/cuid2";
 import { IContent } from "../../../utils/types/general";
 import { IItem, MItem } from "../../../utils/types/item";
-import { FNComponent } from "../../../utils/types/meta-fn";
+import { FNCompDef, FNComponent } from "../../../utils/types/meta-fn";
 import { PRASI_COMPONENT } from "../../../utils/types/render";
 import { IRoot } from "../../../utils/types/root";
 import { WS_MSG_GET_COMP } from "../../../utils/types/ws";
@@ -203,7 +203,10 @@ export const instantiateComp = async (
   child_ids: Record<string, string>
 ) => {
   const comp = item.component as FNComponent;
-  const props = mcomp.get("component")?.get("props")?.toJSON();
+  const mprops = mcomp.get("component")?.get("props")?.toJSON() as Record<
+    string,
+    FNCompDef
+  >;
 
   let nitem = {};
   nitem = fillID(mcomp.toJSON() as any, (i) => {
@@ -222,10 +225,20 @@ export const instantiateComp = async (
 
     return false;
   }) as IItem;
+
+  const props: any = {};
+  for (const [k, v] of Object.entries(mprops)) {
+    props[k] = v;
+    if (comp.props[k]) {
+      props[k].value = comp.props[k].value;
+      props[k].valueBuilt = comp.props[k].valueBuilt;
+    }
+  }
+
   return {
     ...nitem,
     id: item.id,
     originalId: item.originalId,
-    component: { ...comp, props: { ...props, ...comp.props } },
+    component: { ...comp, props },
   } as IItem;
 };

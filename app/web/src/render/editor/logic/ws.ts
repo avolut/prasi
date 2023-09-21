@@ -112,7 +112,7 @@ export const editorWS = async (p: PG) => {
             p.mpage.on("update", (e, origin) => {
               rebuildTree(p, {
                 render,
-                mode: "reset",
+                mode: "update",
                 note: "ws-render",
               });
 

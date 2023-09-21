@@ -1,8 +1,8 @@
 import { FC, ReactNode, Suspense, useEffect } from "react";
+import { ErrorBoundary } from "web-init";
 import { deepClone } from "web-utils";
 import { createAPI, createDB } from "../../../utils/script/init-api";
 import { ItemMeta, PG } from "./global";
-import { ErrorBoundary } from "web-init";
 
 export const JS_DEBUG = false;
 
@@ -11,9 +11,6 @@ export const treeScopeEval = (p: PG, meta: ItemMeta, children: ReactNode) => {
   const elprop = meta.elprop;
 
   let item = meta.item;
-  if (meta.comp?.item) {
-    item = meta.comp.item;
-  }
 
   if (item.adv && item.adv.jsBuilt) {
     const adv = item.adv;
@@ -125,13 +122,8 @@ export const mergeScopeUpwards = (p: PG, meta: ItemMeta) => {
 
   let cur = meta;
 
-  
   while (cur) {
     let scope = null;
-
-    if (meta.item.name === "item") {
-      console.log(cur.item.name, cur);
-    }
 
     if (cur.scope || cur.comp?.propval) {
       scope = { ...cur.scope, ...cur.comp?.propval };
@@ -147,9 +139,9 @@ export const mergeScopeUpwards = (p: PG, meta: ItemMeta) => {
     for (const [k, v] of Object.entries(scope)) {
       let val = v;
       if (v && typeof v === "object") {
-        const t: { _jsx: true; Comp: FC<{ from_item_id: string }> } = v as any;
+        const t: { _jsx: true; Comp: FC<{ parent_id: string }> } = v as any;
         if (t._jsx && t.Comp) {
-          val = <t.Comp from_item_id={meta.comp?.item.id || meta.item.id} />;
+          val = <t.Comp parent_id={meta.item.id} />;
         }
       }
       finalScope[k] = val;

@@ -45,9 +45,7 @@ export const ETreeItem: FC<{
   const local = useLocal({ renaming: false, el: null as any });
   const dragOverProps = useDragOver(node.id, isOpen, onToggle);
 
-  const item = node.data.meta.comp
-    ? node.data.meta.comp.item
-    : node.data.meta.item;
+  const item = node.data.meta.item;
 
   const type = item.type;
   let childs = item.type === "text" ? [] : item.childs;
