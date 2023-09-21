@@ -120,12 +120,17 @@ export const mergeScopeUpwards = (p: PG, meta: ItemMeta) => {
   if (!meta.scope) {
     meta.scope = {};
   }
-  const scopes = [meta.scope];
+  const scopes = [];
+  scopes.push(meta.scope);
+
   let cur = meta;
+
   while (cur) {
     let scope = null;
+
     if (cur.scope || cur.comp?.propval) {
       scope = { ...cur.scope, ...cur.comp?.propval };
+
       scopes.unshift(scope);
     }
 
@@ -139,7 +144,7 @@ export const mergeScopeUpwards = (p: PG, meta: ItemMeta) => {
       if (v && typeof v === "object") {
         const t: { _jsx: true; Comp: FC<{ from_item_id: string }> } = v as any;
         if (t._jsx && t.Comp) {
-          val = <t.Comp from_item_id={meta.item.id} />;
+          val = <t.Comp from_item_id={meta.comp?.item.id || meta.item.id} />;
         }
       }
       finalScope[k] = val;

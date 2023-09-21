@@ -242,6 +242,10 @@ const walk = async (
               if (mp) {
                 const mprop = mp?.toJSON() as FNCompDef;
 
+                if (!iprops.get(key)) {
+                  iprops.set(key, mp);
+                }
+
                 const parent_prop = iprops.get(key);
                 if (parent_prop) {
                   const icontent = parent_prop?.get("content");

@@ -1,7 +1,7 @@
 import { FC, useEffect } from "react";
 import { useLocal } from "web-utils";
 import { IText } from "../../../utils/types/text";
-import { PG } from "../logic/global";
+import { ItemMeta, PG } from "../logic/global";
 import { ERender } from "./e-render";
 import { rebuildTree } from "../logic/tree-logic";
 

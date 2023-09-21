@@ -34,13 +34,8 @@ export const treePropEval = (
           _jsx: true,
           Comp: ({ from_item_id }: { from_item_id: string }) => {
             if (prop.content) {
-              const fromMeta = p.treeMeta[from_item_id];
-              const item = fromMeta.item as IItem;
-
-              item.type = "item";
-              item.childs = [prop.content];
-
-              return <EItem id={prop.content.id} fromProp={true} />;
+              // const meta = p.treeMeta[from_item_id];
+              return <EItem id={prop.content.id}  />;
             }
             return null;
           },

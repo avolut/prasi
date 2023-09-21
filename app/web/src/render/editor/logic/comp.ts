@@ -203,6 +203,7 @@ export const instantiateComp = async (
   child_ids: Record<string, string>
 ) => {
   const comp = item.component as FNComponent;
+  const props = mcomp.get("component")?.get("props")?.toJSON();
 
   let nitem = {};
   nitem = fillID(mcomp.toJSON() as any, (i) => {
@@ -225,6 +226,6 @@ export const instantiateComp = async (
     ...nitem,
     id: item.id,
     originalId: item.originalId,
-    component: comp,
+    component: { ...comp, props: { ...props, ...comp.props } },
   } as IItem;
 };

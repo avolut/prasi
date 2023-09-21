@@ -4,7 +4,7 @@ import { produceCSS } from "../../../utils/css/gen";
 import { IContent } from "../../../utils/types/general";
 import { FNAdv, FNCompDef } from "../../../utils/types/meta-fn";
 import { Loading } from "../../../utils/ui/loading";
-import { EditorGlobal } from "../logic/global";
+import { EditorGlobal, ItemMeta } from "../logic/global";
 import { treePropEval } from "../logic/tree-prop";
 import { JS_DEBUG, treeScopeEval } from "../logic/tree-scope";
 import { ComponentOver, ElProp, createElProp } from "./e-relprop";
