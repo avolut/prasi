@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { IContent } from "../../../utils/types/general";
 import { IItem } from "../../../utils/types/item";
-import { editComp, editCompByMeta } from "../logic/comp";
+import { closeEditComp, editComp, editCompByMeta } from "../logic/comp";
 import { PG } from "../logic/global";
 import { rebuildTree } from "../logic/tree-logic";
 const hoverAttempt: { id: string; ts: number }[] = [];
@@ -33,11 +33,8 @@ export const createElProp = (item: IContent, p: PG) => {
       let _item = item;
 
       const meta = p.treeMeta[_item.originalId || _item.id];
-      if (meta) {
-        editCompByMeta(p, meta);
-      }
 
-      if (p.item.active !== _item.id) {
+      const regularSelectActive = () => {
         p.item.active = _item.id;
         if (_item.originalId) {
           p.item.activeOriginalId = _item.originalId;
@@ -46,7 +43,38 @@ export const createElProp = (item: IContent, p: PG) => {
         p.softRender.all();
         localStorage.setItem("prasi-item-active-oid", p.item.activeOriginalId);
         localStorage.setItem("prasi-item-active-id", p.item.active);
+      };
+
+      if (p.comp?.instance_id === _item.id) {
+        regularSelectActive();
+        return;
       }
+
+      if (meta) {
+        if (meta.parent_comp) {
+          const comp_id = meta.parent_comp.comp.id;
+
+          if (comp_id === p.comp?.id) {
+            regularSelectActive();
+          } else {
+            p.item.active = meta.parent_comp.item.id;
+            if (meta.parent_comp.item.originalId) {
+              p.item.activeOriginalId = meta.parent_comp.item.originalId;
+            }
+
+            p.softRender.all();
+            localStorage.setItem(
+              "prasi-item-active-oid",
+              p.item.activeOriginalId
+            );
+            localStorage.setItem("prasi-item-active-id", p.item.active);
+          }
+          return;
+        }
+      }
+
+      closeEditComp(p);
+      regularSelectActive();
     },
   };
 };

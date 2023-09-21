@@ -144,13 +144,27 @@ export const closeEditComp = (p: PG) => {
 };
 
 export const editCompByMeta = (p: PG, meta: ItemMeta) => {
-  if (meta.parent_comp) {
-    p.comp = {
-      id: meta.parent_comp.comp.id,
-      instance_id: meta.parent_comp.item.id,
-      last: [{ active_id: "", active_oid: "" }],
-      props: meta.parent_comp.item.component?.props || {},
-    };
+  if (meta.parent_comp && p.comp?.id !== meta.parent_comp.comp.id) {
+    if (!p.comp) {
+      p.comp = {
+        id: meta.parent_comp.comp.id,
+        instance_id: meta.parent_comp.item.id,
+        last: [{ active_id: "", active_oid: "" }],
+        props: meta.parent_comp.item.component?.props || {},
+      };
+    } else {
+      p.comp.last.push({
+        active_id: p.item.active,
+        active_oid: p.item.activeOriginalId,
+        instance_id: p.comp.instance_id,
+        comp_id: p.comp.id,
+        props: p.comp.props,
+      });
+
+      p.comp.id = meta.parent_comp.comp.id;
+      p.comp.instance_id = meta.parent_comp.item.id;
+      p.comp.props = meta.parent_comp.item.component?.props || {};
+    }
     rebuildTree(p, { mode: "update", note: "click-comp-meta" });
   }
 };
