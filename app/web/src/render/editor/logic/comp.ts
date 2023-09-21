@@ -6,9 +6,10 @@ import { PRASI_COMPONENT } from "../../../utils/types/render";
 import { IRoot } from "../../../utils/types/root";
 import { WS_MSG_GET_COMP } from "../../../utils/types/ws";
 import { fillID } from "../tools/fill-id";
-import { PG } from "./global";
+import { ItemMeta, PG } from "./global";
 import { rebuildTree, updateComponentInTree } from "./tree-logic";
 import { wsend } from "./ws";
+import * as Y from "yjs";
 
 export const scanComponent = (
   item: IRoot | IContent,
@@ -142,6 +143,18 @@ export const closeEditComp = (p: PG) => {
   rebuildTree(p, { mode: "update", note: "close-edit-comp" });
 };
 
+export const editCompByMeta = (p: PG, meta: ItemMeta) => {
+  if (meta.parent_comp) {
+    p.comp = {
+      id: meta.parent_comp.comp.id,
+      instance_id: meta.parent_comp.item.id,
+      last: [{ active_id: "", active_oid: "" }],
+      props: meta.parent_comp.item.component?.props || {},
+    };
+    rebuildTree(p, { mode: "update", note: "click-comp-meta" });
+  }
+};
+
 export const editComp = (p: PG, id: string) => {
   const item = p.treeMeta[id].item;
   if (item && item.type === "item" && item.component) {
@@ -203,10 +216,15 @@ export const instantiateComp = async (
   child_ids: Record<string, string>
 ) => {
   const comp = item.component as FNComponent;
-  const mprops = mcomp.get("component")?.get("props")?.toJSON() as Record<
+  let mprops = mcomp.get("component")?.get("props")?.toJSON() as Record<
     string,
     FNCompDef
   >;
+
+  if (!mprops) {
+    mcomp.get("component")?.set("props", new Y.Map() as any);
+    mprops = mcomp.get("component")?.get("props")?.toJSON() as any;
+  }
 
   let nitem = {};
   nitem = fillID(mcomp.toJSON() as any, (i) => {
@@ -238,7 +256,7 @@ export const instantiateComp = async (
   return {
     ...nitem,
     id: item.id,
-    originalId: item.originalId,
+    originalId: item.originalId || (nitem as IItem).originalId,
     component: { ...comp, props },
   } as IItem;
 };

@@ -19,6 +19,7 @@ import { NodeMeta, PG } from "../../../logic/global";
 import { fillID } from "../../../tools/fill-id";
 import { newMap } from "../../../tools/yjs-tools";
 import { walk } from "../body";
+import { rebuildTree } from "../../../logic/tree-logic";
 export const DEPTH_WIDTH = 8;
 
 export const Placeholder: FC<{
@@ -72,172 +73,38 @@ export const onDrop = (
   options: DropOptions<NodeMeta>,
   local: any
 ) => {
-  const { dragSource, dropTargetId, dropTarget, relativeIndex } = options;
+  const { dragSource, dropTarget, relativeIndex } = options;
 
-  let listItem = p.item.selection;
-  if (listItem.length) {
-    // Multiple drop targets
-    if (
-      dragSource?.data &&
-      (dropTarget?.data || dropTargetId === "root") &&
-      dropTarget
-    ) {
-      let from = p.treeMeta[dragSource.id];
-      let to = p.treeMeta[dropTarget.id];
-      if (from && to && p.mpage && dragSource.id !== dropTarget.id)
-        if (!find(listItem, (e) => e === dropTargetId)) {
-          to.mitem.doc?.transact(() => {
-            const open = new Set<string>();
-            p.item.selection = [];
-            let multiple: any = [];
-            const listContent: any = listItem.map((e) => {
-              let item = p.treeMeta[e];
-              if (item) {
-                if (item.mitem.get("type") === "section") {
-                  const json = item.mitem.toJSON();
-                  const newItem = {
-                    id: json.id,
-                    name: json.name,
-                    type: "item",
-                    dim: { w: "fit", h: "fit" },
-                    adv: json.adv,
-                    childs: json.childs || [],
-                    component: json.component,
-                  } as IItem;
-                  return newItem;
-                }
+  if (dragSource?.data && dropTarget) {
+    let fromMeta = p.treeMeta[dragSource.id];
+    let toMeta = p.treeMeta[dropTarget.id];
+    if (fromMeta && toMeta) {
+      let to = toMeta.comp ? toMeta.comp.mcomp : toMeta.mitem;
+      let from = fromMeta.mitem;
 
-                return item.mitem.toJSON();
-              }
-            });
-            listItem.map((e) => {
-              let mitem = p.treeMeta[e];
-              if (mitem) {
-                const jso = mitem.mitem;
-                jso.parent.forEach((e, idx) => {
-                  if (e === jso) {
-                    jso.parent.delete(idx);
-                  }
-                });
-              }
-            });
-            let res = flatTree(listContent);
-            let listMap = res.map((e: IContent) => fillID(e));
-            listMap.map((e: IContent) => {
-              const map = new Y.Map() as MContent;
-              syncronize(map as any, e);
-              const titem = to.mitem;
-              const childs = titem.get("childs");
-              if (childs && childs.length - 1 >= (relativeIndex || 0)) {
-                childs?.insert(relativeIndex || 0, [map]);
-              } else {
-                childs?.push([map]);
-              }
-              let id = walk(map);
-              multiple = multiple.concat(id);
-              if (typeof dropTargetId === "string") open.add(dropTargetId);
-            });
-            p.render();
-            p.item.selection = multiple;
-            if (local.method) local.method?.open([...open]);
-          });
-        }
-    }
-  } else {
-    // Single drop targets
-    if (
-      dragSource?.data &&
-      (dropTarget?.data || dropTargetId === "root") &&
-      dropTarget
-    ) {
-      let from = p.treeMeta[dragSource.id];
-      let to = p.treeMeta[dropTarget.id];
-      if (from && to && p.mpage && dragSource.id !== dropTarget.id && p) {
-        let toitem = to.mitem;
-        let mitem = from.mitem;
-
-        let iscomp = false;
-        const tojson = toitem.toJSON();
-
-        if (
-          p.comp &&
-          tojson.type === "item" &&
-          tojson.component?.id === p.comp.id &&
-          tojson.id === dropTarget.id
-        ) {
-          iscomp = true;
-          const comp = p.comps.doc[p.comp.id];
-          toitem = comp.getMap("map").get("content_tree") as MItem;
-
-          const findId = (e: MItem, id: string) => {
-            let res = null;
-            e.get("childs")?.forEach((child) => {
-              if (child.get("id") === id) {
-                res = child;
-              } else {
-                const found = findId(child, id);
-                if (found) {
-                  res = found;
-                }
-              }
-            });
-            return res;
-          };
-
-          mitem = findId(toitem, mitem.get("id") || "") as any;
-        }
-
-        let map = null as any;
-        toitem.doc?.transact(() => {
-          const json = mitem.toJSON() as IContent;
-          const nmap = fillID(json);
-          map = newMap(nmap);
-          mitem.parent.forEach((e, idx) => {
-            if (e.get("id") === mitem.get("id")) {
-              mitem.parent.delete(idx);
+      if (to) {
+        to.doc?.transact(() => {
+          if (to && from && typeof relativeIndex === "number") {
+            const toChilds = to.get("childs");
+            if (toChilds) {
+              toChilds.insert(relativeIndex, [
+                newMap(fillID(from.toJSON() as any)),
+              ]);
             }
-          });
-          if (dropTargetId !== "root" || iscomp) {
-            const titem = toitem;
-            if (titem) {
-              const childs = titem.get("childs");
-              if (childs && childs.length - 1 >= (relativeIndex || 0)) {
-                childs?.insert(relativeIndex || 0, [map]);
-              } else {
-                childs?.push([map]);
+
+            from.parent.forEach((e, idx) => {
+              if (from && e.get("id") === from.get("id")) {
+                from.parent.delete(idx);
               }
-            }
-          } else {
-            if (p.mpage) {
-              const childs = p.mpage
-                .getMap("map")
-                .get("content_tree")
-                ?.get("childs");
-              childs?.insert(relativeIndex || 0, [map]);
-            }
+            });
           }
         });
-
-        if (iscomp && p.comp) {
-          p.comp.content_tree = (toitem as any).toJSON();
-        }
-        if (map) {
-          const item = map.toJSON();
-          // p.treeMeta[item.id] = {
-          //   item,
-          //   mitem: map,
-          // };
-          if (item) {
-            p.item.active = item.id;
-          }
-        }
-        p.render();
       }
     }
   }
 };
 
-export const canDrop = (p: PG, arg: DropOptions<NodeMeta>, local: any) => {
+export const canDrop = (p: PG, arg: DropOptions<NodeMeta>) => {
   const { dragSource, dragSourceId, dropTargetId, dropTarget } = arg;
   try {
     const parentSource: MContent | undefined = get(
@@ -264,9 +131,9 @@ export const canDrop = (p: PG, arg: DropOptions<NodeMeta>, local: any) => {
         }
       } else {
         if (typeof dragSourceId === "string") {
-          const mitem = p.treeMeta[dragSourceId];
-          if (mitem) {
-            let walkId = walk(mitem.mitem);
+          const meta = p.treeMeta[dragSourceId];
+          if (meta && meta.mitem) {
+            let walkId = walk(meta.mitem);
             if (find(walkId, (e) => e === dropTargetId)) {
               return false;
             }
@@ -283,7 +150,7 @@ export const canDrop = (p: PG, arg: DropOptions<NodeMeta>, local: any) => {
             dropTarget.data.meta.item.component?.id
           ) {
             if (p.comp) {
-              if (p.comp.content_tree.id === dropTarget.data.meta.item.id) {
+              if (p.comp.id === dropTarget.data.meta.comp?.id) {
                 return true;
               }
             }
@@ -300,7 +167,7 @@ export const canDrop = (p: PG, arg: DropOptions<NodeMeta>, local: any) => {
             dropTarget.data.meta.item.component?.id
           ) {
             if (p.comp) {
-              if (p.comp.content_tree.id === dropTarget.data.meta.item.id) {
+              if (p.comp.id === dropTarget.data.meta.comp?.id) {
                 return true;
               }
             }
@@ -327,9 +194,9 @@ export const selectMultiple = (p: PG, node: NodeModel<NodeMeta>) => {
   let root: any = null;
   let listId = p.item.selection || [];
   if (!listId.length) {
-    const item = p.treeMeta[p.item.active];
-    if (item) {
-      listId = treeContent(item.mitem);
+    const meta = p.treeMeta[p.item.active];
+    if (meta && meta.mitem) {
+      listId = treeContent(meta.mitem);
     }
   }
   if (comp) {
@@ -337,9 +204,9 @@ export const selectMultiple = (p: PG, node: NodeModel<NodeMeta>) => {
   } else if (p.mpage) {
     root = p.mpage.getMap("map").get("content_tree");
   }
-  const item = p.treeMeta[node.id];
-  if (item) {
-    const listItemId = treeContent(item.mitem);
+  const meta = p.treeMeta[node.id];
+  if (meta && meta.mitem) {
+    const listItemId = treeContent(meta.mitem);
     if (find(listId, (e) => e === node.id) && p.item.selection.length) {
       listId = listId.filter((e) => !find(listItemId, (x) => x === e));
     } else {

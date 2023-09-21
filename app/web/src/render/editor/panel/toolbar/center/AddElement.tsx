@@ -71,6 +71,7 @@ export const AddElement: FC<{}> = ({}) => {
                     }
                     const item = map.toJSON();
                     p.item.active = item.id;
+                    p.item.activeOriginalId = item.id;
                   }
                 } else if (type === "text") {
                   let done = false;
@@ -84,6 +85,8 @@ export const AddElement: FC<{}> = ({}) => {
                         let active = mitem.parent.get(idx + 1) as any;
                         const item = active.toJSON();
                         p.item.active = item.id;
+                        p.item.activeOriginalId = item.id;
+
                         done = true;
                         p.render();
                       }
@@ -137,6 +140,8 @@ export const AddElement: FC<{}> = ({}) => {
                     }
                     const item = map.toJSON();
                     p.item.active = item.id;
+                    p.item.activeOriginalId = item.id;
+
                     p.render();
                   }
                 } else {
@@ -151,6 +156,7 @@ export const AddElement: FC<{}> = ({}) => {
                         let active = mitem.parent.get(idx + 1) as any;
                         const item = active.toJSON();
                         p.item.active = item.id;
+                        p.item.activeOriginalId = item.id;
                         done = true;
                         p.render();
                       }
@@ -205,6 +211,8 @@ export const AddElement: FC<{}> = ({}) => {
                         childs.push([map]);
                         const mitem = map.toJSON();
                         p.item.active = mitem.id;
+                        p.item.activeOriginalId = mitem.id;
+
                         p.render();
                       }
                     }
@@ -262,6 +270,8 @@ export const AddElement: FC<{}> = ({}) => {
                       }
                       const item = map.toJSON();
                       p.item.active = item.id;
+                      p.item.activeOriginalId = item.id;
+
                       p.render();
                     }
                   } else {
@@ -276,6 +286,8 @@ export const AddElement: FC<{}> = ({}) => {
                           let active = mitem.parent.get(idx + 1) as any;
                           const item = active.toJSON();
                           p.item.active = item.id;
+                          p.item.activeOriginalId = item.id;
+
                           done = true;
                           p.render();
                         }

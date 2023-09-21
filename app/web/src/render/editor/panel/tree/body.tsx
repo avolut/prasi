@@ -464,7 +464,7 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
             onDragStart={(node) => onDragStart(p, node)}
             onDragEnd={(node) => onDragEnd(p, node)}
             canDrop={(_, args) => {
-              return canDrop(p, args, local);
+              return canDrop(p, args);
             }}
             onDrop={(...args) => onDrop(p, ...args, local)}
           ></TypedTree>
@@ -476,9 +476,11 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
 
 export const walk = (item: MContent, result?: string[]) => {
   const _result = result || [];
-  _result.push(item.get("id") || "");
-  item.get("childs")?.forEach((e) => {
-    walk(e, _result);
-  });
+  if (item && item.get) {
+    _result.push(item.get("id") || "");
+    item.get("childs")?.forEach((e) => {
+      walk(e, _result);
+    });
+  }
   return _result;
 };

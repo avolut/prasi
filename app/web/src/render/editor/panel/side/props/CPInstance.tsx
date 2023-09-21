@@ -44,7 +44,7 @@ export const CPInstance: FC<{ mitem: MItem }> = ({ mitem }) => {
           local.status = "ERROR: Item not found.";
           local.render();
           return;
-        } else {
+        } else if (cprops) {
           local.mprops = mprops;
           const props: any = {};
           for (const [k, v] of Object.entries(cprops)) {
