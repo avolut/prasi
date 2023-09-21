@@ -20,7 +20,7 @@ export const rebuildTree = async (
   p: PG,
   opt?: { render?: () => void; mode?: REBUILD_MODE; note: string }
 ) => {
-  if (p.pendingRebuild) {
+  if (p.pendingRebuild || p.focused) {
     return;
   }
   p.pendingRebuild = true;

@@ -23,6 +23,11 @@ export const createElProp = (item: IContent, p: PG) => {
 
     onPointerDown: async (e: React.PointerEvent<HTMLDivElement>) => {
       e.stopPropagation();
+      const render = () => {
+        if (item.type !== "text") {
+          p.softRender.all();
+        }
+      };
       if (item.type !== "text") {
         e.preventDefault();
         (document.activeElement as any)?.blur();
@@ -41,7 +46,7 @@ export const createElProp = (item: IContent, p: PG) => {
           p.item.activeOriginalId = _item.originalId;
         }
 
-        p.softRender.all();
+        render();
         localStorage.setItem("prasi-item-active-oid", p.item.activeOriginalId);
         localStorage.setItem("prasi-item-active-id", p.item.active);
       };
@@ -72,7 +77,7 @@ export const createElProp = (item: IContent, p: PG) => {
                 p.item.activeOriginalId = cur.item.originalId;
               }
 
-              p.softRender.all();
+              render();
               localStorage.setItem(
                 "prasi-item-active-oid",
                 p.item.activeOriginalId
@@ -86,7 +91,9 @@ export const createElProp = (item: IContent, p: PG) => {
         }
       }
 
-      closeEditComp(p);
+      if (item.type !== "text") {
+        closeEditComp(p);
+      }
       regularSelectActive();
     },
   };
