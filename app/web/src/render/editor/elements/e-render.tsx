@@ -1,10 +1,10 @@
 import { FC, ReactNode } from "react";
-import { useGlobal, useLocal } from "web-utils";
+import { useGlobal } from "web-utils";
 import { produceCSS } from "../../../utils/css/gen";
 import { IContent } from "../../../utils/types/general";
 import { FNAdv, FNCompDef } from "../../../utils/types/meta-fn";
 import { Loading } from "../../../utils/ui/loading";
-import { EditorGlobal, ItemMeta } from "../logic/global";
+import { EditorGlobal } from "../logic/global";
 import { treePropEval } from "../logic/tree-prop";
 import { JS_DEBUG, treeScopeEval } from "../logic/tree-scope";
 import { ComponentOver, ElProp, createElProp } from "./e-relprop";
@@ -14,7 +14,7 @@ export const ERender: FC<{
   id: string;
   children?: (childs: IContent[]) => ReactNode;
   fromProp?: boolean;
-}> = ({ id, children, fromProp }) => {
+}> = ({ id, children }) => {
   const p = useGlobal(EditorGlobal, "EDITOR");
   const meta = p.treeMeta[id];
 
@@ -63,6 +63,7 @@ export const ERender: FC<{
     }
   }
 
+
   meta.elprop = createElProp(item, p);
   meta.className = produceCSS(item, {
     mode: p.mode,
@@ -106,6 +107,9 @@ export const ERender: FC<{
         </>
       );
 
+      // if (item.name === "menu-ppds-new") {
+      //   console.log(el);
+      // }
       return el;
     }
   }

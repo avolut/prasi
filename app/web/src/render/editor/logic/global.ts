@@ -6,7 +6,7 @@ import { FMCompDef, FNCompDef } from "../../../utils/types/meta-fn";
 import { PRASI_COMPONENT } from "../../../utils/types/render";
 import { IRoot } from "../../../utils/types/root";
 
-type WithRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] };
+export type WithRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] };
 export type NodeMeta = { meta: ItemMeta; idx: number };
 export type ItemMeta = {
   mitem?: MContent;

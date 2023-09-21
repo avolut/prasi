@@ -4,9 +4,10 @@ import { IItem, MItem } from "../../../utils/types/item";
 import { FMCompDef, FNCompDef } from "../../../utils/types/meta-fn";
 import { createElProp } from "../elements/e-relprop";
 import { DefaultScript } from "../panel/script/monaco/monaco-element";
+import { fillID } from "../tools/fill-id";
 import { newMap } from "../tools/yjs-tools";
 import { instantiateComp, loadComponent } from "./comp";
-import { ItemMeta, PG } from "./global";
+import { ItemMeta, PG, WithRequired } from "./global";
 export type REBUILD_MODE = "update" | "reset";
 
 const DEBUG = false;
@@ -75,7 +76,7 @@ export const walk = async (
     item?: IContent;
     minstance?: MItem;
     parent_id: string;
-    parent_comp?: ItemMeta;
+    parent_comp?: WithRequired<ItemMeta, "comp"> & { item: IItem };
     jsx_prop?: { name: string; called_by: Set<string>; mprop: FMCompDef };
     depth?: number;
     idx?: number;
@@ -88,7 +89,17 @@ export const walk = async (
   let mitem = val.mitem;
 
   if (val.mitem) {
-    item = val.mitem.toJSON() as any;
+    if (val.parent_comp) {
+      const child_ids = val.parent_comp.comp.child_ids;
+      item = fillID(val.mitem.toJSON() as any, (e) => {
+        if (child_ids[e.id]) {
+          e.id = child_ids[e.id];
+        }
+        return false;
+      }) as any;
+    } else {
+      item = val.mitem.toJSON() as any;
+    }
   }
 
   if (val.parent_comp) {
@@ -326,7 +337,7 @@ export const walk = async (
           if (comp) {
             return await walk(p, mode, {
               item: child,
-              parent_comp: meta,
+              parent_comp: meta as any,
               mitem: comp.mcomp.get("childs")?.get(idx),
               parent_id: item.id,
               jsx_prop: val.jsx_prop,

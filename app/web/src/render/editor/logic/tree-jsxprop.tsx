@@ -13,6 +13,9 @@ export const intantiateJSXPropMeta = (arg: {
   prop: FNCompDef;
 }) => {
   const { p, parent_id, name, prop } = arg;
+
+  if (!prop.content) return;
+
   if (!p.treeJSXProp[parent_id]) {
     p.treeJSXProp[parent_id] = {};
   }

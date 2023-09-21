@@ -12,6 +12,7 @@ export const treeScopeEval = (p: PG, meta: ItemMeta, children: ReactNode) => {
 
   let item = meta.item;
 
+
   if (item.adv && item.adv.jsBuilt) {
     const adv = item.adv;
     let args = {};
@@ -53,31 +54,31 @@ export const treeScopeEval = (p: PG, meta: ItemMeta, children: ReactNode) => {
         children,
         props: { ...elprop, className },
         render: (jsx: ReactNode) => {
-          // output.jsx = jsx;
-          output.jsx = (
-            <>
-              <pre className={"text-[9px] font-mono text-black"}>
-                {item.originalId}-{item.name}
-              </pre>
-              {jsx}
-            </>
-          );
-          output.jsx = (
-            <ErrorBoundary>
-              <Suspense
-                fallback={
-                  <div className="flex flex-1 items-center justify-center w-full h-full relative">
-                    {p.ui.loading}
-                  </div>
-                }
-              >
-                {/* <pre className={"text-[9px] font-mono text-black"}>
-                  {item.id}-{item.name}
-                </pre> */}
-                {jsx}
-              </Suspense>
-            </ErrorBoundary>
-          );
+          output.jsx = jsx;
+          // output.jsx = (
+          //   <>
+          //     <pre className={"text-[9px] font-mono text-black"}>
+          //       {item.originalId}-{item.name}
+          //     </pre>
+          //     {jsx}
+          //   </>
+          // );
+          // output.jsx = (
+          //   <ErrorBoundary>
+          //     <Suspense
+          //       fallback={
+          //         <div className="flex flex-1 items-center justify-center w-full h-full relative">
+          //           {p.ui.loading}
+          //         </div>
+          //       }
+          //     >
+          //       {/* <pre className={"text-[9px] font-mono text-black"}>
+          //         {item.id}-{item.name}
+          //       </pre> */}
+          //       {jsx}
+          //     </Suspense>
+          //   </ErrorBoundary>
+          // );
         },
       };
 
