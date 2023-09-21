@@ -97,6 +97,21 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
                       }
 
                       if (item.type !== "text") {
+                        if (item.type === "item" && item.component) {
+                          for (const prop of Object.values(
+                            item.component.props
+                          )) {
+                            if (
+                              prop &&
+                              prop.meta &&
+                              prop.meta.type === "content-element" &&
+                              prop.content
+                            ) {
+                              walk(prop.content);
+                            }
+                          }
+                        }
+
                         for (const c of item.childs) {
                           walk(c);
                         }
