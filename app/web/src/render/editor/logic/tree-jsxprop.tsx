@@ -14,14 +14,25 @@ export const intantiateJSXPropMeta = (arg: {
 }) => {
   const { p, parent_id, name, prop } = arg;
 
-  if (!prop.content) return;
-
   if (!p.treeJSXProp[parent_id]) {
     p.treeJSXProp[parent_id] = {};
   }
   if (!p.treeJSXProp[parent_id][name]) {
     p.treeJSXProp[parent_id][name] = fillID(
-      JSON.parse(JSON.stringify(prop.content))
+      JSON.parse(
+        JSON.stringify(
+          prop.content || {
+            id: "-",
+            name: name,
+            type: "item",
+            dim: { w: "full", h: "full" },
+            childs: [],
+            adv: {
+              css: "",
+            },
+          }
+        )
+      )
     ) as IItem;
   }
 
