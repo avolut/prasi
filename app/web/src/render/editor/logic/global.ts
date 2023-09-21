@@ -12,7 +12,7 @@ export type ItemMeta = {
   item: IContent;
   parent_id: string;
   parent_comp?: ItemMeta["comp"];
-  parent_prop?: FMCompDef;
+  jsx_prop?: { name: string; called_by: Set<string>; mprop: FMCompDef };
   scope?: any;
   className: string;
   elprop: any;

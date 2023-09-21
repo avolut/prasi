@@ -5,7 +5,7 @@ import { FMCompDef, FNCompDef } from "../../../utils/types/meta-fn";
 import { createElProp } from "../elements/e-relprop";
 import { DefaultScript } from "../panel/script/monaco/monaco-element";
 import { newMap } from "../tools/yjs-tools";
-import { closeEditComp, instantiateComp, loadComponent } from "./comp";
+import { instantiateComp, loadComponent } from "./comp";
 import { ItemMeta, PG } from "./global";
 export type REBUILD_MODE = "update" | "reset";
 
@@ -75,7 +75,7 @@ const walk = async (
     minstance?: MItem;
     parent_id: string;
     parent_comp?: ItemMeta["comp"];
-    parent_prop?: FMCompDef;
+    jsx_prop?: { name: string; called_by: Set<string>; mprop: FMCompDef };
     depth?: number;
     idx?: number;
     includeTree?: boolean;
@@ -182,7 +182,7 @@ const walk = async (
       item,
       parent_id: val.parent_id,
       parent_comp: val.parent_comp,
-      parent_prop: val.parent_prop,
+      jsx_prop: val.jsx_prop,
       depth: val.depth || 0,
       elprop: createElProp(comp ? comp.item : item, p),
       className: produceCSS(comp ? comp.item : item, {
@@ -246,16 +246,20 @@ const walk = async (
                   iprops.set(key, mp);
                 }
 
-                const parent_prop = iprops.get(key);
-                if (parent_prop) {
-                  const icontent = parent_prop?.get("content");
+                const jsx_prop = iprops.get(key);
+                if (jsx_prop) {
+                  const icontent = jsx_prop?.get("content");
                   if (mprop.meta?.type === "content-element" && icontent) {
                     await walk(p, mode, {
                       item: cprop.content,
                       mitem: icontent,
                       parent_id: item.id,
                       parent_comp: val.parent_comp,
-                      parent_prop,
+                      jsx_prop: {
+                        name: key,
+                        called_by: new Set(),
+                        mprop: jsx_prop,
+                      },
                       idx: mprop.idx,
                       depth: (val.depth || 0) + 1,
                       includeTree: true,
@@ -321,7 +325,7 @@ const walk = async (
               parent_comp: meta.comp,
               mitem: comp.mcomp.get("childs")?.get(idx),
               parent_id: comp.item.id,
-              parent_prop: val.parent_prop,
+              jsx_prop: val.jsx_prop,
               depth: (val.depth || 0) + 1,
               includeTree: val.includeTree,
               instanceFound: val.instanceFound,
@@ -353,7 +357,7 @@ const walk = async (
               parent_comp: val.parent_comp,
               mitem: mitem?.get("childs")?.get(idx) as MContent,
               parent_id: item.id || "",
-              parent_prop: val.parent_prop,
+              jsx_prop: val.jsx_prop,
               depth: (val.depth || 0) + 1,
               includeTree: val.includeTree,
               instanceFound: val.instanceFound,
