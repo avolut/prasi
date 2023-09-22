@@ -107,7 +107,11 @@ export const treeScopeEval = (p: PG, meta: ItemMeta, children: ReactNode) => {
   }
 };
 
-export const mergeScopeUpwards = (p: PG, meta: ItemMeta) => {
+export const mergeScopeUpwards = (
+  p: PG,
+  meta: ItemMeta,
+  each?: (meta: ItemMeta, values: Record<string, any>) => void
+) => {
   // merge scope upwards
   if (!meta.scope) {
     meta.scope = {};
@@ -117,13 +121,14 @@ export const mergeScopeUpwards = (p: PG, meta: ItemMeta) => {
 
   let cur = meta;
 
-
   while (cur) {
     let scope = null;
 
     if (cur.scope || cur.comp?.propval) {
       scope = { ...cur.scope, ...cur.comp?.propval };
-
+      if (each) {
+        each(cur, scope);
+      }
       scopes.unshift(scope);
     }
 
@@ -135,8 +140,8 @@ export const mergeScopeUpwards = (p: PG, meta: ItemMeta) => {
           targets.forEach((id) => {
             const m = p.treeMeta[id];
             if (m) {
-              const nscope = mergeScopeUpwards(p, m);
-              scopes.unshift(nscope)
+              const nscope = mergeScopeUpwards(p, m, each);
+              scopes.unshift(nscope);
             }
           });
         }

@@ -14,6 +14,7 @@ import { mergeScopeUpwards } from "../../../logic/tree-scope";
 import { newMap } from "../../../tools/yjs-tools";
 import { jsMount } from "./mount";
 import { monacoTypings } from "./typings";
+import { MonacoScopeBar } from "./scope-bar";
 
 export type MonacoEditor = Parameters<OnMount>[0];
 export const DefaultScript = {
@@ -472,6 +473,7 @@ export const ScriptMonacoElement: FC<{
           }}
         />
       </div>
+      <MonacoScopeBar />
     </div>
   );
 };

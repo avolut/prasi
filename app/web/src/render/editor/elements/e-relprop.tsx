@@ -3,10 +3,6 @@ import { IContent } from "../../../utils/types/general";
 import { IItem } from "../../../utils/types/item";
 import { closeEditComp, editComp } from "../logic/comp";
 import { PG } from "../logic/global";
-import {
-  getSelectionOffset,
-  setSelectionOffset,
-} from "../../../utils/ui/selection";
 
 export type ElProp = ReturnType<typeof createElProp>;
 export const createElProp = (item: IContent, p: PG) => {
