@@ -34,6 +34,7 @@ export const rebuildTree = async (
   };
 
   const mode = opt?.mode || "update";
+  // console.log("rebuild", mode);
 
   if (mode === "reset") {
     p.treeMeta = {};
@@ -301,7 +302,7 @@ export const walk = async (
       const mcomp = p.comps.doc[item.component.id]
         .getMap("map")
         .get("content_tree");
-      if (mcomp && p.comp?.id !== item.component.id) {
+      if (mcomp) {
         const mprops = mcomp.get("component")?.get("props");
         const iprops = mitem?.get("component")?.get("props");
 
@@ -340,7 +341,7 @@ export const walk = async (
                       parent_comp: val.parent_comp,
                       idx: mprop.idx,
                       depth: (val.depth || 0) + 1,
-                      includeTree: true,
+                      includeTree: p.comp?.id !== item.component.id,
                       instanceFound: val.instanceFound,
                     });
                 }

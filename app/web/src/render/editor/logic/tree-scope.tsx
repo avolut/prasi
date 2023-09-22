@@ -1,8 +1,8 @@
 import { FC, ReactNode, Suspense, useEffect } from "react";
-import { ErrorBoundary } from "web-init";
 import { deepClone } from "web-utils";
 import { createAPI, createDB } from "../../../utils/script/init-api";
 import { ItemMeta, PG } from "./global";
+import { ErrorBoundary } from "web-init";
 
 export const JS_DEBUG = false;
 
@@ -52,32 +52,28 @@ export const treeScopeEval = (p: PG, meta: ItemMeta, children: ReactNode) => {
         api: p.script.api,
         children,
         props: { ...elprop, className },
+        useEffect: useEffect,
         render: (jsx: ReactNode) => {
-          output.jsx = jsx;
-          // output.jsx = (
-          //   <>
-          //     <pre className={"text-[9px] font-mono text-black"}>
-          //       {item.originalId}-{item.name}
-          //     </pre>
-          //     {jsx}
-          //   </>
-          // );
-          // output.jsx = (
-          //   <ErrorBoundary>
-          //     <Suspense
-          //       fallback={
-          //         <div className="flex flex-1 items-center justify-center w-full h-full relative">
-          //           {p.ui.loading}
-          //         </div>
-          //       }
-          //     >
-          //       {/* <pre className={"text-[9px] font-mono text-black"}>
-          //         {item.id}-{item.name}
-          //       </pre> */}
-          //       {jsx}
-          //     </Suspense>
-          //   </ErrorBoundary>
-          // );
+          output.jsx = (
+            <ErrorBoundary
+              onError={(e) => {
+                console.warn(e);
+              }}
+            >
+              <Suspense
+                fallback={
+                  <div className="flex flex-1 items-center justify-center w-full h-full relative">
+                    {p.ui.loading}
+                  </div>
+                }
+              >
+                {/* <pre className={"text-[9px] font-mono text-black"}>
+                  {item.id}-{item.name}
+                </pre> */}
+                {jsx}
+              </Suspense>
+            </ErrorBoundary>
+          );
         },
       };
 
@@ -164,16 +160,20 @@ const createPassProp = (p: PG, meta: ItemMeta) => {
 };
 
 const createLocal = (p: PG, meta: ItemMeta) => {
-  return ({
+  const Local = ({
     name,
     value,
     effect,
     children,
+    hook,
+    deps,
   }: {
     name: string;
     value: any;
     effect?: (value: any) => void | Promise<void>;
     children: ReactNode;
+    hook?: () => void;
+    deps?: any[];
   }) => {
     if (!meta.scope) {
       meta.scope = {};
@@ -190,12 +190,22 @@ const createLocal = (p: PG, meta: ItemMeta) => {
       };
     }
 
+    if (typeof hook === "function") {
+      try {
+        hook();
+      } catch (e) {
+        console.warn(e);
+      }
+    }
+
     useEffect(() => {
       if (effect) {
         effect(meta.scope[name]);
       }
-    }, []);
+    }, deps || []);
 
     return children;
   };
+
+  return Local;
 };

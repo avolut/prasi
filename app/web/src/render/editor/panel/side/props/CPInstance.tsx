@@ -16,6 +16,7 @@ import { CPOption } from "./CPOption";
 import { CPText } from "./CPText";
 import { newMap } from "../../../tools/yjs-tools";
 import { Tooltip } from "../../../../../utils/ui/tooltip";
+import { rebuildTree } from "../../../logic/tree-logic";
 
 export const CPInstance: FC<{ mitem: MItem }> = ({ mitem }) => {
   const p = useGlobal(EditorGlobal, "EDITOR");
@@ -204,7 +205,7 @@ const SingleProp: FC<{
         meta.item.component.props[name].value = js;
         meta.item.component.props[name].valueBuilt = jsBuilt;
       }
-      render();
+      rebuildTree(p, { mode: "update", note: "update-props" });
     }
   };
   const reset = () => {
@@ -244,8 +245,8 @@ const SingleProp: FC<{
 
   let notExists = false;
   if (prop) {
-    prop.value = _prop.value;
-    prop.valueBuilt = _prop.valueBuilt;
+    prop.value = mprop.get("value");
+    prop.valueBuilt = mprop.get("valueBuilt");
   } else {
     prop = _prop;
     notExists = true;

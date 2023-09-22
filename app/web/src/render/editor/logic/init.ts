@@ -99,10 +99,8 @@ export const initEditor = async (p: PG, site_id: string) => {
       execSiteJS(p);
 
       p.status = "ready";
-      p.render();
     } else {
       p.status = "not-found";
-      p.render();
     }
     if (!jscript.build) {
       jscript.init();

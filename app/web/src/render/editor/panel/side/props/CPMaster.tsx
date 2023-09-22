@@ -122,7 +122,7 @@ export const CPMaster: FC<{ mitem: MItem }> = ({ mitem }) => {
           </div>
         </div>
 
-        <PreviewItemProp />
+        {/* <PreviewItemProp /> */}
       </div>
       <div className="flex-1 relative overflow-y-auto">
         <div className="absolute flex-col inset-0">

@@ -36,6 +36,7 @@ const Local: <T extends Record<string, any>>(arg: {
   name: string;
   value: T;
   children: ((local: T & { render: () => void }) => any);
+  deps?: any[];
   effect?: (
     local: T & { render: () => void }
   ) => void | (() => void) | Promise<void | (() => void)>;

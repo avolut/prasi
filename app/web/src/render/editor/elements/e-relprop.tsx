@@ -3,19 +3,23 @@ import { IContent } from "../../../utils/types/general";
 import { IItem } from "../../../utils/types/item";
 import { closeEditComp, editComp } from "../logic/comp";
 import { PG } from "../logic/global";
+import {
+  getSelectionOffset,
+  setSelectionOffset,
+} from "../../../utils/ui/selection";
 
 export type ElProp = ReturnType<typeof createElProp>;
 export const createElProp = (item: IContent, p: PG) => {
   return {
     onPointerEnter: (e: React.PointerEvent<HTMLDivElement>) => {
+      e.stopPropagation();
+
       if (p.item.sideHover) {
         p.item.sideHover = false;
         p.softRender.all();
       }
 
       if (p.item.hover !== item.id) {
-        e.stopPropagation();
-        e.preventDefault();
         p.item.hover = item.id;
         p.softRender.all();
       }
@@ -26,6 +30,12 @@ export const createElProp = (item: IContent, p: PG) => {
       const render = () => {
         if (item.type !== "text") {
           p.softRender.all();
+        } else {
+          if (
+            !document.activeElement?.attributes.getNamedItem("contenteditable")
+          ) {
+            p.softRender.tree();
+          }
         }
       };
       if (item.type !== "text") {

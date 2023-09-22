@@ -433,9 +433,9 @@ export const ScriptMonacoElement: FC<{
           }
           onChange={(newsrc) => {
             clearTimeout(local.changeTimeout);
-            local.changeTimeout = setTimeout(() => {
+            local.changeTimeout = setTimeout(async () => {
               if (ytext && ytext.doc) {
-                ytext.doc.transact(async () => {
+                await ytext.doc.transact(async () => {
                   const delta = new Delta();
 
                   const sd = strDelta(ytext.toString(), newsrc || "");
@@ -452,13 +452,20 @@ export const ScriptMonacoElement: FC<{
                   }
                   ytext.applyDelta(delta.ops);
 
+                  const meta = p.treeMeta[p.item.active];
+                  if (meta.item.adv) meta.item.adv.js = ytext.toJSON();
                   if (script.type === "js") {
                     const compiled = await build(
                       "element.tsx",
                       `render(${trim((newsrc || "").trim(), ";")})`
                     );
                     adv.set("jsBuilt", compiled);
+                    if (meta.item.adv) meta.item.adv.jsBuilt = compiled;
                   }
+                  if (meta.memoize) {
+                    delete meta.memoize;
+                  }
+                  p.render();
                 });
               }
             }, 200);
