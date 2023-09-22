@@ -1,13 +1,14 @@
+import { NodeModel } from "@minoru/react-dnd-treeview";
 import { FC } from "react";
-import { IContent, MContent } from "../../../../../utils/types/general";
-import { Tooltip } from "../../../../../utils/ui/tooltip";
-import { FNAdv } from "../../../../../utils/types/meta-fn";
 import { useGlobal } from "web-utils";
-import { EditorGlobal, PG } from "../../../logic/global";
+import { IContent, MContent } from "../../../../../utils/types/general";
 import { IItem } from "../../../../../utils/types/item";
-import { newMap } from "../../../tools/yjs-tools";
-import { fillID } from "../../../tools/fill-id";
+import { FNAdv } from "../../../../../utils/types/meta-fn";
+import { Tooltip } from "../../../../../utils/ui/tooltip";
 import { editComp } from "../../../logic/comp";
+import { EditorGlobal, NodeMeta, PG } from "../../../logic/global";
+import { fillID } from "../../../tools/fill-id";
+import { newMap } from "../../../tools/yjs-tools";
 
 export const ETreeItemAction: FC<{
   item: IContent;
@@ -15,7 +16,9 @@ export const ETreeItemAction: FC<{
   isComponent: boolean;
   isPropContent: boolean;
   rename: () => void;
-}> = ({ item, mode, isComponent, isPropContent, rename }) => {
+  onClick: (node: NodeModel<NodeMeta>) => void;
+  node: NodeModel<NodeMeta>;
+}> = ({ item, mode, isComponent, isPropContent, rename, node, onClick }) => {
   const p = useGlobal(EditorGlobal, "EDITOR");
 
   let link: string;
@@ -66,7 +69,7 @@ export const ETreeItemAction: FC<{
 
       {!isComponent && (
         <>
-          <Adv item={item} p={p} />
+          <Adv item={item} p={p} node={node} onClick={onClick} />
         </>
       )}
       {item.hidden === "all" && (
@@ -173,13 +176,15 @@ export const ETreeItemAction: FC<{
 export const Adv: FC<{
   item: IContent;
   p: PG;
-}> = ({ item, p }) => {
+  onClick: (node: NodeModel<NodeMeta>) => void;
+  node: NodeModel<NodeMeta>;
+}> = ({ item, p, onClick, node }) => {
   const adv = { ...item.adv } as FNAdv;
 
   const openEditor = (mode: "css" | "js" | "html") => {
-    p.item.active = item.id;
-    p.script.active = true;
     p.script.type = mode;
+    p.script.active = true;
+    onClick(node);
     p.render();
   };
 

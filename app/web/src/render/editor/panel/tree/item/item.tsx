@@ -173,10 +173,12 @@ export const ETreeItem: FC<{
                   local.renaming = true;
                   local.render();
                 }}
+                node={node}
+                onClick={onClick}
               />
             ) : (
               <div className="flex items-center">
-                <Adv p={p} item={item} />
+                <Adv p={p} item={item} node={node} onClick={onClick} />
                 <Tooltip
                   content="Rename"
                   className="flex items-center p-1 h-full text-blue-700"

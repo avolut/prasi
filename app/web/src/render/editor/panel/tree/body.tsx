@@ -118,7 +118,6 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
           }
           p.softRender.all();
         } else {
-          console.log(nmeta);
           p.item.selection = [];
           p.item.active = nmeta.item.id;
           p.item.activeOriginalId = nmeta.item.id;
@@ -337,7 +336,12 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
                         doneRenaming={() => {}}
                       />
                       <div className="pr-[2px] space-x-[1px] flex">
-                        <Adv p={p} item={meta.item} />
+                        <Adv
+                          p={p}
+                          item={meta.item}
+                          node={node}
+                          onClick={onClick}
+                        />
                       </div>
                     </div>
                   </div>
@@ -350,7 +354,6 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
                   depth={depth}
                   isOpen={isOpen}
                   onToggle={() => {
-                    console.log(node.id);
                     onToggle();
                   }}
                   onHover={onHover}
