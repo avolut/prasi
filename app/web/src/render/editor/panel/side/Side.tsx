@@ -5,8 +5,6 @@ import * as Y from "yjs";
 import { TypedMap } from "yjs-types";
 import { IItem, MItem } from "../../../../utils/types/item";
 import { EditorGlobal } from "../../logic/global";
-import { CPInstance } from "./props/CPInstance";
-import { CPMaster, PreviewItemProp } from "./props/CPMaster";
 import { PanelAdv } from "./panel/advanced";
 import { PanelAutoLayout } from "./panel/auto-layout";
 import { PanelBackground } from "./panel/background";
@@ -15,9 +13,10 @@ import { PanelDimension } from "./panel/dimension";
 import { PanelFont } from "./panel/font";
 import { PanelLink } from "./panel/link";
 import { PanelPadding } from "./panel/padding";
+import { CPInstance } from "./props/CPInstance";
+import { CPMaster, PreviewItemProp } from "./props/CPMaster";
 import { SideBox } from "./ui/SideBox";
 import { SideLabel } from "./ui/SideLabel";
-import { rebuildTree } from "../../logic/tree-logic";
 
 export const ESide = () => {
   const p = useGlobal(EditorGlobal, "EDITOR");

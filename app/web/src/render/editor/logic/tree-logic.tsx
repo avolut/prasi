@@ -2,7 +2,7 @@ import { createId } from "@paralleldrive/cuid2";
 import { produceCSS } from "../../../utils/css/gen";
 import { IContent, MContent } from "../../../utils/types/general";
 import { IItem, MItem } from "../../../utils/types/item";
-import { FMCompDef, FNCompDef } from "../../../utils/types/meta-fn";
+import { FNCompDef } from "../../../utils/types/meta-fn";
 import { createElProp } from "../elements/e-relprop";
 import { DefaultScript } from "../panel/script/monaco/monaco-element";
 import { fillID } from "../tools/fill-id";
@@ -105,6 +105,7 @@ export const walk = async (
         const child_ids = val.parent_comp.comp.child_ids;
         item = fillID(val.mitem.toJSON() as any, (e) => {
           if (child_ids[e.id]) {
+            e.originalId = e.id
             e.id = child_ids[e.id];
           }
           return false;
@@ -254,13 +255,18 @@ export const walk = async (
           p.treeFlatTemp.length > 0 ||
           (p.treeFlatTemp.length === 0 && val.parent_id === "root")
         ) {
-          val.includeTree = false;
-          p.treeFlatTemp.push({
-            parent: val.parent_id,
-            data: { meta, idx: val.idx || 0 },
-            id: item.id,
-            text: item.name,
-          });
+          if (
+            !meta.parent_comp ||
+            (meta.parent_comp && meta.parent_comp.comp.id === p.comp?.id)
+          ) {
+            val.includeTree = false;
+            p.treeFlatTemp.push({
+              parent: val.parent_id,
+              data: { meta, idx: val.idx || 0 },
+              id: item.id,
+              text: item.name,
+            });
+          }
         }
       }
 
@@ -283,7 +289,7 @@ export const walk = async (
             const child_ids = p.compInstance[item.id];
             const itemnew = instantiateComp(p, item, mcomp, child_ids);
             for (const [k, v] of Object.entries(itemnew)) {
-              if (k !== "id" && k !== "originalId") (meta.item as any)[k] = v;
+              if (k !== "id") (meta.item as any)[k] = v;
             }
 
             meta.comp = {
@@ -366,7 +372,11 @@ export const walk = async (
         })
       );
     } else if (item) {
-      if (val.includeTree) {
+      if (
+        val.includeTree &&
+        (!meta.parent_comp ||
+          (meta.parent_comp && meta.parent_comp.comp.id === p.comp?.id))
+      ) {
         if (
           p.treeFlatTemp.length > 0 ||
           (p.treeFlatTemp.length === 0 && val.parent_id === "root")

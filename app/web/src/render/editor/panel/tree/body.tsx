@@ -8,8 +8,8 @@ import {
 } from "@minoru/react-dnd-treeview";
 import { FC, useCallback, useEffect } from "react";
 import { useGlobal, useLocal, waitUntil } from "web-utils";
-import { IContent, MContent } from "../../../../utils/types/general";
-import { EditorGlobal, ItemMeta, NodeMeta } from "../../logic/global";
+import { MContent } from "../../../../utils/types/general";
+import { EditorGlobal, NodeMeta } from "../../logic/global";
 import { rebuildTree } from "../../logic/tree-logic";
 import { Adv } from "./item/action";
 import { ETreeItem } from "./item/item";
@@ -23,7 +23,6 @@ import {
   onDragEnd,
   onDragStart,
   onDrop,
-  selectMultiple,
 } from "./utils/tree-utils";
 export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
   tree,
@@ -47,10 +46,11 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
     (node: NodeModel<NodeMeta>) => {
       p.preventTreeScroll = true;
       if (node.data) {
+        const nmeta = node.data.meta;
+
         if (meta.search) {
           meta.search = "";
           meta.render();
-          const nmeta = node.data.meta;
           p.item.selection = [];
 
           if (nmeta.parent_comp) {
@@ -80,53 +80,9 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
               JSON.stringify(p.comp.props)
             );
 
+            p.item.active = nmeta.item.id;
+
             rebuildTree(p, { mode: "update", note: "search" });
-
-            if (originalId) {
-              let found: undefined | IContent;
-              const instances = p.compInstance[nmeta.parent_comp.item.id];
-              if (instances) {
-                instances.forEach((e) => {
-                  if (found) return;
-                  if (e.item.id === p.comp?.instance_id) {
-                    const walk = (item: IContent) => {
-                      if (found) return;
-                      if (item.originalId === originalId) {
-                        found = item;
-                        return;
-                      }
-
-                      if (item.type !== "text") {
-                        if (item.type === "item" && item.component) {
-                          for (const prop of Object.values(
-                            item.component.props
-                          )) {
-                            if (
-                              prop &&
-                              prop.meta &&
-                              prop.meta.type === "content-element" &&
-                              prop.content
-                            ) {
-                              walk(prop.content);
-                            }
-                          }
-                        }
-
-                        for (const c of item.childs) {
-                          walk(c);
-                        }
-                      }
-                    };
-                    if (e.comp) walk(e.item);
-                  }
-                });
-              }
-              if (found) {
-                p.item.active = found.id;
-                if (found.originalId)
-                  p.item.activeOriginalId = found.originalId;
-              }
-            }
           } else {
             p.comp = null;
             p.item.active = nmeta.item.id;
@@ -162,38 +118,35 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
           }
           p.softRender.all();
         } else {
-          if (p.item.selectMode === "multi") {
-            selectMultiple(p, node);
-            p.softRender.all();
-          } else {
-            p.item.selection = [];
-            p.item.active = node.data.meta.item.id;
-            if (node.data.meta.item.originalId) {
-              p.item.activeOriginalId = node.data.meta.item.originalId;
-            }
-            localStorage.setItem(
-              "prasi-item-active-oid",
-              p.item.activeOriginalId
-            );
-            localStorage.setItem("prasi-item-active-id", p.item.active);
-
-            if (node.data.meta.item.type === "text") {
-              setTimeout(() => {
-                const text = document.getElementById(
-                  `text-${p.item.active}`
-                ) as HTMLInputElement;
-                if (text && text.focus) {
-                  text.focus();
-                }
-              }, 100);
-            }
-
-            if (p.compProp.edit) {
-              p.compProp.edit = false;
-            }
-
-            p.softRender.all();
+          console.log(nmeta);
+          p.item.selection = [];
+          p.item.active = nmeta.item.id;
+          p.item.activeOriginalId = nmeta.item.id;
+          if (nmeta.item.originalId) {
+            p.item.activeOriginalId = nmeta.item.originalId;
           }
+          localStorage.setItem(
+            "prasi-item-active-oid",
+            p.item.activeOriginalId
+          );
+          localStorage.setItem("prasi-item-active-id", p.item.active);
+
+          if (nmeta.item.type === "text") {
+            setTimeout(() => {
+              const text = document.getElementById(
+                `text-${p.item.active}`
+              ) as HTMLInputElement;
+              if (text && text.focus) {
+                text.focus();
+              }
+            }, 100);
+          }
+
+          if (p.compProp.edit) {
+            p.compProp.edit = false;
+          }
+
+          p.softRender.all();
         }
       }
     },
@@ -215,88 +168,48 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
       if (p.pendingRebuild) {
         await waitUntil(() => !p.pendingRebuild);
       }
-
-      let active = p.treeMeta[p.item.active];
-      if (!active && p.comp?.instance_id) {
-        const doc = p.comps.doc[p.comp.id];
-        if (doc) {
-          const walk = (item: IContent) => {
-            if (item.originalId === p.item.activeOriginalId) {
-              p.item.active = item.id;
-              active = p.treeMeta[p.item.active];
-              return;
-            }
-
-            if (item.type !== "text") {
-              if (item.type === "item" && item.component) {
-                for (const prop of Object.values(item.component.props)) {
-                  if (
-                    prop &&
-                    prop.meta &&
-                    prop.meta.type === "content-element" &&
-                    prop.content
-                  ) {
-                    walk(prop.content);
-                  }
-                }
-              }
-
-              for (const c of item.childs) {
-                walk(c);
-              }
-            }
-          };
-
-          // if (p.compInstance[p.comp.id]) {
-          //   let found = false;
-          //   let first: ItemMeta = undefined as any;
-          //   p.compInstance[p.comp.id].forEach((meta) => {
-          //     if (!first) {
-          //       first = meta;
-          //     }
-          //     if (meta.item && meta.item.id === p.comp?.instance_id) {
-          //       found = true;
-          //       walk(meta.item);
-          //     }
-          //   });
-          //   if (!found && !!first && first.comp) {
-          //     walk(first.item);
-          //   }
-          // }
-        }
-      }
-
       const open = new Set<string>();
-      let cur = active;
-      while (cur) {
-        let item = cur.item;
-        open.add(item.id);
-        if (cur.parent_comp) {
-          open.add(cur.parent_comp.item.id);
+
+      const map: Record<string, string> = {};
+      let found = "";
+      let foundOID = "";
+      for (const flat of p.treeFlat) {
+        if (!map[flat.id]) map[flat.id] = flat.parent;
+        const cur = flat.data.meta.item;
+
+        if (
+          p.item.activeOriginalId === cur.originalId ||
+          p.item.active === cur.id
+        ) {
+          if (cur.originalId) {
+            foundOID = cur.originalId;
+          }
+          found = flat.id;
         }
-        cur = p.treeMeta[cur.parent_id];
       }
 
-      const doOpen = async () => {
-        if (local.method) {
-          const method = local.method;
-          local.method.open([...open]);
-          setTimeout(() => method.open([...open]), 50);
-          setTimeout(() => method.open([...open]), 100);
-          setTimeout(() => method.open([...open]), 200);
+      if (found) {
+        let cur = map[found];
+        while (cur !== "root" && cur) {
+          open.add(cur);
+          cur = map[cur];
         }
-      };
 
-      doOpen();
-      if (p.treeFlat.length === 0 || !local.method) {
-        waitUntil(() => p.treeFlat.length > 0 && local.method).then(() => {
-          doOpen();
-        });
-      } else {
-        doOpen();
+        if (p.item.active !== found) {
+          p.item.active = found;
+          if (foundOID) {
+            p.item.activeOriginalId = foundOID;
+          }
+          p.render();
+        }
+      }
+
+      if (local.method) {
+        const method = local.method;
+        method.open([...open]);
       }
     })();
-  }, [p.item.active]);
+  }, [p.item.active, local.method]);
 
   return (
     <div
@@ -437,6 +350,7 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
                   depth={depth}
                   isOpen={isOpen}
                   onToggle={() => {
+                    console.log(node.id);
                     onToggle();
                   }}
                   onHover={onHover}

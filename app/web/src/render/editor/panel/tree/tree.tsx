@@ -79,6 +79,20 @@ export const ETree = () => {
           continue;
         }
       }
+
+      if (item.type === "item" && item.component?.props) {
+        let has_found = false;
+        for (const prop of Object.values(item.component.props)) {
+          if (!has_found) {
+            if (prop.value) {
+              if (prop.value.toLowerCase().includes(search)) {
+                found();
+                has_found = true;
+              }
+            }
+          }
+        }
+      }
     }
   }
 
