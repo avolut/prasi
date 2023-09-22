@@ -43,13 +43,51 @@ export const MonacoScopeBar = () => {
       {scopeHistory.length > 0 && (
         <div
           className="border-r px-2 flex items-center cursor-pointer hover:bg-blue-100"
-          onClick={(e) => {
+          onClick={async (e) => {
             const meta = scopeHistory.pop();
 
             if (meta) {
               p.script.active = false;
               p.render();
-              console.log(meta);
+
+              if (meta.parent_comp) {
+                p.comp = {
+                  id: meta.parent_comp.comp.id,
+                  instance_id: meta.parent_comp.item.id,
+                  last: [
+                    {
+                      active_id: p.item.active,
+                      active_oid: p.item.activeOriginalId,
+                    },
+                  ],
+                  props: {},
+                };
+              } else if (meta.comp) {
+                p.comp = {
+                  id: meta.comp.id,
+                  instance_id: meta.item.id,
+                  last: [
+                    {
+                      active_id: p.item.active,
+                      active_oid: p.item.activeOriginalId,
+                    },
+                  ],
+                  props: {},
+                };
+              } else {
+                p.comp = null;
+              }
+              await rebuildTree(p, { mode: "update", note: "edit-js" });
+
+              p.item.active = meta.item.id;
+              if (meta.item.originalId) {
+                p.item.activeOriginalId = meta.item.originalId;
+              }
+
+              setTimeout(() => {
+                p.script.active = true;
+                p.render();
+              }, 300);
             }
           }}
         >
@@ -58,7 +96,7 @@ export const MonacoScopeBar = () => {
         </div>
       )}
 
-      <div className="pl-2 flex items-center"> Variables: </div>
+      <div className="pl-2 flex items-center"> Available Vars: </div>
       {vars.length === 0 ? (
         <div className="text-gray-500 flex items-center">None</div>
       ) : (
