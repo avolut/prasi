@@ -5,6 +5,7 @@ import { EItem } from "../elements/e-item";
 import { ItemMeta, PG } from "./global";
 import { intantiateJSXPropMeta } from "./tree-jsxprop";
 import { mergeScopeUpwards } from "./tree-scope";
+import { IItem } from "../../../utils/types/item";
 
 export type PropCompFC = FC<{}>;
 
@@ -55,6 +56,11 @@ export const treePropEval = (
             _jsx: true,
             Comp: ({ parent_id }: { parent_id: string }) => {
               if (prop.content) {
+                if (!p.treeJSXProp[prop.content.id]) {
+                  p.treeJSXProp[prop.content.id] = new Set();
+                }
+                p.treeJSXProp[prop.content.id].add(parent_id);
+
                 return <EItem id={prop.content.id} fromProp={true} />;
               }
               return <></>;

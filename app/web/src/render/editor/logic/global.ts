@@ -123,7 +123,7 @@ export const EditorGlobal = {
     data: { meta: ItemMeta; idx: number };
   }[],
   treeMeta: {} as Record<string, ItemMeta>,
-  treeJSXProp: {} as Record<string, Record<string, IItem>>,
+  treeJSXProp: {} as Record<string, Set<string>>,
 
   /** components */
   comp: null as null | {

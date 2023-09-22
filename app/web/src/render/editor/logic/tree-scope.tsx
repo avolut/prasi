@@ -27,6 +27,7 @@ export const treeScopeEval = (p: PG, meta: ItemMeta, children: ReactNode) => {
       if (!p.script.db) p.script.db = createDB(p.site.api_url);
       if (!p.script.api) p.script.api = createAPI(p.site.api_url);
       const w = window as any;
+
       const finalScope = mergeScopeUpwards(p, meta);
 
       if (JS_DEBUG) {
@@ -116,6 +117,7 @@ export const mergeScopeUpwards = (p: PG, meta: ItemMeta) => {
 
   let cur = meta;
 
+
   while (cur) {
     let scope = null;
 
@@ -123,6 +125,22 @@ export const mergeScopeUpwards = (p: PG, meta: ItemMeta) => {
       scope = { ...cur.scope, ...cur.comp?.propval };
 
       scopes.unshift(scope);
+    }
+
+    if (cur.mitem && cur.mitem.parent) {
+      const content = (cur.mitem.parent as any).get("content");
+      if (content) {
+        const targets = p.treeJSXProp[content.get("id")];
+        if (targets) {
+          targets.forEach((id) => {
+            const m = p.treeMeta[id];
+            if (m) {
+              const nscope = mergeScopeUpwards(p, m);
+              scopes.unshift(nscope)
+            }
+          });
+        }
+      }
     }
 
     cur = p.treeMeta[cur.parent_id];

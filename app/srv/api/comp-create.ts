@@ -1,7 +1,7 @@
 import { syncronize } from "y-pojo";
 import { TypedMap } from "yjs-types";
 import { IContent } from "../../web/src/utils/types/general";
-import { IItem } from "../../web/src/utils/types/item";
+import { IItem, MItem } from "../../web/src/utils/types/item";
 import { eg } from "../edit/edit-global";
 
 export const _ = {
@@ -14,13 +14,25 @@ export const _ = {
     group_id?: string;
   }) {
     const { page_id, site_id, item_id, comp_id, group_id } = arg;
-    let element = undefined as TypedMap<IContent> | undefined;
-    const walk = (el: TypedMap<IItem>): TypedMap<IItem> | undefined => {
+    let element = undefined as MItem | undefined;
+    const walk = (el: MItem): MItem | undefined => {
       if (el.get("id") === item_id) {
         return el;
       }
-      const childs = el.get("childs");
       let final = null;
+
+      const props = el.get("component")?.get("props");
+      if (props) {
+        props.forEach((e) => {
+          const content = e.get("content");
+          if (content) {
+            const result = walk(content);
+            if (result) final = result;
+          }
+        });
+      }
+
+      const childs = el.get("childs");
       childs?.forEach((e: any) => {
         const result = walk(e);
         if (result) final = result;
