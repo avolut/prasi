@@ -25,6 +25,7 @@ export type ItemMeta = {
     Local: FC<any>;
     PassProp: FC<any>;
   };
+  render?: () => void;
 };
 
 type LPage = {
@@ -45,9 +46,6 @@ export const LiveGlobal = {
     | "not-found"
     | "error"
     | "tree-rebuild",
-  item: {
-    active: "",
-  },
   site: {
     id: "",
     api_url: "",
@@ -75,7 +73,10 @@ export const LiveGlobal = {
     resolve: {} as Record<string, (comp: PRASI_COMPONENT) => void>,
     doc: {} as Record<string, CompDoc>,
   },
-
+  script: {
+    db: null as any,
+    api: null as any,
+  },
   compInstance: {} as Record<string, Record<string, string>>,
   ws: null as null | WebSocket,
   wsRetry: {

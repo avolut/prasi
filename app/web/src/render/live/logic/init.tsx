@@ -37,11 +37,11 @@ export const initLive = async (p: PG, domain: string) => {
           location.hostname === "10.0.2.2" // android localhost
         ) {
           if (
-            location.pathname.startsWith("/preview") &&
-            !_href.startsWith("/preview")
+            location.pathname.startsWith("/live") &&
+            !_href.startsWith("/live")
           ) {
             const patharr = location.pathname.split("/");
-            _href = `/preview/${patharr[2]}${_href}`;
+            _href = `/live/${patharr[2]}${_href}`;
           }
         }
       }

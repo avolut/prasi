@@ -49,8 +49,11 @@ export const routeLive = (p: PG, pathname: string) => {
 
     if (page_id) {
       let page = p.pages[page_id];
+
       if (!page || !page.content_tree) {
         p.status = "loading";
+
+        loadNpmPage(p, page_id);
         loadPage(p, page_id);
       } else {
         const mpage = p.mpage?.getMap("map");
@@ -97,12 +100,16 @@ export const preload = async (p: PG, pathname: string) => {
   }
 };
 
-const loadNpmPage = async (id: string) => {
+const loadNpmPage = async (p: PG, id: string) => {
   try {
     if (typeof window.exports === "undefined") {
       window.exports = {};
     }
-    await importModule(`${serverurl}/npm/page/${id}/index.js?`);
+    await importModule(`${serverurl}/npm/page/${id}/page.js`);
+
+    rebuildTree(p, {
+      note: "ws-update-comp",
+    });
   } catch (e) {
     console.error(e);
   }

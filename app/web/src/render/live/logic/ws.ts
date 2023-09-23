@@ -183,8 +183,11 @@ export const liveWS = async (p: PG) => {
 
               const exec = (fn: string, scopes: any) => {
                 if (p) {
-                  scopes["api"] = createAPI(p.site.api_url);
-                  scopes["db"] = createDB(p.site.api_url);
+                  if (!p.script.api) p.script.api = createAPI(p.site.api_url);
+                  if (!p.script.db) p.script.db = createDB(p.site.api_url);
+
+                  scopes["db"] = p.script.db;
+                  scopes["api"] = p.script.api;
                   const f = new Function(...Object.keys(scopes), fn);
                   const res = f(...Object.values(scopes));
                   return res;

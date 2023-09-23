@@ -1,6 +1,4 @@
 import { FC } from "react";
-import { useGlobal } from "web-utils";
-import { EditorGlobal } from "../logic/global";
 import { EItem } from "./e-item";
 import { ERender } from "./e-render";
 

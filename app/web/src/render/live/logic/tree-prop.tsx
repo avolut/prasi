@@ -1,12 +1,13 @@
 import { FC } from "react";
 import { createAPI, createDB } from "../../../utils/script/init-api";
 import { FNCompDef } from "../../../utils/types/meta-fn";
-import { EItem } from "../elements/e-item";
 import { ItemMeta, PG } from "./global";
 import { mergeScopeUpwards } from "./tree-scope";
+import { LItem } from "../elements/l-item";
 
 export type PropCompFC = FC<{}>;
 
+const jsxProps = {} as Record<string, any>;
 export const treePropEval = (
   p: PG,
   meta: ItemMeta,
@@ -50,25 +51,29 @@ export const treePropEval = (
 
       if (prop.meta?.type === "content-element") {
         if (!(typeof value === "object" && !!value && value._jsx)) {
-          value = {
-            _jsx: true,
-            Comp: ({ parent_id }: { parent_id: string }) => {
-              if (prop.content) {
-                const meta = p.treeMeta[parent_id];
-                const scopes: { meta: ItemMeta; value: any }[] = [];
-                mergeScopeUpwards(p, meta, {
-                  each: (m, val) => {
-                    scopes.push({ meta: m, value: val });
-                    return true;
-                  },
-                });
-                p.treeMeta[prop.content.id].scopeAttached = scopes;
+          const id = `${meta.item.id}-${name}`;
+          if (!jsxProps[id]) {
+            jsxProps[id] = {
+              _jsx: true,
+              Comp: ({ parent_id }: { parent_id: string }) => {
+                if (prop.content) {
+                  const meta = p.treeMeta[parent_id];
+                  const scopes: { meta: ItemMeta; value: any }[] = [];
+                  mergeScopeUpwards(p, meta, {
+                    each: (m, val) => {
+                      scopes.push({ meta: m, value: val });
+                      return true;
+                    },
+                  });
+                  p.treeMeta[prop.content.id].scopeAttached = scopes;
 
-                return <EItem id={prop.content.id} fromProp={true} />;
-              }
-              return <></>;
-            },
-          };
+                  return <LItem id={prop.content.id} fromProp={true} />;
+                }
+                return <></>;
+              },
+            };
+          }
+          value = jsxProps[id];
         }
       }
 

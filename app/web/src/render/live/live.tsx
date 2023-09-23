@@ -1,10 +1,11 @@
-import { FC, useEffect } from "react";
+import { FC, useCallback, useEffect } from "react";
 import { useGlobal } from "web-utils";
 import { LiveGlobal } from "./logic/global";
 import parseUA from "ua-parser-js";
 import { Loading } from "../../utils/ui/loading";
 import { initLive } from "./logic/init";
 import { routeLive } from "./logic/route";
+import { LPage } from "./elements/l-page";
 
 export const Live: FC<{ domain: string; pathname: string }> = ({
   domain,
@@ -25,19 +26,22 @@ export const Live: FC<{ domain: string; pathname: string }> = ({
       p.mode = "desktop";
     }
   }
+  const onResize = useCallback(() => {
+    let newmode = p.mode;
+    if (window.innerWidth < 600) newmode = "mobile";
+    else newmode = "desktop";
+
+    if (newmode !== p.mode) {
+      p.mode = newmode;
+      p.render();
+    }
+  }, [p]);
 
   useEffect(() => {
-    if (p.site.responsive === "all") {
-      window.addEventListener("resize", () => {
-        let newmode = p.mode;
-        if (window.innerWidth < 600) newmode = "mobile";
-        else newmode = "desktop";
+    window.removeEventListener("resize", onResize);
 
-        if (newmode !== p.mode) {
-          p.mode = newmode;
-          p.render();
-        }
-      });
+    if (p.site.responsive === "all") {
+      window.addEventListener("resize", onResize);
     }
   }, [p.site.responsive]);
 
@@ -50,5 +54,5 @@ export const Live: FC<{ domain: string; pathname: string }> = ({
     routeLive(p, pathname);
   }
 
-  return <>{JSON.stringify(Object.keys(p.treeMeta).length)}</>;
+  return <LPage />;
 };
