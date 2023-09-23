@@ -129,11 +129,11 @@ const chevronSize = 13;
 const elbowSize = 14;
 const sectionSize = 17;
 
-export const ChevronRight = () => (
+export const ChevronRight = ({ size: size }: { size?: number }) => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
-    width={chevronSize}
-    height={chevronSize}
+    width={size || chevronSize}
+    height={size || chevronSize}
     fill="none"
     viewBox="0 0 15 15"
   >

@@ -122,7 +122,7 @@ export const CPMaster: FC<{ mitem: MItem }> = ({ mitem }) => {
           </div>
         </div>
 
-        {/* <PreviewItemProp /> */}
+        <PreviewItemProp />
       </div>
       <div className="flex-1 relative overflow-y-auto">
         <div className="absolute flex-col inset-0">
@@ -201,48 +201,49 @@ export const CPMaster: FC<{ mitem: MItem }> = ({ mitem }) => {
 };
 
 export const PreviewItemProp = () => {
-  const p = useGlobal(EditorGlobal, "EDITOR");
+  return <></>;
+  // const p = useGlobal(EditorGlobal, "EDITOR");
 
-  return (
-    <div
-      className="flex text-xs space-x-1 mr-1 cursor-pointer hover:text-blue-500 items-center"
-      onClick={() => {
-        p.compProp.inherit = !p.compProp.inherit;
-        p.render();
-      }}
-    >
-      <div>
-        {p.compProp.inherit ? <>Prop Inherited</> : <>No Inheritance</>}
-      </div>
-      <div>
-        {!p.compProp.inherit ? (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-          >
-            <path
-              fill="currentColor"
-              d="M8 7a5 5 0 000 10h8a5 5 0 000-10H8zm0-2h8a7 7 0 110 14H8A7 7 0 118 5zm0 10a3 3 0 110-6 3 3 0 010 6z"
-            ></path>
-          </svg>
-        ) : (
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-          >
-            <path
-              fill="currentColor"
-              d="M8 5h8a7 7 0 110 14H8A7 7 0 118 5zm8 10a3 3 0 100-6 3 3 0 000 6z"
-            ></path>
-          </svg>
-        )}
-      </div>
-    </div>
-  );
+  // return (
+  //   <div
+  //     className="flex text-xs space-x-1 mr-1 cursor-pointer hover:text-blue-500 items-center"
+  //     onClick={() => {
+  //       p.compProp.inherit = !p.compProp.inherit;
+  //       p.render();
+  //     }}
+  //   >
+  //     <div>
+  //       {p.compProp.inherit ? <>Prop Inherited</> : <>No Inheritance</>}
+  //     </div>
+  //     <div>
+  //       {!p.compProp.inherit ? (
+  //         <svg
+  //           xmlns="http://www.w3.org/2000/svg"
+  //           width="20"
+  //           height="20"
+  //           viewBox="0 0 24 24"
+  //         >
+  //           <path
+  //             fill="currentColor"
+  //             d="M8 7a5 5 0 000 10h8a5 5 0 000-10H8zm0-2h8a7 7 0 110 14H8A7 7 0 118 5zm0 10a3 3 0 110-6 3 3 0 010 6z"
+  //           ></path>
+  //         </svg>
+  //       ) : (
+  //         <svg
+  //           xmlns="http://www.w3.org/2000/svg"
+  //           width="20"
+  //           height="20"
+  //           viewBox="0 0 24 24"
+  //         >
+  //           <path
+  //             fill="currentColor"
+  //             d="M8 5h8a7 7 0 110 14H8A7 7 0 118 5zm8 10a3 3 0 100-6 3 3 0 000 6z"
+  //           ></path>
+  //         </svg>
+  //       )}
+  //     </div>
+  //   </div>
+  // );
 };
 
 const SingleProp: FC<{
