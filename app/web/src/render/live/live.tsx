@@ -47,7 +47,6 @@ export const Live: FC<{ domain: string; pathname: string }> = ({
 
   if (p.status === "init") {
     initLive(p, domain);
-    return <Loading />;
   }
 
   if (p.site.id) {

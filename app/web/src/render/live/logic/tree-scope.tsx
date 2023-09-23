@@ -162,6 +162,8 @@ const createPassProp = (p: PG, meta: ItemMeta) => {
   };
 };
 
+const cachedLocal = {} as Record<string, Record<string, any>>;
+
 const createLocal = (p: PG, meta: ItemMeta) => {
   const Local = ({
     name,
@@ -170,6 +172,7 @@ const createLocal = (p: PG, meta: ItemMeta) => {
     children,
     hook,
     deps,
+    cache,
   }: {
     name: string;
     value: any;
@@ -177,19 +180,44 @@ const createLocal = (p: PG, meta: ItemMeta) => {
     children: ReactNode;
     hook?: () => void;
     deps?: any[];
+    cache?: boolean;
   }) => {
     if (!meta.scope) {
       meta.scope = {};
     }
+    const genScope = () => {
+      if (!meta.scope[name]) {
+        meta.scope[name] = {
+          ...deepClone(value),
+          render: () => {
+            if (meta.render) meta.render();
+            else p.render();
+          },
+        };
+      }
+    };
 
-    if (!meta.scope[name]) {
-      meta.scope[name] = {
-        ...deepClone(value),
-        render: () => {
-          if (meta.render) meta.render();
-          else p.render();
-        },
-      };
+    if (cache === false) {
+      genScope();
+    } else {
+      const page_id = p.page?.id;
+      if (page_id) {
+        if (!cachedLocal[page_id]) {
+          cachedLocal[page_id] = {};
+        }
+        if (cachedLocal[page_id][meta.item.originalId || meta.item.id]) {
+          meta.scope[name] =
+            cachedLocal[page_id][meta.item.originalId || meta.item.id];
+          meta.scope[name].render = () => {
+            if (meta.render) meta.render();
+            else p.render();
+          };
+        } else {
+          genScope();
+          cachedLocal[page_id][meta.item.originalId || meta.item.id] =
+            meta.scope[name];
+        }
+      }
     }
 
     if (typeof hook === "function") {

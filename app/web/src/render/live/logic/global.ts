@@ -9,7 +9,6 @@ import { IRoot } from "../../../utils/types/root";
 type WithRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] };
 export type ItemMeta = {
   item: IContent;
-  mitem?: MContent;
   scope?: any;
   scopeAttached?: any;
   comp?: {
@@ -59,6 +58,7 @@ export const LiveGlobal = {
     js: "",
     js_compiled: "",
   },
+  page: null as null | LPage,
   mpage: null as null | MPage,
   mpageLoaded: null as null | ((mpage: MPage) => void),
   pagePreload: {} as Record<string, true>,

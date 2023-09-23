@@ -72,9 +72,8 @@ export const liveWS = async (p: PG) => {
               "update",
               throttle((e, origin) => {
                 if (p.mpage) {
-                  rebuildTree(p, {
-                    note: "ws-update-page",
-                  });
+                  p.page = p.mpage.getMap("map").toJSON() as any;
+                  rebuildTree(p, { note: "page-changed" });
 
                   console.log("asuo");
                   console.clear();
@@ -86,8 +85,8 @@ export const liveWS = async (p: PG) => {
                 }
               })
             );
+            p.page = p.mpage.getMap("map").toJSON() as any;
 
-            rebuildTree(p, { note: "page-load" });
             if (p.mpageLoaded) {
               p.mpageLoaded(p.mpage);
               p.mpageLoaded = null;

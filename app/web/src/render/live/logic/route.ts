@@ -4,11 +4,11 @@ import { w } from "../../../utils/types/general";
 import { WS_MSG_GET_PAGE } from "../../../utils/types/ws";
 import importModule from "../../editor/tools/dynamic-import";
 import { loadComponent } from "./comp";
-import { PG } from "./global";
+import { LiveGlobal, PG } from "./global";
 import { liveWS, wsend } from "./ws";
 import { rebuildTree } from "./tree-logic";
 
-const cacheMeta = {} as Record<string, any>;
+const cacheMeta = {} as Record<string, (typeof LiveGlobal)["treeMeta"]>;
 
 export const routeLive = (p: PG, pathname: string) => {
   if (p.status !== "loading") {
@@ -20,27 +20,9 @@ export const routeLive = (p: PG, pathname: string) => {
       if (!found) {
         p.status = "not-found";
       } else {
-        const id = p.mpage?.get("id") as unknown as string;
-        let paramsChanged = false;
-
         if (found.params) {
           for (const [k, v] of Object.entries(found.params)) {
-            if (w.params[k] !== v) {
-              paramsChanged = true;
-            }
             w.params[k] = v;
-          }
-        }
-
-        if (id && (id !== found.id || paramsChanged)) {
-          if (!cacheMeta[id]) {
-            cacheMeta[id] = p.treeMeta;
-          }
-
-          if (cacheMeta[found.id]) {
-            p.treeMeta = cacheMeta[found.id];
-          } else {
-            p.treeMeta = {};
           }
         }
         page_id = found.id;
@@ -48,22 +30,37 @@ export const routeLive = (p: PG, pathname: string) => {
     }
 
     if (page_id) {
-      let page = p.pages[page_id];
+      p.page = p.pages[page_id];
 
-      if (!page || !page.content_tree) {
+      if (!p.page || !p.page.content_tree) {
         p.status = "loading";
+        Promise.all([loadNpmPage(p, page_id), loadPage(p, page_id)]).then(
+          () => {
+            pageLoaded(p);
+            p.status = "ready";
 
-        loadNpmPage(p, page_id);
-        loadPage(p, page_id);
+            p.render();
+          }
+        );
       } else {
-        const mpage = p.mpage?.getMap("map");
-        if (mpage) {
-          p.status = "ready";
-        } else {
-          p.status = "not-found";
-        }
+        pageLoaded(p);
       }
     }
+  }
+};
+
+const pageLoaded = (p: PG) => {
+  if (p.page) {
+    if (cacheMeta[p.page.id]) {
+      p.treeMeta = cacheMeta[p.page.id];
+    }
+    rebuildTree(p, { render: false, note: "render", reset: false }).then(() => {
+      if (p.page) {
+        cacheMeta[p.page.id] = p.treeMeta;
+      }
+    });
+  } else {
+    p.status = "not-found";
   }
 };
 
@@ -83,18 +80,6 @@ export const preload = async (p: PG, pathname: string) => {
         },
       });
       if (page) {
-        // pageNpmStatus[page.id] = "loading";
-        // await loadNpmPage(page.id);
-        // delete p.pagePreload[found.id];
-        // p.pages[found.id] = {
-        //   id: page.id,
-        //   js: page.js_compiled as any,
-        //   url: page.url,
-        //   name: page.name,
-        //   content_tree: page.content_tree as any,
-        // };
-        // await loadComponent(p, p.pages[found.id].content_tree);
-        // pageNpmStatus[page.id] = "loaded";
       }
     }
   }
@@ -106,10 +91,6 @@ const loadNpmPage = async (p: PG, id: string) => {
       window.exports = {};
     }
     await importModule(`${serverurl}/npm/page/${id}/page.js`);
-
-    rebuildTree(p, {
-      note: "ws-update-comp",
-    });
   } catch (e) {
     console.error(e);
   }

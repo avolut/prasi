@@ -1,68 +1,51 @@
-import { createId } from "@paralleldrive/cuid2";
 import { produceCSS } from "../../../utils/css/gen";
-import { IContent, MContent } from "../../../utils/types/general";
+import { IContent } from "../../../utils/types/general";
 import { MItem } from "../../../utils/types/item";
 import { FNCompDef } from "../../../utils/types/meta-fn";
-import { fillID } from "../../editor/tools/fill-id";
-import { newMap } from "../../editor/tools/yjs-tools";
 import { instantiateComp, loadComponent } from "./comp";
-import { ItemMeta, PG } from "./global";
+import { ItemMeta, LiveGlobal, PG } from "./global";
 
-export const rebuildTree = async (p: PG, _: { note: string }) => {
+export const rebuildTree = async (
+  p: PG,
+  _: { note: string; render?: boolean; reset?: boolean }
+) => {
   if (!p.mpage) {
     console.warn("MPage not loaded");
   }
 
   if (p.mpage) {
-    p.treeMeta = {};
-    const mpage = p.mpage.getMap("map").get("content_tree");
-    await mpage?.doc?.transact(async () => {
-      await Promise.all(
-        mpage?.get("childs")?.map(async (mitem, idx) => {
+    const treeMeta = p.treeMeta;
+    await Promise.all(
+      Object.values(p.page?.content_tree.childs || {}).map(
+        async (item, idx) => {
           await walk(p, {
-            mitem,
+            treeMeta,
+            item,
             parent_id: "root",
             idx,
           });
-        }) || []
-      );
-    });
+        }
+      ) || []
+    );
 
-    p.render();
+    if (_.render !== false) {
+      p.render();
+    }
   }
 };
 
 const walk = async (
   p: PG,
   val: {
+    treeMeta: (typeof LiveGlobal)["treeMeta"];
     item?: IContent;
-    mitem?: MContent;
     parent_id: string;
     idx: number;
     parent_comp?: ItemMeta["parent_comp"];
   }
 ) => {
+  const treeMeta = val.treeMeta;
   let item = val.item as IContent;
-  let mitem = val.mitem;
-
-  if (val.mitem) {
-    if (val.parent_comp) {
-      try {
-        const child_ids = val.parent_comp.comp.child_ids;
-        item = fillID(val.mitem.toJSON() as any, (e) => {
-          if (child_ids[e.id]) {
-            e.originalId = e.id;
-            e.id = child_ids[e.id];
-          }
-          return false;
-        }) as any;
-      } catch (e) {
-        return;
-      }
-    } else {
-      item = val.mitem.toJSON() as any;
-    }
-  }
 
   if (val.parent_comp) {
     const pchild_ids = val.parent_comp.comp?.child_ids;
@@ -88,7 +71,6 @@ const walk = async (
     }
 
     const meta: ItemMeta = {
-      mitem: mitem,
       item,
       parent_id: val.parent_id,
       parent_comp: val.parent_comp as any,
@@ -98,7 +80,7 @@ const walk = async (
       comp,
     };
 
-    p.treeMeta[meta.item.id] = meta;
+    treeMeta[meta.item.id] = meta;
 
     if (item.type === "item" && item.component?.id) {
       const cid = item.component.id;
@@ -117,7 +99,7 @@ const walk = async (
           const child_ids = p.compInstance[item.id];
           const itemnew = instantiateComp(p, item, mcomp, child_ids);
           for (const [k, v] of Object.entries(itemnew)) {
-            if (k !== "id") (meta.item as any)[k] = v;
+            if (k !== "id") (item as any)[k] = v;
           }
 
           meta.comp = {
@@ -134,39 +116,23 @@ const walk = async (
         });
         if (mcomp) {
           const mprops = mcomp.get("component")?.get("props");
-          const iprops = mitem?.get("component")?.get("props");
+          const iprops = item.component.props;
 
           if (mprops && iprops) {
             for (const [name, cprop] of cprops) {
               let mp = mprops.get(name);
               if (mp) {
                 const mprop = mp?.toJSON() as FNCompDef;
-                const jsx_prop = iprops.get(name);
+                const jsx_prop = iprops[name];
 
                 if (jsx_prop) {
                   if (mprop.meta?.type === "content-element") {
-                    let icontent = jsx_prop.get("content");
-
-                    if (!icontent) {
-                      jsx_prop.set(
-                        "content",
-                        newMap({
-                          id: createId(),
-                          name: name,
-                          type: "item",
-                          dim: { w: "full", h: "full" },
-                          childs: [],
-                          adv: {
-                            css: "",
-                          },
-                        }) as any
-                      );
-                    }
+                    let icontent = jsx_prop.content;
 
                     if (icontent)
                       await walk(p, {
+                        treeMeta,
                         item: cprop.content,
-                        mitem: icontent,
                         parent_id: item.id,
                         parent_comp: val.parent_comp,
                         idx: mprop.idx,
@@ -181,9 +147,9 @@ const walk = async (
           item.childs.map(async (child, idx) => {
             if (meta.comp && meta.comp.mcomp) {
               return await walk(p, {
+                treeMeta,
                 item: child,
                 parent_comp: meta as any,
-                mitem: meta.comp.mcomp.get("childs")?.get(idx),
                 parent_id: item.id,
                 idx,
               });
@@ -196,10 +162,10 @@ const walk = async (
         await Promise.all(
           item.childs.map(async (child, idx) => {
             return await walk(p, {
+              treeMeta,
               idx,
               item: child,
               parent_comp: val.parent_comp,
-              mitem: mitem?.get("childs")?.get(idx) as MContent,
               parent_id: item.id || "",
             });
           })

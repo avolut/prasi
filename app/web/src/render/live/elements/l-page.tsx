@@ -1,18 +1,16 @@
 import { useGlobal } from "web-utils";
 import { LiveGlobal } from "../logic/global";
 import { LSection } from "./l-section";
+import { Loading } from "../../../utils/ui/loading";
 
 export const LPage = () => {
   const p = useGlobal(LiveGlobal, "LIVE");
-  if (!p.mpage) return null;
   const mode = p.mode;
 
-  const rootChilds: string[] | undefined = p.mpage
-    .getMap("map")
-    .get("content_tree")
-    ?.get("childs")
-    ?.map((e) => e.get("id"));
-    
+  const rootChilds: string[] | undefined = Object.values(
+    p.page?.content_tree.childs || {}
+  ).map((e) => e.id);
+
   return (
     <div
       className={cx(
@@ -40,9 +38,11 @@ export const LPage = () => {
           `
         )}
       >
-        {rootChilds?.map((id) => (
-          <LSection key={id} id={id} />
-        ))}
+        {p.status === "ready" || p.status === "tree-rebuild" ? (
+          rootChilds?.map((id) => <LSection key={id} id={id} />)
+        ) : (
+          <Loading />
+        )}
       </div>
     </div>
   );
