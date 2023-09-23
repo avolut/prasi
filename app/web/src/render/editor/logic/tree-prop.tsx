@@ -51,15 +51,20 @@ export const treePropEval = (
       }
 
       if (prop.meta?.type === "content-element") {
-        if (!isValidElement(value)) {
+        if (!(typeof value === "object" && value._jsx)) {
           value = {
             _jsx: true,
             Comp: ({ parent_id }: { parent_id: string }) => {
               if (prop.content) {
-                if (!p.treeJSXProp[prop.content.id]) {
-                  p.treeJSXProp[prop.content.id] = new Set();
-                }
-                p.treeJSXProp[prop.content.id].add(parent_id);
+                const meta = p.treeMeta[parent_id];
+                const scopes: { meta: ItemMeta; value: any }[] = [];
+                mergeScopeUpwards(p, meta, {
+                  each: (m, val) => {
+                    scopes.push({ meta: m, value: val });
+                    return true;
+                  },
+                });
+                p.treeMeta[prop.content.id].scopeAttached = scopes;
 
                 return <EItem id={prop.content.id} fromProp={true} />;
               }

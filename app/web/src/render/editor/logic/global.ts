@@ -14,6 +14,7 @@ export type ItemMeta = {
   parent_id: string;
   parent_comp?: WithRequired<ItemMeta, "comp"> & { item: IItem };
   scope?: any;
+  scopeAttached?: { meta: ItemMeta; value: any }[];
   className: string;
   elprop: any;
   depth: number;
@@ -123,7 +124,6 @@ export const EditorGlobal = {
     data: { meta: ItemMeta; idx: number };
   }[],
   treeMeta: {} as Record<string, ItemMeta>,
-  treeJSXProp: {} as Record<string, Set<string>>,
 
   /** components */
   comp: null as null | {

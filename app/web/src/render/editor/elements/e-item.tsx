@@ -1,6 +1,7 @@
 import { FC } from "react";
 import { ERender } from "./e-render";
 import { EText } from "./e-text";
+import { ItemMeta } from "../logic/global";
 
 export const EItem: FC<{
   id: string;

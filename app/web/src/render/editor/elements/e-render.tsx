@@ -4,7 +4,7 @@ import { produceCSS } from "../../../utils/css/gen";
 import { IContent } from "../../../utils/types/general";
 import { FNAdv, FNCompDef } from "../../../utils/types/meta-fn";
 import { Loading } from "../../../utils/ui/loading";
-import { EditorGlobal } from "../logic/global";
+import { EditorGlobal, ItemMeta } from "../logic/global";
 import { treePropEval } from "../logic/tree-prop";
 import { JS_DEBUG, treeScopeEval } from "../logic/tree-scope";
 import { ComponentOver, ElProp, createElProp } from "./e-relprop";
@@ -95,23 +95,32 @@ export const ERender: FC<{
     }
   }
 
+  if (!adv?.js && (meta.scopeAttached || meta.comp)) {
+    return treeScopeEval(
+      p,
+      meta,
+      <>
+        {_children}
+        {componentOver}
+      </>,
+      `render(React.createElement("div",{...props},children));`
+    );
+  }
+
   if (adv) {
     if (adv.html) {
       const html = renderHTML(className, adv, elprop);
       if (html) return html;
-    } else if (adv.jsBuilt) {
+    } else if (adv.jsBuilt && adv.js) {
       const el = treeScopeEval(
         p,
         meta,
         <>
           {_children}
           {componentOver}
-        </>
+        </>,
+        adv.jsBuilt
       );
-
-      // if (item.name === "menu-ppds-new") {
-      //   console.log(el);
-      // }
       return el;
     }
   }

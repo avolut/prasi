@@ -40,7 +40,6 @@ export const rebuildTree = async (
     p.treeMeta = {};
     p.compInstance = {};
   }
-  p.treeJSXProp = {};
 
   p.treeFlatTemp = [];
 

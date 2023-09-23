@@ -374,7 +374,7 @@ export const ETreeRightClick: FC<{
                     p.render();
                     api
                       .comp_create({
-                        item_id: item.id,
+                        item_id: item.originalId || item.id,
                         site_id: p.site.id || "",
                         page_id: rootComp ? undefined : p.page?.id,
                         comp_id: rootComp ? rootComp.id : undefined,
