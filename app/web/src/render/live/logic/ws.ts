@@ -1,29 +1,24 @@
-import { PG } from "./global";
-import { page } from "dbgen";
 import throttle from "lodash.throttle";
 import { compress, decompress } from "lz-string";
 import * as Y from "yjs";
-import { CompDoc } from "../../../base/global/content-editor";
+import { createAPI, createDB } from "../../../utils/script/init-api";
 import { MPage } from "../../../utils/types/general";
-import { IItem } from "../../../utils/types/item";
-import { PRASI_COMPONENT } from "../../../utils/types/render";
 import {
   WS_MSG,
   WS_MSG_DIFF_LOCAL,
   WS_MSG_SET_PAGE,
   WS_MSG_SVDIFF_REMOTE,
+  WS_MSG_SV_LOCAL,
 } from "../../../utils/types/ws";
-import { scanComponent } from "./comp";
-import { createAPI, createDB } from "../../../utils/script/init-api";
 import importModule from "../../editor/tools/dynamic-import";
+import { PG } from "./global";
+import { rebuildTree } from "./tree-logic";
+import { CompDoc } from "../../../base/global/content-editor";
+import { IItem } from "../../../utils/types/item";
+import { scanComponent } from "./comp";
+import { PRASI_COMPONENT } from "../../../utils/types/render";
 
-export const previewWS = async (p: PG) => {
-  if (p.ws && p.ws.readyState === p.ws.OPEN) {
-    if (p.page) {
-    }
-    return;
-  }
-
+export const liveWS = async (p: PG) => {
   return new Promise<void>(async (resolve) => {
     const wsurl = new URL(serverurl);
     wsurl.protocol = wsurl.protocol.startsWith("http:") ? "ws:" : "wss:";
@@ -48,11 +43,11 @@ export const previewWS = async (p: PG) => {
         p.wsRetry.reconnecting = true;
         p.wsRetry.localIP = true;
         if (p.wsRetry.fast) {
-          previewWS(p);
+          liveWS(p);
         } else {
           setTimeout(() => {
             console.log("Reconnecting...");
-            previewWS(p);
+            liveWS(p);
           }, 2000);
         }
       };
@@ -77,30 +72,22 @@ export const previewWS = async (p: PG) => {
               "update",
               throttle((e, origin) => {
                 if (p.mpage) {
-                  p.status = "init";
-                  const page = p.mpage.getMap("map")?.toJSON() as page;
+                  rebuildTree(p, {
+                    note: "ws-update-page",
+                  });
+
+                  console.log("asuo");
                   console.clear();
                   console.log(
-                    `🔥 Page updated: ${
-                      page.url
-                    } ${new Date().toLocaleString()}`
+                    `🔥 Page updated: ${p.mpage.get(
+                      "url"
+                    )} ${new Date().toLocaleString()}`
                   );
-                  p.pageComp = {};
-
-                  if (!p.pages[page.id]) {
-                    p.pages[page.id] = {
-                      id: page.id,
-                      js: page.js_compiled || "",
-                      content_tree: page.content_tree as any,
-                    };
-                  } else {
-                    p.pages[page.id].content_tree = page.content_tree as any;
-                    p.pages[page.id].js = page.js_compiled as any;
-                  }
-                  p.render();
                 }
               })
             );
+
+            rebuildTree(p, { note: "page-load" });
             if (p.mpageLoaded) {
               p.mpageLoaded(p.mpage);
               p.mpageLoaded = null;
@@ -118,7 +105,7 @@ export const previewWS = async (p: PG) => {
             }
             if (msg.mode === "comp") {
               Y.applyUpdate(
-                p.comp.doc[msg.id] as any,
+                p.comps.doc[msg.id] as any,
                 extract(msg.diff_local),
                 "remote"
               );
@@ -126,29 +113,53 @@ export const previewWS = async (p: PG) => {
             break;
           case "set_comp":
             {
-              const callback = p.comp.pending[msg.comp_id];
+              const callback = p.comps.resolve[msg.comp_id];
               if (callback) {
-                p.comp.doc[msg.comp_id] = new Y.Doc() as CompDoc;
+                p.comps.doc[msg.comp_id] = new Y.Doc() as CompDoc;
                 Y.applyUpdate(
-                  p.comp.doc[msg.comp_id] as any,
+                  p.comps.doc[msg.comp_id] as any,
                   extract(msg.changes),
                   "remote"
                 );
-                p.comp.doc[msg.comp_id].on(
-                  "update",
-                  throttle((e, origin) => {
-                    p.pageComp = {};
-                    p.status = "init";
-                    console.clear();
-                    console.log(
-                      `🔥 Component updated: ${p.comp.doc[msg.comp_id]
-                        .getMap("map")
-                        .get("name")} ${new Date().toLocaleString()}`
-                    );
-                    p.render();
-                  })
-                );
-                const comp = p.comp.doc[msg.comp_id]
+                setTimeout(() => {
+                  p.comps.doc[msg.comp_id].on(
+                    "update",
+                    throttle((e, origin) => {
+                      if (origin === "remote") {
+                        return;
+                      }
+
+                      const doc = p.comps.doc[msg.comp_id];
+                      if (doc) {
+                        if (!origin && origin !== "updated_at") {
+                          const id = doc.getMap("map").get("id");
+                          if (id) {
+                            doc.transact(() => {
+                              doc
+                                .getMap("map")
+                                .set("updated_at", new Date().toISOString());
+                            }, "updated_at");
+
+                            const sendmsg: WS_MSG_SV_LOCAL = {
+                              type: "sv_local",
+                              mode: "comp",
+                              id,
+                              sv_local: compress(
+                                Y.encodeStateVector(doc as any).toString()
+                              ),
+                            };
+                            wsend(p, JSON.stringify(sendmsg));
+                          }
+                        }
+
+                        rebuildTree(p, {
+                          note: "ws-update-comp",
+                        });
+                      }
+                    }, 200)
+                  );
+                }, 500);
+                const comp = p.comps.doc[msg.comp_id]
                   .getMap("map")
                   .get("content_tree")
                   ?.toJSON() as IItem;
@@ -157,11 +168,12 @@ export const previewWS = async (p: PG) => {
                 scanComponent(comp, ids);
 
                 callback(
-                  p.comp.doc[msg.comp_id]
+                  p.comps.doc[msg.comp_id]
                     .getMap("map")
                     .toJSON() as PRASI_COMPONENT
                 );
-                delete p.comp.pending[msg.comp_id];
+                delete p.comps.pending[msg.comp_id];
+                delete p.comps.resolve[msg.comp_id];
               }
             }
             break;
@@ -191,7 +203,6 @@ export const previewWS = async (p: PG) => {
               };
 
               p.status = "init";
-              console.clear();
               console.log(
                 `🔥 Site JS Reloaded: ${new Date().toLocaleString()}`
               );
@@ -210,7 +221,6 @@ export const previewWS = async (p: PG) => {
           case "redo":
           case "new_comp":
           case "get_comp":
-            console.log(msg);
         }
       });
       ws.addEventListener("open", () => {
@@ -242,7 +252,7 @@ const svLocal = async (arg: {
 
   let doc = null as any;
   if (mode === "page") doc = p.mpage;
-  if (mode === "comp") doc = p.comp.doc[id];
+  if (mode === "comp") doc = p.comps.doc[id];
   if (!doc) return;
 
   const diff_remote = Y.encodeStateAsUpdate(doc, bin);
@@ -290,7 +300,7 @@ const svdRemote = async (arg: {
 
   let doc = null as any;
   if (mode === "page") doc = p.mpage;
-  if (mode === "comp") doc = p.comp.doc[id];
+  if (mode === "comp") doc = p.comps.doc[id];
   if (!doc) return;
   sendDoc(doc);
 };

@@ -46,7 +46,7 @@ const loadNpmPage = async (id: string) => {
     if (typeof window.exports === "undefined") {
       window.exports = {};
     }
-    await importModule(`${serverurl}/npm/page/${id}/index.js?` + Date.now());
+    await importModule(`${serverurl}/npm/page/${id}/page.js`);
   } catch (e) {
     console.error(e);
   }

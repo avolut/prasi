@@ -4,7 +4,7 @@ import { produceCSS } from "../../../utils/css/gen";
 import { IContent } from "../../../utils/types/general";
 import { FNAdv, FNCompDef } from "../../../utils/types/meta-fn";
 import { Loading } from "../../../utils/ui/loading";
-import { EditorGlobal, ItemMeta } from "../logic/global";
+import { EditorGlobal } from "../logic/global";
 import { treePropEval } from "../logic/tree-prop";
 import { JS_DEBUG, treeScopeEval } from "../logic/tree-scope";
 import { ComponentOver, ElProp, createElProp } from "./e-relprop";
@@ -81,7 +81,9 @@ export const ERender: FC<{
       )
     ) {
       if (!p.comps.doc[item.component.id]) {
-        componentOver = <Loading backdrop={false} />;
+        componentOver = (
+          <Loading backdrop={false} note={item.component.id.substring(28)} />
+        );
       } else if (item.id !== p.comp?.instance_id) {
         componentOver = <ComponentOver item={item} p={p} elprop={elprop} />;
       }

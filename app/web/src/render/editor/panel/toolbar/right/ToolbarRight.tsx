@@ -83,7 +83,7 @@ export const ToolbarRight = () => {
                       location.hostname === "localhost"
                         ? "http://localhost:4550"
                         : "https://prasi.app"
-                    }/preview/${p.site.id}/${p.page?.id}`}
+                    }/live/${p.site.id}/${p.page?.id}`}
                   />
                 }
               >

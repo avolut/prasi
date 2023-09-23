@@ -46,6 +46,14 @@ export const editor = {
   layout: undefined,
   
 }
+export const live = {
+  name: "live",
+  url: "/live/:domain/**",
+  path: "app/web/src/base/page/live.tsx",
+  ssr: false,
+  layout: undefined,
+  
+}
 export const preview = {
   name: "preview",
   url: "/preview/:domain/**",

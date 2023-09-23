@@ -46,6 +46,14 @@ export const editor = {
   layout: undefined,
   component: () => import("../../../web/src/base/page/editor")
 }
+export const live = {
+  name: "live",
+  url: "/live/:domain/**",
+  path: "app/web/src/base/page/live.tsx",
+  ssr: false,
+  layout: undefined,
+  component: () => import("../../../web/src/base/page/live")
+}
 export const preview = {
   name: "preview",
   url: "/preview/:domain/**",

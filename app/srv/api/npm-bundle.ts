@@ -9,6 +9,7 @@ import { stat } from "fs/promises";
 import { apiContext } from "service-srv";
 import { eg } from "../edit/edit-global";
 import { validate } from "uuid";
+import { glb } from "../global";
 
 globalThis.window = {
   react: {},
@@ -24,7 +25,7 @@ export type NPMImportAs = {
 export const _ = {
   url: "/npm-bundle/:mode/:id",
   async api(mode: "site" | "page", id: string) {
-    const { req, res } = apiContext(this);
+    const {} = apiContext(this);
     if (!validate(id)) return "-";
 
     let items = [] as npm_page[] | npm_site[];
@@ -154,6 +155,7 @@ packages:
       const s = await stat(dir.path(`../npm/${mode}/${id}/index.js`));
 
       if (mode === "page") {
+        delete glb.npm.page[id];
         await db.npm_page.updateMany({
           where: {
             id_page: id,
@@ -173,6 +175,8 @@ packages:
           p.doc.getMap("map").set("updated_at", new Date().toISOString());
         }
       } else if (mode === "site") {
+        delete glb.npm.site[id];
+
         await db.npm_site.updateMany({
           where: {
             id_site: id,
@@ -187,21 +191,3 @@ packages:
     }
   },
 };
-
-// let httpPlugin: esbuild.Plugin = {
-//   name: "http",
-//   setup(build) {
-//     build.onResolve({ filter: /.*/ }, (args) => ({
-//       path: args.path,
-//       namespace: "http-url",
-//     }));
-//     build.onLoad({ filter: /.*/, namespace: "http-url" }, async (args) => {
-//       if (args.path.startsWith("react@")) {
-//         return { contents: "return window.React" };
-//       }
-//       if (args.path.startsWith("https://cdn.jsdelivr.net/npm/react-dom@")) {
-//         return { contents: "return window.ReactDOM" };
-//       }
-//     });
-//   },
-// };

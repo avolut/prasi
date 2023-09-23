@@ -9,27 +9,24 @@ import { ChevronRight } from "../../tree/item/indent";
 
 const scopeHistory: ItemMeta[] = [];
 
-const TIMEOUT = 100
+const TIMEOUT = 100;
 export const MonacoScopeBar = () => {
   const p = useGlobal(EditorGlobal, "EDITOR");
   const local = useLocal(
     {
-      vars: {} as Record<
-        string,
-        { meta: ItemMeta; values: Record<string, any> }
-      >,
+      vars: [] as { meta: ItemMeta; values: Record<string, any> }[],
     },
     () => {
       const meta = p.treeMeta[p.item.active];
-      local.vars = {};
+      local.vars.length = 0;
       console.clear();
       mergeScopeUpwards(p, meta, {
         debug: true,
         each: (m, vars) => {
-          local.vars[m.item.id] = {
+          local.vars.push({
             meta: m,
             values: vars,
-          };
+          });
           return true;
         },
       });

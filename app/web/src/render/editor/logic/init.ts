@@ -72,9 +72,7 @@ export const initEditor = async (p: PG, site_id: string) => {
 
       if (site) {
         w.exports = {};
-        await importModule(
-          `${serverurl}/npm/site/${site.id}/index.js?` + Date.now()
-        );
+        await importModule(`${serverurl}/npm/site/${site.id}/site.js`);
 
         p.site.id = site.id;
         p.site.js = site.js || "";

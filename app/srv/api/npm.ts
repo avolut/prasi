@@ -3,12 +3,13 @@ import { apiContext } from "service-srv";
 import mime from "mime-types";
 import { readAsync } from "fs-jetpack";
 import crypto from "crypto";
+import { glb } from "../global";
 
 export const _ = {
   url: "/npm/:mode/:id/*",
   async api(mode: "site" | "page", id: string) {
     const { req, res, mode: _mode } = apiContext(this);
-    const path = dir.path(`../npm/${mode}/${id}/${req.params._}`);
+    let path = dir.path(`../npm/${mode}/${id}/${req.params._}`);
 
     res.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT");
     res.setHeader("Access-Control-Allow-Headers", "content-type rid");
@@ -17,15 +18,31 @@ export const _ = {
 
     const contentType = mime.lookup(path);
     if (contentType) res.setHeader("content-type", contentType);
-    if (path.length > dir.path(`../npm/${mode}/${id}`).length) {
-      const file = await readAsync(path, "buffer");
-      if (file) {
-        res.setHeader(
-          "etag",
-          crypto.createHash("md5").update(file).digest("hex")
-        );
-        res.setHeader("content-length", file.byteLength.toString());
-        res.send(file);
+
+    if (path.endsWith(`${mode}.js`)) {
+      path = path.substring(0, path.length - `${mode}.js`.length) + `index.js`;
+    }
+
+    if (!glb.npm[mode][id]) {
+      if (path.length > dir.path(`../npm/${mode}/${id}`).length) {
+        const file = await readAsync(path, "buffer");
+        if (file) {
+          glb.npm[mode][id] = {
+            file,
+            etag: crypto.createHash("md5").update(file).digest("hex"),
+          };
+          res.setHeader("etag", glb.npm[mode][id].etag);
+          res.setHeader("content-length", file.byteLength.toString());
+          res.send(file);
+          return;
+        }
+      }
+    } else {
+      const npm = glb.npm[mode][id];
+      if (npm) {
+        res.setHeader("etag", npm.etag);
+        res.setHeader("content-length", npm.file.byteLength.toString());
+        res.send(npm.file);
         return;
       }
     }

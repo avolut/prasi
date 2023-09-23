@@ -1,17 +1,16 @@
 import { page } from "dbgen";
-import { loadComponent } from "./comp";
-import { PG } from "./global";
-import { previewWS, wsend } from "./ws";
-import importModule from "../../editor/tools/dynamic-import";
-import { WS_MSG_GET_PAGE } from "../../../utils/types/ws";
 import { validate } from "uuid";
 import { w } from "../../../utils/types/general";
-
-export const pageNpmStatus: Record<string, "loaded" | "loading"> = {};
+import { WS_MSG_GET_PAGE } from "../../../utils/types/ws";
+import importModule from "../../editor/tools/dynamic-import";
+import { loadComponent } from "./comp";
+import { PG } from "./global";
+import { liveWS, wsend } from "./ws";
+import { rebuildTree } from "./tree-logic";
 
 const cacheMeta = {} as Record<string, any>;
 
-export const routePreview = (p: PG, pathname: string) => {
+export const routeLive = (p: PG, pathname: string) => {
   if (p.status !== "loading") {
     let page_id = "";
     if (validate(pathname.substring(1))) {
@@ -21,7 +20,7 @@ export const routePreview = (p: PG, pathname: string) => {
       if (!found) {
         p.status = "not-found";
       } else {
-        const id = p.page?.id;
+        const id = p.mpage?.get("id") as unknown as string;
         let paramsChanged = false;
 
         if (found.params) {
@@ -32,7 +31,7 @@ export const routePreview = (p: PG, pathname: string) => {
             w.params[k] = v;
           }
         }
-        
+
         if (id && (id !== found.id || paramsChanged)) {
           if (!cacheMeta[id]) {
             cacheMeta[id] = p.treeMeta;
@@ -49,43 +48,16 @@ export const routePreview = (p: PG, pathname: string) => {
     }
 
     if (page_id) {
-      const page = p.pages[page_id];
-      if (!page) {
+      let page = p.pages[page_id];
+      if (!page || !page.content_tree) {
         p.status = "loading";
-        loadPage(p, page_id).then(() => {
-          p.status = "ready";
-          p.render();
-        });
+        loadPage(p, page_id);
       } else {
         const mpage = p.mpage?.getMap("map");
         if (mpage) {
           p.status = "ready";
-          if (mpage.get("id") !== p.page?.id) {
-            loadPage(p, page_id).then(() => {
-              p.render();
-            });
-          }
         } else {
           p.status = "not-found";
-        }
-      }
-
-      if (page) {
-        if (!pageNpmStatus[page.id]) {
-          p.status = "loading";
-          pageNpmStatus[page.id] = "loading";
-          loadNpmPage(page.id).then(() => {
-            p.page = page;
-            p.status = "ready";
-            pageNpmStatus[page.id] = "loaded";
-            p.render();
-          });
-        } else {
-          if (pageNpmStatus[page.id] === "loaded") {
-            p.page = page;
-          } else {
-            p.status = "loading";
-          }
         }
       }
     }
@@ -101,21 +73,25 @@ export const preload = async (p: PG, pathname: string) => {
         where: { id: found.id },
         select: {
           id: true,
+          name: true,
           content_tree: true,
+          url: true,
           js_compiled: true,
         },
       });
       if (page) {
-        pageNpmStatus[page.id] = "loading";
-        await loadNpmPage(page.id);
-        delete p.pagePreload[found.id];
-        p.pages[found.id] = {
-          id: page.id,
-          js: page.js_compiled as any,
-          content_tree: page.content_tree as any,
-        };
-        await loadComponent(p, p.pages[found.id].content_tree);
-        pageNpmStatus[page.id] = "loaded";
+        // pageNpmStatus[page.id] = "loading";
+        // await loadNpmPage(page.id);
+        // delete p.pagePreload[found.id];
+        // p.pages[found.id] = {
+        //   id: page.id,
+        //   js: page.js_compiled as any,
+        //   url: page.url,
+        //   name: page.name,
+        //   content_tree: page.content_tree as any,
+        // };
+        // await loadComponent(p, p.pages[found.id].content_tree);
+        // pageNpmStatus[page.id] = "loaded";
       }
     }
   }
@@ -126,7 +102,7 @@ const loadNpmPage = async (id: string) => {
     if (typeof window.exports === "undefined") {
       window.exports = {};
     }
-    await importModule(`${serverurl}/npm/page/${id}/index.js?` );
+    await importModule(`${serverurl}/npm/page/${id}/index.js?`);
   } catch (e) {
     console.error(e);
   }
@@ -134,11 +110,13 @@ const loadNpmPage = async (id: string) => {
 
 const loadPage = (p: PG, id: string) => {
   return new Promise<void>(async (resolve) => {
-    await previewWS(p);
+    await liveWS(p);
     p.mpageLoaded = async (mpage) => {
       const dbpage = mpage.getMap("map").toJSON() as page;
       p.pages[dbpage.id] = {
         id: dbpage.id,
+        url: dbpage.url,
+        name: dbpage.name,
         content_tree: dbpage.content_tree as any,
         js: dbpage.js_compiled as any,
       };

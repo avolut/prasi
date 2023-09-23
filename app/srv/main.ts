@@ -5,6 +5,7 @@ import { dir } from "dir";
 import { $ } from "execa";
 import { existsAsync } from "fs-jetpack";
 glb.prasiSrv = { status: {}, running: {} };
+glb.npm = { page: {}, site: {} };
 
 export const main = createAPIServer({
   name: "srv",

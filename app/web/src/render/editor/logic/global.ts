@@ -2,9 +2,10 @@ import { FC, ReactElement } from "react";
 import { CompDoc } from "../../../base/global/content-editor";
 import { IContent, MContent, MPage } from "../../../utils/types/general";
 import { IItem, MItem } from "../../../utils/types/item";
-import { FMCompDef, FNCompDef } from "../../../utils/types/meta-fn";
+import { FNCompDef } from "../../../utils/types/meta-fn";
 import { PRASI_COMPONENT } from "../../../utils/types/render";
 import { IRoot } from "../../../utils/types/root";
+import { createRouter } from "web-init";
 
 export type WithRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] };
 export type NodeMeta = { meta: ItemMeta; idx: number };
@@ -151,6 +152,13 @@ export const EditorGlobal = {
   compDirectEdit: false,
   compLoading: {} as Record<string, true>,
   compInstance: {} as Record<string, Record<string, string>>,
+
+  /** routing */
+  pagePreload: {} as Record<string, true>,
+  route: createRouter<{
+    id: string;
+    url: string;
+  }>(),
 
   /** write-only */
   mpage: null as null | MPage,
