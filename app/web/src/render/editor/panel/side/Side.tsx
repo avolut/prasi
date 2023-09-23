@@ -143,15 +143,17 @@ export const ESide = () => {
                         ) : (
                           <>
                             <div
-                              className="flex mr-1 px-2 bg-white text-xs border rounded-sm cursor-pointer hover:bg-blue-50 hover:border-blue-500 text-blue-700"
+                              className="flex mr-1 px-2 bg-white text-xs border rounded-sm cursor-pointer hover:bg-blue-50 hover:border-blue-500 text-blue-700 space-x-1"
                               onClick={() => {
                                 p.compProp.edit = true;
                                 p.render();
                               }}
                             >
-                              Master Props
+                              <div>Edit Prop:</div>
+                              <div className="text-ellipsis font-bold">
+                                {meta.parent_comp?.item.name}
+                              </div>
                             </div>
-                            <PreviewItemProp />
                           </>
                         )}
                       </div>

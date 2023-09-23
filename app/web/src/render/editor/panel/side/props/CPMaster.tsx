@@ -1,20 +1,17 @@
 import { FC, useEffect } from "react";
 import { useGlobal, useLocal } from "web-utils";
-import { syncronize } from "y-pojo";
-import * as Y from "yjs";
 import { TypedMap } from "yjs-types";
-import { IItem, MItem } from "../../../../../utils/types/item";
+import { IContent } from "../../../../../utils/types/general";
+import { MItem } from "../../../../../utils/types/item";
 import { FMCompDef, FNCompDef } from "../../../../../utils/types/meta-fn";
 import { Popover } from "../../../../../utils/ui/popover";
+import { closeEditComp } from "../../../logic/comp";
 import { EditorGlobal, PG } from "../../../logic/global";
 import { newMap } from "../../../tools/yjs-tools";
 import { jscript } from "../../script/script-element";
 import { AutoHeightTextarea } from "../panel/link";
 import { CPCodeEdit } from "./CPCodeEdit";
 import { CPCoded } from "./CPCoded";
-import { IContent } from "../../../../../utils/types/general";
-import { closeEditComp } from "../../../logic/comp";
-import { rebuildTree } from "../../../logic/tree-logic";
 
 const popover = {
   name: "",

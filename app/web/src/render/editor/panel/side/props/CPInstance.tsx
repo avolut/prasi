@@ -98,7 +98,7 @@ export const CPInstance: FC<{ mitem: MItem }> = ({ mitem }) => {
           PROPS
         </div>
         <div
-          className="flex mr-1 px-2 bg-white text-xs border rounded-sm cursor-pointer hover:bg-blue-50 hover:border-blue-500 text-blue-700"
+          className="flex mr-1 px-2 bg-white text-xs border rounded-sm cursor-pointer hover:bg-blue-50 hover:border-blue-500 text-blue-700 space-x-1"
           onClick={() => {
             const meta = p.treeMeta[p.item.active];
             if (meta) {
@@ -108,7 +108,8 @@ export const CPInstance: FC<{ mitem: MItem }> = ({ mitem }) => {
             }
           }}
         >
-          Edit Master Props
+          <div>Edit Prop:</div>
+          <div className="text-ellipsis font-bold">{mitem.get("name")}</div>
         </div>
       </div>
       <div className="flex-1 relative overflow-y-auto">
