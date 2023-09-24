@@ -202,6 +202,7 @@ export const InternalAPI: FC<{
                   local.loading = true;
                   local.render();
                   await api.srvapi_destroy(p.site.id);
+                  p.site.api_url = "";
                   p.site.api_prasi.db = "";
                   p.site.api_prasi.port = "";
                   local.loading = false;
