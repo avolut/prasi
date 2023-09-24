@@ -47138,7 +47138,6 @@ var init_prasi = __esm({
             let prisma = "";
             {
               const pdir2 = dir.path(`db/node_modules/.gen/index.d.ts`);
-              console.log(pdir2);
               if (await (0, import_fs_jetpack10.existsAsync)(pdir2)) {
                 prisma = await (0, import_fs_jetpack10.readAsync)(pdir2, "utf8") || "";
               }
