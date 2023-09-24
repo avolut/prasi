@@ -89,7 +89,7 @@ export const initLive = async (p: PG, domain: string) => {
     if (site) {
       /** import site module */
       w.exports = {};
-      await importModule(`${serverurl}/npm/site/${site.id}/index.js`);
+      await importModule(`${serverurl}/npm/site/${site.id}/site.js`);
 
       p.site.id = site.id;
       p.site.js = site.js_compiled || "";
