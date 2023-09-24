@@ -6,15 +6,15 @@ import strDelta from "textdiff-create";
 import { useGlobal, useLocal } from "web-utils";
 import * as Y from "yjs";
 import { TypedMap } from "yjs-types";
-import { FNAdv } from "../../../../../utils/types/meta-fn";
+import { FMCompDef, FNAdv } from "../../../../../utils/types/meta-fn";
 import { Button } from "../../../../../utils/ui/form/Button";
 import { Loading } from "../../../../../utils/ui/loading";
 import { EditorGlobal } from "../../../logic/global";
 import { mergeScopeUpwards } from "../../../logic/tree-scope";
 import { newMap } from "../../../tools/yjs-tools";
 import { jsMount } from "./mount";
-import { monacoTypings } from "./typings";
 import { MonacoScopeBar } from "./scope-bar";
+import { monacoTypings } from "./typings";
 
 export type MonacoEditor = Parameters<OnMount>[0];
 export const DefaultScript = {
@@ -110,30 +110,54 @@ export const ScriptMonacoElement: FC<{
     p.script.active = false;
     return <div>no mitem</div>;
   }
+  let ytext: Y.Text = null as any;
 
   const adv = mitem.get("adv");
+  let mprop = undefined as undefined | FMCompDef;
+  if (p.script.prop === null) {
+    if (!adv) {
+      if (p.page && !local.reloading) {
+        local.reloading = true;
+        mitem.set(
+          "adv",
+          newMap({ css: "", js: "", html: "", jsBuilt: "" }) as TypedMap<FNAdv>
+        );
+      }
 
-  if (!adv) {
-    if (p.page && !local.reloading) {
-      local.reloading = true;
-      mitem.set(
-        "adv",
-        newMap({ css: "", js: "", html: "", jsBuilt: "" }) as TypedMap<FNAdv>
-      );
+      return <Loading note="monaco-el" backdrop={false} />;
     }
+    let _ytext = adv.get(script.type) as any;
+    if (!(_ytext instanceof Y.Text)) {
+      setTimeout(() => {
+        adv.set(script.type, new Y.Text(_ytext) as any);
+        local.render();
+      });
 
-    return <Loading note="monaco-el" backdrop={false} />;
+      return <Loading note="monaco-el2" backdrop={false} />;
+    }
+    ytext = _ytext;
+  } else {
+    let mprops = mitem.get("component")?.get("props");
+    if (!mprops) {
+      mitem.get("component")?.set("props", new Y.Map() as any);
+      mprops = mitem.get("component")?.get("props");
+    }
+    if (mprops) {
+      const propName = p.script.prop.name;
+      mprop = mprops?.get(propName);
+      if (mprop) {
+        let _ytext = mprop.get("ytext");
+        if (!(_ytext instanceof Y.Text)) {
+          mprop.set("ytext", new Y.Text(mprop.get("value")));
+          return <Loading note="monaco-el2" backdrop={false} />;
+        }
+        ytext = _ytext;
+      }
+      return <div>MProp not found</div>;
+    } else {
+      return <div>Failed to create mprops</div>;
+    }
   }
-  let _ytext = adv.get(script.type) as any;
-  if (!(_ytext instanceof Y.Text)) {
-    setTimeout(() => {
-      adv.set(script.type, new Y.Text(_ytext) as any);
-      local.render();
-    });
-
-    return <Loading note="monaco-el2" backdrop={false} />;
-  }
-  let ytext: Y.Text = _ytext as any;
 
   let defaultSrc = DefaultScript[script.type] || "";
 
@@ -435,24 +459,50 @@ export const ScriptMonacoElement: FC<{
           onChange={(newsrc) => {
             clearTimeout(local.changeTimeout);
             local.changeTimeout = setTimeout(async () => {
-              if (ytext && ytext.doc) {
-                await ytext.doc.transact(async () => {
-                  const delta = new Delta();
+              const applyChanges = async (
+                fn: (ytext: Y.Text) => Promise<void>
+              ) => {
+                if (ytext && ytext.doc) {
+                  await ytext.doc.transact(async () => {
+                    const delta = new Delta();
 
-                  const sd = strDelta(ytext.toString(), newsrc || "");
-                  for (const change of sd) {
-                    const operation = change[0];
-                    const value = change[1];
-                    if (operation == -1 && typeof value === "number") {
-                      delta.delete(value);
-                    } else if (operation === 0 && typeof value === "number") {
-                      delta.retain(value);
-                    } else if (typeof value === "string") {
-                      delta.insert(value);
+                    const sd = strDelta(ytext.toString(), newsrc || "");
+                    for (const change of sd) {
+                      const operation = change[0];
+                      const value = change[1];
+                      if (operation == -1 && typeof value === "number") {
+                        delta.delete(value);
+                      } else if (operation === 0 && typeof value === "number") {
+                        delta.retain(value);
+                      } else if (typeof value === "string") {
+                        delta.insert(value);
+                      }
                     }
-                  }
-                  ytext.applyDelta(delta.ops);
+                    ytext.applyDelta(delta.ops);
 
+                    await fn(ytext);
+                  });
+                }
+              };
+
+              if (p.script.prop) {
+                applyChanges(async (ytext) => {
+                  if (mprop) {
+                    const text = ytext.toJSON();
+                    mprop.set("value", text);
+                    const compiled = await build(
+                      "element.tsx",
+                      `return ${text.trim()}`
+                    );
+                    mprop.set("valueBuilt", compiled);
+                  }
+                  if (meta.memoize) {
+                    delete meta.memoize;
+                  }
+                  p.render();
+                });
+              } else {
+                applyChanges(async (ytext) => {
                   const meta = p.treeMeta[p.item.active];
                   if (meta.item.adv) meta.item.adv.js = ytext.toJSON();
                   if (script.type === "js") {

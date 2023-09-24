@@ -33,6 +33,9 @@ export const liveWS = async (p: PG) => {
 
     wsurl.pathname = "/edit";
 
+    if (p.ws && p.ws.readyState === p.ws.OPEN) {
+      return;
+    }
     p.ws = new WebSocket(wsurl);
     const ws = p.ws;
 

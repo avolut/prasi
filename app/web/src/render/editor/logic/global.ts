@@ -54,6 +54,10 @@ export const EditorGlobal = {
   script: {
     siteActive: false,
     siteTypes: {},
+    prop: null as null | {
+      name: string;
+      mode: "instance" | "master";
+    },
     active: false,
     type: "js" as "js" | "css" | "html",
     db: null as any,

@@ -14,8 +14,7 @@ export const LPage = () => {
   return (
     <div
       className={cx(
-        "w-full relative flex flex-1 items-center justify-center",
-        mode === "mobile" ? "h-screen" : "h-full"
+        "relative flex flex-1 items-center justify-center"
       )}
     >
       <div

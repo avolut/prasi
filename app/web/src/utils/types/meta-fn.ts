@@ -1,6 +1,7 @@
 import { TypedMap } from "yjs-types";
 import { IItem, MItem } from "./item";
 import * as Y from "yjs";
+import { YText } from "yjs/dist/src/internals";
 export type FNLayout = {
   dir: "row" | "col" | "row-reverse" | "col-reverse";
   align: FNAlign;
@@ -44,6 +45,7 @@ export type FMCompDef = TypedMap<
   Omit<FNCompDef, "meta" | "content"> & {
     content: MItem;
     meta: TypedMap<FNCompMeta>;
+    ytext?: YText 
   }
 >;
 
