@@ -52,7 +52,7 @@ export const initEditor = async (p: PG, site_id: string) => {
         site = JSON.parse(localStorage.getItem(`prasi-site-${site_id}`) || "");
       } catch (e) {}
 
-      if (!site) {
+      const loadSite = async () => {
         site = await db.site.findFirst({
           where: site_id
             ? { id: site_id }
@@ -68,6 +68,11 @@ export const initEditor = async (p: PG, site_id: string) => {
           },
         });
         localStorage.setItem(`prasi-site-${site_id}`, JSON.stringify(site));
+      };
+      if (!site) {
+        await loadSite();
+      } else {
+        loadSite();
       }
 
       if (site) {
