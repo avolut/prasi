@@ -24,7 +24,9 @@ export const extractProp = (prop: {
             props[k].type = "any";
           }
         } else {
-          if (!!v && !!v.render && typeof v.$$typeof === "symbol") {
+          if (typeof v === "object" && v._jsx) {
+            props[k].type = "React.ReactElement;";
+          } else if (!!v && !!v.render && typeof v.$$typeof === "symbol") {
             props[k].type = "React.FC<Record<string,any> & {ref?:any}>";
           } else {
             props[k].val = v;

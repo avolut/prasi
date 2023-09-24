@@ -68,22 +68,18 @@ export const initLive = async (p: PG, domain: string) => {
       });
       localStorage.setItem(`prasi-site-${domain}`, JSON.stringify(site));
     } else {
-      db.site
-        .findFirst({
-          where: validate(domain) ? { id: domain } : { domain },
-          select: {
-            id: true,
-            config: true,
-            domain: true,
-            name: true,
-            js: true,
-            responsive: true,
-            js_compiled: true,
-          },
-        })
-        .then((site) => {
-          localStorage.setItem(`prasi-site-${domain}`, JSON.stringify(site));
-        });
+      db.site.findFirst({
+        where: validate(domain) ? { id: domain } : { domain },
+        select: {
+          id: true,
+          config: true,
+          domain: true,
+          name: true,
+          js: true,
+          responsive: true,
+          js_compiled: true,
+        },
+      });
     }
 
     if (site) {

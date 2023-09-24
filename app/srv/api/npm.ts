@@ -21,28 +21,31 @@ export const _ = {
 
     if (path.endsWith(`${mode}.js`)) {
       path = path.substring(0, path.length - `${mode}.js`.length) + `index.js`;
-    }
 
-    if (!glb.npm[mode][id]) {
-      if (path.length > dir.path(`../npm/${mode}/${id}`).length) {
-        const file = await readAsync(path, "buffer");
-        if (file) {
+      if (glb.npm[mode][id]) {
+        const npm = glb.npm[mode][id];
+        if (npm) {
+          res.setHeader("etag", npm.etag);
+          res.setHeader("content-length", npm.file.byteLength.toString());
+          res.send(npm.file);
+          return;
+        }
+      }
+    }
+    console.log(path);
+
+    if (path.length > dir.path(`../npm/${mode}/${id}`).length) {
+      const file = await readAsync(path, "buffer");
+      if (file) {
+        if (path.endsWith("index.js")) {
           glb.npm[mode][id] = {
             file,
             etag: crypto.createHash("md5").update(file).digest("hex"),
           };
-          res.setHeader("etag", glb.npm[mode][id].etag);
-          res.setHeader("content-length", file.byteLength.toString());
-          res.send(file);
-          return;
         }
-      }
-    } else {
-      const npm = glb.npm[mode][id];
-      if (npm) {
-        res.setHeader("etag", npm.etag);
-        res.setHeader("content-length", npm.file.byteLength.toString());
-        res.send(npm.file);
+        res.setHeader("etag", glb.npm[mode][id].etag);
+        res.setHeader("content-length", file.byteLength.toString());
+        res.send(file);
         return;
       }
     }

@@ -30,36 +30,44 @@ export const routeLive = (p: PG, pathname: string) => {
     }
 
     if (page_id) {
-      p.page = p.pages[page_id];
+      const promises: Promise<void>[] = [];
+      if (page_id !== p.page?.id) {
+        if (p.page) {
+          cacheMeta[p.page.id] = p.treeMeta;
+        }
 
+        p.page = p.pages[page_id];
+
+        if (p.page && cacheMeta[p.page.id]) {
+          p.treeMeta = cacheMeta[p.page.id];
+        } else {
+          promises.push(loadNpmPage(p, page_id));
+          p.treeMeta = {};
+        }
+      }
       if (!p.page || !p.page.content_tree) {
         p.status = "loading";
-        Promise.all([loadNpmPage(p, page_id), loadPage(p, page_id)]).then(
-          () => {
-            pageLoaded(p);
-            p.status = "ready";
+        promises.push(streamPage(p, page_id));
+      } else {
+        streamPage(p, page_id);
+      }
 
-            p.render();
-          }
-        );
+      if (promises.length > 0) {
+        Promise.all(promises).then(async () => {
+          await pageLoaded(p);
+          p.render();
+        });
       } else {
         pageLoaded(p);
-        loadPage(p, page_id);
       }
     }
   }
 };
 
-const pageLoaded = (p: PG) => {
+const pageLoaded = async (p: PG) => {
   if (p.page) {
-    if (cacheMeta[p.page.id]) {
-      p.treeMeta = cacheMeta[p.page.id];
-    }
-    rebuildTree(p, { render: false, note: "render", reset: false }).then(() => {
-      if (p.page) {
-        cacheMeta[p.page.id] = p.treeMeta;
-      }
-    });
+    rebuildTree(p, { render: false, note: "render", reset: false });
+    p.status = "ready";
   } else {
     p.status = "not-found";
   }
@@ -70,20 +78,30 @@ export const preload = async (p: PG, pathname: string) => {
   if (found) {
     if (!p.pages[found.id] && !p.pagePreload[found.id]) {
       p.pagePreload[found.id] = true;
-      const dbpage = p.mpage?.getMap("map").toJSON() as page;
-      p.pages[dbpage.id] = {
-        id: dbpage.id,
-        url: dbpage.url,
-        name: dbpage.name,
-        content_tree: dbpage.content_tree as any,
-        js: dbpage.js_compiled as any,
-      };
-      const page = p.pages[dbpage.id];
-      if (page && page.content_tree) {
-        await loadComponent(p, page.content_tree);
+      const dbpage = await db.page.findFirst({
+        where: { id: found.id },
+        select: {
+          id: true,
+          url: true,
+          name: true,
+          content_tree: true,
+          js_compiled: true,
+        },
+      });
+      if (dbpage) {
+        p.pages[dbpage.id] = {
+          id: dbpage.id,
+          url: dbpage.url,
+          name: dbpage.name,
+          content_tree: dbpage.content_tree as any,
+          js: dbpage.js_compiled as any,
+        };
+        const page = p.pages[dbpage.id];
+        if (page && page.content_tree) {
+          await loadComponent(p, page.content_tree);
+        }
+        delete p.pagePreload[found.id];
       }
-
-      delete p.pagePreload[found.id];
     }
   }
 };
@@ -99,7 +117,7 @@ const loadNpmPage = async (p: PG, id: string) => {
   }
 };
 
-const loadPage = (p: PG, id: string) => {
+const streamPage = (p: PG, id: string) => {
   return new Promise<void>(async (resolve) => {
     await liveWS(p);
     p.mpageLoaded = async (mpage) => {
