@@ -25,16 +25,14 @@ export const _ = {
       if (site) {
         const config = site.config as SiteConfig;
 
-        if (!config.prasi) {
-          config.prasi = {
-            port: await getPort({
-              port: portNumbers(getRandomArbitrary(21000, 22000), 25000),
-            }),
-            dburl: `postgresql://postgres:andromedia123oke@db.web.andromedia.co.id/test?schema=public`,
-          };
-
-          await db.site.update({ where: { id: site.id }, data: { config } });
-        }
+        config.prasi = {
+          port: await getPort({
+            port: portNumbers(getRandomArbitrary(21000, 22000), 25000),
+          }),
+          dburl: `postgresql://postgres:andromedia123oke@db.web.andromedia.co.id/test?schema=public`,
+        };
+        config.api_url = `https://${config.prasi.port}.prasi.world`;
+        await db.site.update({ where: { id: site.id }, data: { config } });
         if (glb.prasiSrv.status[site_id]) {
           return site?.config || ({} as any);
         }
