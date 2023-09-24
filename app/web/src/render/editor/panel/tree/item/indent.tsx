@@ -1,6 +1,8 @@
 import { FC } from "react";
 import { IContent, MContent } from "../../../../../utils/types/general";
 import { DEPTH_WIDTH } from "../utils/tree-utils";
+import { NodeModel } from "@minoru/react-dnd-treeview";
+import { NodeMeta } from "../../../logic/global";
 
 export const ETreeItemIndent: FC<{
   depth: number;
@@ -10,6 +12,8 @@ export const ETreeItemIndent: FC<{
   isOpen: boolean;
   isActive: boolean;
   isComponent: boolean;
+  node: NodeModel<NodeMeta>;
+  onClick: (node: NodeModel<NodeMeta>) => void;
   mitem: MContent;
 }> = ({
   depth,
@@ -17,6 +21,8 @@ export const ETreeItemIndent: FC<{
   type,
   hasChilds,
   isOpen,
+  onClick,
+  node,
   isActive,
   isComponent,
   mitem,
@@ -102,6 +108,9 @@ export const ETreeItemIndent: FC<{
         )}
         onClick={(e) => {
           e.stopPropagation();
+          if (isOpen) {
+            onClick(node);
+          }
           onToggle();
         }}
       >

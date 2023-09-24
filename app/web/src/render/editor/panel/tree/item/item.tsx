@@ -147,6 +147,8 @@ export const ETreeItem: FC<{
             type={type}
             mitem={mitem}
             isOpen={isOpen}
+            onClick={onClick}
+            node={node}
             hasChilds={hasChilds}
             isActive={isActive || p.item.selection.includes(item.id)}
             isComponent={isComponent}
