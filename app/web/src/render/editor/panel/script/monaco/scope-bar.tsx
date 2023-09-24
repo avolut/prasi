@@ -19,7 +19,6 @@ export const MonacoScopeBar = () => {
     () => {
       const meta = p.treeMeta[p.item.active];
       local.vars.length = 0;
-      console.clear();
       mergeScopeUpwards(p, meta, {
         debug: true,
         each: (m, vars) => {

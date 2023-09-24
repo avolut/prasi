@@ -20,18 +20,38 @@ export const monacoTypings = async (
   }
 
   if (w.prasiApi[p.site.api_url] && w.prasiApi[p.site.api_url].prismaTypes) {
-    for (const [k, v] of Object.entries(
-      w.prasiApi[p.site.api_url].prismaTypes
-    )) {
-      register(
-        monaco,
-        `declare module '${k === "prisma.d.ts" ? "" : "ts:"}${k.replace(
-          `\.d\.ts`,
-          ""
-        )}' { ${v} } `,
-        `ts:${k}`
-      );
-    }
+    const prisma = w.prasiApi[p.site.api_url].prismaTypes;
+
+    register(
+      monaco,
+      `\
+declare module "ts:runtime/index" {
+  ${prisma["runtime/index.d.ts"]}
+}`,
+      `ts:runtime/index.d.ts`
+    );
+
+    register(
+      monaco,
+      `\
+declare module "ts:runtime/library" {
+  ${prisma["runtime/library.d.ts"]}
+}`,
+      `ts:runtime/library.d.ts`
+    );
+
+    register(
+      monaco,
+      `\
+declare module "ts:prisma" {
+  ${prisma["prisma.d.ts"].replace(
+    `import * as runtime from './runtime/library';`,
+    `import * as runtime from 'ts:runtime/library';`
+  )}
+}`,
+      `ts:prisma.d.ts`
+    );
+
     register(monaco, w.prasiApi[p.site.api_url].apiTypes, "ts:api.d.ts");
   }
 
@@ -72,7 +92,7 @@ export const monacoTypings = async (
     monaco,
     `\
 import React from 'react';
-import prisma from 'prisma';
+import prisma from 'ts:prisma';
 
 ${iftext(
   apiTypes,
@@ -81,7 +101,7 @@ import "./api"
 import type * as SRVAPI from "${apiPath}";`
 )}
 
-declare global {
+declare global {;
   const db: prisma.PrismaClient; 
   
   ${baseTypings}
