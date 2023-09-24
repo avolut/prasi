@@ -44,6 +44,7 @@ export const routeLive = (p: PG, pathname: string) => {
         );
       } else {
         pageLoaded(p);
+        loadPage(p, page_id);
       }
     }
   }
@@ -69,18 +70,20 @@ export const preload = async (p: PG, pathname: string) => {
   if (found) {
     if (!p.pages[found.id] && !p.pagePreload[found.id]) {
       p.pagePreload[found.id] = true;
-      const page = await db.page.findFirst({
-        where: { id: found.id },
-        select: {
-          id: true,
-          name: true,
-          content_tree: true,
-          url: true,
-          js_compiled: true,
-        },
-      });
-      if (page) {
+      const dbpage = p.mpage?.getMap("map").toJSON() as page;
+      p.pages[dbpage.id] = {
+        id: dbpage.id,
+        url: dbpage.url,
+        name: dbpage.name,
+        content_tree: dbpage.content_tree as any,
+        js: dbpage.js_compiled as any,
+      };
+      const page = p.pages[dbpage.id];
+      if (page && page.content_tree) {
+        await loadComponent(p, page.content_tree);
       }
+
+      delete p.pagePreload[found.id];
     }
   }
 };

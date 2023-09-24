@@ -25,6 +25,7 @@ export const produceCSS = (
       css`
         display: flex;
         position: relative;
+        user-select: none;
         ${cssLayout(item, arg.mode)}
         ${cssPadding(item, arg.mode)}
         ${cssDimension(item, arg.mode, arg?.editor)}

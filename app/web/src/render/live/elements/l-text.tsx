@@ -9,9 +9,6 @@ export const LText: FC<{
 }> = ({ id, fromProp }) => {
   return <LRender id={id} fromProp={fromProp} />;
 };
-const currentFocus = {
-  id: "",
-};
 
 export const LTextInternal: FC<{
   className: any;
@@ -25,7 +22,6 @@ export const LTextInternal: FC<{
       className={cx(
         className,
         css`
-          user-select: all;
           outline: none;
           min-width: 3px !important;
           min-height: 10px !important;

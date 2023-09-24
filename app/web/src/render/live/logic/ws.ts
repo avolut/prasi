@@ -73,14 +73,12 @@ export const liveWS = async (p: PG) => {
               throttle((e, origin) => {
                 if (p.mpage) {
                   p.page = p.mpage.getMap("map").toJSON() as any;
-                  rebuildTree(p, { note: "page-changed" });
 
-                  console.log("asuo");
                   console.clear();
                   console.log(
-                    `🔥 Page updated: ${p.mpage.get(
-                      "url"
-                    )} ${new Date().toLocaleString()}`
+                    `🔥 Page updated: ${
+                      p.page?.url
+                    } ${new Date().toLocaleString()}`
                   );
                 }
               })
@@ -97,6 +95,8 @@ export const liveWS = async (p: PG) => {
             break;
           case "svd_remote":
             svdRemote({ p, bin: extract(msg.diff_remote), msg });
+            p.treeMeta = {};
+            rebuildTree(p, { note: "page-changed" });
             break;
           case "diff_local":
             if (msg.mode === "page") {
@@ -150,10 +150,6 @@ export const liveWS = async (p: PG) => {
                             wsend(p, JSON.stringify(sendmsg));
                           }
                         }
-
-                        rebuildTree(p, {
-                          note: "ws-update-comp",
-                        });
                       }
                     }, 200)
                   );
