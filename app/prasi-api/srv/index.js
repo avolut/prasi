@@ -47146,7 +47146,7 @@ var init_prasi = __esm({
             let prismart = "";
             {
               const pdir2 = dir.path(
-                `db/node_modules/.gen/runtime/index.d.ts`
+                `db/node_modules/.gen/runtime/index-browser.d.ts`
               );
               if (await (0, import_fs_jetpack10.existsAsync)(pdir2)) {
                 prismart = await (0, import_fs_jetpack10.readAsync)(pdir2, "utf8") || "";
