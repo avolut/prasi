@@ -1,7 +1,7 @@
 import type { Editor as MonacoEditor, OnMount } from "@monaco-editor/react";
 import trim from "lodash.trim";
 import Delta from "quill-delta";
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import strDelta from "textdiff-create";
 import { useGlobal, useLocal } from "web-utils";
 import * as Y from "yjs";
@@ -15,6 +15,7 @@ import { newMap } from "../../../tools/yjs-tools";
 import { jsMount } from "./mount";
 import { MonacoScopeBar } from "./scope-bar";
 import { monacoTypings } from "./typings";
+import { rebuildTree } from "../../../logic/tree-logic";
 
 export type MonacoEditor = Parameters<OnMount>[0];
 export const DefaultScript = {
@@ -43,6 +44,8 @@ export type FBuild = (
   files?: Record<string, string>
 ) => Promise<string>;
 
+const monacoViewState = {} as Record<string, any>;
+
 export const ScriptMonacoElement: FC<{
   Editor: typeof MonacoEditor;
   build: FBuild;
@@ -53,6 +56,20 @@ export const ScriptMonacoElement: FC<{
     reloading: false,
     changeTimeout: 0 as any,
   });
+
+  useEffect(() => {
+    return () => {
+      if (local.editor) {
+        const meta = p.treeMeta[p.item.active];
+        if (meta) {
+          const item = meta.item;
+          monacoViewState[item.originalId || item.id] =
+            local.editor.saveViewState();
+        }
+      }
+
+    };
+  }, [local.editor]);
 
   const script = p.script;
   if (!script) return null;
@@ -164,6 +181,18 @@ export const ScriptMonacoElement: FC<{
 
   return (
     <div className="flex flex-1 items-stretch flex-col">
+      <div
+        className="fixed bg-red-500 z-100 w-[30px] h-[30px] left-0 top-0"
+        onClick={async () => {
+          p.status = "loading";
+          p.render();
+          await rebuildTree(p);
+          setTimeout(() => {
+            p.status = "ready";
+            p.render();
+          }, 1000);
+        }}
+      ></div>
       {script.type === "js" && (
         <div
           className={cx(
@@ -422,6 +451,8 @@ export const ScriptMonacoElement: FC<{
               editor.focus();
             }, 300);
 
+            let restoreViewState = false;
+
             const value = editor.getValue();
             if (script.type === "js") {
               monaco.editor.getModels().forEach((model) => {
@@ -437,10 +468,18 @@ export const ScriptMonacoElement: FC<{
               );
               editor.setModel(model);
             }
+            const meta = p.treeMeta[p.item.active];
+            if (meta) {
+              const item = meta.item;
+              const state = monacoViewState[item.originalId || item.id];
+              if (state) {
+                delete monacoViewState[item.originalId || item.id];
+                local.editor?.restoreViewState(state);
+              }
+            }
 
             let propVal: any = {};
 
-            const meta = p.treeMeta[p.item.active];
             const scope = mergeScopeUpwards(p, meta);
             propVal = {
               ...(window.exports || {}),

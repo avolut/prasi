@@ -1,10 +1,10 @@
-import { Suspense, lazy, useEffect } from "react";
+import { Suspense, lazy } from "react";
 import { useGlobal } from "web-utils";
 import { Loading } from "../../../utils/ui/loading";
+import { mobileCSS } from "../elements/e-page";
 import { editorStyle } from "../elements/style";
 import { EditorGlobal } from "../logic/global";
 import { Toolbar } from "./toolbar/Toolbar";
-import { mobileCSS } from "../elements/e-page";
 
 const ETree = lazy(async () => ({
   default: (await import("./tree/tree")).ETree,
