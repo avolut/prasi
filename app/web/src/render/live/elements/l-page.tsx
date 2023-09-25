@@ -12,11 +12,7 @@ export const LPage = () => {
   ).map((e) => e.id);
 
   return (
-    <div
-      className={cx(
-        "relative flex flex-1 items-center justify-center"
-      )}
-    >
+    <div className={cx("relative flex flex-1 items-center justify-center")}>
       <div
         className={cx(
           "absolute flex flex-col items-stretch flex-1 bg-white ",

@@ -34,6 +34,7 @@ export const liveWS = async (p: PG) => {
     wsurl.pathname = "/edit";
 
     if (p.ws && p.ws.readyState === p.ws.OPEN) {
+      resolve();
       return;
     }
     p.ws = new WebSocket(wsurl);
@@ -70,6 +71,11 @@ export const liveWS = async (p: PG) => {
           case "get_page":
             break;
           case "set_page":
+            console.log("mpage");
+            if (p.mpage) {
+              p.mpage.destroy();
+            }
+
             p.mpage = await setPage(msg);
             p.mpage.on(
               "update",

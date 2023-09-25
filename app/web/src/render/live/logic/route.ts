@@ -55,6 +55,7 @@ export const routeLive = (p: PG, pathname: string) => {
       if (promises.length > 0) {
         Promise.all(promises).then(async () => {
           await pageLoaded(p);
+          p.status = "ready";
           p.render();
         });
       } else {
