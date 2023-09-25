@@ -45,7 +45,6 @@ export type FMCompDef = TypedMap<
   Omit<FNCompDef, "meta" | "content"> & {
     content: MItem;
     meta: TypedMap<FNCompMeta>;
-    ytext?: YText 
   }
 >;
 

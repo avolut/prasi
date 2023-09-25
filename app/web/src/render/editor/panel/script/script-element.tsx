@@ -12,7 +12,6 @@ import {
   FBuild,
   ScriptMonacoElement,
 } from "./monaco/monaco-element";
-import { MItem } from "../../../../utils/types/item";
 
 export const jscript = {
   editor: null as typeof MonacoEditor | null,
@@ -102,6 +101,12 @@ export const EScriptElement: FC<{}> = ({}) => {
         }
 
         p.script.active = false;
+
+        if (typeof p.script.onClose === "function") {
+          p.script.onClose();
+          p.script.onClose = undefined;
+        }
+
         p.render();
       }}
     >

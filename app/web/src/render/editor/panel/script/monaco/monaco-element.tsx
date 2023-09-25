@@ -146,14 +146,15 @@ export const ScriptMonacoElement: FC<{
       const propName = p.script.prop.name;
       mprop = mprops?.get(propName);
       if (mprop) {
-        let _ytext = mprop.get("ytext");
+        let _ytext = mprop.get("value");
         if (!(_ytext instanceof Y.Text)) {
-          mprop.set("ytext", new Y.Text(mprop.get("value")));
+          mprop.set("value", new Y.Text(mprop.get("value")));
           return <Loading note="monaco-el2" backdrop={false} />;
         }
         ytext = _ytext;
+      } else {
+        return <div>MProp not found</div>;
       }
-      return <div>MProp not found</div>;
     } else {
       return <div>Failed to create mprops</div>;
     }
@@ -489,23 +490,19 @@ export const ScriptMonacoElement: FC<{
                 applyChanges(async (ytext) => {
                   if (mprop) {
                     const text = ytext.toJSON();
-                    mprop.set("value", text);
                     const compiled = await build(
                       "element.tsx",
                       `return ${text.trim()}`
                     );
-                    mprop.set("valueBuilt", compiled);
+                    mprop.set("valueBuilt", compiled.substring(6));
+                    console.log(mprop.toJSON());
                   }
-                  if (meta.memoize) {
-                    delete meta.memoize;
-                  }
-                  p.render();
                 });
               } else {
                 applyChanges(async (ytext) => {
                   const meta = p.treeMeta[p.item.active];
                   if (meta.item.adv) meta.item.adv.js = ytext.toJSON();
-                  if (script.type === "js") {
+                  if (script.type === "js" && adv) {
                     const compiled = await build(
                       "element.tsx",
                       `render(${trim((newsrc || "").trim(), ";")})`

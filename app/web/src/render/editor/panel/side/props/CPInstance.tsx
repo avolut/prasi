@@ -2,21 +2,21 @@ import { FC, useEffect } from "react";
 import { useGlobal, useLocal } from "web-utils";
 import { TypedMap } from "yjs-types";
 import { CompDoc } from "../../../../../base/global/content-editor";
-import { IItem, MItem } from "../../../../../utils/types/item";
+import { MItem } from "../../../../../utils/types/item";
 import { FMCompDef, FNCompDef } from "../../../../../utils/types/meta-fn";
 import { Menu, MenuItem } from "../../../../../utils/ui/context-menu";
 import { Loading } from "../../../../../utils/ui/loading";
 import { Popover } from "../../../../../utils/ui/popover";
+import { Tooltip } from "../../../../../utils/ui/tooltip";
 import { editComp, loadComponent } from "../../../logic/comp";
 import { EditorGlobal, PG } from "../../../logic/global";
+import { rebuildTree } from "../../../logic/tree-logic";
+import { newMap } from "../../../tools/yjs-tools";
 import { jscript } from "../../script/script-element";
 import { CPCodeEdit } from "./CPCodeEdit";
 import { CPJsx } from "./CPJsx";
 import { CPOption } from "./CPOption";
 import { CPText } from "./CPText";
-import { newMap } from "../../../tools/yjs-tools";
-import { Tooltip } from "../../../../../utils/ui/tooltip";
-import { rebuildTree } from "../../../logic/tree-logic";
 
 export const CPInstance: FC<{ mitem: MItem }> = ({ mitem }) => {
   const p = useGlobal(EditorGlobal, "EDITOR");
@@ -185,9 +185,8 @@ const SingleProp: FC<{
 }> = ({ name, prop: _prop, mprop, mprops, render, comp, p }) => {
   const local = useLocal({
     clickEvent: null as any,
-    editCode: false,
-    editCodeOnClose: () => {},
     loading: false,
+    editCode: false,
   });
   const type = _prop.meta?.type || "text";
   const updateValue = async (val: string) => {
@@ -253,6 +252,22 @@ const SingleProp: FC<{
     notExists = true;
   }
 
+  const editCode = (onClose?: () => void) => {
+    local.editCode = true;
+    p.script.active = true;
+    p.script.prop = { name, mode: "instance" };
+    p.script.onClose = () => {
+      p.script.prop = null;
+      if (typeof onClose === "function") {
+        onClose();
+      }
+
+      local.editCode = false;
+      local.render();
+    };
+    p.render();
+  };
+
   return (
     <div
       onContextMenu={(e) => {
@@ -276,8 +291,7 @@ const SingleProp: FC<{
           <MenuItem
             label={"Edit Code"}
             onClick={() => {
-              local.editCode = true;
-              local.render();
+              editCode();
             }}
           />
         </Menu>
@@ -328,31 +342,9 @@ const SingleProp: FC<{
           return (
             <>
               {local.editCode ? (
-                <Popover
-                  open={true}
-                  onOpenChange={(open) => {
-                    if (!open && local.editCodeOnClose) {
-                      local.editCode = false;
-                      local.editCodeOnClose();
-                      local.render();
-                      local.editCodeOnClose = () => {};
-                    }
-                  }}
-                  placement="left-start"
-                  autoFocus={false}
-                  backdrop={false}
-                  content={
-                    <div className="bg-white w-[55vw] h-[55vh] flex">
-                      <CPCodeEdit
-                        value={prop.value || ""}
-                        onChange={updateValue}
-                      />
-                    </div>
-                  }
-                  className="bg-orange-500 text-white px-2 flex items-center absolute inset-0"
-                >
+                <div className="bg-orange-500 text-white px-2 flex items-center absolute inset-0">
                   {name}
-                </Popover>
+                </div>
               ) : (
                 label
               )}
@@ -371,11 +363,7 @@ const SingleProp: FC<{
                 prop={prop}
                 name={name}
                 onChange={updateValue}
-                editCode={(onClose) => {
-                  local.editCode = true;
-                  local.editCodeOnClose = onClose;
-                  local.render();
-                }}
+                editCode={editCode}
                 reset={reset}
               />
             )}
@@ -384,11 +372,7 @@ const SingleProp: FC<{
                 prop={prop}
                 name={name}
                 onChange={updateValue}
-                editCode={(onClose) => {
-                  local.editCode = true;
-                  local.editCodeOnClose = onClose;
-                  local.render();
-                }}
+                editCode={editCode}
                 reset={reset}
               />
             )}
@@ -397,11 +381,7 @@ const SingleProp: FC<{
                 name={name}
                 prop={prop}
                 onChange={updateValue}
-                editCode={(onClose) => {
-                  local.editCode = true;
-                  local.editCodeOnClose = onClose;
-                  local.render();
-                }}
+                editCode={editCode}
                 reset={reset}
               />
             )}

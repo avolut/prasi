@@ -62,6 +62,7 @@ export const EditorGlobal = {
     type: "js" as "js" | "css" | "html",
     db: null as any,
     api: null as any,
+    onClose: undefined as undefined | (() => void),
   },
   item: {
     active: "",
