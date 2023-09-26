@@ -15,7 +15,6 @@ import { newMap } from "../../../tools/yjs-tools";
 import { jsMount } from "./mount";
 import { MonacoScopeBar } from "./scope-bar";
 import { monacoTypings } from "./typings";
-import { rebuildTree } from "../../../logic/tree-logic";
 
 export type MonacoEditor = Parameters<OnMount>[0];
 export const DefaultScript = {

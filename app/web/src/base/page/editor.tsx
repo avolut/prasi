@@ -64,9 +64,6 @@ export default page({
                   where: {
                     id_site: res.id,
                     is_deleted: false,
-                    name: {
-                      startsWith: "home",
-                    },
                   },
                   select: {
                     id: true,
@@ -88,9 +85,6 @@ export default page({
                 where: {
                   id_site: site_id,
                   is_deleted: false,
-                  name: {
-                    startsWith: "home",
-                  },
                 },
                 select: {
                   id: true,
