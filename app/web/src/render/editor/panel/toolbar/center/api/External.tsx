@@ -1,8 +1,6 @@
-import get from "lodash.get";
-import trim from "lodash.trim";
 import { useGlobal, useLocal } from "web-utils";
-import { EditorGlobal } from "../../../../logic/global";
 import { reloadDBAPI } from "../../../../../../utils/script/init-api";
+import { EditorGlobal } from "../../../../logic/global";
 
 export const ExternalAPI = () => {
   const local = useLocal({
@@ -12,6 +10,7 @@ export const ExternalAPI = () => {
 
   const p = useGlobal(EditorGlobal, "EDITOR");
   const site = p.site;
+
   if (!site) return null;
   return (
     <div className="flex flex-col flex-1 items-stretch space-y-1">
@@ -35,60 +34,10 @@ export const ExternalAPI = () => {
         className="p-1 border min-w-[350px] font-mono text-[11px]"
         disabled={local.status === "loading"}
         defaultValue={p.site.api_url || ""}
-        onKeyDown={(e) => {
-          local.status = "ready";
-          local.render();
-          if (e.key === "Enter") {
-            e.currentTarget.blur();
-          }
-        }}
-        onBlur={async (e) => {
+        onInput={(e) => {
           const val = e.currentTarget.value;
-          local.status = "loading";
-          local.render();
-
-          if (val === "") {
-            await db.site.update({
-              data: {
-                config: {
-                  api_url: val,
-                },
-              },
-              where: {
-                id: p.site?.id,
-              },
-            });
-            local.status = "valid";
-          } else {
-            try {
-              const res = await fetch(trim(val, "/") + "/_prasi/_", {
-                mode: "no-cors",
-              });
-              const json = await res.json();
-              if (!!get(json, "prasi")) {
-                local.status = "valid";
-              }
-            } catch (e) {
-              local.status = "invalid";
-            }
-
-            await db.site.update({
-              data: {
-                config: {
-                  api_url: val,
-                },
-              },
-              where: {
-                id: p.site?.id,
-              },
-            });
-          }
-          if (p.site) {
-            p.site.api_url = val;
-            // console.log("console", wsdoc.site.config);
-          }
-
-          local.render();
+          p.site.api_url = val;
+          p.render();
         }}
       />
 
@@ -102,7 +51,9 @@ export const ExternalAPI = () => {
         onClick={async () => {
           local.clearingCache = true;
           local.render();
-          await reloadDBAPI(p.site.api_url, false);
+          try {
+            await reloadDBAPI(p.site.api_url, false);
+          } catch (e) {}
           local.clearingCache = false;
           local.render();
           alert("API Cache Cleared");

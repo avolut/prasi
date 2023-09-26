@@ -61,7 +61,13 @@ export default page({
               });
               if (res) {
                 const page = await db.page.findFirst({
-                  where: { id_site: res.id },
+                  where: {
+                    id_site: res.id,
+                    is_deleted: false,
+                    name: {
+                      startsWith: "home",
+                    },
+                  },
                   select: {
                     id: true,
                   },
@@ -79,7 +85,13 @@ export default page({
               }
             } else if (!page_id) {
               let res = await db.page.findFirst({
-                where: { id_site: site_id, is_deleted: false },
+                where: {
+                  id_site: site_id,
+                  is_deleted: false,
+                  name: {
+                    startsWith: "home",
+                  },
+                },
                 select: {
                   id: true,
                 },

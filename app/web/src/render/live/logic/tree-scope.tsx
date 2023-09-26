@@ -178,7 +178,7 @@ const createLocal = (p: PG, meta: ItemMeta) => {
     value: any;
     effect?: (value: any) => void | Promise<void>;
     children: ReactNode;
-    hook?: () => void;
+    hook?: (value: any) => void;
     deps?: any[];
     cache?: boolean;
   }) => {
@@ -222,7 +222,7 @@ const createLocal = (p: PG, meta: ItemMeta) => {
 
     if (typeof hook === "function") {
       try {
-        hook();
+        hook(meta.scope[name]);
       } catch (e) {
         console.warn(e);
       }

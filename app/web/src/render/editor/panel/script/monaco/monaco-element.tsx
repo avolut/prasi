@@ -181,18 +181,6 @@ export const ScriptMonacoElement: FC<{
 
   return (
     <div className="flex flex-1 items-stretch flex-col">
-      <div
-        className="fixed bg-red-500 z-100 w-[30px] h-[30px] left-0 top-0"
-        onClick={async () => {
-          p.status = "loading";
-          p.render();
-          await rebuildTree(p);
-          setTimeout(() => {
-            p.status = "ready";
-            p.render();
-          }, 1000);
-        }}
-      ></div>
       {script.type === "js" && (
         <div
           className={cx(

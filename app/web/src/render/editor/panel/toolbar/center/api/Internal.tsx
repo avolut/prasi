@@ -21,13 +21,14 @@ export const InternalAPI: FC<{
   const config = p.site;
 
   const reloadStatus = () => {
-    if (p.site)
-      api.srvapi_check(p.site.id).then((e) => {
+    if (p.site) {
+      const s = api.srvapi_check.bind({ apiUrl: "https://api.prasi.app" });
+      s(p.site.id).then((e) => {
         local.status = e;
-        console.log(e);
         checkApi(e === "started");
         local.render();
       });
+    }
   };
   useEffect(() => {
     reloadStatus();
@@ -83,7 +84,11 @@ export const InternalAPI: FC<{
               className="border border-slate-500 hover:bg-red-100 hover:border-red-500 px-2 rounded cursor-pointer"
               onClick={async () => {
                 if (p.site) {
-                  await api.srvapi_op(p.site.id, "stop");
+                  const s = api.srvapi_op.bind({
+                    apiUrl: "https://api.prasi.app",
+                  });
+
+                  await s(p.site.id, "stop");
                 }
                 reloadStatus();
               }}
@@ -95,7 +100,11 @@ export const InternalAPI: FC<{
               className="border border-slate-500 hover:bg-purple-100 hover:border-purple-500 px-2 rounded cursor-pointer"
               onClick={async () => {
                 if (p.site) {
-                  await api.srvapi_op(p.site.id, "start");
+                  const s = api.srvapi_op.bind({
+                    apiUrl: "https://api.prasi.app",
+                  });
+
+                  await s(p.site.id, "stop");
                 }
                 local.loading = true;
                 local.render();
@@ -116,7 +125,11 @@ export const InternalAPI: FC<{
               className="border border-slate-500 hover:bg-green-100 hover:border-green-500 px-2 rounded cursor-pointer"
               onClick={async () => {
                 if (p.site) {
-                  await api.srvapi_op(p.site.id, "start");
+                  const s = api.srvapi_op.bind({
+                    apiUrl: "https://api.prasi.app",
+                  });
+
+                  await s(p.site.id, "start");
                 }
                 reloadStatus();
               }}
@@ -165,7 +178,10 @@ export const InternalAPI: FC<{
                         config.api_url = `https://${p.site.api_prasi.port}.prasi.world`;
 
                         const base = trim(config.api_url, "/");
-                        await reloadDBAPI(base);
+
+                        try {
+                          await reloadDBAPI(base);
+                        } catch (e) {}
                       }
                     } catch (e) {
                       console.log(e);
@@ -185,7 +201,9 @@ export const InternalAPI: FC<{
             onClick={async () => {
               local.clearingCache = true;
               local.render();
-              await reloadDBAPI(p.site.api_url, false);
+              try {
+                await reloadDBAPI(p.site.api_url, false);
+              } catch (e) {}
               local.clearingCache = false;
               local.render();
               alert("API Cache Cleared");

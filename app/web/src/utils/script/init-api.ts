@@ -43,7 +43,9 @@ export const initApi = async (config: any) => {
   }
   if (url) {
     if (!w.prasiApi[url]) {
-      await reloadDBAPI(url);
+      try {
+        await reloadDBAPI(url);
+      } catch (e) {}
     }
   }
   return url;
@@ -55,44 +57,42 @@ const loadText = async (url: string, v2?: boolean) => {
 };
 
 export const reloadDBAPI = async (url: string, useCache: boolean = true) => {
-  try {
-    const base = trim(url, "/");
+  const base = trim(url, "/");
 
-    if (!w.prasiApi) {
-      w.prasiApi = {};
-    }
-    if (useCache === false) {
-      delete w.prasiApi[url];
-      localStorage.removeItem(`prasi-api-${url}`);
-    }
-    if (w.prasiApi[url]) return;
-    w.prasiApi[url] = {};
-    const ver = await fetch(base + "/_prasi/_");
-    if ((await ver.json()).prasi === "v2") {
-      await new Promise<void>((done) => {
-        const d = document;
-        const script = d.body.appendChild(d.createElement("script"));
-        script.onload = () => {
-          done();
-        };
-        script.src = `${base}/_prasi/load.js?url=${url}`;
-      });
-    } else {
-      const apiTypes = await fetch(base + "/_prasi/api-types");
-      const apiEntry = await fetch(base + "/_prasi/api-entry");
-      w.prasiApi[url] = {
-        apiEntry: (await apiEntry.json()).srv,
-        prismaTypes: {
-          "prisma.d.ts": await loadText(`${base}/_prasi/prisma/index.d.ts`),
-          "runtime/index.d.ts": await loadText(
-            `${base}/_prasi/prisma/runtime/index.d.ts`
-          ),
-          "runtime/library.d.ts": await loadText(
-            `${base}/_prasi/prisma/runtime/library.d.ts`
-          ),
-        },
-        apiTypes: await apiTypes.text(),
+  if (!w.prasiApi) {
+    w.prasiApi = {};
+  }
+  if (useCache === false) {
+    delete w.prasiApi[url];
+    localStorage.removeItem(`prasi-api-${url}`);
+  }
+  if (w.prasiApi[url]) return;
+  w.prasiApi[url] = {};
+  const ver = await fetch(base + "/_prasi/_");
+  if ((await ver.json()).prasi === "v2") {
+    await new Promise<void>((done) => {
+      const d = document;
+      const script = d.body.appendChild(d.createElement("script"));
+      script.onload = () => {
+        done();
       };
-    }
-  } catch (e) {}
+      script.src = `${base}/_prasi/load.js?url=${url}`;
+    });
+  } else {
+    const apiTypes = await fetch(base + "/_prasi/api-types");
+    const apiEntry = await fetch(base + "/_prasi/api-entry");
+    w.prasiApi[url] = {
+      apiEntry: (await apiEntry.json()).srv,
+      prismaTypes: {
+        "prisma.d.ts": await loadText(`${base}/_prasi/prisma/index.d.ts`),
+        "runtime/index.d.ts": await loadText(
+          `${base}/_prasi/prisma/runtime/index.d.ts`
+        ),
+        "runtime/library.d.ts": await loadText(
+          `${base}/_prasi/prisma/runtime/library.d.ts`
+        ),
+      },
+      apiTypes: await apiTypes.text(),
+    };
+  }
 };

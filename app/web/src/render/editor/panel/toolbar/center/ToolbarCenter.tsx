@@ -28,16 +28,16 @@ export const ToolbarCenter = () => {
   });
 
   const checkApi = async (status?: boolean) => {
+    local.apiStatus = "";
+    local.render();
     if (typeof status === "boolean") {
-      if (local.apiStatus) {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        await reloadDBAPI(p.site.api_url);
+      if (status) {
+        local.apiStatus = "started";
       } else {
         delete w.prasiApi[p.site.api_url];
-
         local.apiStatus = "stopped";
-        local.render();
       }
+      local.render();
 
       return;
     }
@@ -46,7 +46,8 @@ export const ToolbarCenter = () => {
       try {
         local.apiStatus = "starting";
         local.render();
-        await reloadDBAPI(p.site.api_url);
+
+        await reloadDBAPI(p.site.api_url, false);
         local.apiStatus = "started";
         local.render();
       } catch (e) {
@@ -158,9 +159,27 @@ export const ToolbarCenter = () => {
                     }}
                   />
                 }
-                onOpenChange={(open) => {
+                onOpenChange={async (open) => {
                   local.apiConfigOpen = open;
                   local.render();
+
+                  if (
+                    !open &&
+                    (!p.site.api_prasi ||
+                      (p.site.api_prasi && !p.site.api_prasi.port))
+                  ) {
+                    await db.site.update({
+                      data: {
+                        config: {
+                          api_url: p.site.api_url,
+                        },
+                      },
+                      where: {
+                        id: p.site?.id,
+                      },
+                    });
+                  }
+
                   checkApi();
                 }}
               >

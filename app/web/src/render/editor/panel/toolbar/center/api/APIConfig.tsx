@@ -82,5 +82,4 @@ export const APIConfig: FC<{
       )}
     </div>
   );
-  return <></>;
 };
