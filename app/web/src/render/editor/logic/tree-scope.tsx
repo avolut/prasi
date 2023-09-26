@@ -19,7 +19,6 @@ export const treeScopeEval = (
 
   const adv = item.adv;
   let args = {};
-  try {
     if (!meta.memoize) {
       meta.memoize = {
         Local: createLocal(p, meta),
@@ -108,15 +107,6 @@ export const treeScopeEval = (
     }
 
     return output.jsx;
-  } catch (e) {
-    console.warn(e);
-    console.warn(
-      (
-        `ERROR in ${item.type} [${item.name}]:\n ` + ((adv?.js || "") as any)
-      ).trim()
-    );
-    console.warn(`Available var:`, args, `\n\n`);
-  }
 };
 
 export const mergeScopeUpwards = (
@@ -201,7 +191,7 @@ const createLocal = (p: PG, meta: ItemMeta) => {
     value: any;
     effect?: (value: any) => void | Promise<void>;
     children: ReactNode;
-    hook?: () => void;
+    hook?: (value: any) => void;
     deps?: any[];
   }) => {
     if (!meta.scope) {
@@ -223,7 +213,7 @@ const createLocal = (p: PG, meta: ItemMeta) => {
 
     if (typeof hook === "function") {
       try {
-        hook();
+        hook(meta.scope[name]);
       } catch (e) {
         console.warn(e);
       }
