@@ -71,7 +71,6 @@ export const liveWS = async (p: PG) => {
           case "get_page":
             break;
           case "set_page":
-            console.log("mpage");
             if (p.mpage) {
               p.mpage.destroy();
             }
