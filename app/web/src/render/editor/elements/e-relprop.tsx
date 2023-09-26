@@ -20,7 +20,10 @@ export const createElProp = (item: IContent, p: PG) => {
         p.softRender.all();
       }
     },
-
+    onClick: (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+    },
     onPointerDown: async (e: React.PointerEvent<HTMLDivElement>) => {
       e.stopPropagation();
       const render = () => {
@@ -56,6 +59,11 @@ export const createElProp = (item: IContent, p: PG) => {
         localStorage.setItem("prasi-item-active-oid", p.item.activeOriginalId);
         localStorage.setItem("prasi-item-active-id", p.item.active);
       };
+
+      if (!p.comp) {
+        regularSelectActive();
+        return;
+      }
 
       if (p.comp?.instance_id === _item.id) {
         regularSelectActive();

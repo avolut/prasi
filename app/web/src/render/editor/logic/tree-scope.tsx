@@ -3,6 +3,7 @@ import { deepClone } from "web-utils";
 import { createAPI, createDB } from "../../../utils/script/init-api";
 import { ItemMeta, PG } from "./global";
 import { ErrorBoundary } from "web-init";
+import { ErrorBox } from "../elements/e-error";
 
 export const JS_DEBUG = false;
 
@@ -19,94 +20,89 @@ export const treeScopeEval = (
 
   const adv = item.adv;
   let args = {};
-    if (!meta.memoize) {
-      meta.memoize = {
-        Local: createLocal(p, meta),
-        PassProp: createPassProp(p, meta),
-      };
-    }
+  if (!meta.memoize) {
+    meta.memoize = {
+      Local: createLocal(p, meta),
+      PassProp: createPassProp(p, meta),
+    };
+  }
 
-    // prepare args
-    if (!p.script.db) p.script.db = createDB(p.site.api_url);
-    if (!p.script.api) p.script.api = createAPI(p.site.api_url);
-    const w = window as any;
+  // prepare args
+  if (!p.script.db) p.script.db = createDB(p.site.api_url);
+  if (!p.script.api) p.script.api = createAPI(p.site.api_url);
+  const w = window as any;
 
-    const finalScope = mergeScopeUpwards(p, meta);
+  const finalScope = mergeScopeUpwards(p, meta);
 
-    for (const [k, v] of Object.entries(finalScope)) {
-      if (v && typeof v === "object") {
-        const t: { _jsx: true; Comp: FC<{ parent_id: string }> } = v as any;
-        if (t._jsx && t.Comp) {
-          finalScope[k] = <t.Comp parent_id={meta.item.id} />;
-        }
+  for (const [k, v] of Object.entries(finalScope)) {
+    if (v && typeof v === "object") {
+      const t: { _jsx: true; Comp: FC<{ parent_id: string }> } = v as any;
+      if (t._jsx && t.Comp) {
+        finalScope[k] = <t.Comp parent_id={meta.item.id} />;
       }
     }
+  }
 
-    if (JS_DEBUG) {
-      const args = [
-        (".".repeat(meta.depth || 0) + meta.item.name).padEnd(30, "_") +
-          " " +
-          meta.item.id,
-      ].join(" ");
+  if (JS_DEBUG) {
+    const args = [
+      (".".repeat(meta.depth || 0) + meta.item.name).padEnd(30, "_") +
+        " " +
+        meta.item.id,
+    ].join(" ");
 
-      if (meta.comp) {
-        console.log("%c" + args, "color:red", finalScope);
-      } else {
-        console.log(args, finalScope);
-      }
+    if (meta.comp) {
+      console.log("%c" + args, "color:red", finalScope);
+    } else {
+      console.log(args, finalScope);
     }
+  }
 
-    const output = { jsx: null as any };
-    args = {
-      ...w.exports,
-      ...finalScope,
-      ...meta.memoize,
-      db: p.script.db,
-      api: p.script.api,
-      children,
-      props: { ...elprop, className },
-      useEffect: useEffect,
-      render: (jsx: ReactNode) => {
-        output.jsx = (
-          <ErrorBoundary
-            onError={(e) => {
-              console.warn(e);
-            }}
+  const output = { jsx: null as any };
+  args = {
+    ...w.exports,
+    ...finalScope,
+    ...meta.memoize,
+    db: p.script.db,
+    api: p.script.api,
+    children,
+    props: { ...elprop, className },
+    useEffect: useEffect,
+    render: (jsx: ReactNode) => {
+      output.jsx = (
+        <ErrorBox>
+          <Suspense
+            fallback={
+              <div className="flex flex-1 items-center justify-center w-full h-full relative">
+                {p.ui.loading}
+              </div>
+            }
           >
-            <Suspense
-              fallback={
-                <div className="flex flex-1 items-center justify-center w-full h-full relative">
-                  {p.ui.loading}
-                </div>
-              }
-            >
-              {/* <pre className={"text-[9px] font-mono text-black"}>
+            {/* <pre className={"text-[9px] font-mono text-black"}>
                   {item.id}-{item.name}
                 </pre> */}
-              {jsx}
-            </Suspense>
-          </ErrorBoundary>
-        );
-      },
-    };
+            {jsx}
+          </Suspense>
+        </ErrorBox>
+      );
+    },
+  };
 
-    // execute
-    const fn = new Function(...Object.keys(args), js);
-    const res = fn(...Object.values(args));
-    if (res instanceof Promise) {
-      res.catch((e: any) => {
-        console.warn(e);
-        console.warn(
-          (
-            `ERROR in ${item.type} [${item.name}]:\n ` +
-            ((adv?.js || "") as any)
-          ).trim()
-        );
-        console.warn(`Available var:`, args, `\n\n`);
-      });
-    }
+  // execute
+  const fn = new Function(...Object.keys(args), js);
+  const res = fn(...Object.values(args));
+  if (res instanceof Promise) {
+    res.catch((e: any) => {
+      console.warn(e);
+      console.warn(
+        (
+          `ERROR in ${item.type} [${item.name}]:\n ` + ((adv?.js || "") as any)
+        ).trim()
+      );
+      console.warn(`Available var:`, args, `\n\n`);
+    });
+  }
 
-    return output.jsx;
+  return output.jsx;
 };
 
 export const mergeScopeUpwards = (
@@ -198,7 +194,10 @@ const createLocal = (p: PG, meta: ItemMeta) => {
       meta.scope = {};
     }
 
-    if (!meta.scope[name] || meta.item.id === p.item.active) {
+    if (
+      !meta.scope[name] ||
+      (meta.item.id === p.item.active && p.script.active)
+    ) {
       try {
         meta.scope[name] = {
           ...deepClone(value),

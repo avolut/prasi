@@ -1,8 +1,8 @@
-import { FC, ReactNode, Suspense, useEffect, useState } from "react";
+import { FC, ReactNode, Suspense, useEffect } from "react";
 import { deepClone } from "web-utils";
 import { createAPI, createDB } from "../../../utils/script/init-api";
+import { ErrorBox } from "../../editor/elements/e-error";
 import { ItemMeta, PG } from "./global";
-import { ErrorBoundary } from "web-init";
 
 export const JS_DEBUG = false;
 
@@ -54,13 +54,9 @@ export const treeScopeEval = (
       useEffect: useEffect,
       render: (jsx: ReactNode) => {
         output.jsx = (
-          <ErrorBoundary
-            onError={(e) => {
-              console.warn(e);
-            }}
-          >
+          <ErrorBox>
             <Suspense>{jsx}</Suspense>
-          </ErrorBoundary>
+          </ErrorBox>
         );
       },
     };

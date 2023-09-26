@@ -194,7 +194,7 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
           cur = map[cur];
         }
 
-        if (p.item.active !== found) {
+        if (p.item.active !== found && p.comp) {
           p.item.active = found;
           if (foundOID) {
             p.item.activeOriginalId = foundOID;

@@ -2,7 +2,7 @@ import { withErrorBoundary, useErrorBoundary } from "react-use-error-boundary";
 import { useLocal } from "web-utils";
 
 export const ErrorBox = withErrorBoundary(
-  ({ children, id }: { children: any; id: string }) => {
+  ({ children, id }: { children: any; id?: string }) => {
     const local = useLocal({ retrying: false });
     const [error, resetError] = useErrorBoundary((error, errorInfo) => {
       console.warn(error);
