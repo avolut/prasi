@@ -382,6 +382,9 @@ importers:
       react-is:
         specifier: ^18.2.0
         version: 18.2.0
+      react-use-error-boundary:
+        specifier: ^3.0.0
+        version: 3.0.0(react@18.2.0)
       react-virtuoso:
         specifier: ^4.3.8
         version: 4.4.2(react-dom@18.2.0)(react@18.2.0)
@@ -5877,6 +5880,14 @@ packages:
     resolution: {integrity: sha512-Gvzk7OZpiqKSkxsQvO/mbTN1poglhmAV7gR/DdIrRrSMXraRQQlfikRJOr3Nb9GTMPC5kof948Zy6jJZIFtDvQ==}
     engines: {node: '>=0.10.0'}
     dev: true
+
+  /react-use-error-boundary@3.0.0(react@18.2.0):
+    resolution: {integrity: sha512-5urkfyU3ZzInEMSHe1gxtDzlQAHs0krTt0V6h8H2L5nXhDKq3OYXnCs9lGHDkEkYvLmsphw8ap5g8uYfvrkJng==}
+    peerDependencies:
+      react: '>= 16.8'
+    dependencies:
+      react: 18.2.0
+    dev: false
 
   /react-use-measure@2.1.1(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-nocZhN26cproIiIduswYpV5y5lQpSQS1y/4KuvUCjSKmw7ZWIS/+g3aFnX3WdBkyuGUtTLif3UTqnLLhbDoQig==}
