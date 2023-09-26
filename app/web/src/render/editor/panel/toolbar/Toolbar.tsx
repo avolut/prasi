@@ -8,13 +8,14 @@ import { EditorGlobal } from "../../logic/global";
 
 export const Toolbar = () => {
   const p = useGlobal(EditorGlobal, "EDITOR");
+  const danger = p.wsPing < 0 && p.wsPing > 1000 && p.status === "ready";
   return (
     <div
       className={cx(
         "toolbar",
         "flex",
-        p.wsPing < 0 && "bg-red-500 ",
-        p.wsPing < 0 &&
+        danger && "bg-red-500 ",
+        danger &&
           css`
             * {
               color: white;

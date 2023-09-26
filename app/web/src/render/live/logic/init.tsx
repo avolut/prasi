@@ -14,6 +14,7 @@ const w = window as unknown as {
   exports: any;
   params: any;
   apiClient: typeof apiClient;
+  apiurl: string;
 };
 
 export const initLive = async (p: PG, domain: string) => {
@@ -93,6 +94,7 @@ export const initLive = async (p: PG, domain: string) => {
       p.site.js = site.js_compiled || "";
       p.site.responsive = site.responsive as any;
       p.site.api_url = await initApi(site.config);
+      w.apiurl = p.site.api_url;
 
       /** load pages */
       const pagesLocal = localStorage.getItem(`prasi-pages-[${domain}]`);

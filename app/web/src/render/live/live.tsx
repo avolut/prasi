@@ -1,11 +1,10 @@
 import { FC, useCallback, useEffect } from "react";
-import { useGlobal } from "web-utils";
-import { LiveGlobal } from "./logic/global";
 import parseUA from "ua-parser-js";
-import { Loading } from "../../utils/ui/loading";
+import { useGlobal } from "web-utils";
+import { LPage } from "./elements/l-page";
+import { LiveGlobal } from "./logic/global";
 import { initLive } from "./logic/init";
 import { routeLive } from "./logic/route";
-import { LPage } from "./elements/l-page";
 
 export const Live: FC<{ domain: string; pathname: string }> = ({
   domain,

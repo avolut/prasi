@@ -32,6 +32,7 @@ const children: ReactNode;
 const PassProp: FC<Record<string,any> & {children: React.ReactNode}>;
 const PassChild: FC<{name: string}>;
 const Preload: FC<{url: string[]}>;
+const apiurl: string;
 const Local: <T extends Record<string, any>>(arg: {
   name: string;
   value: T;

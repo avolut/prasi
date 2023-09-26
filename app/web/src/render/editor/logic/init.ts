@@ -12,6 +12,7 @@ const w = window as unknown as {
   isDesktop: boolean;
   apiHeaders: any;
   exports: any;
+  apiurl: string;
 };
 
 export const initEditor = async (p: PG, site_id: string) => {
@@ -80,6 +81,7 @@ export const initEditor = async (p: PG, site_id: string) => {
       p.site.domain = site.domain;
       p.site.responsive = site.responsive as any;
       p.site.api_url = await initApi(site.config);
+      w.apiurl = p.site.api_url;
       api.site_dts(p.site.id).then((e) => {
         p.site_dts = e || "";
         p.render();
