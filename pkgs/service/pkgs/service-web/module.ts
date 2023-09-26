@@ -24,7 +24,6 @@ export const serve = async (
   </script>
 </body>`
     );
-    console.log(cache.index);
   }
 
   res.setHeader("content-type", "text/html");

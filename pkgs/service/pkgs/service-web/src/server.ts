@@ -42,6 +42,10 @@ export const server = async ({
     }
   }
 
+  if (mode !== "dev") {
+    web.module = web.module.load();
+  }
+  
   server.any("/*", (req, res) => {
     serveStatic(req, res, async () => {
       if (mode === "dev") {
