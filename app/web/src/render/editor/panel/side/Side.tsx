@@ -151,7 +151,8 @@ export const ESide = () => {
                             >
                               <div>Edit Prop:</div>
                               <div className="text-ellipsis font-bold">
-                                {meta.parent_comp?.item.name}
+                                {meta.comp?.mcomp?.get("name") ||
+                                  meta.parent_comp?.item.name}
                               </div>
                             </div>
                           </>
