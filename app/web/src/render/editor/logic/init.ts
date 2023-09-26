@@ -47,65 +47,61 @@ export const initEditor = async (p: PG, site_id: string) => {
     }
 
     let site = null as any;
-    if (!p.site.id) {
-      try {
-        site = JSON.parse(localStorage.getItem(`prasi-site-${site_id}`) || "");
-      } catch (e) {}
+    try {
+      site = JSON.parse(localStorage.getItem(`prasi-site-${site_id}`) || "");
+    } catch (e) {}
 
-      const querySite = async () => {
-        const site = await db.site.findFirst({
-          where: site_id
-            ? { id: site_id }
-            : { id_user: p.session.data.user.id },
-          select: {
-            id: true,
-            config: true,
-            domain: true,
-            name: true,
-            js: true,
-            responsive: true,
-            js_compiled: true,
-          },
-        });
-        localStorage.setItem(`prasi-site-${site_id}`, JSON.stringify(site));
-        return site;
-      };
-      const processSite = async (site: any) => {
-        w.exports = {};
-        await importModule(
-          `${serverurl}/npm/site/${site.id}/site.js?${Date.now()}`
-        );
+    const querySite = async () => {
+      const site = await db.site.findFirst({
+        where: site_id ? { id: site_id } : { id_user: p.session.data.user.id },
+        select: {
+          id: true,
+          config: true,
+          domain: true,
+          name: true,
+          js: true,
+          responsive: true,
+          js_compiled: true,
+        },
+      });
+      localStorage.setItem(`prasi-site-${site_id}`, JSON.stringify(site));
+      return site;
+    };
+    const processSite = async (site: any) => {
+      w.exports = {};
+      await importModule(
+        `${serverurl}/npm/site/${site.id}/site.js?${Date.now()}`
+      );
 
-        p.site.id = site.id;
-        p.site.js = site.js || "";
-        p.site.js_compiled = site.js_compiled || "";
-        p.site.name = site.name;
-        p.site.domain = site.domain;
-        p.site.responsive = site.responsive as any;
-        p.site.api_url = await initApi(site.config);
-        api.site_dts(p.site.id).then((e) => {
-          p.site_dts = e || "";
-          p.render();
-        });
-        const configLocal: any = get(site, "config.prasi");
-        if (configLocal) {
-          p.site.api_prasi.db = configLocal.dburl ? configLocal.dburl : "";
-          p.site.api_prasi.port = configLocal.port ? configLocal.port : "";
-        }
-        execSiteJS(p);
-      };
-      if (!site || (site && !site.id)) {
-        const site = await querySite();
-        await processSite(site);
-      } else {
-        await processSite(site);
-        await querySite();
+      p.site.id = site.id;
+      p.site.js = site.js || "";
+      p.site.js_compiled = site.js_compiled || "";
+      p.site.name = site.name;
+      p.site.domain = site.domain;
+      p.site.responsive = site.responsive as any;
+      p.site.api_url = await initApi(site.config);
+      api.site_dts(p.site.id).then((e) => {
+        p.site_dts = e || "";
+        p.render();
+      });
+      const configLocal: any = get(site, "config.prasi");
+      if (configLocal) {
+        p.site.api_prasi.db = configLocal.dburl ? configLocal.dburl : "";
+        p.site.api_prasi.port = configLocal.port ? configLocal.port : "";
       }
-
-      p.status = "ready";
+      execSiteJS(p);
+    };
+    if (!site || (site && !site.id)) {
+      const site = await querySite();
+      await processSite(site);
     } else {
-      p.status = "not-found";
+      await processSite(site);
+      await querySite();
     }
+
+    p.status = "ready";
+    p.render();
+
     if (!jscript.build) {
       jscript.init();
     }
