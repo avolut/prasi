@@ -41,8 +41,8 @@ export const _ = {
             file,
             etag: crypto.createHash("md5").update(file).digest("hex"),
           };
+          res.setHeader("etag", glb.npm[mode][id].etag);
         }
-        res.setHeader("etag", glb.npm[mode][id].etag);
         res.setHeader("content-length", file.byteLength.toString());
         res.send(file);
         return;
