@@ -3,7 +3,7 @@ import * as Y from "yjs";
 import { IItem, MItem } from "../../../../../../utils/types/item";
 import { FNCompDef } from "../../../../../../utils/types/meta-fn";
 import { PG } from "../../../../logic/global";
-import { FBuild } from "../../../script/monaco/monaco-element";
+import { FBuild } from "../../../script/monaco/monaco-el";
 import { fillID } from "../../../../tools/fill-id";
 import { syncronize } from "y-pojo";
 

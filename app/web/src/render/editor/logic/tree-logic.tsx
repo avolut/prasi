@@ -4,7 +4,7 @@ import { IContent, MContent } from "../../../utils/types/general";
 import { IItem, MItem } from "../../../utils/types/item";
 import { FNCompDef } from "../../../utils/types/meta-fn";
 import { createElProp } from "../elements/e-relprop";
-import { DefaultScript } from "../panel/script/monaco/monaco-element";
+import { DefaultScript } from "../panel/script/monaco/monaco-el";
 import { fillID } from "../tools/fill-id";
 import { newMap } from "../tools/yjs-tools";
 import { instantiateComp, loadComponent } from "./comp";

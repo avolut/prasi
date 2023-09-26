@@ -11,7 +11,7 @@ import {
   DefaultScript,
   FBuild,
   ScriptMonacoElement,
-} from "./monaco/monaco-element";
+} from "./monaco/monaco-el";
 
 export const jscript = {
   editor: null as typeof MonacoEditor | null,

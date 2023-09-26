@@ -1,5 +1,5 @@
 import type { Editor as MonacoEditor, OnMount } from "@monaco-editor/react";
-import { createStore, set, UseStore } from "idb-keyval";
+import { createStore, set } from "idb-keyval";
 import trim from "lodash.trim";
 import Delta from "quill-delta";
 import { FC, useEffect } from "react";
@@ -8,7 +8,6 @@ import { useGlobal, useLocal } from "web-utils";
 import * as Y from "yjs";
 import { TypedMap } from "yjs-types";
 import { FMCompDef, FNAdv } from "../../../../../utils/types/meta-fn";
-import { Button } from "../../../../../utils/ui/form/Button";
 import { Loading } from "../../../../../utils/ui/loading";
 import { EditorGlobal } from "../../../logic/global";
 import { mergeScopeUpwards } from "../../../logic/tree-scope";
@@ -16,6 +15,10 @@ import { newMap } from "../../../tools/yjs-tools";
 import { jsMount } from "./mount";
 import { MonacoScopeBar } from "./scope-bar";
 import { monacoTypings } from "./typings";
+import { MonacoElSnippet } from "./monaco-el-snippet";
+import { Button } from "../../../../../utils/ui/form/Button";
+import { Popover } from "../../../../../utils/ui/popover";
+import { MonacoElHistory } from "./monaco-el-history";
 
 export type MonacoEditor = Parameters<OnMount>[0];
 export const DefaultScript = {
@@ -55,6 +58,7 @@ export const ScriptMonacoElement: FC<{
     editor: null as null | MonacoEditor,
     reloading: false,
     changeTimeout: 0 as any,
+    historyOpen: false,
     idbstore: createStore(`prasi-page-${p.page?.id}`, "script-history"),
   });
 
@@ -194,213 +198,49 @@ export const ScriptMonacoElement: FC<{
             `
           )}
         >
-          <div className="flex items-center space-x-1 pl-1">
-            <Button
-              onClick={() => {
-                doEdit(
-                  `\
-<div {...props}>
-  <Local
-    name="local"
-    value={
-      {
-        //local object
-      }
-    }
-    effect={async (local) => {
-      //local effect
-    }}
-  >
-    {children}
-  </Local>
-</div>
-                  `,
-                  true
-                );
-              }}
-            >
-              &lt;Local/&gt;
-            </Button>
-            <Button
-              onClick={() => {
-                doEdit(
-                  `\
-<div {...props}>
-  <PassProp val={"yourval"}>{children}</PassProp>
-</div>`,
-                  true
-                );
-              }}
-            >
-              &lt;PassProp/&gt;
-            </Button>
-            <Button
-              onClick={() => {
-                doEdit(
-                  `\
-<div {...props}>
-  {(local.list || []).map((item, idx) => (
-    <PassProp item={item} key={idx}>
-      {children}
-    </PassProp>
-  ))}
-</div>   
-`,
-                  true
-                );
-              }}
-            >
-              &lt;Map /&gt;
-            </Button>
+          <MonacoElSnippet doEdit={doEdit} />
 
+          <Popover
+            backdrop={false}
+            open={local.historyOpen}
+            onOpenChange={(open) => {
+              if (!open) {
+                local.historyOpen = false;
+                local.render();
+              }
+            }}
+            content={
+              <MonacoElHistory
+                store={local.idbstore}
+                doEdit={doEdit}
+                close={() => {
+                  local.historyOpen = false;
+                  local.render();
+                }}
+              />
+            }
+          >
             <Button
               onClick={() => {
-                doEdit(
-                  `\
-<>{true && <div {...props}>{children}</div>}</>   
-`,
-                  true
-                );
+                local.historyOpen = true;
+                local.render();
               }}
+              className="flex space-x-1"
             >
-              &lt;If /&gt;
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 256 256"
+              >
+                <path
+                  fill="currentColor"
+                  d="M98 136a6 6 0 016-6h64a6 6 0 010 12h-64a6 6 0 01-6-6zm6-26h64a6 6 0 000-12h-64a6 6 0 000 12zm126 82a30 30 0 01-30 30H88a30 30 0 01-30-30V64a18 18 0 00-36 0c0 6.76 5.58 11.19 5.64 11.23a6 6 0 11-7.24 9.57C20 84.48 10 76.85 10 64a30 30 0 0130-30h136a30 30 0 0130 30v106h10a6 6 0 013.6 1.2c.4.32 10.4 7.95 10.4 20.8zm-124 0c0-6.76-5.59-11.19-5.64-11.23A6 6 0 01104 170h90V64a18 18 0 00-18-18H64a29.82 29.82 0 016 18v128a18 18 0 0036 0zm112 0a14.94 14.94 0 00-4.34-10h-97.78a24.83 24.83 0 012.12 10 29.87 29.87 0 01-6 18h88a18 18 0 0018-18z"
+                ></path>
+              </svg>
+              <div>History</div>
             </Button>
-
-            <Button
-              onClick={() => {
-                doEdit(
-                  `\
-<>
-  {
-    /**if condition */
-    true ? (
-      /** then  */
-      <div {...props}>{children}</div>
-    ) : (
-      /** else  */
-      <div {...props}>ELSE CONDITION</div>
-    )
-  }
-</>
-`,
-                  true
-                );
-              }}
-            >
-              &lt;If Else /&gt;
-            </Button>
-
-            <Button
-              onClick={() => {
-                doEdit(
-                  `\
-<input {...props} />`,
-                  true
-                );
-              }}
-            >
-              &lt;Input /&gt;
-            </Button>
-
-            {/* <Button
-              onClick={() => {
-                doEdit(
-                  `<Preload {...props} url={[""]}>{children}</Preload>`,
-                  true
-                );
-              }}
-            >
-              &lt;Preload/&gt;
-            </Button> */}
-
-            <Button
-              onClick={() => {
-                doEdit(
-                  `<>{isMobile && <div {...props}>{children}</div>}</>`,
-                  true
-                );
-              }}
-            >
-              &lt;isMobile/&gt;
-            </Button>
-
-            <Button
-              onClick={() => {
-                doEdit(
-                  `<>{isDesktop && <div {...props}>{children}</div>}</>`,
-                  true
-                );
-              }}
-            >
-              &lt;isDesktop/&gt;
-            </Button>
-
-            <Button
-              onClick={() => {
-                doEdit(
-                  `\
-<div {...props}>{children}</div>`,
-                  true
-                );
-              }}
-            >
-              Reset
-            </Button>
-
-            <Button
-              onClick={() => {
-                doEdit(
-                  `\
-<div
-  {...props}
-  className={cx(
-    props.className,
-    css\`
-/** Custom CSS **/
-
-
-
-\`
-  )}
->
-  {children}
-</div>
-                  `,
-                  true
-                );
-              }}
-            >
-              CSS
-            </Button>
-            <Button
-              onClick={() => {
-                doEdit(
-                  `\
-<div
-  {...props}
-  className={cx(props.className,"custom-class")}
->
-  {children}
-</div>
-                  `,
-                  true
-                );
-              }}
-            >
-              ClassName
-            </Button>
-          </div>
-          {/* <div>
-            <Button
-              onClick={() => {
-                // reloadCE(c);
-              }}
-            >
-              Reload Page (
-              {navigator.userAgent.indexOf("Mac OS X") != -1 ? "⌘" : "Ctrl"} +
-              S)
-            </Button>
-          </div> */}
+          </Popover>
         </div>
       )}
 
@@ -513,13 +353,10 @@ export const ScriptMonacoElement: FC<{
                 }
               };
 
-              const ts = Math.round(Date.now() / 1000);
-
+              const ts = Math.round(Date.now() / 10000);
+              const id = meta.item.originalId || meta.item.id;
               if (p.script.prop) {
-                set(
-                  `${p.item.active}@${p.script.prop.name}-${ts}`,
-                  newsrc || ""
-                );
+                set(`${id}@${p.script.prop.name}-${ts}`, newsrc || "");
                 applyChanges(async (ytext) => {
                   if (mprop) {
                     const text = ytext.toJSON();
@@ -532,11 +369,7 @@ export const ScriptMonacoElement: FC<{
                   }
                 });
               } else {
-                set(
-                  `${p.item.active}:${script.type}-${ts}`,
-                  newsrc || "",
-                  local.idbstore
-                );
+                set(`${id}:${script.type}-${ts}`, newsrc || "", local.idbstore);
                 applyChanges(async (ytext) => {
                   const meta = p.treeMeta[p.item.active];
                   if (meta.item.adv) meta.item.adv.js = ytext.toJSON();
