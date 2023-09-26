@@ -74,7 +74,6 @@ export const liveWS = async (p: PG) => {
             if (p.mpage) {
               p.mpage.destroy();
             }
-
             p.mpage = await setPage(msg);
             p.mpage.on(
               "update",

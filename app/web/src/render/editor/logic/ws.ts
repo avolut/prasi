@@ -30,7 +30,7 @@ export const editorWS = async (p: PG) => {
     return;
   }
   const render = () => {
-    if (!p.focused) {
+    if (!p.focused && !p.script.active) {
       p.render();
     }
   };
