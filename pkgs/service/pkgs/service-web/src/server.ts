@@ -26,7 +26,6 @@ export const server = async ({
   const serveStatic: MiddlewareHandler = (req, res, next) => {
     let url = decodeURI(req.path);
     const asset = web.asset.get(decodeURI(url));
-    console.log(url, !!asset);
 
     if (!asset) next();
     else {
