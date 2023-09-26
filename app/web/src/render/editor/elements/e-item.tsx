@@ -1,15 +1,14 @@
 import { FC } from "react";
+import { ErrorBox } from "./e-error";
 import { ERender } from "./e-render";
 import { EText } from "./e-text";
-import { ItemMeta } from "../logic/global";
-import { ErrorBoundary } from "web-init";
 
 export const EItem: FC<{
   id: string;
   fromProp?: boolean;
 }> = ({ id, fromProp }) => {
   return (
-    <ErrorBoundary>
+    <ErrorBox id={id}>
       <ERender id={id} fromProp={fromProp}>
         {(childs) => {
           return childs.map((e) => {
@@ -21,6 +20,6 @@ export const EItem: FC<{
           });
         }}
       </ERender>
-    </ErrorBoundary>
+    </ErrorBox>
   );
 };

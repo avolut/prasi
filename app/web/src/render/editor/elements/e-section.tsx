@@ -1,11 +1,11 @@
 import { FC } from "react";
+import { ErrorBox } from "./e-error";
 import { EItem } from "./e-item";
 import { ERender } from "./e-render";
-import { ErrorBoundary } from "web-init";
 
 export const ESection: FC<{ id: string }> = ({ id }) => {
   return (
-    <ErrorBoundary>
+    <ErrorBox id={id}>
       <ERender id={id}>
         {(childs) =>
           childs.map((e) => {
@@ -13,6 +13,6 @@ export const ESection: FC<{ id: string }> = ({ id }) => {
           })
         }
       </ERender>
-    </ErrorBoundary>
+    </ErrorBox>
   );
 };

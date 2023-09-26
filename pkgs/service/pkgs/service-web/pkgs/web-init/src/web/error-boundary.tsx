@@ -9,6 +9,7 @@ export class ErrorBoundary extends Component<
     children: ReactNode;
     onError?: (error: any) => void;
     onSuccess?: () => void;
+    showError?: boolean;
   },
   ErrorBoundaryState
 > {
@@ -26,7 +27,10 @@ export class ErrorBoundary extends Component<
       if (this.props.onError) {
         this.props.onError(this.state.errorInfo);
       }
-      return handleError(this);
+      if (this.props.showError !== false) {
+        return handleError(this);
+      }
+      return null;
     }
     if (this.props.onSuccess) {
       this.props.onSuccess();

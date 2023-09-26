@@ -3,17 +3,17 @@ import { useLocal } from "web-utils";
 import { IText } from "../../../utils/types/text";
 import { PG } from "../logic/global";
 import { rebuildTree } from "../logic/tree-logic";
+import { ErrorBox } from "./e-error";
 import { ERender } from "./e-render";
-import { ErrorBoundary } from "web-init";
 
 export const EText: FC<{
   id: string;
   fromProp?: boolean;
 }> = ({ id, fromProp }) => {
   return (
-    <ErrorBoundary>
+    <ErrorBox id={id}>
       <ERender id={id} fromProp={fromProp} />
-    </ErrorBoundary>
+    </ErrorBox>
   );
 };
 const currentFocus = {
