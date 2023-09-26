@@ -356,7 +356,11 @@ export const ScriptMonacoElement: FC<{
               const ts = Math.round(Date.now() / 10000);
               const id = meta.item.originalId || meta.item.id;
               if (p.script.prop) {
-                set(`${id}@${p.script.prop.name}-${ts}`, newsrc || "");
+                set(
+                  `${id}@${p.script.prop.name}-${ts}`,
+                  newsrc || "",
+                  local.idbstore
+                );
                 applyChanges(async (ytext) => {
                   if (mprop) {
                     const text = ytext.toJSON();
