@@ -52,8 +52,8 @@ export const initEditor = async (p: PG, site_id: string) => {
         site = JSON.parse(localStorage.getItem(`prasi-site-${site_id}`) || "");
       } catch (e) {}
 
-      const loadSite = async () => {
-        site = await db.site.findFirst({
+      const querySite = async () => {
+        const site = await db.site.findFirst({
           where: site_id
             ? { id: site_id }
             : { id_user: p.session.data.user.id },
@@ -68,14 +68,9 @@ export const initEditor = async (p: PG, site_id: string) => {
           },
         });
         localStorage.setItem(`prasi-site-${site_id}`, JSON.stringify(site));
+        return site;
       };
-      if (!site) {
-        await loadSite();
-      } else {
-        loadSite();
-      }
-
-      if (site) {
+      const processSite = async (site: any) => {
         w.exports = {};
         await importModule(
           `${serverurl}/npm/site/${site.id}/site.js?${Date.now()}`
@@ -97,11 +92,15 @@ export const initEditor = async (p: PG, site_id: string) => {
           p.site.api_prasi.db = configLocal.dburl ? configLocal.dburl : "";
           p.site.api_prasi.port = configLocal.port ? configLocal.port : "";
         }
+        execSiteJS(p);
+      };
+      if (!site || (site && !site.id)) {
+        const site = await querySite();
+        await processSite(site);
       } else {
-        site = p.site;
+        await processSite(site);
+        await querySite();
       }
-
-      execSiteJS(p);
 
       p.status = "ready";
     } else {
