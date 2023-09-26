@@ -67,13 +67,6 @@ const buildSPARaw = async (mode: string) => {
         },
       }),
     ],
-    banner: {
-      js: `\
-if (typeof isSSR === 'undefined') {
-  if (typeof window !== 'undefined') window.isSSR = false;
-  else if (typeof globalThis !== 'undefined') globalThis.isSSR = false;
-}`,
-    },
   });
   if (mode === "dev") {
     await ctx.watch({});
@@ -97,13 +90,6 @@ const buildSPA = async (mode: string) => {
     logLevel: "error",
     define: {
       "process.env.NODE_ENV": `"production"`,
-    },
-    banner: {
-      js: `\
-if (typeof isSSR === 'undefined') {
-  if (typeof window !== 'undefined') window.isSSR = false;
-  else if (typeof globalThis !== 'undefined') globalThis.isSSR = false;
-}`,
     },
   });
   if (mode === "dev") {
@@ -143,7 +129,7 @@ const buildSSR = async (mode: string) => {
       }),
     ],
     banner: {
-      js: `if (typeof isSSR === 'undefined') window.isSSR = false;`,
+      js: `window.isSSR = true;`,
     },
   });
   if (mode === "dev") {

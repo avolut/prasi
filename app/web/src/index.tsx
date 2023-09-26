@@ -1,12 +1,11 @@
 import { initApp } from "web-init/app";
-import { App } from "./app";
 import "./index.css";
 
-const g = (isSSR ? {} : window) as any;
+const g = window as any;
 
 g.siteApiUrl = "https://api.prasi.app";
 // g.siteApiUrl = "http://localhost:12300";
-initApp("web", App);
+initApp("web");
 
 declare global {
   const siteApiUrl: string;

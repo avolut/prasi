@@ -14,8 +14,6 @@ const w = window as unknown as {
 export const GlobalContext = createContext({
   global: {},
   render: () => {},
-  ssrGlobalEffect: {},
-  ssrShouldRender: false,
 } as {
   global: Record<string, any>;
   render: (reset?: boolean) => void;
@@ -74,11 +72,7 @@ export const useGlobal = <T extends object>(
       if (reset) {
         global[_id] = undefined;
       }
-      if (isSSR) {
-        render();
-      } else {
-        startTransition(render);
-      }
+      startTransition(render);
     };
   } else {
     console.log(defaultValue, _id);

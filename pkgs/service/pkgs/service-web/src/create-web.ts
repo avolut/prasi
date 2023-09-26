@@ -11,13 +11,11 @@ export const createWeb = async <T>({
   name,
   port,
   entry,
-  ssrMode,
   action,
 }: {
   name: SERVICE_NAME;
   port: number;
   entry: string;
-  ssrMode: "render" | "stream";
   action?: T;
 }) => {
   return await createService({
@@ -29,7 +27,6 @@ export const createWeb = async <T>({
         web.name = name;
         web.entry = entry;
         web.mode = mode;
-        web.ssrMode = ssrMode;
         web.module = serviceModule({ mode, name });
 
         await createRPC(name, actions);

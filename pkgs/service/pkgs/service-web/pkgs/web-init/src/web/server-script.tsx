@@ -8,7 +8,7 @@ export const ServerScript: FC<{ source: string }> = ({ source }) => {
 };
 
 export const setupEnv = () => {
-  const g = (isSSR ? globalThis : window) as any;
+  const g = window as any;
   g.css = (
     tag: CSSAttribute | TemplateStringsArray | string,
     ...props: Array<string | number | boolean | undefined | null>

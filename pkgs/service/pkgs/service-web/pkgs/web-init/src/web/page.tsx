@@ -4,12 +4,11 @@ import { PageResponse } from "../types";
 export const page = (arg: {
   name?: string;
   url: string;
-  ssr?: boolean;
   layout?: string;
   path?: string;
   component:
     | FC<Record<string, any> & { res: PageResponse }>
-    | PromisedComponent; 
+    | PromisedComponent;
 }) => {
   return arg;
 };

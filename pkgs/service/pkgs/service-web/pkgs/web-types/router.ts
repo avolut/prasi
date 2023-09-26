@@ -3,7 +3,6 @@ import { g } from "web-init/src/types";
 
 export const initRouter = () => {
   const router = createRouter({ strictTrailingSlash: false });
-  const routerSSR = createRouter({ strictTrailingSlash: false });
 
   for (const r of Object.values(g.__PAGES__)) {
     if (r.url === "*") continue;
@@ -22,10 +21,5 @@ export const initRouter = () => {
     router.insert(r.url, r);
   }
 
-  for (const [url, fn] of Object.entries(g.__SSR__.handler)) {
-    routerSSR.insert(url, { ssr: fn });
-  }
-
   g.router = router as any;
-  g.routerSSR = routerSSR as any;
 };

@@ -1,4 +1,4 @@
-import { FC, lazy, ReactNode, Suspense } from "react";
+import { FC, ReactNode, Suspense } from "react";
 import { GlobalContext, useLocal, waitUntil } from "web-utils";
 import { g, PageResponse } from "../types";
 import { ErrorBoundary } from "./error-boundary";
@@ -8,8 +8,7 @@ export const Root: FC<{
   name: string;
   loading?: ReactNode;
   props: Record<string, any>;
-  res: PageResponse;
-}> = ({ loading, props, res }) => {
+}> = ({ loading, props }) => {
   const local = useLocal({
     Layout: undefined as
       | undefined
@@ -20,23 +19,19 @@ export const Root: FC<{
     pathLoaded: false,
     pageLoaded: false,
     pageUrl: "",
-    firstRender: true,
     Page: (() => <>{loading}</>) as
       | React.LazyExoticComponent<FC<any>>
       | FC<any>,
     timeout: null as any,
   });
 
-  if (!isSSR) {
-    const w = window as any;
-    w.rootRender = local.render;
+  const w = window as any;
+  w.rootRender = local.render;
 
-    if (local.firstRender) local.firstRender = false;
-    else res.pathname = location.pathname;
+  const res = { pathname: location.pathname, params: {} as any };
 
-    w.rootRes = res;
-    w.pathname = res.pathname;
-  }
+  w.rootRes = res;
+  w.pathname = res.pathname;
 
   let page = g.__PAGES__["index"];
 
@@ -68,18 +63,14 @@ export const Root: FC<{
   }
 
   if (found && found.name) {
-    if (g.__PAGES__[found.name]) {
-      page = g.__PAGES__[found.name];
-    }
+    page = g.__PAGES__[found.name];
     res.params = found.params || {};
-    if (!isSSR && typeof window === "object") {
+    if (typeof window === "object") {
       (window as any).params = res.params;
     }
   }
 
-  if (!isSSR) {
-    g.__CURPAGE__ = page;
-  }
+  g.__CURPAGE__ = page;
 
   if (page) {
     if (local.pathname !== res.pathname) {
@@ -108,32 +99,25 @@ export const Root: FC<{
       }, 2000);
 
       const component = (page.component as PromisedComponent)();
+
       if (typeof component === "object" && component instanceof Promise) {
         local.pathLoaded = true;
-        if (!page.ssr) {
-          local.Page = () => <>{loading}</>;
+        local.Page = () => <>{loading}</>;
 
-          component
-            .then((e) => {
-              clearTimeout(local.timeout);
-              local.Page = e.default.component;
-              local.pageLoaded = true;
-              local.render();
-            })
-            .catch((e) => {
-              console.warn(
-                `Page [${found?.name || "-not-found-"}] failed to load`,
-                e
-              );
-              local.render();
-            });
-        } else {
-          local.Page = lazy(async () => {
-            return {
-              default: (await component).default.component,
-            };
+        component
+          .then((e) => {
+            clearTimeout(local.timeout);
+            local.Page = e.default.component;
+            local.pageLoaded = true;
+            local.render();
+          })
+          .catch((e) => {
+            console.warn(
+              `Page [${found?.name || "-not-found-"}] failed to load`,
+              e
+            );
+            local.render();
           });
-        }
       } else {
         local.Page = component;
         local.pathLoaded = true;

@@ -451,7 +451,7 @@
           maxRetries: 3
         });
       };
-      var removeAsync12 = (path4) => {
+      var removeAsync11 = (path4) => {
         return fs2.rm(path4, {
           recursive: true,
           force: true,
@@ -460,7 +460,7 @@
       };
       exports2.validateInput = validateInput;
       exports2.sync = removeSync;
-      exports2.async = removeAsync12;
+      exports2.async = removeAsync11;
     }
   });
 
@@ -727,7 +727,7 @@
           }).then(resolve, reject);
         });
       };
-      var writeAsync19 = (path4, data, options) => {
+      var writeAsync18 = (path4, data, options) => {
         const opts = options || {};
         const processedData = serializeToJsonMaybe(data, opts.jsonIndent);
         let writeStrategy = writeFileAsync;
@@ -738,7 +738,7 @@
       };
       exports2.validateInput = validateInput;
       exports2.sync = writeSync;
-      exports2.async = writeAsync19;
+      exports2.async = writeAsync18;
     }
   });
 
@@ -3022,7 +3022,7 @@
         }
         return data;
       };
-      var readAsync15 = (path4, returnAs) => {
+      var readAsync14 = (path4, returnAs) => {
         return new Promise((resolve, reject) => {
           const retAs = returnAs || "utf8";
           let encoding = "utf8";
@@ -3052,7 +3052,7 @@
       };
       exports2.validateInput = validateInput;
       exports2.sync = readSync;
-      exports2.async = readAsync15;
+      exports2.async = readAsync14;
     }
   });
 
@@ -8073,7 +8073,7 @@
         else
           dest[name].push(elem);
       }
-      function parse4(header) {
+      function parse3(header) {
         const offers = /* @__PURE__ */ Object.create(null);
         let params = /* @__PURE__ */ Object.create(null);
         let mustUnescape = false;
@@ -8228,7 +8228,7 @@
           }).join(", ");
         }).join(", ");
       }
-      module2.exports = { format, parse: parse4 };
+      module2.exports = { format, parse: parse3 };
     }
   });
 
@@ -8260,7 +8260,7 @@
       var {
         EventTarget: { addEventListener, removeEventListener }
       } = require_event_target();
-      var { format, parse: parse4 } = require_extension();
+      var { format, parse: parse3 } = require_extension();
       var { toBuffer } = require_buffer_util();
       var closeTimeout = 30 * 1e3;
       var kAborted = Symbol("kAborted");
@@ -8935,7 +8935,7 @@
             }
             let extensions;
             try {
-              extensions = parse4(secWebSocketExtensions);
+              extensions = parse3(secWebSocketExtensions);
             } catch (err2) {
               const message = "Invalid Sec-WebSocket-Extensions header";
               abortHandshake(websocket, socket, message);
@@ -9105,7 +9105,7 @@
     "node_modules/.pnpm/ws@8.12.1/node_modules/ws/lib/subprotocol.js"(exports2, module2) {
       "use strict";
       var { tokenChars } = require_validation();
-      function parse4(header) {
+      function parse3(header) {
         const protocols = /* @__PURE__ */ new Set();
         let start = -1;
         let end = -1;
@@ -9144,7 +9144,7 @@
         protocols.add(protocol);
         return protocols;
       }
-      module2.exports = { parse: parse4 };
+      module2.exports = { parse: parse3 };
     }
   });
 
@@ -17037,7 +17037,7 @@
       function isWhitespace(c) {
         return c === 32 || c === 9 || c === 10 || c === 12 || c === 13;
       }
-      function parse4(selector) {
+      function parse3(selector) {
         var subselects = [];
         var endIndex = parseSelector(subselects, "".concat(selector), 0);
         if (endIndex < selector.length) {
@@ -17045,7 +17045,7 @@
         }
         return subselects;
       }
-      exports2.parse = parse4;
+      exports2.parse = parse3;
       function parseSelector(subselects, selector, selectorIndex) {
         var tokens = [];
         function getName(offset) {
@@ -17799,7 +17799,7 @@
       var whitespace = /* @__PURE__ */ new Set([9, 10, 12, 13, 32]);
       var ZERO = "0".charCodeAt(0);
       var NINE = "9".charCodeAt(0);
-      function parse4(formula) {
+      function parse3(formula) {
         formula = formula.trim().toLowerCase();
         if (formula === "even") {
           return [2, 0];
@@ -17851,7 +17851,7 @@
           }
         }
       }
-      exports2.parse = parse4;
+      exports2.parse = parse3;
     }
   });
 
@@ -37138,17 +37138,17 @@ ERROR: Async operation of type "${type}" was created in "process.exit" callback.
   __export(build_exports, {
     build: () => build
   });
-  var import_esbuild2, import_fs_jetpack17, build, buildSPARaw, buildSPA, buildSSR;
+  var import_esbuild2, import_fs_jetpack16, build, buildSPARaw, buildSPA, buildSSR;
   var init_build = __esm({
     "app/build.ts"() {
       "use strict";
       init_lib();
       init_export();
       import_esbuild2 = __require("esbuild");
-      import_fs_jetpack17 = __toESM(require_main());
+      import_fs_jetpack16 = __toESM(require_main());
       build = async (mode) => {
-        if (!await (0, import_fs_jetpack17.existsAsync)(dir.root(".output/app/prasi-api"))) {
-          await (0, import_fs_jetpack17.copyAsync)(
+        if (!await (0, import_fs_jetpack16.existsAsync)(dir.root(".output/app/prasi-api"))) {
+          await (0, import_fs_jetpack16.copyAsync)(
             dir.root("app/prasi-api"),
             dir.root(".output/app/prasi-api"),
             {
@@ -37157,12 +37157,12 @@ ERROR: Async operation of type "${type}" was created in "process.exit" callback.
           );
         }
         await new Promise(async (resolve) => {
-          if (await (0, import_fs_jetpack17.existsAsync)(dir.root("app/gen/srv/api/srv-args.ts"))) {
+          if (await (0, import_fs_jetpack16.existsAsync)(dir.root("app/gen/srv/api/srv-args.ts"))) {
             resolve();
           } else {
             const retry = () => {
               setTimeout(async () => {
-                if (await (0, import_fs_jetpack17.existsAsync)(dir.root("app/gen/srv/api/srv-args.ts"))) {
+                if (await (0, import_fs_jetpack16.existsAsync)(dir.root("app/gen/srv/api/srv-args.ts"))) {
                   resolve();
                 } else {
                   retry();
@@ -37177,7 +37177,7 @@ ERROR: Async operation of type "${type}" was created in "process.exit" callback.
         await buildSSR(mode);
       };
       buildSPARaw = async (mode) => {
-        await (0, import_fs_jetpack17.removeAsync)(dir.root(".output/app/srv/spa-raw"));
+        await (0, import_fs_jetpack16.removeAsync)(dir.root(".output/app/srv/spa-raw"));
         const ctx = await (0, import_esbuild2.context)({
           bundle: true,
           absWorkingDir: dir.root(""),
@@ -37207,13 +37207,7 @@ ERROR: Async operation of type "${type}" was created in "process.exit" callback.
                 type: "cjs"
               }
             })
-          ],
-          banner: {
-            js: `if (typeof isSSR === 'undefined') {
-  if (typeof window !== 'undefined') window.isSSR = false;
-  else if (typeof globalThis !== 'undefined') globalThis.isSSR = false;
-}`
-          }
+          ]
         });
         if (mode === "dev") {
           await ctx.watch({});
@@ -37222,7 +37216,7 @@ ERROR: Async operation of type "${type}" was created in "process.exit" callback.
         }
       };
       buildSPA = async (mode) => {
-        await (0, import_fs_jetpack17.removeAsync)(dir.root(".output/app/srv/spa"));
+        await (0, import_fs_jetpack16.removeAsync)(dir.root(".output/app/srv/spa"));
         const ctx = await (0, import_esbuild2.context)({
           bundle: true,
           absWorkingDir: dir.root(""),
@@ -37236,12 +37230,6 @@ ERROR: Async operation of type "${type}" was created in "process.exit" callback.
           logLevel: "error",
           define: {
             "process.env.NODE_ENV": `"production"`
-          },
-          banner: {
-            js: `if (typeof isSSR === 'undefined') {
-  if (typeof window !== 'undefined') window.isSSR = false;
-  else if (typeof globalThis !== 'undefined') globalThis.isSSR = false;
-}`
           }
         });
         if (mode === "dev") {
@@ -37280,7 +37268,7 @@ ERROR: Async operation of type "${type}" was created in "process.exit" callback.
             })
           ],
           banner: {
-            js: `if (typeof isSSR === 'undefined') window.isSSR = false;`
+            js: `window.isSSR = true;`
           }
         });
         if (mode === "dev") {
@@ -37689,7 +37677,7 @@ ERROR: Async operation of type "${type}" was created in "process.exit" callback.
         }
         return parsed;
       }
-      function parse4(command, args2, options) {
+      function parse3(command, args2, options) {
         if (args2 && !Array.isArray(args2)) {
           options = args2;
           args2 = null;
@@ -37708,7 +37696,7 @@ ERROR: Async operation of type "${type}" was created in "process.exit" callback.
         };
         return options.shell ? parsed : parseNonShell(parsed);
       }
-      module2.exports = parse4;
+      module2.exports = parse3;
     }
   });
 
@@ -37767,16 +37755,16 @@ ERROR: Async operation of type "${type}" was created in "process.exit" callback.
     "node_modules/.pnpm/cross-spawn@7.0.3/node_modules/cross-spawn/index.js"(exports2, module2) {
       "use strict";
       var cp = __require("child_process");
-      var parse4 = require_parse3();
+      var parse3 = require_parse3();
       var enoent = require_enoent();
       function spawn4(command, args2, options) {
-        const parsed = parse4(command, args2, options);
+        const parsed = parse3(command, args2, options);
         const spawned = cp.spawn(parsed.command, parsed.args, parsed.options);
         enoent.hookChildProcess(spawned, parsed);
         return spawned;
       }
       function spawnSync3(command, args2, options) {
-        const parsed = parse4(command, args2, options);
+        const parsed = parse3(command, args2, options);
         const result = cp.spawnSync(parsed.command, parsed.args, parsed.options);
         result.error = result.error || enoent.verifyENOENTSync(result.status, parsed);
         return result;
@@ -37784,7 +37772,7 @@ ERROR: Async operation of type "${type}" was created in "process.exit" callback.
       module2.exports = spawn4;
       module2.exports.spawn = spawn4;
       module2.exports.sync = spawnSync3;
-      module2.exports._parse = parse4;
+      module2.exports._parse = parse3;
       module2.exports._enoent = enoent;
     }
   });
@@ -38796,9 +38784,9 @@ ERROR: Async operation of type "${type}" was created in "process.exit" callback.
 
   // pkgs/base/src/main.ts
   init_export();
-  var import_fs_jetpack26 = __toESM(require_main());
+  var import_fs_jetpack25 = __toESM(require_main());
   var import_lodash6 = __toESM(require_lodash());
-  var import_path19 = __require("path");
+  var import_path18 = __require("path");
 
   // pkgs/base/pkgs/pkg/export.ts
   var import_child_process2 = __require("child_process");
@@ -40325,7 +40313,7 @@ Make sure to kill running instance before starting.
 
   // pkgs/base/src/builder/service-module.ts
   init_export();
-  var import_fs_jetpack16 = __toESM(require_main());
+  var import_fs_jetpack15 = __toESM(require_main());
 
   // pkgs/base/src/builder/service/prepare/db.ts
   init_export();
@@ -42079,9 +42067,9 @@ export const _ = {
 
   // pkgs/base/src/builder/service/prepare/web.ts
   init_export();
-  var import_fs_jetpack15 = __toESM(require_main());
+  var import_fs_jetpack14 = __toESM(require_main());
   var import_promises4 = __require("fs/promises");
-  var import_path14 = __require("path");
+  var import_path13 = __require("path");
 
   // pkgs/base/src/scaffold/web/layout.ts
   init_export();
@@ -42133,7 +42121,7 @@ ${parsed.map((e) => {
     return dirs;
   };
   var parsePage = async (filePath) => {
-    const result = { url: "", ssr: false, layout: "", file: filePath };
+    const result = { url: "", layout: "", file: filePath };
     const src = await (0, import_fs_jetpack12.readAsync)(filePath, "utf8");
     if (src) {
       await traverse(src, (parent) => ({
@@ -42146,9 +42134,6 @@ ${parsed.map((e) => {
               if (p.key.value === "layout" && p.value.type === "StringLiteral") {
                 result.layout = p.value.value;
               }
-              if (p.key.value === "ssr" && p.value.type === "BooleanLiteral") {
-                result.ssr = p.value.value;
-              }
             }
           }
           return parent.visitObjectExpression(n);
@@ -42159,7 +42144,7 @@ ${parsed.map((e) => {
   };
   var generatePage = async (name, path4) => {
     const parsed = await Promise.all((await scan3(path4)).map(parsePage));
-    const content = (ssr) => (e) => {
+    const content = () => (e) => {
       const page = e.file.substring(0, e.file.length - (0, import_path12.extname)(e.file).length).substring(path4.length + 1).replace(/\W/gi, "_");
       const filePath = e.file.substring(path4.length + 1);
       const importPath = `"../../../${name}/src/base/page/${filePath.substring(
@@ -42170,18 +42155,13 @@ ${parsed.map((e) => {
   name: "${page}",
   url: "${e.url}",
   path: "${e.file.substring(dir.root("").length + 1)}",
-  ssr: ${e.ssr ? "true" : "false"},
   layout: ${e.layout ? `"${e.layout}"` : `undefined`},
-  ${!ssr || e.ssr && ssr ? `component: () => import(${importPath.replace("\\", "/")})` : ""}
+  component: () => import(${importPath.replace("\\", "/")})
 }`;
     };
     await (0, import_fs_jetpack12.writeAsync)(
       dir.root(`app/gen/web/page/${name}.ts`),
-      parsed.map(content(false)).join("\n")
-    );
-    await (0, import_fs_jetpack12.writeAsync)(
-      dir.root(`app/gen/web/page/${name}-ssr.ts`),
-      parsed.map(content(true)).join("\n")
+      parsed.map(content()).join("\n")
     );
   };
   var generatePageEntry = async (dirs) => {
@@ -42190,72 +42170,17 @@ ${parsed.map((e) => {
       dir.root(`app/gen/web/page/entry.ts`),
       dirs.map((e) => `export * as ${e} from "./${e}"`).join("\n")
     );
-    await (0, import_fs_jetpack12.writeAsync)(
-      dir.root(`app/gen/web/page/entry-ssr.ts`),
-      dirs.map((e) => `export * as ${e} from "./${e}-ssr"`).join("\n")
-    );
-  };
-
-  // pkgs/base/src/scaffold/web/ssr.ts
-  init_export();
-  var import_fs_jetpack13 = __toESM(require_main());
-  var import_path13 = __require("path");
-  var scan4 = async (path4) => {
-    const dirs = (await walkDir2(path4)).filter(
-      (e) => e.endsWith(".ts") || e.endsWith(".tsx")
-    );
-    return dirs;
-  };
-  var parse3 = async (filePath) => {
-    const result = { path: "", file: filePath };
-    const src = await (0, import_fs_jetpack13.readAsync)(filePath, "utf8");
-    if (src) {
-      await traverse(src, (parent) => ({
-        visitObjectExpression(n) {
-          for (const p of n.properties) {
-            if (p.type === "KeyValueProperty" && p.key.type === "Identifier") {
-              if (p.key.value === "path" && p.value.type === "StringLiteral") {
-                result.path = p.value.value;
-              }
-            }
-          }
-          return parent.visitObjectExpression(n);
-        }
-      }));
-    }
-    return result;
-  };
-  var generateSSR = async (name, path4) => {
-    const parsed = await Promise.all((await scan4(path4)).map(parse3));
-    await (0, import_fs_jetpack13.writeAsync)(
-      dir.root(`app/gen/web/ssr/${name}.ts`),
-      parsed.map((e) => {
-        const page = e.file.substring(0, e.file.length - (0, import_path13.extname)(e.file).length).substring(path4.length + 1).replace(/\W/gi, "_");
-        const filePath = e.file.substring(path4.length + 1);
-        return `export const ${page} = ["${e.path}", import("../../../${name}/src/base/ssr/${filePath.substring(
-          0,
-          filePath.length - (0, import_path13.extname)(filePath).length
-        )}")]`;
-      }).join("\n")
-    );
-  };
-  var generateSSREntry = async (dirs) => {
-    await (0, import_fs_jetpack13.removeAsync)(dir.root(`app/gen/web/ssr`));
-    await (0, import_fs_jetpack13.writeAsync)(
-      dir.root(`app/gen/web/ssr/entry.ts`),
-      dirs.map((e) => `export * as ${e} from "./${e}"`).join("\n")
-    );
   };
 
   // pkgs/base/src/scaffold/web/web.ts
   init_export();
-  var import_fs_jetpack14 = __toESM(require_main());
+  var import_fs_jetpack13 = __toESM(require_main());
   var import_promises3 = __require("fs/promises");
   var scaffoldWeb = async () => {
     const webs = (await (0, import_promises3.readdir)(dir.root("app"))).filter(
       (e) => e.startsWith("web")
     );
-    await (0, import_fs_jetpack14.writeAsync)(
+    await (0, import_fs_jetpack13.writeAsync)(
       dir.path("app/gen/web/entry.ts"),
       `
 ${webs.map((e) => `export { App as ${e} } from "../../${e}/src/app";`).join("\n")}`
@@ -42270,8 +42195,6 @@ ${webs.map((e) => `export { App as ${e} } from "../../${e}/src/app";`).join("\n"
       await generatePage(name, dir.root(`app/${name}/src/base/page`));
       await generateLayoutEntry([name]);
       await generateLayout(name, dir.root(`app/${name}/src/base/layout`));
-      await generateSSREntry([name]);
-      await generateSSR(name, dir.root(`app/${name}/src/base/ssr`));
       return { shouldRestart: false };
     }
     try {
@@ -42279,10 +42202,10 @@ ${webs.map((e) => `export { App as ${e} } from "../../${e}/src/app";`).join("\n"
         if (e.startsWith(dir.root(`app/${name}/src/base/page`))) {
           const s = await (0, import_promises4.stat)(e);
           if (s.size === 0) {
-            const routeName = (0, import_path14.basename)(
-              e.substring(0, e.length - (0, import_path14.extname)(e).length)
+            const routeName = (0, import_path13.basename)(
+              e.substring(0, e.length - (0, import_path13.extname)(e).length)
             );
-            await (0, import_fs_jetpack15.writeAsync)(
+            await (0, import_fs_jetpack14.writeAsync)(
               e,
               `import { page } from "web-init";
 
@@ -42318,7 +42241,7 @@ export default page({
 
   // pkgs/base/src/builder/service-module.ts
   var buildServiceModule = async (name, arg) => {
-    if (await (0, import_fs_jetpack16.existsAsync)(dir.root(`app/${name}/module.ts`))) {
+    if (await (0, import_fs_jetpack15.existsAsync)(dir.root(`app/${name}/module.ts`))) {
       await bundle({
         input: dir.root(`app/${name}/module.ts`),
         output: dir.root(`.output/app/${name}/module.js`),
@@ -42434,7 +42357,7 @@ export default page({
 
   // pkgs/base/src/builder/build-app.ts
   init_export();
-  var import_fs_jetpack18 = __toESM(require_main());
+  var import_fs_jetpack17 = __toESM(require_main());
   var g2 = global;
   var buildMainApp = async (app) => {
     await bundle({
@@ -42446,8 +42369,8 @@ export default page({
         output: dir.root(".output/app/package.json")
       }
     });
-    const src = await (0, import_fs_jetpack18.readAsync)(app.output, "utf8");
-    await (0, import_fs_jetpack18.writeAsync)(
+    const src = await (0, import_fs_jetpack17.readAsync)(app.output, "utf8");
+    await (0, import_fs_jetpack17.writeAsync)(
       app.output,
       `/*
 \u2584\u2584\u2584         \u2584\xB7 \u2584\u258C \u2584\u2584\u2584\xB7 \u2584\u2584\u258C
@@ -42470,7 +42393,7 @@ export default page({
 ${src}
 })()`
     );
-    if (await (0, import_fs_jetpack18.existsAsync)(dir.root("app/build.ts"))) {
+    if (await (0, import_fs_jetpack17.existsAsync)(dir.root("app/build.ts"))) {
       try {
         const res = await Promise.resolve().then(() => (init_build(), build_exports));
         if (res && typeof res.build === "function") {
@@ -42486,10 +42409,10 @@ ${src}
   // pkgs/base/src/builder/service/postrun/web.ts
   var import_child_process3 = __require("child_process");
   init_export();
-  var import_fs_jetpack19 = __toESM(require_main());
-  var import_path15 = __require("path");
+  var import_fs_jetpack18 = __toESM(require_main());
+  var import_path14 = __require("path");
   var postRunWeb = async (name) => {
-    const src = await (0, import_fs_jetpack19.readAsync)(dir.root(`app/${name}/main.ts`), "utf8");
+    const src = await (0, import_fs_jetpack18.readAsync)(dir.root(`app/${name}/main.ts`), "utf8");
     let entry = "";
     if (src) {
       await traverse(src, (parent) => ({
@@ -42504,9 +42427,9 @@ ${src}
       }));
     }
     if (entry) {
-      await (0, import_fs_jetpack19.removeAsync)(dir.root(`.output/app/${name}/public`));
+      await (0, import_fs_jetpack18.removeAsync)(dir.root(`.output/app/${name}/public`));
       const args2 = [
-        (0, import_path15.join)(..."node_modules/parcel/lib/bin.js".split("/")),
+        (0, import_path14.join)(..."node_modules/parcel/lib/bin.js".split("/")),
         baseGlobal.mode === "dev" ? "watch" : "build",
         entry,
         baseGlobal.mode === "dev" ? "--no-hmr" : "--no-optimize",
@@ -42524,7 +42447,7 @@ ${src}
         });
       }
       setTimeout(async () => {
-        const list = await (0, import_fs_jetpack19.listAsync)(dir.root(`.output/app/${name}/public`));
+        const list = await (0, import_fs_jetpack18.listAsync)(dir.root(`.output/app/${name}/public`));
         if (list && list.length === 0) {
           console.log(
             `WARNING: parcel is hanging. Please exit nodejs process for:
@@ -42589,7 +42512,7 @@ ${src}
 
   // pkgs/base/src/commit-hook.ts
   init_export();
-  var import_fs_jetpack20 = __toESM(require_main());
+  var import_fs_jetpack19 = __toESM(require_main());
 
   // node_modules/.pnpm/execa@7.2.0/node_modules/execa/index.js
   var import_node_buffer2 = __require("node:buffer");
@@ -43724,7 +43647,7 @@ ${error.message}` : execaMessage;
   // pkgs/base/src/commit-hook.ts
   var commitHook = async (args2) => {
     const isMainRepo = async () => {
-      const conf = await (0, import_fs_jetpack20.readAsync)(dir.root(".git/config"), "utf8");
+      const conf = await (0, import_fs_jetpack19.readAsync)(dir.root(".git/config"), "utf8");
       if (conf?.includes("url = https://github.com/avolut/royal")) {
         return true;
       }
@@ -43732,19 +43655,19 @@ ${error.message}` : execaMessage;
     };
     if (args2.includes("pre-commit")) {
       if (await isMainRepo()) {
-        if (!await (0, import_fs_jetpack20.existsAsync)(dir.root(".husky/_/husky.sh"))) {
+        if (!await (0, import_fs_jetpack19.existsAsync)(dir.root(".husky/_/husky.sh"))) {
           await $`pnpm husky install`;
         }
-        await (0, import_fs_jetpack20.writeAsync)(dir.root(".output/.commit"), "");
+        await (0, import_fs_jetpack19.writeAsync)(dir.root(".output/.commit"), "");
       }
       process.exit(1);
       return true;
     }
     if (args2.includes("post-commit")) {
       if (await isMainRepo()) {
-        if (await (0, import_fs_jetpack20.existsAsync)(dir.root(".output/.commit"))) {
-          await (0, import_fs_jetpack20.removeAsync)(dir.root(".output/.commit"));
-          await (0, import_fs_jetpack20.writeAsync)(dir.root("pkgs/version.json"), { ts: Date.now() });
+        if (await (0, import_fs_jetpack19.existsAsync)(dir.root(".output/.commit"))) {
+          await (0, import_fs_jetpack19.removeAsync)(dir.root(".output/.commit"));
+          await (0, import_fs_jetpack19.writeAsync)(dir.root("pkgs/version.json"), { ts: Date.now() });
           await $`git add .pkgs/version.json`;
           await $`git commit --ammend -C HEAD --no-verify`;
         }
@@ -43758,23 +43681,23 @@ ${error.message}` : execaMessage;
   // pkgs/base/src/scaffold/app.ts
   init_export();
   var import_fs5 = __require("fs");
-  var import_fs_jetpack22 = __toESM(require_main());
+  var import_fs_jetpack21 = __toESM(require_main());
 
   // pkgs/base/src/appgen/service.ts
   init_export();
-  var import_fs_jetpack21 = __toESM(require_main());
+  var import_fs_jetpack20 = __toESM(require_main());
   var import_promises5 = __require("fs/promises");
   var serviceGen = async () => {
     const names = [];
     const actions = [];
     for (const f of await (0, import_promises5.readdir)(dir.root("app"))) {
       const s = await (0, import_promises5.stat)(dir.root(`app/${f}`));
-      if (s.isDirectory() && await (0, import_fs_jetpack21.existsAsync)(dir.root(`app/${f}/main.ts`))) {
+      if (s.isDirectory() && await (0, import_fs_jetpack20.existsAsync)(dir.root(`app/${f}/main.ts`))) {
         names.push(f);
         if (f.startsWith("web") || f.startsWith("db") || f.startsWith("srv")) {
           actions.push({ type: "single", name: f });
         } else {
-          const src = await (0, import_fs_jetpack21.readAsync)(dir.root(`app/${f}/main.ts`), "utf8");
+          const src = await (0, import_fs_jetpack20.readAsync)(dir.root(`app/${f}/main.ts`), "utf8");
           if (src) {
             await traverse(src, (parent) => ({
               visitObjectExpression(n) {
@@ -43790,7 +43713,7 @@ ${error.message}` : execaMessage;
         }
       }
     }
-    await (0, import_fs_jetpack21.writeAsync)(
+    await (0, import_fs_jetpack20.writeAsync)(
       dir.root(`app/gen/service/actions.d.ts`),
       `${actions.map((e) => {
         return `import { main as ${e.name}_action } from "../../${e.name}/main";`;
@@ -43806,7 +43729,7 @@ ${actions.map((e) => {
 }
 `
     );
-    await (0, import_fs_jetpack21.writeAsync)(
+    await (0, import_fs_jetpack20.writeAsync)(
       dir.root(`app/gen/service/name.ts`),
       `export type SERVICE_NAME = "${names.join(`" | "`)}";`
     );
@@ -43814,7 +43737,7 @@ ${actions.map((e) => {
 
   // pkgs/base/src/scaffold/app.ts
   var prepareApp = async () => {
-    await (0, import_fs_jetpack22.writeAsync)(
+    await (0, import_fs_jetpack21.writeAsync)(
       dir.path(".output/app/pnpm-workspace.yaml"),
       `packages:
   - ./*`
@@ -44311,13 +44234,13 @@ ${actions.map((e) => {
 
   // pkgs/base/src/upgrade.ts
   var import_fs6 = __require("fs");
-  var import_fs_jetpack23 = __toESM(require_main());
-  var import_path16 = __require("path");
+  var import_fs_jetpack22 = __toESM(require_main());
+  var import_path15 = __require("path");
   var upgradeHook = async (args2) => {
     if (args2.includes("upgrade")) {
       const backupDir = dir.root(".output/upgrade/backup");
-      await (0, import_fs_jetpack23.removeAsync)(dir.root(".output/upgrade"));
-      await (0, import_fs_jetpack23.dirAsync)(backupDir);
+      await (0, import_fs_jetpack22.removeAsync)(dir.root(".output/upgrade"));
+      await (0, import_fs_jetpack22.dirAsync)(backupDir);
       console.log(`Upgrading Base Framework`);
       console.log(` > Downloading upgrade zip`);
       const downloadURI = `https://github.com/avolut/royal/archive/refs/heads/main.zip`;
@@ -44325,13 +44248,13 @@ ${actions.map((e) => {
       const ab = await res.arrayBuffer();
       console.log(` > Extracting: .output/upgrade/royal`);
       const uzi = unzipSync(new Uint8Array(ab));
-      await (0, import_fs_jetpack23.dirAsync)(dir.root(".output/upgrade/royal-main"));
+      await (0, import_fs_jetpack22.dirAsync)(dir.root(".output/upgrade/royal-main"));
       await Promise.all(
         Object.entries(uzi).map(async ([filename, buf]) => {
           if (buf.length === 0) {
-            await (0, import_fs_jetpack23.dirAsync)(dir.root(`.output/upgrade/${filename}`));
+            await (0, import_fs_jetpack22.dirAsync)(dir.root(`.output/upgrade/${filename}`));
           } else {
-            await (0, import_fs_jetpack23.writeAsync)(
+            await (0, import_fs_jetpack22.writeAsync)(
               dir.root(`.output/upgrade/${filename}`),
               Buffer.from(buf)
             );
@@ -44342,20 +44265,20 @@ ${actions.map((e) => {
       const root = dir.root("");
       for (const f of (0, import_fs6.readdirSync)(dir.root(""))) {
         if (f !== "app" && f !== ".output" && f !== ".husky" && f !== ".git") {
-          if (await (0, import_fs_jetpack23.existsAsync)((0, import_path16.join)(root, `.output/upgrade/backup/${f}`))) {
-            await (0, import_fs_jetpack23.moveAsync)(
-              (0, import_path16.join)(root, f),
-              (0, import_path16.join)(root, `.output/upgrade/backup/${f}`)
+          if (await (0, import_fs_jetpack22.existsAsync)((0, import_path15.join)(root, `.output/upgrade/backup/${f}`))) {
+            await (0, import_fs_jetpack22.moveAsync)(
+              (0, import_path15.join)(root, f),
+              (0, import_path15.join)(root, `.output/upgrade/backup/${f}`)
             );
           }
         }
       }
       console.log(` > Applying upgrade`);
-      for (const f of (0, import_fs6.readdirSync)((0, import_path16.join)(root, ".output/upgrade/royal-main"))) {
+      for (const f of (0, import_fs6.readdirSync)((0, import_path15.join)(root, ".output/upgrade/royal-main"))) {
         if (f !== "app" && f !== ".output" && f !== "." && f !== ".." && f !== ".husky" && f !== ".git") {
-          await (0, import_fs_jetpack23.copyAsync)(
-            (0, import_path16.join)(root, `.output/upgrade/royal-main/${f}`),
-            (0, import_path16.join)(root, f),
+          await (0, import_fs_jetpack22.copyAsync)(
+            (0, import_path15.join)(root, `.output/upgrade/royal-main/${f}`),
+            (0, import_path15.join)(root, f),
             {
               overwrite: true
             }
@@ -44375,18 +44298,18 @@ ${actions.map((e) => {
 
   // pkgs/base/src/vscode.ts
   init_export();
-  var import_fs_jetpack24 = __toESM(require_main());
-  var import_path17 = __require("path");
+  var import_fs_jetpack23 = __toESM(require_main());
+  var import_path16 = __require("path");
   var vscodeSettings = async () => {
     const vscodeFile = dir.path(".vscode/settings.json");
     const source = JSON.stringify(defaultVsSettings, null, 2);
-    if (await (0, import_fs_jetpack24.existsAsync)(vscodeFile)) {
-      if (await (0, import_fs_jetpack24.readAsync)(vscodeFile, "utf8") === source) {
+    if (await (0, import_fs_jetpack23.existsAsync)(vscodeFile)) {
+      if (await (0, import_fs_jetpack23.readAsync)(vscodeFile, "utf8") === source) {
         return;
       }
     }
-    await (0, import_fs_jetpack24.dirAsync)((0, import_path17.dirname)(vscodeFile));
-    await (0, import_fs_jetpack24.writeAsync)(vscodeFile, source);
+    await (0, import_fs_jetpack23.dirAsync)((0, import_path16.dirname)(vscodeFile));
+    await (0, import_fs_jetpack23.writeAsync)(vscodeFile, source);
   };
   var defaultVsSettings = {
     "typescript.preferences.importModuleSpecifier": "relative",
@@ -44432,9 +44355,9 @@ ${actions.map((e) => {
 
   // pkgs/base/src/watcher/new-service.ts
   init_export();
-  var import_fs_jetpack25 = __toESM(require_main());
+  var import_fs_jetpack24 = __toESM(require_main());
   var import_promises6 = __require("fs/promises");
-  var import_path18 = __require("path");
+  var import_path17 = __require("path");
   var watchNewService = () => {
     watcher.watch({
       dir: dir.root("app"),
@@ -44442,14 +44365,14 @@ ${actions.map((e) => {
       event: async (err2, changes) => {
         if (!err2) {
           for (const c of changes) {
-            const name = (0, import_path18.basename)(c.path);
+            const name = (0, import_path17.basename)(c.path);
             if (name === "app.ts") {
               process.exit(99);
               return;
             }
             if (c.type === "delete") {
               console.log(`Removing service: ${source_default.red(name)}`);
-              await (0, import_fs_jetpack25.removeAsync)(dir.root(`.output/app/${name}`));
+              await (0, import_fs_jetpack24.removeAsync)(dir.root(`.output/app/${name}`));
               await serviceGen();
               process.exit(99);
             } else if (c.type === "create") {
@@ -44468,13 +44391,13 @@ ${actions.map((e) => {
                     const fpath = dir.root(`${root}/${f}`);
                     const s2 = await (0, import_promises6.stat)(fpath);
                     if (s2.isDirectory()) {
-                      await (0, import_fs_jetpack25.copyAsync)(fpath, (0, import_path18.join)(c.path, f), {
+                      await (0, import_fs_jetpack24.copyAsync)(fpath, (0, import_path17.join)(c.path, f), {
                         overwrite: true
                       });
                     } else {
-                      const src = await (0, import_fs_jetpack25.readAsync)(fpath, "utf8");
-                      await (0, import_fs_jetpack25.writeAsync)(
-                        (0, import_path18.join)(c.path, f),
+                      const src = await (0, import_fs_jetpack24.readAsync)(fpath, "utf8");
+                      await (0, import_fs_jetpack24.writeAsync)(
+                        (0, import_path17.join)(c.path, f),
                         (src || "").replace(/template_service/g, name)
                       );
                     }
@@ -44511,18 +44434,18 @@ ${actions.map((e) => {
     if (args.includes("clean")) {
       console.log("Cleaning node_modules");
       const dirs = await scanDir([dir.root()]);
-      await (0, import_fs_jetpack26.removeAsync)(dir.root(".output"));
+      await (0, import_fs_jetpack25.removeAsync)(dir.root(".output"));
       await Promise.all(
-        dirs.map((e) => (0, import_fs_jetpack26.removeAsync)((0, import_path19.join)((0, import_path19.dirname)(e), "node_modules")))
+        dirs.map((e) => (0, import_fs_jetpack25.removeAsync)((0, import_path18.join)((0, import_path18.dirname)(e), "node_modules")))
       );
-      await (0, import_fs_jetpack26.removeAsync)(dir.root("node_modules"));
+      await (0, import_fs_jetpack25.removeAsync)(dir.root("node_modules"));
       return;
     }
     console.log(`\u2500\u2500 ${(0, import_lodash6.default)(source_default.yellow(`BASE`) + " ", 47, "\u2500")}`);
     baseGlobal.parcels = /* @__PURE__ */ new Set();
     await createRPC("base", action, { isMain: true });
     if (args.includes("build") || args.includes("deploy") || args.includes("prod") || args.includes("staging")) {
-      await (0, import_fs_jetpack26.removeAsync)(dir.root(`.output/app`));
+      await (0, import_fs_jetpack25.removeAsync)(dir.root(`.output/app`));
       const app = await prepareApp();
       baseGlobal.app = app;
       baseGlobal.mode = "prod";
@@ -44540,14 +44463,14 @@ ${actions.map((e) => {
         await g3.afterBuild();
       }
       await Promise.all(app.serviceNames.map(async (e) => await postRun(e)));
-      await (0, import_fs_jetpack26.writeAsync)(dir.root(`.output/app/${baseGlobal.mode}`), "");
+      await (0, import_fs_jetpack25.writeAsync)(dir.root(`.output/app/${baseGlobal.mode}`), "");
       console.log(`
 Build done: ${source_default.green(`.output/app`)}`);
       process.exit(1);
     } else {
       baseGlobal.mode = "dev";
-      await (0, import_fs_jetpack26.removeAsync)(dir.root(`.output/app/prod`));
-      await (0, import_fs_jetpack26.removeAsync)(dir.root(`.output/app/staging`));
+      await (0, import_fs_jetpack25.removeAsync)(dir.root(`.output/app/prod`));
+      await (0, import_fs_jetpack25.removeAsync)(dir.root(`.output/app/staging`));
       connectRPC("root", {
         waitConnection: true
       }).then((e) => {

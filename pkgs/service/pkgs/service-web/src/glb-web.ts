@@ -3,11 +3,9 @@ import { Server, Websocket } from "hyper-express";
 import { ServiceModule } from "../../../export";
 import { serve } from "../module";
 import { Asset } from "./asset";
-import { initSSR } from "./init-ssr";
 
 export type WebModule = {
   serve: typeof serve;
-  initSSR: typeof initSSR;
 };
 
 export const web = globalize({
@@ -16,7 +14,6 @@ export const web = globalize({
     name: "",
     mode: "prod" as "dev" | "prod" | "staging",
     entry: "",
-    ssrMode: "stream" as "render" | "stream",
     index: {
       css: "",
       js: "",

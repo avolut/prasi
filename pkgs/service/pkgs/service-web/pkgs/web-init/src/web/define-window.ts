@@ -1,8 +1,10 @@
 import { css, extractCss } from "goober";
+import { waitUntil } from "web-utils";
 
 export const defineWindow = async (baseurl?: URL) => {
   let w = typeof window === "object" ? window : (globalThis as any);
 
+  await waitUntil(() => w.__SRV_URL__);
   const location = (
     typeof window === "object" ? window["location"] : baseurl
   ) as (typeof window)["location"];
@@ -14,7 +16,7 @@ export const defineWindow = async (baseurl?: URL) => {
         ? "http"
         : "https";
 
-  w.serverurl = __SRV_URL__;
+  w.serverurl = w.__SRV_URL__;
   const serverURL = new URL(w.serverurl);
   if (
     serverURL.hostname === "localhost" ||

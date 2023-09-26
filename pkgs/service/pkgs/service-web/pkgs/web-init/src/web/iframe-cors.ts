@@ -148,43 +148,6 @@ export const fetchSendApi = async (
 ) => {
   let w: any = typeof window === "object" ? window : globalThis;
 
-  if (isSSR) {
-    let data = params;
-    const headers: any = {};
-    if (!(data instanceof w.FormData || data instanceof w.File)) {
-      headers["content-type"] = "application/json";
-    } else {
-      if (data instanceof w.File) {
-        let ab = await new Promise<ArrayBuffer | undefined>((resolve) => {
-          const reader = new FileReader();
-          reader.addEventListener("load", (e) => {
-            resolve(e.target?.result as ArrayBuffer);
-          });
-          reader.readAsArrayBuffer(data);
-        });
-        if (ab) {
-          data = new File([ab], data.name);
-        }
-      }
-    }
-
-    const init = { body: data, headers, method: "POST" };
-    if (init && init.body && init.body instanceof File) {
-      const body = new FormData();
-      body.append("file", init.body);
-      init.body = body;
-    } else {
-      init.body = JSON.stringify(data);
-    }
-    const res = await fetch(w.serverurl + _url, init);
-    const body = await res.text();
-    try {
-      return JSON.parse(body);
-    } catch (e) {
-      return body;
-    }
-  }
-
   const win = parentWindow || w;
   let url = _url;
   let frm: Awaited<ReturnType<typeof createFrameCors>>;

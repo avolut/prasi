@@ -1,10 +1,10 @@
 import { CSSAttribute, extractCss as GooberExtractCSS } from "goober";
 import { RadixRouter } from "radix3";
 import React, { FC, ReactNode } from "react";
-import { OnRequestSSR, BPage as Page, SSR } from "web-types";
+import { DbDefCols, DbDefRels } from "service-db/src/glbdb";
+import { BPage as Page } from "web-types";
 import { PrismaClient } from "../../../../../../../app/db/node_modules/.gen";
 import type * as SRVAPI from "../../../../../../../app/gen/srv/api/srv";
-import { DbDefCols, DbDefRels } from "service-db/src/glbdb";
 
 export type PageResponse = {
   pathname: string;
@@ -18,16 +18,12 @@ type ApiName = keyof Api;
 interface WebGlobal {
   extractCss: typeof GooberExtractCSS;
   router: RadixRouter<Page>;
-  routerSSR: RadixRouter<{ ssr: OnRequestSSR; params: any }>;
   navigate: (href: string) => void;
-  isSSR: boolean;
 
   __WEB_NAME__: string;
   __SRV_URL__: string;
-  __SSR__: SSR;
   __PAGES__: Record<string, Page>;
   __MODE__: "dev" | "prod" | "staging";
-  __SSR_PROP__: Record<string, any>;
   __STATUS_CODE__: number;
   __LAYOUTS__: Record<
     string,
@@ -63,7 +59,6 @@ interface WebGlobal {
 }
 
 declare global {
-  const isSSR: boolean;
   const css: WebGlobal["css"];
   const cx: WebGlobal["cx"];
 

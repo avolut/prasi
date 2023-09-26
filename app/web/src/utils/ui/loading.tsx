@@ -1,7 +1,7 @@
 import { FC, ReactElement, ReactNode, useEffect } from "react";
 import { useLocal } from "web-utils";
 
-const w = (!isSSR ? window : {}) as unknown as { loadingIcon: string };
+const w = window as unknown as { loadingIcon: string };
 
 export const Loading: FC<{
   children?: ReactNode;
@@ -27,7 +27,7 @@ export const Loading: FC<{
       }
       local.render();
     }, 200);
-    if (!isSSR && w.loadingIcon) {
+    if (w.loadingIcon) {
       local.icon = (
         <img
           alt="loading"

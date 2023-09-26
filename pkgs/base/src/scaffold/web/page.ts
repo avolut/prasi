@@ -12,7 +12,7 @@ const scan = async (path: string) => {
 };
 
 export const parsePage = async (filePath: string) => {
-  const result = { url: "", ssr: false, layout: "", file: filePath };
+  const result = { url: "", layout: "", file: filePath };
   const src = await readAsync(filePath, "utf8");
 
   if (src) {
@@ -26,9 +26,6 @@ export const parsePage = async (filePath: string) => {
             if (p.key.value === "layout" && p.value.type === "StringLiteral") {
               result.layout = p.value.value;
             }
-            if (p.key.value === "ssr" && p.value.type === "BooleanLiteral") {
-              result.ssr = p.value.value;
-            }
           }
         }
         return parent.visitObjectExpression(n);
@@ -41,37 +38,30 @@ export const parsePage = async (filePath: string) => {
 export const generatePage = async (name: string, path: string) => {
   const parsed = await Promise.all((await scan(path)).map(parsePage));
 
-  const content =
-    (ssr: boolean) => (e: Awaited<ReturnType<typeof parsePage>>) => {
-      const page = e.file
-        .substring(0, e.file.length - extname(e.file).length)
-        .substring(path.length + 1)
-        .replace(/\W/gi, "_");
-      const filePath = e.file.substring(path.length + 1);
-      const importPath = `"../../../${name}/src/base/page/${filePath.substring(
-        0,
-        filePath.length - extname(filePath).length
-      )}"`;
+  const content = () => (e: Awaited<ReturnType<typeof parsePage>>) => {
+    const page = e.file
+      .substring(0, e.file.length - extname(e.file).length)
+      .substring(path.length + 1)
+      .replace(/\W/gi, "_");
+    const filePath = e.file.substring(path.length + 1);
+    const importPath = `"../../../${name}/src/base/page/${filePath.substring(
+      0,
+      filePath.length - extname(filePath).length
+    )}"`;
 
-      return `\
+    return `\
 export const ${page} = {
   name: "${page}",
   url: "${e.url}",
   path: "${e.file.substring(dir.root("").length + 1)}",
-  ssr: ${e.ssr ? "true" : "false"},
   layout: ${e.layout ? `"${e.layout}"` : `undefined`},
-  ${!ssr || (e.ssr && ssr) ? `component: () => import(${importPath.replace('\\', '/')})` : ""}
+  component: () => import(${importPath.replace('\\', '/')})
 }`;
-    };
+  };
 
   await writeAsync(
     dir.root(`app/gen/web/page/${name}.ts`),
-    parsed.map(content(false)).join("\n")
-  );
-
-  await writeAsync(
-    dir.root(`app/gen/web/page/${name}-ssr.ts`),
-    parsed.map(content(true)).join("\n")
+    parsed.map(content()).join("\n")
   );
 };
 
@@ -80,9 +70,5 @@ export const generatePageEntry = async (dirs: string[]) => {
   await writeAsync(
     dir.root(`app/gen/web/page/entry.ts`),
     dirs.map((e) => `export * as ${e} from "./${e}"`).join("\n")
-  );
-  await writeAsync(
-    dir.root(`app/gen/web/page/entry-ssr.ts`),
-    dirs.map((e) => `export * as ${e} from "./${e}-ssr"`).join("\n")
   );
 };

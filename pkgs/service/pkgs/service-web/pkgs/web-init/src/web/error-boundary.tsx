@@ -77,7 +77,7 @@ const handleError = (ctx: any) => {
             <button
               className="flex items-center justify-center w-full p-4 text-sm font-medium text-blue-600 border border-transparent rounded-none rounded-r-lg hover:text-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
               onClick={() => {
-                if (!isSSR && typeof location === "object") location.reload();
+                if (typeof location === "object") location.reload();
               }}
             >
               Reload
