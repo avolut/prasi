@@ -26,6 +26,8 @@ export const server = async ({
   const serveStatic: MiddlewareHandler = (req, res, next) => {
     let url = decodeURI(req.path);
     const asset = web.asset.get(decodeURI(url));
+    console.log(url, !!asset);
+
     if (!asset) next();
     else {
       res.setHeader("etag", asset.etag);
@@ -42,10 +44,6 @@ export const server = async ({
     }
   }
 
-  if (mode !== "dev") {
-    web.module = web.module.load();
-  }
-  
   server.any("/*", (req, res) => {
     serveStatic(req, res, async () => {
       if (mode === "dev") {
