@@ -31,15 +31,24 @@ export const SiteManager = () => {
       },
     });
 
-    local.orgs = {};
-
     if (orgs) {
+      orgs.push({
+        org: {
+          id: "15929f4c-88ea-4094-b487-a06539e822ca",
+          name: "prasi",
+          created_at: null,
+          created_by: null,
+          updated_at: null,
+        },
+      });
       for (const org of orgs) {
         local.orgs[org.org.id] = org.org;
       }
       const sites = await db.site.findMany({
         where: {
-          id_org: { in: Object.keys(local.orgs) },
+          id_org: {
+            in: Object.keys(local.orgs),
+          },
           is_deleted: false,
         },
         select: {
@@ -50,6 +59,7 @@ export const SiteManager = () => {
           domain: true,
         },
       });
+      console.log(sites);
       local.sites = sites;
     }
 
