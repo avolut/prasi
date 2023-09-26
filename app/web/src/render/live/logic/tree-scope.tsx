@@ -187,13 +187,17 @@ const createLocal = (p: PG, meta: ItemMeta) => {
     }
     const genScope = () => {
       if (!meta.scope[name]) {
-        meta.scope[name] = {
-          ...deepClone(value),
-          render: () => {
-            if (meta.render) meta.render();
-            else p.render();
-          },
-        };
+        try {
+          meta.scope[name] = {
+            ...deepClone(value),
+            render: () => {
+              if (meta.render) meta.render();
+              else p.render();
+            },
+          };
+        } catch (e) {
+          console.warn(e);
+        }
       }
     };
 
@@ -230,7 +234,11 @@ const createLocal = (p: PG, meta: ItemMeta) => {
 
     useEffect(() => {
       if (effect) {
-        effect(meta.scope[name]);
+        try {
+          effect(meta.scope[name]);
+        } catch (e) {
+          console.warn(e);
+        }
       }
     }, deps || []);
 

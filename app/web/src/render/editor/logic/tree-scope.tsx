@@ -160,7 +160,7 @@ export const mergeScopeUpwards = (
       for (const [k, v] of Object.entries(scope)) {
         if (typeof finalScope[k] === "undefined") finalScope[k] = v;
       }
-      
+
       if (opt?.each) {
         if (!opt.each(cur, scope)) {
           break;
@@ -209,14 +209,16 @@ const createLocal = (p: PG, meta: ItemMeta) => {
     }
 
     if (!meta.scope[name] || meta.item.id === p.item.active) {
-      meta.scope[name] = {
-        ...deepClone(value),
-        render: () => {
-          if (!p.focused) {
-            p.render();
-          }
-        },
-      };
+      try {
+        meta.scope[name] = {
+          ...deepClone(value),
+          render: () => {
+            if (!p.focused) {
+              p.render();
+            }
+          },
+        };
+      } catch (e) {}
     }
 
     if (typeof hook === "function") {
@@ -229,10 +231,11 @@ const createLocal = (p: PG, meta: ItemMeta) => {
 
     useEffect(() => {
       if (effect) {
-        effect(meta.scope[name]);
+        try {
+          effect(meta.scope[name]);
+        } catch (e) {}
       }
     }, deps || []);
-
     return children;
   };
 
