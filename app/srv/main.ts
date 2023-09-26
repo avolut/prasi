@@ -24,28 +24,26 @@ export const main = createAPIServer({
   },
 
   async init() {
-    const sites = await db.site.findMany({
-      select: { id: true, name: true, config: true },
-    });
-    for (const site of sites) {
-      const prasi = (site.config as any)?.prasi;
-      if (prasi) {
-        const root = dir.path(`../prasi-api/${site.id}/app`);
-
-        if (await existsAsync(root)) {
-          if (!glb.prasiSrv.running[site.id]) {
-            glb.prasiSrv.running[site.id] = $({
-              cwd: root,
-            })`node app.js`;
-
-            glb.prasiSrv.running[site.id].on("exit", () => {
-              glb.prasiSrv.status[site.id] = "stopped";
-            });
-          }
-          glb.prasiSrv.status[site.id] = "started";
-          console.log(` > Site ${site.name}: ${prasi.port}.prasi.world`);
-        }
-      }
-    }
+    // const sites = await db.site.findMany({
+    //   select: { id: true, name: true, config: true },
+    // });
+    // for (const site of sites) {
+    //   const prasi = (site.config as any)?.prasi;
+    //   if (prasi) {
+    //     const root = dir.path(`../prasi-api/${site.id}/app`);
+    //     if (await existsAsync(root)) {
+    //       if (!glb.prasiSrv.running[site.id]) {
+    //         glb.prasiSrv.running[site.id] = $({
+    //           cwd: root,
+    //         })`node app.js`;
+    //         glb.prasiSrv.running[site.id].on("exit", () => {
+    //           glb.prasiSrv.status[site.id] = "stopped";
+    //         });
+    //       }
+    //       glb.prasiSrv.status[site.id] = "started";
+    //       console.log(` > Site ${site.name}: ${prasi.port}.prasi.world`);
+    //     }
+    //   }
+    // }
   },
 });
