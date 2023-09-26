@@ -13,17 +13,19 @@ export const Live: FC<{ domain: string; pathname: string }> = ({
 }) => {
   const p = useGlobal(LiveGlobal, "LIVE");
 
-  if (!p.mode && !!p.site.responsive) {
-    if (p.site.responsive === "all") {
-      const parsed = parseUA();
-      p.mode = parsed.device.type === "mobile" ? "mobile" : "desktop";
-      if (localStorage.getItem("prasi-editor-mode")) {
-        p.mode = localStorage.getItem("prasi-editor-mode") as any;
+  if (p.site.id) {
+    if (!p.mode && !!p.site.responsive) {
+      if (p.site.responsive === "all") {
+        const parsed = parseUA();
+        p.mode = parsed.device.type === "mobile" ? "mobile" : "desktop";
+        if (localStorage.getItem("prasi-editor-mode")) {
+          p.mode = localStorage.getItem("prasi-editor-mode") as any;
+        }
+      } else if (p.site.responsive === "mobile-only") {
+        p.mode = "mobile";
+      } else if (p.site.responsive === "desktop-only") {
+        p.mode = "desktop";
       }
-    } else if (p.site.responsive === "mobile-only") {
-      p.mode = "mobile";
-    } else if (p.site.responsive === "desktop-only") {
-      p.mode = "desktop";
     }
   }
   const onResize = useCallback(() => {
@@ -38,10 +40,12 @@ export const Live: FC<{ domain: string; pathname: string }> = ({
   }, [p]);
 
   useEffect(() => {
-    window.removeEventListener("resize", onResize);
+    if (p.site.id) {
+      window.removeEventListener("resize", onResize);
 
-    if (p.site.responsive === "all") {
-      window.addEventListener("resize", onResize);
+      if (p.site.responsive === "all") {
+        window.addEventListener("resize", onResize);
+      }
     }
   }, [p.site.responsive]);
 
