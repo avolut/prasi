@@ -1,4 +1,5 @@
 import type { Editor as MonacoEditor, OnMount } from "@monaco-editor/react";
+import { createStore, set, UseStore } from "idb-keyval";
 import trim from "lodash.trim";
 import Delta from "quill-delta";
 import { FC, useEffect } from "react";
@@ -54,7 +55,13 @@ export const ScriptMonacoElement: FC<{
     editor: null as null | MonacoEditor,
     reloading: false,
     changeTimeout: 0 as any,
+    idbstore: createStore(`prasi-page-${p.page?.id}`, "script-history"),
   });
+
+  useEffect(() => {
+    local.idbstore = createStore(`prasi-page-${p.page?.id}`, "script-history");
+    local.render();
+  }, [p.page?.id]);
 
   useEffect(() => {
     return () => {
@@ -506,7 +513,13 @@ export const ScriptMonacoElement: FC<{
                 }
               };
 
+              const ts = Math.round(Date.now() / 1000);
+
               if (p.script.prop) {
+                set(
+                  `${p.item.active}@${p.script.prop.name}-${ts}`,
+                  newsrc || ""
+                );
                 applyChanges(async (ytext) => {
                   if (mprop) {
                     const text = ytext.toJSON();
@@ -519,6 +532,11 @@ export const ScriptMonacoElement: FC<{
                   }
                 });
               } else {
+                set(
+                  `${p.item.active}:${script.type}-${ts}`,
+                  newsrc || "",
+                  local.idbstore
+                );
                 applyChanges(async (ytext) => {
                   const meta = p.treeMeta[p.item.active];
                   if (meta.item.adv) meta.item.adv.js = ytext.toJSON();

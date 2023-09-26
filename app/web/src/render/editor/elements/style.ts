@@ -94,7 +94,6 @@ export const editorStyle = css`
             &.disabled {
               color: #ccc;
               cursor: default;
-              background: white;
             }
           }
 

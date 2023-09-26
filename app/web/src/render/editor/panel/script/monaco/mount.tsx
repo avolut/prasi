@@ -80,6 +80,44 @@ export const jsMount = async (editor: MonacoEditor, monaco: Monaco) => {
   });
 
   monaco.languages.registerCompletionItemProvider("typescript", {
+    provideCompletionItems: (model, position) => {
+      const word = model.getWordUntilPosition(position);
+      return {
+        suggestions: [
+          {
+            label: "log",
+            kind: monaco.languages.CompletionItemKind.Function,
+            documentation: "Add Console.log",
+            insertText: `console.log($1)`,
+            insertTextRules:
+              monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            range: {
+              startLineNumber: position.lineNumber,
+              endLineNumber: position.lineNumber,
+              startColumn: word.startColumn,
+              endColumn: word.endColumn,
+            },
+          },
+          {
+            label: "sfy",
+            kind: monaco.languages.CompletionItemKind.Function,
+            documentation: "Add JSON.stringify",
+            insertText: `JSON.stringify($1)`,
+            insertTextRules:
+              monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+            range: {
+              startLineNumber: position.lineNumber,
+              endLineNumber: position.lineNumber,
+              startColumn: word.startColumn,
+              endColumn: word.endColumn,
+            },
+          },
+        ],
+      };
+    },
+  });
+
+  monaco.languages.registerCompletionItemProvider("typescript", {
     triggerCharacters: [">"],
     provideCompletionItems: (model, position) => {
       const codePre: string = model.getValueInRange({

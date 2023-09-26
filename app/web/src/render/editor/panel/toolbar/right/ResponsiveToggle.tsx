@@ -6,7 +6,7 @@ import { w } from "../../../../../utils/types/general";
 export const ResponsiveToggle = () => {
   const c = useGlobal(EditorGlobal, "EDITOR");
   const mode = c.mode;
-  const activeModeClassName = "border-b-2 border-blue-500 bg-blue-50";
+  const activeModeClassName = "border-b-2 border-blue-500";
   return (
     <ToolbarBox
       items={[

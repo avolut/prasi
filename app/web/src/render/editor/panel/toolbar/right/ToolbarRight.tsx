@@ -9,7 +9,6 @@ import { Tooltip } from "../../../../../utils/ui/tooltip";
 export const ToolbarRight = () => {
   const p = useGlobal(EditorGlobal, "EDITOR");
   const local = useLocal({ pingOpen: false });
-  p.softRender.topR = local.render;
 
   return (
     <div className={cx("toolbar-right", "flex mr-2")}>
