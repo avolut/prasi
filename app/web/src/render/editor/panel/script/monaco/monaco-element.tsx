@@ -66,7 +66,6 @@ export const ScriptMonacoElement: FC<{
             local.editor.saveViewState();
         }
       }
-
     };
   }, [local.editor]);
 
@@ -144,12 +143,7 @@ export const ScriptMonacoElement: FC<{
     }
     let _ytext = adv.get(script.type) as any;
     if (!(_ytext instanceof Y.Text)) {
-      setTimeout(() => {
-        adv.set(script.type, new Y.Text(_ytext) as any);
-        local.render();
-      });
-
-      return <Loading note="monaco-el2" backdrop={false} />;
+      adv.set(script.type, new Y.Text(_ytext) as any);
     }
     ytext = _ytext;
   } else {
