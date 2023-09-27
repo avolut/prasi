@@ -29,12 +29,9 @@ export const editorWS = async (p: PG) => {
     }
     return;
   }
-  const render = (note: string) => {
+  const render = () => {
     if (!p.focused && !p.script.active) {
-      rebuildTree(p, {
-        mode: "reset",
-        note: note,
-      });
+      p.render();
     }
   };
 
@@ -113,6 +110,12 @@ export const editorWS = async (p: PG) => {
           case "set_page":
             p.mpage = await setPage(msg);
             p.mpage.on("update", (e, origin) => {
+              rebuildTree(p, {
+                render,
+                mode: "update",
+                note: "ws-update-page",
+              });
+
               clearTimeout(timeout.setpage);
               timeout.setpage = setTimeout(() => {
                 const doc = p.mpage;
@@ -132,12 +135,13 @@ export const editorWS = async (p: PG) => {
                     }
                   } else if (origin === "updated_at") {
                     p.page = doc?.getMap("map").toJSON() as any;
-                    render("ws-page-update");
+                    render();
                   }
                 }
               }, 200);
             });
-            render("ws-page-load");
+
+            rebuildTree(p, { render, mode: "reset", note: "page-load" });
             if (p.mpageLoaded) {
               p.mpageLoaded(p.mpage);
               p.mpageLoaded = null;
@@ -204,7 +208,10 @@ export const editorWS = async (p: PG) => {
                           }
                         }
 
-                        render("ws-comp-load");
+                        rebuildTree(p, {
+                          mode: "update",
+                          note: "ws-update-comp",
+                        });
                       }
                     }, 200)
                   );
@@ -231,7 +238,7 @@ export const editorWS = async (p: PG) => {
             p.site.js = msg.js || "";
             execSiteJS(p);
             console.log(`🔥 Site JS Reloaded: ${new Date().toLocaleString()}`);
-            render("ws-site-reload");
+            render();
             api.site_dts(p.site.id).then((e) => {
               p.site_dts = e || "";
               p.render();
