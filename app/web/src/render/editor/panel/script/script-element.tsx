@@ -7,11 +7,8 @@ import { Loading } from "../../../../utils/ui/loading";
 import { Modal } from "../../../../utils/ui/modal";
 import { EditorGlobal } from "../../logic/global";
 import { initJS } from "./monaco/init";
-import {
-  DefaultScript,
-  FBuild,
-  ScriptMonacoElement,
-} from "./monaco/monaco-el";
+import { DefaultScript, FBuild, ScriptMonacoElement } from "./monaco/monaco-el";
+import { rebuildTree } from "../../logic/tree-logic";
 
 export const jscript = {
   editor: null as typeof MonacoEditor | null,
@@ -107,7 +104,7 @@ export const EScriptElement: FC<{}> = ({}) => {
           p.script.onClose = undefined;
         }
 
-        p.render();
+        rebuildTree(p, { mode: "reset", note: "script-closed" });
       }}
     >
       <div className="bg-white w-[80vw] h-[80vh] flex">

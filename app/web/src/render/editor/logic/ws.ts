@@ -29,9 +29,12 @@ export const editorWS = async (p: PG) => {
     }
     return;
   }
-  const render = () => {
+  const render = (note: string) => {
     if (!p.focused && !p.script.active) {
-      p.render();
+      rebuildTree(p, {
+        mode: "reset",
+        note: note,
+      });
     }
   };
 
@@ -110,12 +113,6 @@ export const editorWS = async (p: PG) => {
           case "set_page":
             p.mpage = await setPage(msg);
             p.mpage.on("update", (e, origin) => {
-              rebuildTree(p, {
-                render,
-                mode: "update",
-                note: "ws-update-page",
-              });
-
               clearTimeout(timeout.setpage);
               timeout.setpage = setTimeout(() => {
                 const doc = p.mpage;
@@ -135,13 +132,12 @@ export const editorWS = async (p: PG) => {
                     }
                   } else if (origin === "updated_at") {
                     p.page = doc?.getMap("map").toJSON() as any;
-                    render();
+                    render("ws-page-update");
                   }
                 }
               }, 200);
             });
-
-            rebuildTree(p, { render, mode: "reset", note: "page-load" });
+            render("ws-page-load");
             if (p.mpageLoaded) {
               p.mpageLoaded(p.mpage);
               p.mpageLoaded = null;
@@ -208,10 +204,7 @@ export const editorWS = async (p: PG) => {
                           }
                         }
 
-                        rebuildTree(p, {
-                          mode: "update",
-                          note: "ws-update-comp",
-                        });
+                        render("ws-comp-load");
                       }
                     }, 200)
                   );
@@ -238,7 +231,7 @@ export const editorWS = async (p: PG) => {
             p.site.js = msg.js || "";
             execSiteJS(p);
             console.log(`🔥 Site JS Reloaded: ${new Date().toLocaleString()}`);
-            render();
+            render("ws-site-reload");
             api.site_dts(p.site.id).then((e) => {
               p.site_dts = e || "";
               p.render();

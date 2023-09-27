@@ -1,9 +1,12 @@
 import type { OnMount } from "@monaco-editor/react";
 import trim from "lodash.trim";
+import { KeyCode, KeyMod } from "monaco-editor";
 import {
   MonacoJsxSyntaxHighlight,
   getWorker,
 } from "monaco-jsx-syntax-highlight-v2";
+import { rebuildTree } from "../../../logic/tree-logic";
+import { PG } from "../../../logic/global";
 
 export type MonacoEditor = Parameters<OnMount>[0];
 type Monaco = Parameters<OnMount>[1];
@@ -18,7 +21,7 @@ const w = window as unknown as {
   };
 };
 
-export const jsMount = async (editor: MonacoEditor, monaco: Monaco) => {
+export const jsMount = async (p: PG, editor: MonacoEditor, monaco: Monaco) => {
   const m = monaco as any;
   if (!m.customJSMounted) {
     m.customJSMounted = true;
@@ -45,6 +48,20 @@ export const jsMount = async (editor: MonacoEditor, monaco: Monaco) => {
   highlighter();
   editor.onDidChangeModelContent(() => {
     highlighter();
+  });
+  editor.addAction({
+    id: "reloadPrasiEditorPage",
+    label: "Reload Prasi Editor Page",
+    keybindings: [KeyMod.Alt | KeyCode.KeyR],
+    run: async () => {
+      p.pageHidden = true;
+      p.render();
+      await rebuildTree(p, { mode: "reset", note: "reload" });
+      setTimeout(() => {
+        p.pageHidden = false;
+        p.render();
+      }, 500);
+    },
   });
 
   monaco.languages.registerDocumentFormattingEditProvider("typescript", {

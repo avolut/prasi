@@ -44,6 +44,7 @@ export const EditorGlobal = {
     | "tree-rebuild",
   focused: "",
   pendingRebuild: false,
+  localReloading: {} as Record<string, true>,
   manager: {
     page: false,
     site: false,

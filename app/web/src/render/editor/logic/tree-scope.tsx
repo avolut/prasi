@@ -194,10 +194,9 @@ const createLocal = (p: PG, meta: ItemMeta) => {
       meta.scope = {};
     }
 
-    if (
-      !meta.scope[name] ||
-      (meta.item.id === p.item.active && p.script.active)
-    ) {
+    const immediateExecute = meta.item.id === p.item.active && p.script.active;
+
+    if (!meta.scope[name]) {
       try {
         meta.scope[name] = {
           ...deepClone(value),
@@ -220,11 +219,19 @@ const createLocal = (p: PG, meta: ItemMeta) => {
 
     useEffect(() => {
       if (effect) {
+        if (immediateExecute) {
+          if (!p.localReloading[p.item.active]) {
+            p.localReloading[p.item.active] = true;
+          } else {
+            return;
+          }
+        }
+
         try {
           effect(meta.scope[name]);
         } catch (e) {}
       }
-    }, deps || []);
+    }, []);
     return children;
   };
 

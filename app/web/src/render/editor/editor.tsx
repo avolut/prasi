@@ -7,6 +7,7 @@ import { execSiteJS, initEditor } from "./logic/init";
 import { routeEditor } from "./logic/route";
 import { undoManager } from "./logic/undo";
 import { w } from "../../utils/types/general";
+import { rebuildTree } from "./logic/tree-logic";
 
 export const Editor: FC<{ site_id: string; page_id: string; session: any }> = ({
   session,
@@ -56,6 +57,15 @@ export const Editor: FC<{ site_id: string; page_id: string; session: any }> = ({
         !evt.shiftKey
       ) {
         undoManager.undo(p);
+      }
+
+      if (
+        (evt.key === "r" || evt.key === "R" || evt.key === "®") &&
+        evt.altKey
+      ) {
+        p.localReloading = {};
+        p.render();
+        await rebuildTree(p, { mode: "reset", note: "reload" });
       }
     };
     window.addEventListener("keydown", keyDown, true);
