@@ -125,7 +125,12 @@ export const ScriptMonacoElement: FC<{
     }
   };
 
-  const meta = p.treeMeta[p.item.active];
+  let meta = p.treeMeta[p.item.active];
+
+  if (!meta) {
+    meta = p.treeMeta[p.item.activeOriginalId];
+  }
+
   let mitem = meta.mitem;
 
   if (p.comp && p.comp.id === meta.comp?.id) {
@@ -146,7 +151,12 @@ export const ScriptMonacoElement: FC<{
         local.reloading = true;
         mitem.set(
           "adv",
-          newMap({ css: "", js: "", html: "", jsBuilt: "" }) as TypedMap<FNAdv>
+          newMap({
+            css: "",
+            js: "",
+            html: "",
+            jsBuilt: "",
+          }) as TypedMap<FNAdv>
         );
       }
 
@@ -271,7 +281,9 @@ export const ScriptMonacoElement: FC<{
               // emmetHTML(monaco);
             }
           }}
-          defaultValue={ytext.toJSON() || defaultSrc}
+          defaultValue={
+            !!ytext && typeof ytext === "object" ? ytext.toJSON() : defaultSrc
+          }
           onMount={async (editor, monaco) => {
             local.editor = editor;
             editor.focus();
@@ -369,7 +381,6 @@ export const ScriptMonacoElement: FC<{
                       `return ${text.trim()}`
                     );
                     mprop.set("valueBuilt", compiled.substring(6));
-                    console.log(mprop.toJSON());
                   }
                 });
               } else {

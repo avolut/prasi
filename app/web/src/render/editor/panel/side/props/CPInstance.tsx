@@ -6,17 +6,16 @@ import { MItem } from "../../../../../utils/types/item";
 import { FMCompDef, FNCompDef } from "../../../../../utils/types/meta-fn";
 import { Menu, MenuItem } from "../../../../../utils/ui/context-menu";
 import { Loading } from "../../../../../utils/ui/loading";
-import { Popover } from "../../../../../utils/ui/popover";
 import { Tooltip } from "../../../../../utils/ui/tooltip";
 import { editComp, loadComponent } from "../../../logic/comp";
 import { EditorGlobal, PG } from "../../../logic/global";
 import { rebuildTree } from "../../../logic/tree-logic";
 import { newMap } from "../../../tools/yjs-tools";
 import { jscript } from "../../script/script-element";
-import { CPCodeEdit } from "./CPCodeEdit";
 import { CPJsx } from "./CPJsx";
 import { CPOption } from "./CPOption";
 import { CPText } from "./CPText";
+import { mergeScopeUpwards } from "../../../logic/tree-scope";
 
 export const CPInstance: FC<{ mitem: MItem }> = ({ mitem }) => {
   const p = useGlobal(EditorGlobal, "EDITOR");
@@ -24,7 +23,6 @@ export const CPInstance: FC<{ mitem: MItem }> = ({ mitem }) => {
     status: "loading",
     mprops: null as unknown as TypedMap<Record<string, FMCompDef>>,
     props: {} as Record<string, FNCompDef>,
-    visibles: {} as Record<string, string>,
     jsx: false,
   });
   const comp = p.comps.doc[mitem.get("component")?.get("id") || ""];
@@ -124,14 +122,18 @@ export const CPInstance: FC<{ mitem: MItem }> = ({ mitem }) => {
                 if (!local.jsx && v.meta?.type === "content-element") return;
 
                 let visible = true;
-                if (local.visibles[k]) {
+                const meta = p.treeMeta[p.item.active];
+                if (v.visible && meta) {
                   try {
+                    const scopes = mergeScopeUpwards(p, meta);
                     const args = {
                       ...window.exports,
+                      ...scopes,
                     };
+
                     const fn = new Function(
                       ...Object.keys(args),
-                      `return ${local.visibles[k]}`
+                      `return ${v.visible}`
                     );
 
                     visible = fn(...Object.values(args));
