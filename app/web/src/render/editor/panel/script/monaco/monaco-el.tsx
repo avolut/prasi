@@ -133,7 +133,10 @@ export const ScriptMonacoElement: FC<{
 
   let mitem = meta.mitem;
 
-  if (p.comp && p.comp.id === meta.comp?.id) {
+  if (!mitem) {
+    p.script.active = false;
+    return <div>no mitem</div>;
+  } else if (p.comp && p.comp.id === meta.comp?.id) {
     mitem = meta.comp.mcomp;
   }
 
@@ -141,6 +144,7 @@ export const ScriptMonacoElement: FC<{
     p.script.active = false;
     return <div>no mitem</div>;
   }
+
   let ytext: Y.Text = null as any;
 
   const adv = mitem.get("adv");
