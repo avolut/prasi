@@ -9,6 +9,7 @@ import { editComp } from "../../../logic/comp";
 import { EditorGlobal, NodeMeta, PG } from "../../../logic/global";
 import { fillID } from "../../../tools/fill-id";
 import { newMap } from "../../../tools/yjs-tools";
+import { createId } from "@paralleldrive/cuid2";
 
 export const ETreeItemAction: FC<{
   item: IContent;
@@ -138,7 +139,12 @@ export const ETreeItemAction: FC<{
                 mitem.parent.forEach((e: MContent, idx) => {
                   if (e.get("id") === mitem.get("id")) {
                     const json = e.toJSON() as IContent;
-                    const map = newMap(fillID(json)) as MContent;
+                    const map = newMap(
+                      fillID(json, (e) => {
+                        e.originalId = createId();
+                        return true;
+                      })
+                    ) as MContent;
                     mitem.parent.insert(idx, [map]);
                   }
                 });
