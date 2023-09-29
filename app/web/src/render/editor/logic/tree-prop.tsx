@@ -38,7 +38,10 @@ export const treePropEval = (
           `return ${prop.valueBuilt}`
         );
         try {
-          value = fn(...Object.values(args));
+          // note: by default set prop to empty string
+          // if it is undefined then it will be overidden by parent scope
+          // it is not desirable for prop to inherit from parent scope.
+          value = fn(...Object.values(args)) || "";
         } catch (e) {
           const cname = meta.item.name;
           console.warn(e);

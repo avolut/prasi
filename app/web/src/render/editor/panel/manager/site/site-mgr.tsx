@@ -59,7 +59,6 @@ export const SiteManager = () => {
           domain: true,
         },
       });
-      console.log(sites);
       local.sites = sites;
     }
 
