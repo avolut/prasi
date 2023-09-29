@@ -30,6 +30,7 @@ export const routeLive = (p: PG, pathname: string) => {
     }
 
     if (page_id) {
+      (window as any).prasiPageID = page_id;
       const promises: Promise<void>[] = [];
       if (page_id !== p.page?.id) {
         if (p.page) {

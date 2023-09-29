@@ -53,6 +53,8 @@ const loadNpmPage = async (id: string) => {
 };
 
 const loadPage = (p: PG, id: string) => {
+  (window as any).prasiPageID = id;
+
   return new Promise<MPage>(async (resolve) => {
     await editorWS(p);
     p.mpageLoaded = async (mpage) => {
