@@ -258,6 +258,56 @@ const SingleProp: FC<{
     local.editCode = true;
     p.script.active = true;
     p.script.prop = { name, mode: "instance" };
+    const DEFAULT = `\
+async () => {
+  return \`""\`
+}`;
+    if (
+      prop.gen &&
+      prop.genBuilt &&
+      prop.gen.replace(/\W/g, "") !== DEFAULT.replace(/\W/g, "")
+    ) {
+      p.script.toolbar = (
+        <div
+          className="bg-blue-500 hover:bg-blue-300 cursor-pointer text-white rounded-sm flex items-center px-2"
+          onClick={async () => {
+            const meta = p.treeMeta[p.item.active];
+            if (prop.genBuilt && meta && p.script.doEdit) {
+              try {
+                const scopes = mergeScopeUpwards(p, meta);
+                const args = {
+                  ...window.exports,
+                  ...scopes,
+                };
+
+                const fn = new Function(
+                  ...Object.keys(args),
+                  `return ${prop.genBuilt}`
+                );
+
+                const efn = fn(Object.values(args));
+                let result = "";
+                if (typeof efn === "function") {
+                  const promise = efn();
+                  if (promise && promise instanceof Promise) {
+                    result = await promise;
+                  } else {
+                    result = promise;
+                  }
+                }
+                if (typeof result === "string") {
+                  p.script.doEdit(result, true);
+                }
+              } catch (e) {
+                console.log(e);
+              }
+            }
+          }}
+        >
+          Generate
+        </div>
+      );
+    }
     p.script.onClose = () => {
       p.script.prop = null;
       if (typeof onClose === "function") {

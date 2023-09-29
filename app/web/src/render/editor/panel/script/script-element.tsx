@@ -62,7 +62,7 @@ export const EScriptElement: FC<{}> = ({}) => {
     return null;
   }
 
-  const onOpenChange = (open) => {
+  const onOpenChange = () => {
     if (p.script.active) {
       let mitem = p.treeMeta[p.item.active]?.mitem;
       if (!mitem) return;
@@ -98,6 +98,8 @@ export const EScriptElement: FC<{}> = ({}) => {
 
     p.script.active = false;
     p.script.prop = null;
+    p.script.doEdit = null;
+    p.script.toolbar = null;
 
     if (typeof p.script.onClose === "function") {
       p.script.onClose();

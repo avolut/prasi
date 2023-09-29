@@ -1,4 +1,4 @@
-import { FC, ReactElement } from "react";
+import { FC, ReactElement, ReactNode } from "react";
 import { createRouter } from "web-init";
 import { CompDoc } from "../../../base/global/content-editor";
 import { IContent, MContent, MPage } from "../../../utils/types/general";
@@ -64,11 +64,13 @@ export const EditorGlobal = {
         | "master-visible"
         | "master-gen";
     },
+    toolbar: null as ReactNode,
     active: false,
     type: "js" as "js" | "css" | "html",
     db: null as any,
     api: null as any,
     onClose: undefined as undefined | (() => void),
+    doEdit: null as null | ((newval: string, all?: boolean) => Promise<void>),
   },
   item: {
     active: "",

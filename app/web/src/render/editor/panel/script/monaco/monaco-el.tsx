@@ -124,6 +124,7 @@ export const ScriptMonacoElement: FC<{
       ]);
     }
   };
+  p.script.doEdit = doEdit;
 
   let meta = p.treeMeta[p.item.active];
 
@@ -229,7 +230,10 @@ export const ScriptMonacoElement: FC<{
 ]`;
             } else if (p.script.prop.mode === "master-gen") {
               propAttrName = "gen";
-              propAttrDefault = "async () => {}";
+              propAttrDefault = `\
+async () => {
+  return \`""\`
+}`;
             }
             if (propAttrName) {
               _ytext = mprop.get(propAttrName);
@@ -269,47 +273,50 @@ export const ScriptMonacoElement: FC<{
         >
           <MonacoElSnippet doEdit={doEdit} />
 
-          <Popover
-            backdrop={false}
-            open={local.historyOpen}
-            onOpenChange={(open) => {
-              if (!open) {
-                local.historyOpen = false;
-                local.render();
-              }
-            }}
-            content={
-              <MonacoElHistory
-                store={local.idbstore}
-                doEdit={doEdit}
-                close={() => {
+          <div className="flex space-x-1 items-stretch">
+            {p.script.toolbar}
+            <Popover
+              backdrop={false}
+              open={local.historyOpen}
+              onOpenChange={(open) => {
+                if (!open) {
                   local.historyOpen = false;
                   local.render();
-                }}
-              />
-            }
-          >
-            <Button
-              onClick={() => {
-                local.historyOpen = true;
-                local.render();
+                }
               }}
-              className="flex space-x-1"
+              content={
+                <MonacoElHistory
+                  store={local.idbstore}
+                  doEdit={doEdit}
+                  close={() => {
+                    local.historyOpen = false;
+                    local.render();
+                  }}
+                />
+              }
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                viewBox="0 0 256 256"
+              <Button
+                onClick={() => {
+                  local.historyOpen = true;
+                  local.render();
+                }}
+                className="flex space-x-1"
               >
-                <path
-                  fill="currentColor"
-                  d="M98 136a6 6 0 016-6h64a6 6 0 010 12h-64a6 6 0 01-6-6zm6-26h64a6 6 0 000-12h-64a6 6 0 000 12zm126 82a30 30 0 01-30 30H88a30 30 0 01-30-30V64a18 18 0 00-36 0c0 6.76 5.58 11.19 5.64 11.23a6 6 0 11-7.24 9.57C20 84.48 10 76.85 10 64a30 30 0 0130-30h136a30 30 0 0130 30v106h10a6 6 0 013.6 1.2c.4.32 10.4 7.95 10.4 20.8zm-124 0c0-6.76-5.59-11.19-5.64-11.23A6 6 0 01104 170h90V64a18 18 0 00-18-18H64a29.82 29.82 0 016 18v128a18 18 0 0036 0zm112 0a14.94 14.94 0 00-4.34-10h-97.78a24.83 24.83 0 012.12 10 29.87 29.87 0 01-6 18h88a18 18 0 0018-18z"
-                ></path>
-              </svg>
-              <div>History</div>
-            </Button>
-          </Popover>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 256 256"
+                >
+                  <path
+                    fill="currentColor"
+                    d="M98 136a6 6 0 016-6h64a6 6 0 010 12h-64a6 6 0 01-6-6zm6-26h64a6 6 0 000-12h-64a6 6 0 000 12zm126 82a30 30 0 01-30 30H88a30 30 0 01-30-30V64a18 18 0 00-36 0c0 6.76 5.58 11.19 5.64 11.23a6 6 0 11-7.24 9.57C20 84.48 10 76.85 10 64a30 30 0 0130-30h136a30 30 0 0130 30v106h10a6 6 0 013.6 1.2c.4.32 10.4 7.95 10.4 20.8zm-124 0c0-6.76-5.59-11.19-5.64-11.23A6 6 0 01104 170h90V64a18 18 0 00-18-18H64a29.82 29.82 0 016 18v128a18 18 0 0036 0zm112 0a14.94 14.94 0 00-4.34-10h-97.78a24.83 24.83 0 012.12 10 29.87 29.87 0 01-6 18h88a18 18 0 0018-18z"
+                  ></path>
+                </svg>
+                <div>History</div>
+              </Button>
+            </Popover>
+          </div>
         </div>
       )}
 

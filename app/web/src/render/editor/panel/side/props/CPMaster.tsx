@@ -482,18 +482,32 @@ const SinglePopover: FC<{
 
           {type !== "content-element" && (
             <>
-              <div className="border-t border-slate-300 pl-2 pt-1 flex justify-between items-center">
-                <div className="border-t border-slate-300 pl-2 pt-1 flex justify-between items-center">
-                  <div className="uppercase text-xs">Generator</div>
-                  <div
-                    className="m-1 px-1 bg-white cursor-pointer hover:bg-blue-500 hover:text-white hover:border-blue-500 font-mono border border-slate-300 text-[11px]"
-                    onClick={createEditScript("master-gen")}
-                  >
-                    EDIT CODE
-                  </div>
-                </div>
-                <div className="uppercase text-xs text-slate-500">Visible</div>
+              <div
+                className={cx(
+                  "border-t border-slate-300 pl-2 flex justify-between items-center",
+                  css`
+                    margin-bottom: -0.25rem !important;
 
+                    > .label {
+                      padding-top: 0.75rem;
+                      padding-bottom: 0.75rem;
+                    }
+                  `
+                )}
+              >
+                <div className="uppercase text-xs label self-stretch flex items-center">
+                  Generator
+                </div>
+                <div
+                  className="m-1 px-1 bg-white cursor-pointer hover:bg-blue-500 hover:text-white hover:border-blue-500 font-mono border border-slate-300 text-[11px] flex "
+                  onClick={createEditScript("master-gen")}
+                >
+                  EDIT CODE
+                </div>
+                <div className=" border-l border-slate-300 mr-2 self-stretch"></div>
+                <div className="uppercase text-xs label self-stretch flex items-center">
+                  Visible
+                </div>
                 <div
                   className="m-1 px-1 bg-white cursor-pointer hover:bg-blue-500 hover:text-white hover:border-blue-500 font-mono border border-slate-300 text-[11px]"
                   onClick={createEditScript("master-visible")}
