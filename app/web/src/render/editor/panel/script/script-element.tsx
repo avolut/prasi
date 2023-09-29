@@ -179,5 +179,6 @@ export const EScriptElement: FC<{}> = ({}) => {
     </div>
   );
 
+  
   return <Modal onOpenChange={onOpenChange}>{content}</Modal>;
 };
