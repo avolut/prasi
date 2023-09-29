@@ -98,9 +98,6 @@ export const ERender: FC<{
   }
 
   if (!adv?.js && (meta.scopeAttached || meta.comp)) {
-    if (meta.item.name === "item-jaga") {
-      console.log("e-render", meta.scope);
-    }
     return treeScopeEval(
       p,
       meta,
