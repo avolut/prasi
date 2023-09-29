@@ -97,6 +97,7 @@ export const EScriptElement: FC<{}> = ({}) => {
     }
 
     p.script.active = false;
+    p.script.prop = null;
 
     if (typeof p.script.onClose === "function") {
       p.script.onClose();
@@ -179,6 +180,5 @@ export const EScriptElement: FC<{}> = ({}) => {
     </div>
   );
 
-  
   return <Modal onOpenChange={onOpenChange}>{content}</Modal>;
 };
