@@ -39,7 +39,7 @@ export const treePropEval = (
           `return ${prop.valueBuilt}`
         );
         try {
-          value = fn(...Object.values(args));
+          value = fn(...Object.values(args)) || null;
         } catch (e) {
           const cname = meta.item.name;
           console.warn(e);
