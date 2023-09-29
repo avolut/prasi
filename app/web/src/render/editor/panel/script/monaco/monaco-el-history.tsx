@@ -41,8 +41,28 @@ export const MonacoElHistory = ({
         let ts = "";
         const key = foundkeys[parseInt(k)];
 
-        if (p.script.prop && key.startsWith(`${id}@${p.script.prop.name}-`)) {
-          ts = key.substring(`${id}@${p.script.prop.name}-`.length);
+        if (p.script.prop) {
+          if (p.script.prop.mode === "instance") {
+            if (key.startsWith(`${id}@${p.script.prop.name}-`)) {
+              ts = key.substring(`${id}@${p.script.prop.name}-`.length);
+            }
+          } else if (p.script.prop.mode === "master-visible") {
+            if (key.startsWith(`${id}#vis-${p.script.prop.name}-`)) {
+              ts = key.substring(`${id}#vis-${p.script.prop.name}-`.length);
+            }
+          } else if (p.script.prop.mode === "master-option") {
+            if (key.startsWith(`${id}#opt-${p.script.prop.name}-`)) {
+              ts = key.substring(`${id}#opt-${p.script.prop.name}-`.length);
+            }
+          } else if (p.script.prop.mode === "master-gen") {
+            if (key.startsWith(`${id}#gen-${p.script.prop.name}-`)) {
+              ts = key.substring(`${id}#gen-${p.script.prop.name}-`.length);
+            }
+          } else if (p.script.prop.mode === "master-value") {
+            if (key.startsWith(`${id}#val-${p.script.prop.name}-`)) {
+              ts = key.substring(`${id}#val-${p.script.prop.name}-`.length);
+            }
+          }
         } else {
           ts = key.substring(`${id}:${p.script.type}-`.length);
         }

@@ -1,11 +1,11 @@
 import { FC, ReactElement } from "react";
+import { createRouter } from "web-init";
 import { CompDoc } from "../../../base/global/content-editor";
 import { IContent, MContent, MPage } from "../../../utils/types/general";
 import { IItem, MItem } from "../../../utils/types/item";
 import { FNCompDef } from "../../../utils/types/meta-fn";
 import { PRASI_COMPONENT } from "../../../utils/types/render";
 import { IRoot } from "../../../utils/types/root";
-import { createRouter } from "web-init";
 
 export type WithRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] };
 export type NodeMeta = { meta: ItemMeta; idx: number };
@@ -57,7 +57,12 @@ export const EditorGlobal = {
     siteTypes: {},
     prop: null as null | {
       name: string;
-      mode: "instance" | "master";
+      mode:
+        | "instance"
+        | "master-value"
+        | "master-option"
+        | "master-visible"
+        | "master-gen";
     },
     active: false,
     type: "js" as "js" | "css" | "html",

@@ -172,26 +172,81 @@ export const ScriptMonacoElement: FC<{
     }
     ytext = _ytext;
   } else {
-    let mprops = mitem.get("component")?.get("props");
-    if (!mprops) {
-      mitem.get("component")?.set("props", new Y.Map() as any);
-      mprops = mitem.get("component")?.get("props");
-    }
-    if (mprops) {
-      const propName = p.script.prop.name;
-      mprop = mprops?.get(propName);
-      if (mprop) {
-        let _ytext = mprop.get("value");
-        if (!(_ytext instanceof Y.Text)) {
-          mprop.set("value", new Y.Text(mprop.get("value")));
-          return <Loading note="monaco-el2" backdrop={false} />;
+    if (p.script.prop.mode === "instance") {
+      let mprops = mitem.get("component")?.get("props");
+      if (!mprops) {
+        mitem.get("component")?.set("props", new Y.Map() as any);
+        mprops = mitem.get("component")?.get("props");
+      }
+      if (mprops) {
+        const propName = p.script.prop.name;
+        mprop = mprops?.get(propName);
+        if (mprop) {
+          let _ytext = mprop.get("value");
+          if (!(_ytext instanceof Y.Text)) {
+            mprop.set("value", new Y.Text(mprop.get("value")));
+            return <Loading note="monaco-el2" backdrop={false} />;
+          }
+          ytext = _ytext;
+        } else {
+          return <div>MProp not found</div>;
         }
-        ytext = _ytext;
       } else {
-        return <div>MProp not found</div>;
+        return <div>Failed to create mprops</div>;
       }
     } else {
-      return <div>Failed to create mprops</div>;
+      const mcomp = p.comps.doc[p.comp?.id || ""]
+        .getMap("map")
+        .get("content_tree");
+
+      if (mcomp) {
+        const mprops = mcomp.get("component")?.get("props");
+        if (mprops) {
+          const propName = p.script.prop.name;
+          mprop = mprops?.get(propName);
+          if (mprop) {
+            let _ytext = null as any;
+            let propAttrName = "" as any;
+            let propAttrDefault = "";
+            if (p.script.prop.mode === "master-visible") {
+              propAttrDefault = "true";
+              propAttrName = "visible";
+            } else if (p.script.prop.mode === "master-value") {
+              propAttrName = "value";
+              propAttrDefault = '"hello"';
+            } else if (p.script.prop.mode === "master-option") {
+              propAttrName = "option";
+              propAttrDefault = `\
+[
+  {
+    label: "yes",
+    value: "y"
+  },
+  {
+    label: "no",
+    value: "n"
+  },
+]`;
+            } else if (p.script.prop.mode === "master-gen") {
+              propAttrName = "gen";
+              propAttrDefault = "async () => {}";
+            }
+            if (propAttrName) {
+              _ytext = mprop.get(propAttrName);
+              if (!(_ytext instanceof Y.Text)) {
+                mprop.set(
+                  propAttrName,
+                  new Y.Text(mprop.get(propAttrName) || propAttrDefault) as any
+                );
+                return <Loading note="mcomp-el" backdrop={false} />;
+              }
+              ytext = _ytext;
+            }
+          }
+        }
+      } else {
+        return <div>Failed to get mcomp</div>;
+      }
     }
   }
 
@@ -372,21 +427,67 @@ export const ScriptMonacoElement: FC<{
               const ts = Math.round(Date.now() / 10000);
               const id = meta.item.originalId || meta.item.id;
               if (p.script.prop) {
-                set(
-                  `${id}@${p.script.prop.name}-${ts}`,
-                  newsrc || "",
-                  local.idbstore
-                );
-                applyChanges(async (ytext) => {
-                  if (mprop) {
-                    const text = ytext.toJSON();
-                    const compiled = await build(
-                      "element.tsx",
-                      `return ${text.trim()}`
+                if (p.script.prop.mode === "instance") {
+                  set(
+                    `${id}@${p.script.prop.name}-${ts}`,
+                    newsrc || "",
+                    local.idbstore
+                  );
+                  applyChanges(async (ytext) => {
+                    if (mprop) {
+                      const text = ytext.toJSON();
+                      const compiled = await build(
+                        "element.tsx",
+                        `return ${text.trim()}`
+                      );
+                      mprop.set("valueBuilt", compiled.substring(6));
+                    }
+                  });
+                } else {
+                  if (p.script.prop.mode === "master-visible") {
+                    set(
+                      `${id}#vis-${p.script.prop.name}-${ts}`,
+                      newsrc || "",
+                      local.idbstore
                     );
-                    mprop.set("valueBuilt", compiled.substring(6));
+                    applyChanges(async (ytext) => {});
+                  } else if (p.script.prop.mode === "master-option") {
+                    set(
+                      `${id}#opt-${p.script.prop.name}-${ts}`,
+                      newsrc || "",
+                      local.idbstore
+                    );
+                    applyChanges(async (ytext) => {});
+                  } else if (p.script.prop.mode === "master-gen") {
+                    set(
+                      `${id}#gen-${p.script.prop.name}-${ts}`,
+                      newsrc || "",
+                      local.idbstore
+                    );
+                    applyChanges(async (ytext) => {
+                      const text = ytext.toJSON();
+                      const compiled = await build(
+                        "element.tsx",
+                        `return ${text.trim()}`
+                      );
+                      mprop?.set("genBuilt", compiled.substring(6));
+                    });
+                  } else if (p.script.prop.mode === "master-value") {
+                    set(
+                      `${id}#val-${p.script.prop.name}-${ts}`,
+                      newsrc || "",
+                      local.idbstore
+                    );
+                    applyChanges(async (ytext) => {
+                      const text = ytext.toJSON();
+                      const compiled = await build(
+                        "element.tsx",
+                        `return ${text.trim()}`
+                      );
+                      mprop?.set("valueBuilt", compiled.substring(6));
+                    });
                   }
-                });
+                }
               } else {
                 set(`${id}:${script.type}-${ts}`, newsrc || "", local.idbstore);
                 applyChanges(async (ytext) => {

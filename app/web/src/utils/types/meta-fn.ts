@@ -31,6 +31,8 @@ export type FNCompDef = {
   type: string;
   value: any;
   valueBuilt: any;
+  gen?: string;
+  genBuilt?: string;
   content?: IItem;
   visible?: string;
   meta?: FNCompMeta;

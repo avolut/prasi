@@ -357,6 +357,34 @@ const SinglePopover: FC<{
     } catch (e) {}
   }
 
+  const createEditScript = (
+    mode: Exclude<typeof p.script.prop, null>["mode"]
+  ) => {
+    return () => {
+      p.script.active = true;
+      p.script.prop = {
+        mode: mode as any,
+        name: local.name,
+      };
+      p.script.onClose = () => {
+        let i = 0;
+        p.compProp.edit = true;
+        popover.name = name;
+        p.render();
+        const ival = setInterval(() => {
+          i++;
+          if (i > 10) {
+            clearInterval(ival);
+          }
+          p.compProp.edit = true;
+          popover.name = name;
+          p.render();
+        }, 50);
+      };
+      p.render();
+    };
+  };
+
   return (
     <Popover
       children={children}
@@ -456,81 +484,38 @@ const SinglePopover: FC<{
             <>
               <div className="border-t border-slate-300 pl-2 pt-1 flex justify-between items-center">
                 <div className="uppercase text-xs text-slate-500">Visible</div>
-                <Popover
-                  open={state.visibleEdit}
-                  onOpenChange={(open) => {
-                    state.visibleEdit = open;
-                    state.render();
-                  }}
-                  placement="left-start"
-                  autoFocus={false}
-                  backdrop={false}
-                  content={
-                    <div className="bg-white w-[35vw] h-[10vh] flex">
-                      <CPCodeEdit
-                        value={prop.visible || "true"}
-                        onChange={(s) => {
-                          mprop.set("visible", s);
-                        }}
-                        args={args}
-                      />
-                    </div>
-                  }
+
+                <div
+                  className="m-1 px-1 bg-white cursor-pointer hover:bg-blue-500 hover:text-white hover:border-blue-500 font-mono border border-slate-300 text-[11px]"
+                  onClick={createEditScript("master-visible")}
                 >
-                  <CPCoded
-                    editCode={() => {
-                      state.visibleEdit = true;
-                      state.render();
-                    }}
-                  />
-                </Popover>
+                  EDIT CODE
+                </div>
               </div>
 
-              <div className="border-t border-slate-300 px-2 pt-2 pb-1 flex flex-col items-stretch">
-                <div className="uppercase text-xs text-slate-500">ts type</div>
-                <AutoHeightTextarea
-                  defaultValue={prop.type}
-                  onChange={(e) => {
-                    prop.type = e.currentTarget.value as any;
-
-                    mprop.set("type", prop.type);
-                    local.render();
-                  }}
-                  placeholder="TYPE"
-                  className="p-1 outline-none font-mono text-[11px] border focus:border-blue-500"
-                  spellCheck={false}
-                />
-              </div>
-              <div className="border-t border-slate-300 px-2 pt-2 pb-1 flex flex-col items-stretch">
-                <div className="uppercase text-xs text-slate-500">value</div>
-                <AutoHeightTextarea
-                  defaultValue={prop.value}
-                  onChange={async (e) => {
-                    prop.value = e.currentTarget.value;
-
-                    if (jscript.build) {
-                      const res = await jscript.build(
-                        "el.tsx",
-                        `return ${prop.value}`
-                      );
-                      mprop.doc?.transact(() => {
-                        mprop.set("value", prop.value);
-                        mprop.set("valueBuilt", res.substring(6));
-                      });
-                    }
-                  }}
-                  placeholder="VALUE"
-                  className="p-1 outline-none font-mono text-[11px] border focus:border-blue-500"
-                  spellCheck={false}
-                />
+              <div className="border-t border-slate-300 pl-2 pt-1 flex justify-between items-center">
+                <div className="uppercase text-xs">VALUE</div>
+                <div
+                  className="m-1 px-1 bg-white cursor-pointer hover:bg-blue-500 hover:text-white hover:border-blue-500 font-mono border border-slate-300 text-[11px]"
+                  onClick={createEditScript("master-value")}
+                >
+                  EDIT CODE
+                </div>
               </div>
             </>
           )}
 
           {type === "option" && (
-            <div className="border-t border-slate-300 px-2 pt-2 pb-1 flex flex-col items-stretch">
-              <div className="uppercase text-xs text-slate-500">OPTIONS</div>
-              <AutoHeightTextarea
+            <div className="border-t border-slate-300 pl-2 pt-1 flex justify-between items-center">
+              <div className="uppercase text-xs">OPTIONS</div>
+
+              <div
+                className="m-1 px-1 bg-white cursor-pointer hover:bg-blue-500 hover:text-white hover:border-blue-500 font-mono border border-slate-300 text-[11px]"
+                onClick={createEditScript("master-option")}
+              >
+                EDIT CODE
+              </div>
+              {/* <AutoHeightTextarea
                 defaultValue={meta.options}
                 onChange={(e) => {
                   meta.options = e.currentTarget.value as any;
@@ -560,7 +545,7 @@ const SinglePopover: FC<{
                 placeholder="OPTIONS"
                 className="p-1 outline-none font-mono text-[11px] border focus:border-blue-500"
                 spellCheck={false}
-              />
+              /> */}
             </div>
           )}
         </div>
