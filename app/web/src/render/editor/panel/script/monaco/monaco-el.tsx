@@ -237,16 +237,17 @@ async () => {
             }
             if (propAttrName) {
               if (propAttrName === "option") {
-                _ytext = mprop.get("meta")?.get("options");
+                const mmeta = mprop.get("meta");
+                _ytext = mmeta?.get("options");
 
-                if (!(_ytext instanceof Y.Text)) {
-                  mprop.set(
-                    propAttrName,
+                if (mmeta && !(_ytext instanceof Y.Text)) {
+                  mmeta.set(
+                    "options",
                     new Y.Text(
                       mprop.get("meta")?.get("options") || propAttrDefault
                     ) as any
                   );
-                  return <Loading note="mcomp-el" backdrop={false} />;
+                  return <Loading note="mcomp-option" backdrop={false} />;
                 }
                 ytext = _ytext;
               } else {
