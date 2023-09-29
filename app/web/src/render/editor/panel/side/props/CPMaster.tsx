@@ -24,7 +24,17 @@ export const CPMaster: FC<{ mitem: MItem }> = ({ mitem }) => {
   useEffect(() => {
     const pitem = mitem.toJSON() as IContent;
     if (pitem.type === "text") {
-      p.item.active = pitem.id || "";
+      if (p.comp && meta?.parent_comp) {
+        const nmeta = meta.parent_comp;
+        p.item.active = nmeta.item.id;
+        p.item.activeOriginalId = nmeta.item.id;
+        if (nmeta.item.originalId) {
+          p.item.activeOriginalId = nmeta.item.originalId;
+        }
+        localStorage.setItem("prasi-item-active-oid", p.item.activeOriginalId);
+        localStorage.setItem("prasi-item-active-id", p.item.active);
+      }
+
       if (document.activeElement) {
         (document.activeElement as HTMLInputElement).blur();
       }

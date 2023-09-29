@@ -85,6 +85,7 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
             rebuildTree(p, { mode: "update", note: "search" });
           } else {
             p.comp = null;
+
             p.item.active = nmeta.item.id;
             if (nmeta.item.originalId)
               p.item.activeOriginalId = nmeta.item.originalId;
@@ -119,6 +120,7 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
           p.softRender.all();
         } else {
           p.item.selection = [];
+
           p.item.active = nmeta.item.id;
           p.item.activeOriginalId = nmeta.item.id;
           if (nmeta.item.originalId) {

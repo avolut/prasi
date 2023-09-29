@@ -236,15 +236,32 @@ async () => {
 }`;
             }
             if (propAttrName) {
-              _ytext = mprop.get(propAttrName);
-              if (!(_ytext instanceof Y.Text)) {
-                mprop.set(
-                  propAttrName,
-                  new Y.Text(mprop.get(propAttrName) || propAttrDefault) as any
-                );
-                return <Loading note="mcomp-el" backdrop={false} />;
+              if (propAttrName === "option") {
+                _ytext = mprop.get("meta")?.get("options");
+
+                if (!(_ytext instanceof Y.Text)) {
+                  mprop.set(
+                    propAttrName,
+                    new Y.Text(
+                      mprop.get("meta")?.get("options") || propAttrDefault
+                    ) as any
+                  );
+                  return <Loading note="mcomp-el" backdrop={false} />;
+                }
+                ytext = _ytext;
+              } else {
+                _ytext = mprop.get(propAttrName);
+                if (!(_ytext instanceof Y.Text)) {
+                  mprop.set(
+                    propAttrName,
+                    new Y.Text(
+                      mprop.get(propAttrName) || propAttrDefault
+                    ) as any
+                  );
+                  return <Loading note="mcomp-el" backdrop={false} />;
+                }
+                ytext = _ytext;
               }
-              ytext = _ytext;
             }
           }
         }

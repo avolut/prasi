@@ -144,7 +144,10 @@ export const ESide = () => {
                           <>
                             <div
                               className="flex mr-1 px-2 bg-white text-xs border rounded-sm cursor-pointer hover:bg-blue-50 hover:border-blue-500 text-blue-700 space-x-1"
-                              onClick={() => {
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+
                                 p.compProp.edit = true;
                                 p.render();
                               }}
