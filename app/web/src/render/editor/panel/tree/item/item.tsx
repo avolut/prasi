@@ -117,86 +117,93 @@ export const ETreeItem: FC<{
   if (!mitem) return null;
 
   return (
-    <div
+    <Tooltip
+      placement="right"
+      content={bytesToHumanFileSize(JSON.stringify(item).length)}
       className={treeItemStyle({
         isActive: isActive || p.item.selection.includes(item.id),
         isHover,
         isComponent,
         isSelect,
       })}
-      onClick={() => onClick(node)}
-      onPointerOver={() => onHover(node)}
-      onContextMenu={(e) => {
-        onRightClick(node, e);
-      }}
-      ref={(e) => {
-        local.el = e;
-      }}
-      {...dragOverProps}
+      delay={0}
     >
-      {loading ? (
-        <Loading backdrop={false} />
-      ) : (
-        <>
-          <ETreeItemIndent
-            depth={depth}
-            onToggle={() => {
-              if (hasChilds) onToggle();
-              else onClick(node);
-            }}
-            type={type}
-            mitem={mitem}
-            isOpen={isOpen}
-            onClick={onClick}
-            node={node}
-            hasChilds={hasChilds}
-            isActive={isActive || p.item.selection.includes(item.id)}
-            isComponent={isComponent}
-          />
-          <ETreeItemName
-            item={item}
-            name={itemName}
-            renaming={local.renaming}
-            isComponent={isComponent}
-            doneRenaming={() => {
-              local.renaming = false;
-              local.render();
-            }}
-          />
+      <div
+        className="flex flex-1"
+        onClick={() => onClick(node)}
+        onPointerOver={() => onHover(node)}
+        onContextMenu={(e) => {
+          onRightClick(node, e);
+        }}
+        ref={(e) => {
+          local.el = e;
+        }}
+        {...dragOverProps}
+      >
+        {loading ? (
+          <Loading backdrop={false} />
+        ) : (
+          <>
+            <ETreeItemIndent
+              depth={depth}
+              onToggle={() => {
+                if (hasChilds) onToggle();
+                else onClick(node);
+              }}
+              type={type}
+              mitem={mitem}
+              isOpen={isOpen}
+              onClick={onClick}
+              node={node}
+              hasChilds={hasChilds}
+              isActive={isActive || p.item.selection.includes(item.id)}
+              isComponent={isComponent}
+            />
+            <ETreeItemName
+              item={item}
+              name={itemName}
+              renaming={local.renaming}
+              isComponent={isComponent}
+              doneRenaming={() => {
+                local.renaming = false;
+                local.render();
+              }}
+            />
 
-          {!local.renaming &&
-            (!isRootComponent ? (
-              <ETreeItemAction
-                isComponent={isComponent}
-                isPropContent={isPropContent}
-                mode={mode}
-                item={item}
-                rename={() => {
-                  local.renaming = true;
-                  local.render();
-                }}
-                node={node}
-                onClick={onClick}
-              />
-            ) : (
-              <div className="flex items-center">
-                <Adv p={p} item={item} node={node} onClick={onClick} />
-                <Tooltip
-                  content="Rename"
-                  className="flex items-center p-1 h-full text-blue-700"
-                  onClick={() => {
+            {!local.renaming &&
+              (!isRootComponent ? (
+                <ETreeItemAction
+                  isComponent={isComponent}
+                  isPropContent={isPropContent}
+                  mode={mode}
+                  item={item}
+                  rename={() => {
                     local.renaming = true;
                     local.render();
                   }}
-                >
-                  <Rename />
-                </Tooltip>
-                <RootComponentClose item={item} />
-              </div>
-            ))}
-        </>
-      )}
-    </div>
+                  node={node}
+                  onClick={onClick}
+                />
+              ) : (
+                <div className="flex items-center">
+                  <Adv p={p} item={item} node={node} onClick={onClick} />
+                  <Tooltip
+                    content="Rename"
+                    className="flex items-center p-1 h-full text-blue-700"
+                    onClick={() => {
+                      local.renaming = true;
+                      local.render();
+                    }}
+                  >
+                    <Rename />
+                  </Tooltip>
+                  <RootComponentClose item={item} />
+                </div>
+              ))}
+          </>
+        )}
+      </div>
+    </Tooltip>
   );
 };
 
@@ -217,3 +224,13 @@ const RootComponentClose = ({ item }: { item: IContent }) => {
     </>
   );
 };
+
+function bytesToHumanFileSize(bytes: number): string {
+  const sizes = ["bytes", "KB", "MB", "GB", "TB"];
+  if (bytes === 0) return "0 bytes";
+
+  const i = Math.floor(Math.log(bytes) / Math.log(1024));
+  const size = i === 0 ? bytes : (bytes / Math.pow(1024, i)).toFixed(2);
+
+  return `${size} ${sizes[i]}`;
+}

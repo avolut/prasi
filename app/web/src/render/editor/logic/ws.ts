@@ -102,6 +102,8 @@ export const editorWS = async (p: PG) => {
           p.wsPing = Date.now() - p.wsPingTs;
           p.softRender.topR();
           return;
+        } else {
+          console.log('<', msg);
         }
 
         switch (msg.type) {
@@ -340,7 +342,7 @@ const svdRemote = async (arg: {
 export const wsend = async (local: PG, payload: string) => {
   const ws = local.ws;
   if (ws) {
-    // console.log(">", JSON.parse(payload).type);
+    console.log(">", JSON.parse(payload));
     if (ws.readyState !== ws.OPEN) {
       await new Promise<void>((resolve) => {
         const ival = setInterval(() => {

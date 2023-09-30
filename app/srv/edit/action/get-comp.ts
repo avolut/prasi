@@ -11,6 +11,7 @@ import { SingleComp, eg } from "../edit-global";
 
 export const getComp = async (ws: Websocket, msg: WS_MSG_GET_COMP) => {
   const comp_id = msg.comp_id;
+
   if (!eg.edit.comp[comp_id]) {
     const rawComp = await db.component.findFirst({
       where: {
@@ -59,7 +60,7 @@ export const getComp = async (ws: Websocket, msg: WS_MSG_GET_COMP) => {
 
   const comp = eg.edit.comp[comp_id];
   if (comp) {
-    comp.ws.add(ws);
+    if (!comp.ws.has(ws)) comp.ws.add(ws);
     const sent: WS_MSG_SET_COMP = {
       type: "set_comp",
       comp_id: comp_id,

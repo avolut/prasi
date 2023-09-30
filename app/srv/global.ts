@@ -16,8 +16,8 @@ export const glb = global as unknown as {
     running: Record<string, ExecaChildProcess>;
   };
   npm: {
-    page: Record<string, { file: Buffer; etag: string }>;
-    site: Record<string, { file: Buffer; etag: string }>;
+    page: Record<string, null | { file: Buffer; etag: string }>;
+    site: Record<string, null | { file: Buffer; etag: string }>;
   };
 };
 

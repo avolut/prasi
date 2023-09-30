@@ -28,6 +28,16 @@ export const _ = {
           res.setHeader("etag", npm.etag);
           res.setHeader("content-length", npm.file.byteLength.toString());
           res.send(npm.file);
+
+          readAsync(path, "buffer").then((file) => {
+            if (file && path.endsWith("index.js")) {
+              glb.npm[mode][id] = {
+                file,
+                etag: crypto.createHash("md5").update(file).digest("hex"),
+              };
+              const npm = glb.npm[mode][id];
+            }
+          });
           return;
         }
       }
@@ -35,17 +45,21 @@ export const _ = {
 
     if (path.length > dir.path(`../npm/${mode}/${id}`).length) {
       const file = await readAsync(path, "buffer");
+
       if (file) {
         if (path.endsWith("index.js")) {
           glb.npm[mode][id] = {
             file,
             etag: crypto.createHash("md5").update(file).digest("hex"),
           };
-          res.setHeader("etag", glb.npm[mode][id].etag);
+          const npm = glb.npm[mode][id];
+          if (npm) res.setHeader("etag", npm.etag);
         }
         res.setHeader("content-length", file.byteLength.toString());
         res.send(file);
         return;
+      } else {
+        glb.npm[mode][id] = null;
       }
     }
 

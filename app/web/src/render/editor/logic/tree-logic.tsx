@@ -272,8 +272,14 @@ export const walk = async (
       const cid = item.component.id;
       let doc = p.comps.doc[cid];
       if (!doc) {
-        await loadComponent(p, cid);
-        doc = p.comps.doc[cid];
+        if (p.comp?.id === cid) {
+          await loadComponent(p, cid);
+          doc = p.comps.doc[cid];
+        } else {
+          loadComponent(p, cid).then(() => {
+            rebuildTree(p)
+          });
+        }
       }
 
       if (doc) {
