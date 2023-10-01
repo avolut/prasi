@@ -490,6 +490,21 @@ const SinglePopover: FC<{
             />
           </div>
 
+          {type === "content-element" && (
+            <div className="border-t border-slate-300 pl-2 pt-1 flex justify-between items-center">
+              <div className="uppercase text-xs label self-stretch flex items-center">
+                Visible
+              </div>
+
+              <div
+                className="m-1 px-1 bg-white cursor-pointer hover:bg-blue-500 hover:text-white hover:border-blue-500 font-mono border border-slate-300 text-[11px]"
+                onClick={createEditScript("master-visible")}
+              >
+                EDIT CODE
+              </div>
+            </div>
+          )}
+
           {type !== "content-element" && (
             <>
               <div

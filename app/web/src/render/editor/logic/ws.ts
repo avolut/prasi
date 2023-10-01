@@ -103,7 +103,7 @@ export const editorWS = async (p: PG) => {
           p.softRender.topR();
           return;
         } else {
-          console.log('<', msg);
+          // console.log('<', msg);
         }
 
         switch (msg.type) {
@@ -342,7 +342,7 @@ const svdRemote = async (arg: {
 export const wsend = async (local: PG, payload: string) => {
   const ws = local.ws;
   if (ws) {
-    console.log(">", JSON.parse(payload));
+    // console.log(">", JSON.parse(payload));
     if (ws.readyState !== ws.OPEN) {
       await new Promise<void>((resolve) => {
         const ival = setInterval(() => {

@@ -9,6 +9,7 @@ import { fillID } from "../tools/fill-id";
 import { newMap } from "../tools/yjs-tools";
 import { instantiateComp, loadComponent } from "./comp";
 import { ItemMeta, PG, WithRequired } from "./global";
+import { mergeScopeUpwards } from "./tree-scope";
 export type REBUILD_MODE = "update" | "reset";
 
 const DEBUG = false;
@@ -277,7 +278,7 @@ export const walk = async (
           doc = p.comps.doc[cid];
         } else {
           loadComponent(p, cid).then(() => {
-            rebuildTree(p)
+            rebuildTree(p);
           });
         }
       }
@@ -337,7 +338,7 @@ export const walk = async (
                       );
                     }
 
-                    if (icontent)
+                    if (icontent) {
                       await walk(p, mode, {
                         item: cprop.content,
                         mitem: icontent,
@@ -348,6 +349,7 @@ export const walk = async (
                         includeTree: p.comp?.id !== item.component.id,
                         instanceFound: val.instanceFound,
                       });
+                    }
                   }
                 }
               }
