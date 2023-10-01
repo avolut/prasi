@@ -28,6 +28,7 @@ export const ETextInternal: FC<{
   elprop: any;
 }> = ({ p, className, item, _children, elprop }) => {
   const local = useLocal({ el: null as any });
+
   useEffect(() => {
     if (p.item.active) {
       if (
@@ -78,16 +79,20 @@ export const ETextInternal: FC<{
         if (p.focused !== item.id) {
           p.focused = item.id;
         }
-        const mitem = p.treeMeta[item.id]?.mitem;
-        if (mitem) {
-          if (e.currentTarget.innerText.trim() === "") {
-            mitem.set("html", "");
-          } else {
-            mitem.set("html", e.currentTarget.innerHTML);
-          }
+        const meta = p.treeMeta[item.id];
+        if (meta) {
+          meta.item.html = e.currentTarget.innerHTML;
+          const mitem = meta.mitem;
+          if (mitem) {
+            if (e.currentTarget.innerText.trim() === "") {
+              mitem.set("html", "");
+            } else {
+              mitem.set("html", e.currentTarget.innerHTML);
+            }
 
-          if (p.item.active !== item.id) {
-            p.item.active = item.id;
+            if (p.item.active !== item.id) {
+              p.item.active = item.id;
+            }
           }
         }
       }}

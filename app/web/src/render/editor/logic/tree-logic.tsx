@@ -10,6 +10,7 @@ import { newMap } from "../tools/yjs-tools";
 import { instantiateComp, loadComponent } from "./comp";
 import { ItemMeta, PG, WithRequired } from "./global";
 import { mergeScopeUpwards } from "./tree-scope";
+import { syncronize } from "y-pojo";
 export type REBUILD_MODE = "update" | "reset";
 
 const DEBUG = false;
@@ -339,8 +340,31 @@ export const walk = async (
                     }
 
                     if (icontent) {
+                      const childs = icontent.get("childs");
+
+                      if (childs && childs.length === 0 && mcomp) {
+                        const mchilds = mcomp
+                          ?.get("childs")
+                          ?.toJSON() as IItem[];
+                        if (mchilds) {
+                          for (const c of mchilds) {
+                            if (c && c.name && c.name.startsWith("jsx:")) {
+                              const ijson = icontent.toJSON() as IItem;
+                              cprop.content = {
+                                ...c,
+                                name: ijson.name,
+                                id: ijson.id,
+                                hidden: false,
+                                originalId: ijson.originalId,
+                              };
+                              syncronize(icontent as any, cprop.content);
+                            }
+                          }
+                        }
+                      }
+
                       await walk(p, mode, {
-                        item: cprop.content,
+                        item: icontent.toJSON() as any,
                         mitem: icontent,
                         parent_id: item.id,
                         parent_comp: val.parent_comp,
