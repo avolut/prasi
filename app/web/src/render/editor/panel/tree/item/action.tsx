@@ -10,6 +10,8 @@ import { EditorGlobal, NodeMeta, PG } from "../../../logic/global";
 import { fillID } from "../../../tools/fill-id";
 import { newMap } from "../../../tools/yjs-tools";
 import { createId } from "@paralleldrive/cuid2";
+import { syncronize } from "y-pojo";
+import { rebuildTree } from "../../../logic/tree-logic";
 
 export const ETreeItemAction: FC<{
   item: IContent;
@@ -48,6 +50,46 @@ export const ETreeItemAction: FC<{
 
   if (!mitem) canDelete = false;
 
+  let resetJSXProp: any = false;
+  if (
+    !isComponent &&
+    mitem &&
+    mitem.parent &&
+    (mitem.parent as any).get("content")
+  ) {
+    let name = "";
+    (mitem as any).parent.parent.forEach((e: any, k: any) => {
+      if (e === mitem.parent) {
+        name = k;
+      }
+    });
+
+    if (name) {
+      try {
+        let mchilds = [] as IItem[];
+        const cid = (mitem as any).parent.parent.parent.get("id");
+        const comp = p.comps.doc[cid];
+        if (comp) {
+          const mchilds = comp
+            .getMap("map")
+            .get("content_tree")
+            ?.get("childs")
+            ?.toJSON() as IItem[];
+          for (const c of mchilds) {
+            if (
+              c &&
+              c.name &&
+              c.name.startsWith("jsx:") &&
+              c.name.substring(4).trim() === name
+            ) {
+              resetJSXProp = c;
+            }
+          }
+        }
+      } catch (e) {}
+    }
+  }
+
   return (
     <div className="flex action pl-3 items-center w-[100px] justify-end">
       {!!link && (
@@ -71,6 +113,43 @@ export const ETreeItemAction: FC<{
       {!isComponent && (
         <>
           <Adv item={item} p={p} node={node} onClick={onClick} />
+
+          {resetJSXProp && (
+            <Tooltip
+              content="Reset JSX"
+              className={cx("text-orange-600 mx-1")}
+              onClick={() => {
+                if (mitem) {
+                  const ijson = mitem.toJSON() as IItem;
+                  syncronize(mitem as any, {
+                    ...resetJSXProp,
+                    name: ijson.name,
+                    id: ijson.id,
+                    hidden: false,
+                    originalId: ijson.originalId,
+                  });
+                  setTimeout(() => {
+                    rebuildTree(p, { note: "Reset JSX" });
+                  });
+                }
+              }}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="13"
+                height="13"
+                fill="none"
+                viewBox="0 0 15 15"
+              >
+                <path
+                  fill="currentColor"
+                  fillRule="evenodd"
+                  d="M4.854 2.146a.5.5 0 010 .708L3.707 4H9a4.5 4.5 0 110 9H5a.5.5 0 010-1h4a3.5 3.5 0 100-7H3.707l1.147 1.146a.5.5 0 11-.708.708l-2-2a.5.5 0 010-.708l2-2a.5.5 0 01.708 0z"
+                  clipRule="evenodd"
+                ></path>
+              </svg>
+            </Tooltip>
+          )}
         </>
       )}
       {item.hidden === "all" && (

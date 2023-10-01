@@ -316,9 +316,7 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
                             onToggle();
                           }}
                         ></div>
-                        <div
-                          className={cx("text-purple-600", "mx-[5px]")}
-                        >
+                        <div className={cx("text-purple-600", "mx-[5px]")}>
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width={8}

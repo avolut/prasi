@@ -340,34 +340,6 @@ export const walk = async (
                     }
 
                     if (icontent) {
-                      const childs = icontent.get("childs");
-
-                      if (childs && childs.length === 0 && mcomp) {
-                        const mchilds = mcomp
-                          ?.get("childs")
-                          ?.toJSON() as IItem[];
-                        if (mchilds) {
-                          for (const c of mchilds) {
-                            if (
-                              c &&
-                              c.name &&
-                              c.name.startsWith("jsx:") &&
-                              c.name.substring(4).trim() === name
-                            ) {
-                              const ijson = icontent.toJSON() as IItem;
-                              cprop.content = {
-                                ...c,
-                                name: ijson.name,
-                                id: ijson.id,
-                                hidden: false,
-                                originalId: ijson.originalId,
-                              };
-                              syncronize(icontent as any, cprop.content);
-                            }
-                          }
-                        }
-                      }
-
                       await walk(p, mode, {
                         item: icontent.toJSON() as any,
                         mitem: icontent,

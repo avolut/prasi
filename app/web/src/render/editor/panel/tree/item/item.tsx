@@ -116,6 +116,9 @@ export const ETreeItem: FC<{
 
   if (!mitem) return null;
 
+  if (isRootComponent) {
+  }
+
   return (
     <Tooltip
       placement="right"
