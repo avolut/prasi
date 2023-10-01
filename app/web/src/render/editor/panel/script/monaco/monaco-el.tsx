@@ -147,6 +147,7 @@ export const ScriptMonacoElement: FC<{
   }
 
   let ytext: Y.Text = null as any;
+  let defaultSrc = DefaultScript[script.type] || "";
 
   const adv = mitem.get("adv");
   let mprop = undefined as undefined | FMCompDef;
@@ -169,7 +170,11 @@ export const ScriptMonacoElement: FC<{
     }
     let _ytext = adv.get(script.type) as any;
     if (!(_ytext instanceof Y.Text)) {
-      adv.set(script.type, new Y.Text(_ytext) as any);
+      adv.set(script.type, new Y.Text(_ytext || defaultSrc) as any);
+      setTimeout(() => {
+        local.render();
+      }, 500);
+      _ytext = adv.get(script.type) as any;
     }
     ytext = _ytext;
   } else {
@@ -271,8 +276,6 @@ async () => {
       }
     }
   }
-
-  let defaultSrc = DefaultScript[script.type] || "";
 
   return (
     <div className="flex flex-1 items-stretch flex-col">
@@ -542,7 +545,7 @@ async () => {
             }}
           />
         ) : (
-          <Loading backdrop={false} />
+          <Loading note="monaco-ytext" backdrop={false} />
         )}
       </div>
       <MonacoScopeBar />

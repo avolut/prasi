@@ -145,7 +145,7 @@ export const walk = async (
       let m = mitem;
       let _item = item as IItem;
 
-      if (m) {
+      if (m && !p.script.active) {
         const adv = m.get("adv");
         if (adv && _item.adv) {
           if (
