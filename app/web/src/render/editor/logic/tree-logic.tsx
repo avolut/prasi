@@ -348,7 +348,12 @@ export const walk = async (
                           ?.toJSON() as IItem[];
                         if (mchilds) {
                           for (const c of mchilds) {
-                            if (c && c.name && c.name.startsWith("jsx:")) {
+                            if (
+                              c &&
+                              c.name &&
+                              c.name.startsWith("jsx:") &&
+                              c.name.substring(4).trim() === name
+                            ) {
                               const ijson = icontent.toJSON() as IItem;
                               cprop.content = {
                                 ...c,
