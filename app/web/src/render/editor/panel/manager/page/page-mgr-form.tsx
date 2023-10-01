@@ -11,7 +11,12 @@ export const PageForm: FC<{
   onSave: (res: any, isNew: boolean) => void;
 }> = ({ page, onClose, onSave }) => {
   const p = useGlobal(EditorGlobal, "EDITOR");
-  const local = useLocal({ init: false, saving: false, fillUrl: false });
+  const local = useLocal({
+    init: false,
+    saving: false,
+    fillUrl: false,
+    preventClose: false,
+  });
   const form = useLocal({} as Partial<page>);
 
   if (!local.init) {
@@ -26,9 +31,25 @@ export const PageForm: FC<{
       <div
         className="absolute cursor-pointer inset-0 flex items-center justify-center
          backdrop-blur cursor-pointer hover:backdrop-blur-sm transition-all"
-        onClick={onClose}
+        onPointerUp={() => {
+          if (!local.preventClose) {
+            onClose();
+          }
+          local.preventClose = false;
+          local.render();
+        }}
       >
         <form
+          onPointerDown={(e) => {
+            e.stopPropagation();
+            local.preventClose = true;
+            local.render();
+          }}
+          onPointerUp={(e) => {
+            e.stopPropagation();
+            local.preventClose = false;
+            local.render();
+          }}
           onSubmit={async (e) => {
             e.preventDefault();
             if (form.name && p.session) {

@@ -415,7 +415,18 @@ export const PageManager = () => {
                       />
                     ) : (
                       <div className="flex-1 flex items-stretch">
-                        <div className="pr-5">{node.text}</div>
+                        <div className="pr-5 flex items-center">
+                          {node.text.startsWith("layout:") ? (
+                            <>
+                              <div className="bg-green-700 text-white text-[10px] px-2 mr-1">
+                                LAYOUT
+                              </div>
+                              <div>{node.text.substring(7)}</div>
+                            </>
+                          ) : (
+                            node.text
+                          )}
+                        </div>
                         <div
                           className={cx(
                             "flex flex-1 items-stretch space-x-1 pr-[20px] justify-end"

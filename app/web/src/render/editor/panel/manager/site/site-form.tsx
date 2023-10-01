@@ -15,6 +15,7 @@ export const SiteForm: FC<{
   const local = useLocal({
     init: false,
     saving: false,
+    preventClose: false,
   });
   const form = useLocal({} as Partial<site>);
 
@@ -30,9 +31,25 @@ export const SiteForm: FC<{
       <div
         className="absolute cursor-pointer inset-0 flex items-center justify-center
          backdrop-blur cursor-pointer hover:backdrop-blur-sm transition-all"
-        onClick={onClose}
+        onPointerUp={() => {
+          if (!local.preventClose) {
+            onClose();
+          }
+          local.preventClose = false;
+          local.render();
+        }}
       >
         <form
+          onPointerDown={(e) => {
+            e.stopPropagation();
+            local.preventClose = true;
+            local.render();
+          }}
+          onPointerUp={(e) => {
+            e.stopPropagation();
+            local.preventClose = false;
+            local.render();
+          }}
           onSubmit={async (e) => {
             e.preventDefault();
 
@@ -117,14 +134,13 @@ export const SiteForm: FC<{
               <option value="desktop-only">Desktop Only</option>
             </select>
           </label>
-          
+
           {form.id && (
             <label>
               <span>Site ID:</span>
               <Input form={form} name="id" disabled />
             </label>
           )}
-
 
           <div className="flex">
             <button type="submit" disabled={local.saving} className="flex-1">

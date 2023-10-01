@@ -4,6 +4,7 @@ import { EditorGlobal } from "../../../logic/global";
 
 export const ToolbarLeft = () => {
   const p = useGlobal(EditorGlobal, "EDITOR");
+  const pageName = p.page?.name || "";
   return (
     <div className={cx("toolbar-left", "flex space-x-2 pl-1")}>
       <ToolbarBox
@@ -35,7 +36,20 @@ export const ToolbarLeft = () => {
       <ToolbarBox
         items={[
           {
-            content: <>Page {p.page?.name}</>,
+            content: (
+              <>
+                {pageName.startsWith("layout:") ? (
+                  <>
+                    <div className="bg-green-700 text-white text-[10px] px-2 mr-1 -ml-2">
+                      LAYOUT
+                    </div>
+                    <div>{pageName.substring(7)}</div>
+                  </>
+                ) : (
+                  `Page ${pageName}`
+                )}
+              </>
+            ),
             onClick() {
               p.manager.page = true;
               p.render();
