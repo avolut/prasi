@@ -347,194 +347,203 @@ async () => {
           }
         }}
       >
-        <Editor
-          options={{
-            minimap: { enabled: false },
-            wordWrap: "wordWrapColumn",
-            autoClosingBrackets: "always",
-            autoIndent: "full",
-            formatOnPaste: true,
-            formatOnType: true,
-            tabSize: 2,
-            useTabStops: true,
-          }}
-          beforeMount={(monaco) => {
-            if (script.type === "js") {
-              // emmetJSX(monaco, ["typescript"]);
-            } else if (script.type === "html") {
-              // emmetHTML(monaco);
-            }
-          }}
-          defaultValue={
-            !!ytext && typeof ytext === "object" ? ytext.toJSON() : defaultSrc
-          }
-          onMount={async (editor, monaco) => {
-            local.editor = editor;
-            editor.focus();
-            setTimeout(() => {
-              editor.focus();
-            }, 300);
-
-            let restoreViewState = false;
-
-            const value = editor.getValue();
-            if (script.type === "js") {
-              monaco.editor.getModels().forEach((model) => {
-                if (model.uri.toString().startsWith("inmemory://model")) {
-                  model.dispose();
-                }
-              });
-
-              let model = monaco.editor.createModel(
-                value,
-                "typescript",
-                monaco.Uri.parse("ts:_active.tsx")
-              );
-              editor.setModel(model);
-            }
-            const meta = p.treeMeta[p.item.active];
-            if (meta) {
-              const item = meta.item;
-              const state = monacoViewState[item.originalId || item.id];
-              if (state) {
-                delete monacoViewState[item.originalId || item.id];
-                local.editor?.restoreViewState(state);
+        {!!ytext && typeof ytext === "object" ? (
+          <Editor
+            options={{
+              minimap: { enabled: false },
+              wordWrap: "wordWrapColumn",
+              autoClosingBrackets: "always",
+              autoIndent: "full",
+              formatOnPaste: true,
+              formatOnType: true,
+              tabSize: 2,
+              useTabStops: true,
+            }}
+            beforeMount={(monaco) => {
+              if (script.type === "js") {
+                // emmetJSX(monaco, ["typescript"]);
+              } else if (script.type === "html") {
+                // emmetHTML(monaco);
               }
-            }
+            }}
+            defaultValue={ytext.toJSON()}
+            onMount={async (editor, monaco) => {
+              local.editor = editor;
+              editor.focus();
+              setTimeout(() => {
+                editor.focus();
+              }, 300);
 
-            let propVal: any = {};
+              let restoreViewState = false;
 
-            const scope = mergeScopeUpwards(p, meta);
-            propVal = {
-              ...(window.exports || {}),
-              ...scope,
-            };
+              const value = editor.getValue();
+              if (script.type === "js") {
+                monaco.editor.getModels().forEach((model) => {
+                  if (model.uri.toString().startsWith("inmemory://model")) {
+                    model.dispose();
+                  }
+                });
 
-            const propTypes: any = p.script.siteTypes;
-            await jsMount(p, editor, monaco);
-            await monacoTypings(p, monaco, {
-              values: propVal,
-              types: propTypes,
-            });
-          }}
-          language={
-            { css: "scss", js: "typescript", html: "html" }[script.type]
-          }
-          onChange={(newsrc) => {
-            clearTimeout(local.changeTimeout);
-            local.changeTimeout = setTimeout(async () => {
-              const applyChanges = async (
-                fn: (ytext: Y.Text) => Promise<void>
-              ) => {
-                if (ytext && ytext.doc) {
-                  await ytext.doc.transact(async () => {
-                    const delta = new Delta();
-
-                    const sd = strDelta(ytext.toString(), newsrc || "");
-                    for (const change of sd) {
-                      const operation = change[0];
-                      const value = change[1];
-                      if (operation == -1 && typeof value === "number") {
-                        delta.delete(value);
-                      } else if (operation === 0 && typeof value === "number") {
-                        delta.retain(value);
-                      } else if (typeof value === "string") {
-                        delta.insert(value);
-                      }
-                    }
-                    ytext.applyDelta(delta.ops);
-
-                    await fn(ytext);
-                  });
+                let model = monaco.editor.createModel(
+                  value,
+                  "typescript",
+                  monaco.Uri.parse("ts:_active.tsx")
+                );
+                editor.setModel(model);
+              }
+              const meta = p.treeMeta[p.item.active];
+              if (meta) {
+                const item = meta.item;
+                const state = monacoViewState[item.originalId || item.id];
+                if (state) {
+                  delete monacoViewState[item.originalId || item.id];
+                  local.editor?.restoreViewState(state);
                 }
+              }
+
+              let propVal: any = {};
+
+              const scope = mergeScopeUpwards(p, meta);
+              propVal = {
+                ...(window.exports || {}),
+                ...scope,
               };
 
-              const ts = Math.round(Date.now() / 10000);
-              const id = meta.item.originalId || meta.item.id;
-              if (p.script.prop) {
-                if (p.script.prop.mode === "instance") {
+              const propTypes: any = p.script.siteTypes;
+              await jsMount(p, editor, monaco);
+              await monacoTypings(p, monaco, {
+                values: propVal,
+                types: propTypes,
+              });
+            }}
+            language={
+              { css: "scss", js: "typescript", html: "html" }[script.type]
+            }
+            onChange={(newsrc) => {
+              clearTimeout(local.changeTimeout);
+              local.changeTimeout = setTimeout(async () => {
+                const applyChanges = async (
+                  fn: (ytext: Y.Text) => Promise<void>
+                ) => {
+                  if (ytext && ytext.doc) {
+                    await ytext.doc.transact(async () => {
+                      const delta = new Delta();
+
+                      const sd = strDelta(ytext.toString(), newsrc || "");
+                      for (const change of sd) {
+                        const operation = change[0];
+                        const value = change[1];
+                        if (operation == -1 && typeof value === "number") {
+                          delta.delete(value);
+                        } else if (
+                          operation === 0 &&
+                          typeof value === "number"
+                        ) {
+                          delta.retain(value);
+                        } else if (typeof value === "string") {
+                          delta.insert(value);
+                        }
+                      }
+                      ytext.applyDelta(delta.ops);
+
+                      await fn(ytext);
+                    });
+                  }
+                };
+
+                const ts = Math.round(Date.now() / 10000);
+                const id = meta.item.originalId || meta.item.id;
+                if (p.script.prop) {
+                  if (p.script.prop.mode === "instance") {
+                    set(
+                      `${id}@${p.script.prop.name}-${ts}`,
+                      newsrc || "",
+                      local.idbstore
+                    );
+                    applyChanges(async (ytext) => {
+                      if (mprop) {
+                        const text = ytext.toJSON();
+                        const compiled = await build(
+                          "element.tsx",
+                          `return ${text.trim()}`
+                        );
+                        mprop.set("valueBuilt", compiled.substring(6));
+                      }
+                    });
+                  } else {
+                    if (p.script.prop.mode === "master-visible") {
+                      set(
+                        `${id}#vis-${p.script.prop.name}-${ts}`,
+                        newsrc || "",
+                        local.idbstore
+                      );
+                      applyChanges(async (ytext) => {});
+                    } else if (p.script.prop.mode === "master-option") {
+                      set(
+                        `${id}#opt-${p.script.prop.name}-${ts}`,
+                        newsrc || "",
+                        local.idbstore
+                      );
+                      applyChanges(async (ytext) => {});
+                    } else if (p.script.prop.mode === "master-gen") {
+                      set(
+                        `${id}#gen-${p.script.prop.name}-${ts}`,
+                        newsrc || "",
+                        local.idbstore
+                      );
+                      applyChanges(async (ytext) => {
+                        const text = ytext.toJSON();
+                        const compiled = await build(
+                          "element.tsx",
+                          `return ${text.trim()}`
+                        );
+                        mprop?.set("genBuilt", compiled.substring(6));
+                      });
+                    } else if (p.script.prop.mode === "master-value") {
+                      set(
+                        `${id}#val-${p.script.prop.name}-${ts}`,
+                        newsrc || "",
+                        local.idbstore
+                      );
+                      applyChanges(async (ytext) => {
+                        const text = ytext.toJSON();
+                        const compiled = await build(
+                          "element.tsx",
+                          `return ${text.trim()}`
+                        );
+                        mprop?.set("valueBuilt", compiled.substring(6));
+                      });
+                    }
+                  }
+                } else {
                   set(
-                    `${id}@${p.script.prop.name}-${ts}`,
+                    `${id}:${script.type}-${ts}`,
                     newsrc || "",
                     local.idbstore
                   );
                   applyChanges(async (ytext) => {
-                    if (mprop) {
-                      const text = ytext.toJSON();
+                    const meta = p.treeMeta[p.item.active];
+                    if (meta.item.adv) meta.item.adv.js = ytext.toJSON();
+                    if (script.type === "js" && adv) {
                       const compiled = await build(
                         "element.tsx",
-                        `return ${text.trim()}`
+                        `render(${trim((newsrc || "").trim(), ";")})`
                       );
-                      mprop.set("valueBuilt", compiled.substring(6));
+                      adv.set("jsBuilt", compiled);
+                      if (meta.item.adv) meta.item.adv.jsBuilt = compiled;
                     }
+                    if (meta.memoize) {
+                      delete meta.memoize;
+                    }
+                    p.render();
                   });
-                } else {
-                  if (p.script.prop.mode === "master-visible") {
-                    set(
-                      `${id}#vis-${p.script.prop.name}-${ts}`,
-                      newsrc || "",
-                      local.idbstore
-                    );
-                    applyChanges(async (ytext) => {});
-                  } else if (p.script.prop.mode === "master-option") {
-                    set(
-                      `${id}#opt-${p.script.prop.name}-${ts}`,
-                      newsrc || "",
-                      local.idbstore
-                    );
-                    applyChanges(async (ytext) => {});
-                  } else if (p.script.prop.mode === "master-gen") {
-                    set(
-                      `${id}#gen-${p.script.prop.name}-${ts}`,
-                      newsrc || "",
-                      local.idbstore
-                    );
-                    applyChanges(async (ytext) => {
-                      const text = ytext.toJSON();
-                      const compiled = await build(
-                        "element.tsx",
-                        `return ${text.trim()}`
-                      );
-                      mprop?.set("genBuilt", compiled.substring(6));
-                    });
-                  } else if (p.script.prop.mode === "master-value") {
-                    set(
-                      `${id}#val-${p.script.prop.name}-${ts}`,
-                      newsrc || "",
-                      local.idbstore
-                    );
-                    applyChanges(async (ytext) => {
-                      const text = ytext.toJSON();
-                      const compiled = await build(
-                        "element.tsx",
-                        `return ${text.trim()}`
-                      );
-                      mprop?.set("valueBuilt", compiled.substring(6));
-                    });
-                  }
                 }
-              } else {
-                set(`${id}:${script.type}-${ts}`, newsrc || "", local.idbstore);
-                applyChanges(async (ytext) => {
-                  const meta = p.treeMeta[p.item.active];
-                  if (meta.item.adv) meta.item.adv.js = ytext.toJSON();
-                  if (script.type === "js" && adv) {
-                    const compiled = await build(
-                      "element.tsx",
-                      `render(${trim((newsrc || "").trim(), ";")})`
-                    );
-                    adv.set("jsBuilt", compiled);
-                    if (meta.item.adv) meta.item.adv.jsBuilt = compiled;
-                  }
-                  if (meta.memoize) {
-                    delete meta.memoize;
-                  }
-                  p.render();
-                });
-              }
-            }, 200);
-          }}
-        />
+              }, 200);
+            }}
+          />
+        ) : (
+          <Loading backdrop={false} />
+        )}
       </div>
       <MonacoScopeBar />
     </div>
