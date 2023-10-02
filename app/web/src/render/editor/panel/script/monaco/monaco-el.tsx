@@ -132,6 +132,16 @@ export const ScriptMonacoElement: FC<{
     meta = p.treeMeta[p.item.activeOriginalId];
   }
 
+  if (!meta) {
+    p.script.active = false;
+    p.render();
+    setTimeout(() => {
+      p.script.active = true;
+      p.render();
+    });
+
+    return <div>ERROR: Meta Not Found;</div>;
+  }
   let mitem = meta.mitem;
 
   if (!mitem) {

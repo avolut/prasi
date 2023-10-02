@@ -63,6 +63,8 @@ export const Editor: FC<{ site_id: string; page_id: string; session: any }> = ({
         (evt.key === "r" || evt.key === "R" || evt.key === "®") &&
         evt.altKey
       ) {
+        evt.preventDefault();
+        evt.stopPropagation();
         p.localReloading = {};
         p.render();
         await rebuildTree(p, { mode: "reset", note: "reload" });
