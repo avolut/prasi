@@ -37040,96 +37040,37 @@ ERROR: Async operation of type "${type}" was created in "process.exit" callback.
   });
 
   // node_modules/.pnpm/@fal-works+esbuild-plugin-global-externals@2.1.2/node_modules/@fal-works/esbuild-plugin-global-externals/lib/module-info.js
-  var normalizeModuleInfo;
   var init_module_info = __esm({
     "node_modules/.pnpm/@fal-works+esbuild-plugin-global-externals@2.1.2/node_modules/@fal-works/esbuild-plugin-global-externals/lib/module-info.js"() {
-      normalizeModuleInfo = (value) => {
-        const {
-          type = "esm",
-          varName,
-          namedExports = null,
-          defaultExport = true
-        } = typeof value === "string" ? { varName: value } : value;
-        return { type, varName, namedExports, defaultExport };
-      };
     }
   });
 
   // node_modules/.pnpm/@fal-works+esbuild-plugin-global-externals@2.1.2/node_modules/@fal-works/esbuild-plugin-global-externals/lib/on-load.js
-  var createCjsContents, createEsmContents, createContents;
   var init_on_load = __esm({
     "node_modules/.pnpm/@fal-works+esbuild-plugin-global-externals@2.1.2/node_modules/@fal-works/esbuild-plugin-global-externals/lib/on-load.js"() {
-      createCjsContents = (variableName) => `module.exports = ${variableName};`;
-      createEsmContents = (variableName, namedExports, defaultExport) => {
-        const codeElements = defaultExport ? [`export default ${variableName};`] : [];
-        if (namedExports && namedExports.length) {
-          const exportNames = [...new Set(namedExports)].join(", ");
-          codeElements.push(`const { ${exportNames} } = ${variableName};`);
-          codeElements.push(`export { ${exportNames} };`);
-        }
-        return codeElements.join("\n");
-      };
-      createContents = (moduleInfo) => {
-        const { type, varName, namedExports, defaultExport } = moduleInfo;
-        switch (type) {
-          case "esm":
-            return createEsmContents(varName, namedExports, defaultExport);
-          case "cjs":
-            return createCjsContents(varName);
-        }
-      };
     }
   });
 
   // node_modules/.pnpm/@fal-works+esbuild-plugin-global-externals@2.1.2/node_modules/@fal-works/esbuild-plugin-global-externals/lib/with-reg-exp.js
-  var PLUGIN_NAME, globalExternalsWithRegExp;
   var init_with_reg_exp = __esm({
     "node_modules/.pnpm/@fal-works+esbuild-plugin-global-externals@2.1.2/node_modules/@fal-works/esbuild-plugin-global-externals/lib/with-reg-exp.js"() {
       init_module_info();
       init_on_load();
-      PLUGIN_NAME = "global-externals";
-      globalExternalsWithRegExp = (globals) => {
-        const { modulePathFilter, getModuleInfo } = globals;
-        return {
-          name: PLUGIN_NAME,
-          setup(build2) {
-            build2.onResolve({ filter: modulePathFilter }, (args2) => ({
-              path: args2.path,
-              namespace: PLUGIN_NAME
-            }));
-            build2.onLoad({ filter: /.*/, namespace: PLUGIN_NAME }, (args2) => {
-              const modulePath = args2.path;
-              const moduleInfo = normalizeModuleInfo(getModuleInfo(modulePath));
-              return { contents: createContents(moduleInfo) };
-            });
-          }
-        };
-      };
     }
   });
 
   // node_modules/.pnpm/@fal-works+esbuild-plugin-global-externals@2.1.2/node_modules/@fal-works/esbuild-plugin-global-externals/lib/with-object.js
-  var globalExternals;
   var init_with_object = __esm({
     "node_modules/.pnpm/@fal-works+esbuild-plugin-global-externals@2.1.2/node_modules/@fal-works/esbuild-plugin-global-externals/lib/with-object.js"() {
       init_with_reg_exp();
-      globalExternals = (globals) => {
-        const normalizedGlobals = {
-          modulePathFilter: new RegExp(`^(?:${Object.keys(globals).join("|")})$`),
-          getModuleInfo: (modulePath) => globals[modulePath]
-        };
-        return globalExternalsWithRegExp(normalizedGlobals);
-      };
     }
   });
 
   // node_modules/.pnpm/@fal-works+esbuild-plugin-global-externals@2.1.2/node_modules/@fal-works/esbuild-plugin-global-externals/lib/index.js
-  var lib_default;
   var init_lib = __esm({
     "node_modules/.pnpm/@fal-works+esbuild-plugin-global-externals@2.1.2/node_modules/@fal-works/esbuild-plugin-global-externals/lib/index.js"() {
       init_with_object();
       init_with_reg_exp();
-      lib_default = globalExternals;
     }
   });
 
@@ -37138,7 +37079,7 @@ ERROR: Async operation of type "${type}" was created in "process.exit" callback.
   __export(build_exports, {
     build: () => build
   });
-  var import_esbuild2, import_fs_jetpack16, build, buildSPARaw, buildSPA, buildSSR;
+  var import_esbuild2, import_fs_jetpack16, build;
   var init_build = __esm({
     "app/build.ts"() {
       "use strict";
@@ -37172,110 +37113,6 @@ ERROR: Async operation of type "${type}" was created in "process.exit" callback.
             retry();
           }
         });
-        await buildSPA(mode);
-        await buildSPARaw(mode);
-        await buildSSR(mode);
-      };
-      buildSPARaw = async (mode) => {
-        await (0, import_fs_jetpack16.removeAsync)(dir.root(".output/app/srv/spa-raw"));
-        const ctx = await (0, import_esbuild2.context)({
-          bundle: true,
-          absWorkingDir: dir.root(""),
-          entryPoints: [dir.root("app/web/src/render/spa/spa-raw.tsx")],
-          outdir: dir.root(".output/app/srv/spa-raw"),
-          format: "iife",
-          jsx: "transform",
-          minify: true,
-          sourcemap: true,
-          logLevel: "error",
-          define: {
-            "process.env.NODE_ENV": `"production"`
-          },
-          external: ["react"],
-          plugins: [
-            lib_default({
-              react: {
-                varName: "window.React",
-                type: "cjs"
-              },
-              "react-dom/server": {
-                varName: "window.ReactDOMServer",
-                type: "cjs"
-              },
-              "react/jsx-runtime": {
-                varName: "window.JSXRuntime",
-                type: "cjs"
-              }
-            })
-          ]
-        });
-        if (mode === "dev") {
-          await ctx.watch({});
-        } else {
-          await ctx.rebuild();
-        }
-      };
-      buildSPA = async (mode) => {
-        await (0, import_fs_jetpack16.removeAsync)(dir.root(".output/app/srv/spa"));
-        const ctx = await (0, import_esbuild2.context)({
-          bundle: true,
-          absWorkingDir: dir.root(""),
-          entryPoints: [dir.root("app/web/src/render/spa/spa.tsx")],
-          outdir: dir.root(".output/app/srv/spa"),
-          splitting: true,
-          format: "esm",
-          jsx: "transform",
-          minify: true,
-          sourcemap: true,
-          logLevel: "error",
-          define: {
-            "process.env.NODE_ENV": `"production"`
-          }
-        });
-        if (mode === "dev") {
-          await ctx.watch({});
-        } else {
-          await ctx.rebuild();
-        }
-      };
-      buildSSR = async (mode) => {
-        const ctx = await (0, import_esbuild2.context)({
-          bundle: true,
-          absWorkingDir: dir.root(""),
-          entryPoints: [dir.root("app/web/src/render/ssr/ssr.tsx")],
-          outfile: dir.root(".output/app/srv/ssr/index.jsx"),
-          format: "iife",
-          jsx: "transform",
-          logLevel: "error",
-          define: {
-            "process.env.NODE_ENV": `"production"`
-          },
-          external: ["react"],
-          plugins: [
-            lib_default({
-              react: {
-                varName: "window.React",
-                type: "cjs"
-              },
-              "react-dom/server": {
-                varName: "window.ReactDOMServer",
-                type: "cjs"
-              },
-              "react/jsx-runtime": {
-                varName: "window.JSXRuntime",
-                type: "cjs"
-              }
-            })
-          ],
-          banner: {
-            js: `window.isSSR = true;`
-          }
-        });
-        if (mode === "dev") {
-          await ctx.watch({});
-        } else {
-          await ctx.rebuild();
-        }
       };
     }
   });

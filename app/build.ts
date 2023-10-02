@@ -30,9 +30,6 @@ export const build = async (mode: string) => {
       retry();
     }
   });
-  await buildSPA(mode);
-  await buildSPARaw(mode);
-  await buildSSR(mode);
 };
 
 const buildSPARaw = async (mode: string) => {

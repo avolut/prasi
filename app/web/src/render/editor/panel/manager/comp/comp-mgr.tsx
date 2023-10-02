@@ -3,9 +3,9 @@ import { useGlobal, useLocal } from "web-utils";
 import { IItem } from "../../../../../utils/types/item";
 import { Dropdown } from "../../../../../utils/ui/dropdown";
 import { Loading } from "../../../../../utils/ui/loading";
-import { EItem } from "../../../elements/e-item";
 import { loadComponent } from "../../../logic/comp";
 import { EditorGlobal } from "../../../logic/global";
+import { CItem } from "./comp-preview";
 
 const w = window as unknown as {
   compManagerSearch: string;
@@ -93,7 +93,15 @@ export const CompManager: FC = () => {
         where: {
           component_site: {
             some: {
-              id_site: p.site.id,
+              OR: [
+                {
+                  id_site: p.site.id,
+                },
+                {
+                  id_site: "9e34f31f-4ebd-4630-b61d-597045171ebb",
+                  component_group: { name: { not: "__TRASH__" } },
+                },
+              ],
             },
           },
         },
@@ -115,17 +123,17 @@ export const CompManager: FC = () => {
       if (group) {
         local.group = {};
         for (const g of group) {
-          local.group[g.id] = {
-            info: g,
-            shared: g.shared,
-            isOwner: g.component_site[0].is_owner,
-            comps: [],
-          };
-
           if (g.name === "__TRASH__") {
             local.trash_id = g.id;
             local.collapsed.add(g.id);
           }
+
+          local.group[g.id] = {
+            info: g,
+            shared: g.shared,
+            isOwner: !!g.component_site[0]?.is_owner,
+            comps: [],
+          };
         }
       }
       const group_ids = Object.keys(local.group);
@@ -430,7 +438,7 @@ export const CompManager: FC = () => {
                               )}
                             </div>
 
-                            {!g.isOwner && (
+                            {/* {!g.isOwner && (
                               <div
                                 className="cursor-pointer border text-xs px-1 hover:bg-red-100 hover:border-red-500 hover:text-red-600 flex items-center h-[20px]"
                                 onClick={async () => {
@@ -450,7 +458,7 @@ export const CompManager: FC = () => {
                               >
                                 Detach
                               </div>
-                            )}
+                            )} */}
 
                             {g.shared && g.isOwner && (
                               <div
@@ -814,12 +822,15 @@ const CompPreview: FC<{
           className={cx(
             css`
               contain: content;
+              padding: 20px;
               overflow: auto;
             `,
             "flex items-center justify-center flex-1 flex-col "
           )}
         >
-          {local.comp && <EItem item={local.comp} />}
+          {local.comp && (
+            <CItem item={local.comp} comp_id={local.comp.component?.id || ""} />
+          )}
         </div>
       </div>
     </div>
