@@ -189,6 +189,7 @@ const SingleProp: FC<{
     clickEvent: null as any,
     loading: false,
     editCode: false,
+    propval: null,
   });
   const type = _prop.meta?.type || "text";
   const updateValue = async (val: string) => {
@@ -275,7 +276,7 @@ async () => {
             if (prop.genBuilt && meta && p.script.doEdit) {
               try {
                 const scopes = mergeScopeUpwards(p, meta);
-                const args = {
+                let args = {
                   ...window.exports,
                   ...scopes,
                 };
@@ -285,7 +286,7 @@ async () => {
                   `return ${prop.genBuilt}`
                 );
 
-                const efn = fn(Object.values(args));
+                const efn = fn(...Object.values(args));
                 let result = "";
                 if (typeof efn === "function") {
                   const promise = efn();
