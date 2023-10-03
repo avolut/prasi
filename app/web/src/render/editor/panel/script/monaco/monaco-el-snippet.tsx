@@ -130,7 +130,7 @@ true ? (
     &lt;Preload/&gt;
   </Button> */}
 
-      <Button
+      {/* <Button
         onClick={() => {
           doEdit(`<>{isMobile && <div {...props}>{children}</div>}</>`, true);
         }}
@@ -144,7 +144,7 @@ true ? (
         }}
       >
         &lt;isDesktop/&gt;
-      </Button>
+      </Button> */}
 
       <Button
         onClick={() => {
