@@ -36,11 +36,13 @@ export const ETreeItemAction: FC<{
 
   let canDelete = true;
   const rootComponentID = p.comp?.id;
+  let isRootComponent = false;
   if (
     isComponent &&
     rootComponentID &&
     rootComponentID === (item as IItem).component?.id
   ) {
+    isRootComponent = true;
     canDelete = false;
   }
 
@@ -198,7 +200,7 @@ export const ETreeItemAction: FC<{
           </Tooltip>
         </>
       )}
-      {canDelete && (
+      {canDelete && (!isComponent || (isComponent && isRootComponent)) && (
         <Tooltip
           content="Rename"
           className="flex items-center p-1 h-full text-blue-700"

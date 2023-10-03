@@ -3,6 +3,7 @@ import { useGlobal, useLocal } from "web-utils";
 import { IContent } from "../../../../../utils/types/general";
 import { FNComponent } from "../../../../../utils/types/meta-fn";
 import { EditorGlobal } from "../../../logic/global";
+import { rebuildTree } from "../../../logic/tree-logic";
 
 export const ETreeItemName: FC<{
   item: IContent;
@@ -83,6 +84,7 @@ const Renaming: FC<{
               comp.set("name", local.newname);
               const ctree = comp.get("content_tree");
               if (ctree) {
+                ctree.set("name", local.newname);
                 const ccomp = ctree.get("component");
                 if (ccomp) {
                   ccomp.set("name", local.newname);
