@@ -144,6 +144,7 @@ export const ERender: FC<{
     <div className={className} {...elprop}>
       {/* <pre className={"text-[9px] font-mono text-black"}>
         {item.id}-{item.name}
+        {item.name === "coba" && JSON.stringify(item.childs)}
       </pre> */}
       {_children}
       {componentOver}

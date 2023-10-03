@@ -11,6 +11,7 @@ import { instantiateComp, loadComponent } from "./comp";
 import { ItemMeta, PG, WithRequired } from "./global";
 import { mergeScopeUpwards } from "./tree-scope";
 import { syncronize } from "y-pojo";
+import { IText } from "../../../utils/types/text";
 export type REBUILD_MODE = "update" | "reset";
 
 const DEBUG = false;
@@ -98,6 +99,7 @@ export const walk = async (
   }
 ) => {
   let item = val.item as IContent;
+
   let mitem = val.mitem;
 
   if (val.mitem) {
@@ -121,10 +123,22 @@ export const walk = async (
 
   if (val.parent_comp) {
     const pchild_ids = val.parent_comp.comp?.child_ids;
-
     if (pchild_ids && item.originalId) {
       if (pchild_ids[item.originalId]) {
-        item.id = pchild_ids[item.originalId];
+        const walkInner = (item: IItem | IText) => {
+          if (item.originalId) {
+            const pid = pchild_ids[item.originalId];
+            if (pid) {
+              item.id = pid;
+            }
+          }
+          if (item.type === "item") {
+            for (const c of item.childs) {
+              walkInner(c);
+            }
+          }
+        };
+        walkInner(item as any);
       }
     }
   }
@@ -133,13 +147,38 @@ export const walk = async (
     let comp: ItemMeta["comp"] = undefined as any;
 
     if (item.type === "item" && item.component?.id) {
-      comp = {
-        id: item.component.id,
-        child_ids: {},
-        mcomp: p.comps.doc[item.component.id]
-          ?.getMap("map")
-          .get("content_tree"),
-      };
+      const cid = item.component.id;
+      let doc = p.comps.doc[cid];
+      if (!doc) {
+        if (p.comp?.id === cid) {
+          await loadComponent(p, cid);
+          doc = p.comps.doc[cid];
+        } else {
+          loadComponent(p, cid).then(() => {
+            rebuildTree(p);
+          });
+        }
+      }
+
+      if (doc) {
+        const mcomp = doc?.getMap("map").get("content_tree");
+        if (mcomp) {
+          if (!p.compInstance[item.id]) {
+            p.compInstance[item.id] = {};
+          }
+          const child_ids = p.compInstance[item.id];
+          const itemnew = instantiateComp(p, item, mcomp, child_ids);
+          for (const [k, v] of Object.entries(itemnew)) {
+            if (k !== "id") (item as any)[k] = v;
+          }
+
+          comp = {
+            id: cid,
+            mcomp,
+            child_ids,
+          };
+        }
+      }
     }
 
     if (item.adv) {
@@ -273,35 +312,8 @@ export const walk = async (
 
       const cid = item.component.id;
       let doc = p.comps.doc[cid];
-      if (!doc) {
-        if (p.comp?.id === cid) {
-          await loadComponent(p, cid);
-          doc = p.comps.doc[cid];
-        } else {
-          loadComponent(p, cid).then(() => {
-            rebuildTree(p);
-          });
-        }
-      }
-
       if (doc) {
         const mcomp = doc.getMap("map").get("content_tree") as MItem;
-        if (mcomp) {
-          if (!p.compInstance[item.id]) {
-            p.compInstance[item.id] = {};
-          }
-          const child_ids = p.compInstance[item.id];
-          const itemnew = instantiateComp(p, item, mcomp, child_ids);
-          for (const [k, v] of Object.entries(itemnew)) {
-            if (k !== "id") (meta.item as any)[k] = v;
-          }
-
-          meta.comp = {
-            id: cid,
-            mcomp,
-            child_ids,
-          };
-        }
 
         let cprops: [string, FNCompDef][] = Object.entries(
           item.component?.props || {}
@@ -347,7 +359,7 @@ export const walk = async (
                         parent_comp: val.parent_comp,
                         idx: mprop.idx,
                         depth: (val.depth || 0) + 1,
-                        includeTree: p.comp?.id !== item.component.id,
+                        includeTree: p.comp?.id !== item.component?.id,
                         instanceFound: val.instanceFound,
                       });
                     }

@@ -26,6 +26,10 @@ export const ETreeItemName: FC<{
   return (
     <div className={cx("text-sm flex-1 ")}>
       <>{name}</>
+      {/* <div className={cx("text-[9px]")}>
+        {item.id} --{" "}
+        {item.type === "item" && item.childs.map((e) => e.id + "\n")}
+      </div> */}
     </div>
   );
 };
