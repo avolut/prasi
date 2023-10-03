@@ -54,11 +54,11 @@ export const jsMount = async (p: PG, editor: MonacoEditor, monaco: Monaco) => {
     label: "Reload Prasi Editor Page",
     keybindings: [KeyMod.Alt | KeyCode.KeyR],
     run: async () => {
-      p.pageHidden = true;
       p.render();
+      p.script.active = false;
       await rebuildTree(p, { mode: "reset", note: "reload" });
       setTimeout(() => {
-        p.pageHidden = false;
+        p.script.active = true;
         p.render();
       }, 500);
     },
