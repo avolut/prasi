@@ -6,11 +6,13 @@ import { Loading } from "../../../../../../utils/ui/loading";
 import { ExternalAPI } from "./External";
 import { InternalAPI } from "./Internal";
 import get from "lodash.get";
+import { check } from "prettier";
 
 export const APIConfig: FC<{
   close: () => void;
-  checkApi: (status: boolean) => void;
-}> = ({ close, checkApi }) => {
+  status: "" | "started" | "starting" | "stopped";
+  checkApi: (status?: boolean) => void;
+}> = ({ close, checkApi, status }) => {
   const p = useGlobal(EditorGlobal, "EDITOR");
   const local = useLocal({
     mode: "" as "external" | "internal" | "",
@@ -76,7 +78,9 @@ export const APIConfig: FC<{
           <Loading note="api-conf" backdrop={false} />
         </div>
       )}
-      {local.mode === "external" && <ExternalAPI />}
+      {local.mode === "external" && (
+        <ExternalAPI status={status} checkApi={checkApi} />
+      )}
       {local.mode === "internal" && (
         <InternalAPI checkApi={checkApi} close={close} />
       )}

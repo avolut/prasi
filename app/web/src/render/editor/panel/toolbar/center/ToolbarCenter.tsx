@@ -24,7 +24,7 @@ export const ToolbarCenter = () => {
       timeout: null as any,
       editor: null as null | MonacoEditor,
     },
-    apiStatus: "" as "" | "started" | "starting" | "stopped" | "",
+    apiStatus: "" as "" | "started" | "starting" | "stopped",
   });
 
   const checkApi = async (status?: boolean) => {
@@ -153,6 +153,7 @@ export const ToolbarCenter = () => {
                 content={
                   <APIConfig
                     checkApi={checkApi}
+                    status={local.apiStatus}
                     close={() => {
                       local.apiConfigOpen = false;
                       local.render();
