@@ -103,7 +103,7 @@ export const jsMount = async (p: PG, editor: MonacoEditor, monaco: Monaco) => {
         suggestions: [
           {
             label: "log",
-            kind: monaco.languages.CompletionItemKind.Function,
+            kind: monaco.languages.CompletionItemKind.Snippet,
             documentation: "Add Console.log",
             insertText: `console.log($1)`,
             insertTextRules:
@@ -117,7 +117,7 @@ export const jsMount = async (p: PG, editor: MonacoEditor, monaco: Monaco) => {
           },
           {
             label: "sfy",
-            kind: monaco.languages.CompletionItemKind.Function,
+            kind: monaco.languages.CompletionItemKind.Snippet,
             documentation: "Add JSON.stringify",
             insertText: `JSON.stringify($1)`,
             insertTextRules:
