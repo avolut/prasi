@@ -34,6 +34,24 @@ const PassChild: FC<{name: string}>;
 const Preload: FC<{url: string[]}>;
 const apiurl: string;
 const prasiPageID: string;
+type ITEM = {
+  id: string
+  name: string;
+  type: 'item' | 'text';
+  adv?: {
+    js?: string;
+    jsBuilt?: string;
+    css?: string;
+    html?: string;
+  },
+  component?: { id:string, props: Record<string, {
+    value: string, 
+    valueBuilt: string,
+    meta: { type: string }
+  }>},
+  childs: ITEM[]
+}
+const newElement: (gen?: (item: ITEM, idx: number) => ITEM) => React.ReactNode;
 const Local: <T extends Record<string, any>>(arg: {
   name: string;
   value: T;

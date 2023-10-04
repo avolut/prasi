@@ -89,7 +89,7 @@ const loadSingleComponent = (p: PG, comp_id: string) => {
   return p.comps.pending[comp_id];
 };
 
-export const closeEditComp = (p: PG) => {
+export const closeEditComp = async (p: PG) => {
   if (p.comp) {
     const cur = p.comp.last ? p.comp.last.pop() : null;
     if (cur) {
@@ -137,7 +137,7 @@ export const closeEditComp = (p: PG) => {
     }
   }
 
-  rebuildTree(p, { mode: "update", note: "close-edit-comp" });
+  await rebuildTree(p, { mode: "update", note: "close-edit-comp" });
 };
 
 export const editCompByMeta = (p: PG, meta: ItemMeta) => {

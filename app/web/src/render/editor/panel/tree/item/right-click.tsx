@@ -335,7 +335,7 @@ export const ETreeRightClick: FC<{
           }}
         />
       )}
-      {comp?.id && !isActiveComponent && (
+      {/* {comp?.id && !isActiveComponent && (
         <MenuItem
           label="Detach"
           onClick={async () => {
@@ -352,7 +352,7 @@ export const ETreeRightClick: FC<{
             }
           }}
         />
-      )}
+      )} */}
 
       {!comp?.id && (
         <MenuItem

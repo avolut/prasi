@@ -101,8 +101,6 @@ export const initEditor = async (p: PG, site_id: string) => {
       querySite();
     }
 
-    console.log(p.site.js);
-
     p.status = "ready";
     p.render();
 

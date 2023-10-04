@@ -2,16 +2,15 @@ import { createId } from "@paralleldrive/cuid2";
 import { produceCSS } from "../../../utils/css/gen";
 import { IContent, MContent } from "../../../utils/types/general";
 import { IItem, MItem } from "../../../utils/types/item";
-import { FNCompDef } from "../../../utils/types/meta-fn";
+import { FNAdv, FNCompDef } from "../../../utils/types/meta-fn";
+import { IText } from "../../../utils/types/text";
 import { createElProp } from "../elements/e-relprop";
 import { DefaultScript } from "../panel/script/monaco/monaco-el";
 import { fillID } from "../tools/fill-id";
 import { newMap } from "../tools/yjs-tools";
-import { instantiateComp, loadComponent } from "./comp";
+import { closeEditComp, instantiateComp, loadComponent } from "./comp";
 import { ItemMeta, PG, WithRequired } from "./global";
-import { mergeScopeUpwards } from "./tree-scope";
 import { syncronize } from "y-pojo";
-import { IText } from "../../../utils/types/text";
 export type REBUILD_MODE = "update" | "reset";
 
 const DEBUG = false;
@@ -52,6 +51,7 @@ export const rebuildTree = async (
       console.clear();
     }
     const mpage = p.mpage.getMap("map").get("content_tree");
+
     await mpage?.doc?.transact(async () => {
       await Promise.all(
         mpage?.get("childs")?.map(async (mitem, idx) => {
@@ -91,6 +91,7 @@ export const walk = async (
     minstance?: MItem;
     parent_id: string;
     parent_comp?: WithRequired<ItemMeta, "comp"> & { item: IItem };
+    parent_prop?: ItemMeta;
     depth?: number;
     idx?: number;
     includeTree?: boolean;
@@ -218,6 +219,7 @@ export const walk = async (
       parent_comp: val.parent_comp as any,
       depth: val.depth || 0,
       elprop: createElProp(item, p),
+      parent_prop: val.parent_prop,
       className: produceCSS(item, {
         mode: p.mode,
         hover: p.item.sideHover ? false : p.item.hover === item.id,
@@ -333,9 +335,11 @@ export const walk = async (
 
                 if (jsx_prop) {
                   if (mprop.meta?.type === "content-element") {
-                    let icontent = jsx_prop.get("content");
+                    let mcontent = jsx_prop.get("content");
 
-                    if (!icontent) {
+                    let isNew = false;
+                    if (!mcontent) {
+                      isNew = true;
                       jsx_prop.set(
                         "content",
                         newMap({
@@ -349,14 +353,32 @@ export const walk = async (
                           },
                         }) as any
                       );
+                      mcontent = jsx_prop.get("content");
                     }
 
-                    if (icontent) {
+                    if (!!mcontent) {
+                      const icontent = mcontent.toJSON() as IItem;
+                      const adv = icontent.adv as FNAdv;
+                      if (
+                        Object.keys(icontent).length === 6 &&
+                        adv.js === undefined &&
+                        adv.css === "" &&
+                        adv.html === undefined &&
+                        icontent.childs.length === 0
+                      ) {
+                        isNew = true;
+                      }
+
+                      if (isNew) {
+                        const defaultJSX = findDefaultJSX(p, mcontent);
+                        syncronize(mcontent as any, defaultJSX);
+                      }
                       await walk(p, mode, {
-                        item: icontent.toJSON() as any,
-                        mitem: icontent,
+                        item: mcontent.toJSON() as any,
+                        mitem: mcontent,
                         parent_id: item.id,
                         parent_comp: val.parent_comp,
+                        parent_prop: meta,
                         idx: mprop.idx,
                         depth: (val.depth || 0) + 1,
                         includeTree: p.comp?.id !== item.component?.id,
@@ -377,6 +399,7 @@ export const walk = async (
                 parent_comp: meta as any,
                 mitem: meta.comp.mcomp.get("childs")?.get(idx),
                 parent_id: item.id,
+                parent_prop: val.parent_prop,
                 depth: (val.depth || 0) + 1,
                 includeTree: val.includeTree,
                 instanceFound: val.instanceFound,
@@ -413,6 +436,7 @@ export const walk = async (
               parent_comp: val.parent_comp,
               mitem: mitem?.get("childs")?.get(idx) as MContent,
               parent_id: item.id || "",
+              parent_prop: val.parent_prop,
               depth: (val.depth || 0) + 1,
               includeTree: val.includeTree,
               instanceFound: val.instanceFound,
@@ -422,4 +446,46 @@ export const walk = async (
       }
     }
   }
+};
+
+export const findDefaultJSX = (p: PG, mitem: MItem): IItem => {
+  let resetJSXProp: any = false;
+  if (mitem && mitem.parent && (mitem.parent as any).get("content")) {
+    let name = "";
+    (mitem as any).parent.parent.forEach((e: any, k: any) => {
+      if (e === mitem.parent) {
+        name = k;
+      }
+    });
+
+    if (name) {
+      try {
+        const cid = (mitem as any).parent.parent.parent.get("id");
+        const comp = p.comps.doc[cid];
+        if (comp) {
+          const mchilds = comp
+            .getMap("map")
+            .get("content_tree")
+            ?.get("childs")
+            ?.toJSON() as IItem[];
+          for (const c of mchilds) {
+            if (
+              c &&
+              c.name &&
+              c.name.startsWith("jsx:") &&
+              c.name.substring(4).trim() === name
+            ) {
+              c.hidden = false;
+              c.name = name;
+              c.id = mitem.get("id") || "";
+              c.originalId = mitem.get("originalId") || "";
+              resetJSXProp = c;
+            }
+          }
+        }
+      } catch (e) {}
+    }
+  }
+
+  return resetJSXProp;
 };

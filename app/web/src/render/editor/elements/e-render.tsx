@@ -6,9 +6,16 @@ import { FNAdv, FNCompDef } from "../../../utils/types/meta-fn";
 import { Loading } from "../../../utils/ui/loading";
 import { EditorGlobal } from "../logic/global";
 import { treePropEval } from "../logic/tree-prop";
-import { JS_DEBUG, treeScopeEval } from "../logic/tree-scope";
+import {
+  JS_DEBUG,
+  mergeScopeUpwards,
+  treeScopeEval,
+} from "../logic/tree-scope";
 import { ComponentOver, ElProp, createElProp } from "./e-relprop";
 import { ETextInternal } from "./e-text";
+import { IItem } from "../../../utils/types/item";
+import { newMap } from "../tools/yjs-tools";
+import { fillID } from "../tools/fill-id";
 
 export const ERender: FC<{
   id: string;
@@ -25,6 +32,48 @@ export const ERender: FC<{
 
   if (item.hidden) {
     return null;
+  }
+
+  if (
+    meta.parent_prop &&
+    typeof item.adv?.js === "string" &&
+    item.adv.js.startsWith("newElement")
+  ) {
+    const mitem = meta.mitem;
+    if (mitem && item.type === "item") {
+      mitem.doc?.transact(() => {
+        mitem.parent.forEach((e, idx) => {
+          if (e === mitem && item.adv?.js) {
+            const json = e.toJSON() as IItem;
+            mitem.parent.delete(idx);
+
+            const scope = mergeScopeUpwards(p, meta);
+            let fn: any = null;
+            const args = {
+              ...window.exports,
+              ...scope,
+              render: (f: any) => {},
+              newElement: (fx: any) => {
+                fn = fx;
+              },
+            };
+            const rawfn = new Function(
+              ...Object.keys(args),
+              item.adv.jsBuilt || ""
+            );
+            rawfn(...Object.values(args));
+
+            mitem.parent.insert(
+              idx,
+              json.childs.map((e) => {
+                return newMap(fn(fillID(e)));
+              })
+            );
+          }
+        });
+      });
+      return null;
+    }
   }
 
   if (meta.comp && meta.comp.mcomp) {

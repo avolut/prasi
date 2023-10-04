@@ -3,7 +3,7 @@ import { createRouter } from "web-init";
 import { CompDoc } from "../../../base/global/content-editor";
 import { IContent, MContent, MPage } from "../../../utils/types/general";
 import { IItem, MItem } from "../../../utils/types/item";
-import { FNCompDef } from "../../../utils/types/meta-fn";
+import { FMCompDef, FNCompDef } from "../../../utils/types/meta-fn";
 import { PRASI_COMPONENT } from "../../../utils/types/render";
 import { IRoot } from "../../../utils/types/root";
 
@@ -14,6 +14,7 @@ export type ItemMeta = {
   item: IContent;
   parent_id: string;
   parent_comp?: WithRequired<ItemMeta, "comp"> & { item: IItem };
+  parent_prop?: ItemMeta;
   scope?: any;
   scopeAttached?: { meta: ItemMeta; value: any }[];
   className: string;

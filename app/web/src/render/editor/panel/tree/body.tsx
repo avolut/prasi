@@ -26,6 +26,7 @@ import {
   onDrop,
 } from "./utils/tree-utils";
 import { mergeScopeUpwards } from "../../logic/tree-scope";
+import { closeEditComp } from "../../logic/comp";
 export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
   tree,
   meta,
@@ -237,6 +238,19 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
         `
       )}
     >
+      {tree.length === 0 && !meta.search && p.comp?.id && (
+        <div className="flex flex-col items-center select-none">
+          <div
+            className="m-2 px-2 bg-white border text-xs cursor-pointer hover:bg-blue-100"
+            onClick={async () => {
+              await closeEditComp(p);
+              p.render();
+            }}
+          >
+            Close Component
+          </div>
+        </div>
+      )}
       <DndProvider backend={MultiBackend} options={getBackendOptions()}>
         <div className="flex flex-col items-stretch bg-white right-0 left-0">
           {local.rightClick.node && (

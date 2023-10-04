@@ -66,6 +66,7 @@ export const treeScopeEval = (
     api: p.script.api,
     children,
     props: { ...elprop, className },
+    newElement: (children: any) => children,
     useEffect: useEffect,
     render: (jsx: ReactNode) => {
       output.jsx = (
