@@ -371,7 +371,9 @@ export const walk = async (
 
                       if (isNew) {
                         const defaultJSX = findDefaultJSX(p, mcontent);
-                        syncronize(mcontent as any, defaultJSX);
+                        if (defaultJSX && mcontent) {
+                          syncronize(mcontent as any, defaultJSX);
+                        }
                       }
                       await walk(p, mode, {
                         item: mcontent.toJSON() as any,
