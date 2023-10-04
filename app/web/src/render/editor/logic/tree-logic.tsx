@@ -117,7 +117,7 @@ export const walk = async (
       } catch (e) {
         return;
       }
-    } else {
+    } else if (val.mitem) {
       item = val.mitem.toJSON() as any;
     }
   }
