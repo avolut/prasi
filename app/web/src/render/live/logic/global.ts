@@ -36,6 +36,7 @@ type LPage = {
 };
 
 export const LiveGlobal = {
+  loader: "ws" as "ws" | "static",
   mode: "" as "desktop" | "mobile",
   status: "init" as
     | "init"

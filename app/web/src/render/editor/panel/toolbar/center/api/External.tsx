@@ -50,7 +50,7 @@ export const ExternalAPI = ({
           checkApi();
         }}
       />
-
+      {/* 
       <div
         className={cx(
           "cursor-pointer hover:underline",
@@ -70,7 +70,7 @@ export const ExternalAPI = ({
         }}
       >
         {local.clearingCache ? "Clearing Cache..." : "Clear API Cache"}
-      </div>
+      </div> */}
     </div>
   );
 };

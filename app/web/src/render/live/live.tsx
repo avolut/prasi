@@ -6,11 +6,13 @@ import { LiveGlobal } from "./logic/global";
 import { initLive } from "./logic/init";
 import { routeLive } from "./logic/route";
 
-export const Live: FC<{ domain: string; pathname: string }> = ({
-  domain,
-  pathname,
-}) => {
+export const Live: FC<{
+  domain: string;
+  pathname: string;
+  loader: "ws" | "static";
+}> = ({ domain, pathname, loader = "static" }) => {
   const p = useGlobal(LiveGlobal, "LIVE");
+  p.loader = loader;
 
   if (p.site.id) {
     if (!p.mode && !!p.site.responsive) {

@@ -13,6 +13,7 @@ export default page({
     return (
       <Live
         domain={params.domain}
+        loader="ws"
         pathname={`/${params._ === "_" ? "" : params._}`}
       />
     );

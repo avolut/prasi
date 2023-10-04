@@ -34,7 +34,7 @@ export const APIConfig: FC<{
     local.mode = "internal";
   }
   return (
-    <div className="flex flex-col py-2 space-y-2 min-w-[350px] min-h-[100px] items-center justify-center">
+    <div className="flex flex-col py-2 space-y-2 min-w-[350px] min-h-[60px] items-center justify-center">
       {local.mode === "" && !local.creating && (
         <>
           <div

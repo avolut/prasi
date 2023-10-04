@@ -62,10 +62,11 @@ export const reloadDBAPI = async (url: string, useCache: boolean = true) => {
   if (!w.prasiApi) {
     w.prasiApi = {};
   }
-  if (useCache === false) {
-    delete w.prasiApi[url];
-    localStorage.removeItem(`prasi-api-${url}`);
+  const cache = localStorage.getItem(`prasi-api-${url}`);
+  if (cache) {
+    w.prasiApi[url] = JSON.parse(cache);
   }
+
   if (w.prasiApi[url]) return;
   w.prasiApi[url] = {};
   const ver = await fetch(base + "/_prasi/_");
@@ -95,4 +96,6 @@ export const reloadDBAPI = async (url: string, useCache: boolean = true) => {
       apiTypes: await apiTypes.text(),
     };
   }
+
+  localStorage.setItem(`prasi-api-${url}`, JSON.stringify(w.prasiApi[url]));
 };
