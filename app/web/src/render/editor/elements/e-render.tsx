@@ -63,12 +63,20 @@ export const ERender: FC<{
             );
             rawfn(...Object.values(args));
 
-            mitem.parent.insert(
-              idx,
-              json.childs.map((e) => {
-                return newMap(fn(fillID(e)));
-              })
-            );
+            const childs: any[] = [];
+
+            json.childs.map((e) => {
+              const res = fn(fillID(e));
+
+              if (Array.isArray(res)) {
+                for (const r of res) {
+                  childs.push(newMap(fillID(r)));
+                }
+              } else {
+                childs.push(fillID(res));
+              }
+            });
+            mitem.parent.insert(idx, childs);
           }
         });
       });
