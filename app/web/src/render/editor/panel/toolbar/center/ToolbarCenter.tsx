@@ -27,11 +27,11 @@ export const ToolbarCenter = () => {
     apiStatus: "" as "" | "started" | "starting" | "stopped",
   });
 
-  const checkApi = async (status?: boolean) => {
+  const checkApi = async (preventReload?: boolean) => {
     local.apiStatus = "";
     local.render();
-    if (typeof status === "boolean") {
-      if (status) {
+    if (typeof preventReload === "boolean") {
+      if (preventReload) {
         local.apiStatus = "started";
       } else {
         delete w.prasiApi[p.site.api_url];
@@ -42,23 +42,19 @@ export const ToolbarCenter = () => {
       return;
     }
 
-
     if (p.site.api_url) {
       try {
         local.apiStatus = "starting";
         local.render();
-
-        await reloadDBAPI(p.site.api_url);
+        await fetch(p.site.api_url + "/_prasi/_");
         local.apiStatus = "started";
         local.render();
       } catch (e) {
-        console.log(e)
+        console.log(e);
         local.apiStatus = "stopped";
         local.render();
       }
     }
-    console.log(local.apiStatus);
-
   };
   useEffect(() => {
     checkApi();

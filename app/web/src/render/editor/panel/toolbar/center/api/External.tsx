@@ -1,6 +1,6 @@
 import { useGlobal, useLocal } from "web-utils";
-import { reloadDBAPI } from "../../../../../../utils/script/init-api";
 import { EditorGlobal } from "../../../../logic/global";
+import { createAPI } from "../../../../../../utils/script/init-api";
 
 export const ExternalAPI = ({
   status,
@@ -9,8 +9,12 @@ export const ExternalAPI = ({
   status: "" | "started" | "starting" | "stopped";
   checkApi: (status?: boolean) => void;
 }) => {
-  const local = useLocal({
-    clearingCache: false,
+  const local = useLocal({}, async () => {
+    const api = await createAPI(p.site.api_url);
+    const res = await api._deploy({ type: "check" });
+    if (res && res.deployed) {
+    
+    }
   });
 
   const p = useGlobal(EditorGlobal, "EDITOR");
@@ -50,27 +54,6 @@ export const ExternalAPI = ({
           checkApi();
         }}
       />
-      {/* 
-      <div
-        className={cx(
-          "cursor-pointer hover:underline",
-          css`
-            padding: 10px 0px 0px 0px;
-          `
-        )}
-        onClick={async () => {
-          local.clearingCache = true;
-          local.render();
-          try {
-            await reloadDBAPI(p.site.api_url, false);
-          } catch (e) {}
-          local.clearingCache = false;
-          local.render();
-          alert("API Cache Cleared");
-        }}
-      >
-        {local.clearingCache ? "Clearing Cache..." : "Clear API Cache"}
-      </div> */}
     </div>
   );
 };
