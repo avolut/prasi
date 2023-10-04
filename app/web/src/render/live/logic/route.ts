@@ -80,24 +80,9 @@ export const preload = async (p: PG, pathname: string) => {
   if (found) {
     if (!p.pages[found.id] && !p.pagePreload[found.id]) {
       p.pagePreload[found.id] = true;
-      const dbpage = await db.page.findFirst({
-        where: { id: found.id },
-        select: {
-          id: true,
-          url: true,
-          name: true,
-          content_tree: true,
-          js_compiled: true,
-        },
-      });
+      const dbpage = await p.loader.page(p, found.id);
       if (dbpage) {
-        p.pages[dbpage.id] = {
-          id: dbpage.id,
-          url: dbpage.url,
-          name: dbpage.name,
-          content_tree: dbpage.content_tree as any,
-          js: dbpage.js_compiled as any,
-        };
+        p.pages[dbpage.id] = dbpage;
         const page = p.pages[dbpage.id];
         if (page && page.content_tree) {
           await loadComponent(p, page.content_tree);
@@ -113,7 +98,7 @@ const loadNpmPage = async (p: PG, id: string) => {
     if (typeof window.exports === "undefined") {
       window.exports = {};
     }
-    await importModule(`${serverurl}/npm/page/${id}/page.js`);
+    await importModule(p.loader.npm(p, "page", id));
   } catch (e) {
     console.error(e);
   }

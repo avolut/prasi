@@ -727,7 +727,7 @@
           }).then(resolve, reject);
         });
       };
-      var writeAsync18 = (path4, data, options) => {
+      var writeAsync19 = (path4, data, options) => {
         const opts = options || {};
         const processedData = serializeToJsonMaybe(data, opts.jsonIndent);
         let writeStrategy = writeFileAsync;
@@ -738,7 +738,7 @@
       };
       exports2.validateInput = validateInput;
       exports2.sync = writeSync;
-      exports2.async = writeAsync18;
+      exports2.async = writeAsync19;
     }
   });
 
@@ -37039,51 +37039,15 @@ ERROR: Async operation of type "${type}" was created in "process.exit" callback.
     }
   });
 
-  // node_modules/.pnpm/@fal-works+esbuild-plugin-global-externals@2.1.2/node_modules/@fal-works/esbuild-plugin-global-externals/lib/module-info.js
-  var init_module_info = __esm({
-    "node_modules/.pnpm/@fal-works+esbuild-plugin-global-externals@2.1.2/node_modules/@fal-works/esbuild-plugin-global-externals/lib/module-info.js"() {
-    }
-  });
-
-  // node_modules/.pnpm/@fal-works+esbuild-plugin-global-externals@2.1.2/node_modules/@fal-works/esbuild-plugin-global-externals/lib/on-load.js
-  var init_on_load = __esm({
-    "node_modules/.pnpm/@fal-works+esbuild-plugin-global-externals@2.1.2/node_modules/@fal-works/esbuild-plugin-global-externals/lib/on-load.js"() {
-    }
-  });
-
-  // node_modules/.pnpm/@fal-works+esbuild-plugin-global-externals@2.1.2/node_modules/@fal-works/esbuild-plugin-global-externals/lib/with-reg-exp.js
-  var init_with_reg_exp = __esm({
-    "node_modules/.pnpm/@fal-works+esbuild-plugin-global-externals@2.1.2/node_modules/@fal-works/esbuild-plugin-global-externals/lib/with-reg-exp.js"() {
-      init_module_info();
-      init_on_load();
-    }
-  });
-
-  // node_modules/.pnpm/@fal-works+esbuild-plugin-global-externals@2.1.2/node_modules/@fal-works/esbuild-plugin-global-externals/lib/with-object.js
-  var init_with_object = __esm({
-    "node_modules/.pnpm/@fal-works+esbuild-plugin-global-externals@2.1.2/node_modules/@fal-works/esbuild-plugin-global-externals/lib/with-object.js"() {
-      init_with_reg_exp();
-    }
-  });
-
-  // node_modules/.pnpm/@fal-works+esbuild-plugin-global-externals@2.1.2/node_modules/@fal-works/esbuild-plugin-global-externals/lib/index.js
-  var init_lib = __esm({
-    "node_modules/.pnpm/@fal-works+esbuild-plugin-global-externals@2.1.2/node_modules/@fal-works/esbuild-plugin-global-externals/lib/index.js"() {
-      init_with_object();
-      init_with_reg_exp();
-    }
-  });
-
   // app/build.ts
   var build_exports = {};
   __export(build_exports, {
     build: () => build
   });
-  var import_esbuild2, import_fs_jetpack16, build;
+  var import_esbuild2, import_fs_jetpack16, build, buildSite;
   var init_build = __esm({
     "app/build.ts"() {
       "use strict";
-      init_lib();
       init_export();
       import_esbuild2 = __require("esbuild");
       import_fs_jetpack16 = __toESM(require_main());
@@ -37113,6 +37077,47 @@ ERROR: Async operation of type "${type}" was created in "process.exit" callback.
             retry();
           }
         });
+        await buildSite(mode);
+      };
+      buildSite = async (mode) => {
+        await (0, import_fs_jetpack16.removeAsync)(dir.root(".output/app/srv/site"));
+        const ctx = await (0, import_esbuild2.context)({
+          bundle: true,
+          absWorkingDir: dir.root(""),
+          entryPoints: [dir.root("app/web/src/render/site/site.tsx")],
+          outdir: dir.root(".output/app/srv/site"),
+          splitting: true,
+          format: "esm",
+          jsx: "transform",
+          minify: true,
+          sourcemap: true,
+          logLevel: "error",
+          define: {
+            "process.env.NODE_ENV": `"production"`
+          }
+        });
+        if (mode === "dev") {
+          await ctx.watch({});
+        } else {
+          await ctx.rebuild();
+        }
+        await (0, import_fs_jetpack16.writeAsync)(
+          dir.root(".output/app/srv/site/index.html"),
+          `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title></title>
+  <link rel="stylesheet" href="https://prasi.app/index.css">
+</head>
+<body class="flex-col flex-1 w-full min-h-screen flex opacity-0">
+  <div id="root"></div>
+  <script src="/site.js" type="module"></script>
+</body>
+</html>`
+        );
       };
     }
   });

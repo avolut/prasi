@@ -2,15 +2,15 @@ import { FC, useCallback, useEffect } from "react";
 import parseUA from "ua-parser-js";
 import { useGlobal } from "web-utils";
 import { LPage } from "./elements/l-page";
-import { LiveGlobal } from "./logic/global";
+import { LiveGlobal, Loader } from "./logic/global";
 import { initLive } from "./logic/init";
 import { routeLive } from "./logic/route";
 
 export const Live: FC<{
   domain: string;
   pathname: string;
-  loader: "ws" | "static";
-}> = ({ domain, pathname, loader = "static" }) => {
+  loader: Loader;
+}> = ({ domain, pathname, loader }) => {
   const p = useGlobal(LiveGlobal, "LIVE");
   p.loader = loader;
 

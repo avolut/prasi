@@ -1,13 +1,12 @@
 import { css, extractCss } from "goober";
 import { waitUntil } from "web-utils";
 
-export const defineWindow = async (baseurl?: URL) => {
+export const defineWindow = async (awaitServerUrl = true) => {
   let w = typeof window === "object" ? window : (globalThis as any);
 
-  await waitUntil(() => w.__SRV_URL__);
-  const location = (
-    typeof window === "object" ? window["location"] : baseurl
-  ) as (typeof window)["location"];
+  if (awaitServerUrl) await waitUntil(() => w.__SRV_URL__);
+
+  const location = window["location"];
 
   const host =
       0 === location.protocol.indexOf("http") ? location.hostname : "localhost",
@@ -16,17 +15,19 @@ export const defineWindow = async (baseurl?: URL) => {
         ? "http"
         : "https";
 
-  w.serverurl = w.__SRV_URL__;
-  const serverURL = new URL(w.serverurl);
-  if (
-    serverURL.hostname === "localhost" ||
-    serverURL.hostname === "127.0.0.1"
-  ) {
-    serverURL.hostname = location.hostname;
-    serverURL.pathname = serverURL.pathname === "/" ? "" : serverURL.pathname;
-    w.serverurl = serverURL.toString();
-    if (w.serverurl.endsWith("/")) {
-      w.serverurl = w.serverurl.substring(0, w.serverurl.length - 1);
+  if (w.__SRV_URL__) {
+    w.serverurl = w.__SRV_URL__;
+    const serverURL = new URL(w.serverurl);
+    if (
+      serverURL.hostname === "localhost" ||
+      serverURL.hostname === "127.0.0.1"
+    ) {
+      serverURL.hostname = location.hostname;
+      serverURL.pathname = serverURL.pathname === "/" ? "" : serverURL.pathname;
+      w.serverurl = serverURL.toString();
+      if (w.serverurl.endsWith("/")) {
+        w.serverurl = w.serverurl.substring(0, w.serverurl.length - 1);
+      }
     }
   }
 

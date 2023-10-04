@@ -1,6 +1,7 @@
 import { validate } from "uuid";
 import { page } from "web-init";
 import { Live } from "../../render/live/live";
+import { defaultLoader } from "../../render/live/logic/default-loader";
 
 export default page({
   url: "/live/:domain/**",
@@ -13,8 +14,8 @@ export default page({
     return (
       <Live
         domain={params.domain}
-        loader="ws"
         pathname={`/${params._ === "_" ? "" : params._}`}
+        loader={defaultLoader}
       />
     );
   },

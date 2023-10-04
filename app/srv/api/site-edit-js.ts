@@ -13,7 +13,7 @@ export const _ = {
 
     await db.site.update({
       where: { id: site_id },
-      data: { js: src, js_compiled: compiled },
+      data: { js: src || "", js_compiled: compiled || "" },
     });
 
     let dts = "";
@@ -23,6 +23,6 @@ export const _ = {
 
     const program = ts.createProgram(["sitedts"], options, host);
     program.emit();
-    return { dts, compiled };
+    return { dts };
   },
 };

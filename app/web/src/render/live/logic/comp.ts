@@ -73,19 +73,7 @@ export const loadComponent = async (
 };
 
 const loadSingleComponent = (p: PG, comp_id: string) => {
-  p.comps.pending[comp_id] = new Promise<PRASI_COMPONENT>(async (resolve) => {
-    p.comps.resolve[comp_id] = async (comp: PRASI_COMPONENT) => {
-      resolve(comp);
-    };
-    await wsend(
-      p,
-      JSON.stringify({
-        type: "get_comp",
-        comp_id: comp_id,
-      } as WS_MSG_GET_COMP)
-    );
-  });
-  return p.comps.pending[comp_id];
+  return p.loader.comp(p, comp_id);
 };
 
 export const instantiateComp = (

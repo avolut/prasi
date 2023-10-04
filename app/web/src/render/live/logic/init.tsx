@@ -54,41 +54,25 @@ export const initLive = async (p: PG, domain: string) => {
     try {
       site = JSON.parse(localStorage.getItem(`prasi-site-${domain}`) || "");
     } catch (e) {}
+
     if (!site) {
-      site = await db.site.findFirst({
-        where: validate(domain) ? { id: domain } : { domain },
-        select: {
-          id: true,
-          config: true,
-          domain: true,
-          name: true,
-          js: true,
-          responsive: true,
-          js_compiled: true,
-        },
-      });
+      site = await p.loader.site(
+        p,
+        validate(domain) ? { id: domain } : { domain }
+      );
       localStorage.setItem(`prasi-site-${domain}`, JSON.stringify(site));
     } else {
-      db.site.findFirst({
-        where: validate(domain) ? { id: domain } : { domain },
-        select: {
-          id: true,
-          config: true,
-          domain: true,
-          name: true,
-          js: true,
-          responsive: true,
-          js_compiled: true,
-        },
-      });
+      p.loader
+        .site(p, validate(domain) ? { id: domain } : { domain })
+        .then((site) => {
+          localStorage.setItem(`prasi-site-${domain}`, JSON.stringify(site));
+        });
     }
 
     if (site) {
       /** import site module */
       w.exports = {};
-      await importModule(
-        `${serverurl}/npm/site/${site.id}/site.js?${Date.now()}`
-      );
+      await importModule(p.loader.npm(p, "site", site.id));
 
       p.site.id = site.id;
       p.site.js = site.js_compiled || "";
@@ -105,29 +89,15 @@ export const initLive = async (p: PG, domain: string) => {
         } catch (e) {}
       }
       if (pages.length === 0) {
-        pages = await db.page.findMany({
-          where: {
-            id_site: site.id,
-            is_deleted: false,
-          },
-          select: { id: true, url: true },
-        });
+        pages = await p.loader.pages(p, site.id);
         localStorage.setItem(`prasi-pages-[${domain}]`, JSON.stringify(pages));
       } else {
-        db.page
-          .findMany({
-            where: {
-              id_site: site.id,
-              is_deleted: false,
-            },
-            select: { id: true, url: true },
-          })
-          .then((pages) => {
-            localStorage.setItem(
-              `prasi-pages-[${domain}]`,
-              JSON.stringify(pages)
-            );
-          });
+        p.loader.pages(p, site.id).then((pages) => {
+          localStorage.setItem(
+            `prasi-pages-[${domain}]`,
+            JSON.stringify(pages)
+          );
+        });
       }
 
       /** execute site module */

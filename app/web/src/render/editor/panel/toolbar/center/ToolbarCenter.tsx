@@ -47,7 +47,7 @@ export const ToolbarCenter = () => {
         local.apiStatus = "starting";
         local.render();
 
-        await reloadDBAPI(p.site.api_url, false);
+        await reloadDBAPI(p.site.api_url);
         local.apiStatus = "started";
         local.render();
       } catch (e) {
@@ -90,8 +90,8 @@ export const ToolbarCenter = () => {
                 p.render();
                 clearTimeout(local.siteJS.timeout);
                 local.siteJS.timeout = setTimeout(async () => {
-                  api.site_dts(p.site.id).then((e) => {
-                    p.site_dts = e || "";
+                  api.site_edit_js(p.site.id, src, compiled).then((e) => {
+                    p.site_dts = e.dts || "";
                     p.render();
                   });
 

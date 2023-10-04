@@ -27,7 +27,7 @@ export type ItemMeta = {
   render?: () => void;
 };
 
-type LPage = {
+export type LPage = {
   id: string;
   name: string;
   url: string;
@@ -35,8 +35,28 @@ type LPage = {
   js: string;
 };
 
+export type LSite = {
+  id: string;
+  api_url: string;
+  api_prasi: {
+    port: string;
+    db: string;
+  };
+  responsive: "all" | "mobile-only" | "desktop-only";
+  domain: string;
+  name: string;
+  js: string;
+  js_compiled: string;
+};
+export type Loader = {
+  site: (p: PG, where: { domain: string } | { id: string }) => Promise<LSite>;
+  page: (p: PG, id: string) => Promise<LPage>;
+  pages: (p: PG, site_id: string) => Promise<LPage[]>;
+  npm: (p: PG, type: "site" | "page", id: string) => string;
+  comp: (p: PG, id: string) => Promise<PRASI_COMPONENT>;
+};
 export const LiveGlobal = {
-  loader: "ws" as "ws" | "static",
+  loader: undefined as unknown as Loader,
   mode: "" as "desktop" | "mobile",
   status: "init" as
     | "init"

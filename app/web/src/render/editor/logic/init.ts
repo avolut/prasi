@@ -98,8 +98,10 @@ export const initEditor = async (p: PG, site_id: string) => {
       await processSite(site);
     } else {
       await processSite(site);
-      await querySite();
+      querySite();
     }
+
+    console.log(p.site.js);
 
     p.status = "ready";
     p.render();
