@@ -16,6 +16,8 @@ import { ETextInternal } from "./e-text";
 import { IItem } from "../../../utils/types/item";
 import { newMap } from "../tools/yjs-tools";
 import { fillID } from "../tools/fill-id";
+import { jscript } from "../panel/script/script-element";
+import trim from "lodash.trim";
 
 export const ERender: FC<{
   id: string;
@@ -41,44 +43,56 @@ export const ERender: FC<{
   ) {
     const mitem = meta.mitem;
     if (mitem && item.type === "item") {
-      mitem.doc?.transact(() => {
-        mitem.parent.forEach((e, idx) => {
-          if (e === mitem && item.adv?.js) {
-            const json = e.toJSON() as IItem;
-            mitem.parent.delete(idx);
+      mitem.doc?.transact(async () => {
+        await Promise.all(
+          mitem.parent.map(async (e, idx) => {
+            if (e === mitem && item.adv?.js) {
+              const json = e.toJSON() as IItem;
+              mitem.parent.delete(idx);
 
-            const scope = mergeScopeUpwards(p, meta);
-            let fn: any = null;
-            const args = {
-              ...window.exports,
-              ...scope,
-              render: (f: any) => {},
-              newElement: (fx: any) => {
-                fn = fx;
-              },
-            };
-            const rawfn = new Function(
-              ...Object.keys(args),
-              item.adv.jsBuilt || ""
-            );
-            rawfn(...Object.values(args));
+              const scope = mergeScopeUpwards(p, meta);
+              let fn: any = null;
+              const args = {
+                ...window.exports,
+                ...scope,
+                render: (f: any) => {},
+                newElement: (fx: any) => {
+                  fn = fx;
+                },
+              };
+              const rawfn = new Function(
+                ...Object.keys(args),
+                item.adv.jsBuilt || ""
+              );
+              rawfn(...Object.values(args));
 
-            const childs: any[] = [];
+              const childs: any[] = [];
 
-            json.childs.map((e) => {
-              const res = fn(fillID(e));
+              await Promise.all(
+                json.childs.map(async (e) => {
+                  const res = await fn(fillID(e), async (newsrc: string) => {
+                    if (jscript.build) {
+                      return await jscript.build(
+                        "element.tsx",
+                        `render(${trim((newsrc || "").trim(), ";")})`
+                      );
+                    }
+                    return "";
+                  });
 
-              if (Array.isArray(res)) {
-                for (const r of res) {
-                  childs.push(newMap(fillID(r)));
-                }
-              } else {
-                childs.push(newMap(res));
-              }
-            });
-            mitem.parent.insert(idx, childs);
-          }
-        });
+                  if (Array.isArray(res)) {
+                    for (const r of res) {
+                      childs.push(newMap(fillID(r)));
+                    }
+                  } else {
+                    childs.push(newMap(res));
+                  }
+                })
+              );
+              mitem.parent.insert(idx, childs);
+            }
+          })
+        );
       });
       return null;
     }

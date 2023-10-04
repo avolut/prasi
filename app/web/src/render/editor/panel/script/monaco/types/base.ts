@@ -44,6 +44,8 @@ type ITEM = {
     css?: string;
     html?: string;
   },
+  text: string,
+  html: string,
   component?: { id:string, props: Record<string, {
     value: string, 
     valueBuilt: string,
@@ -51,7 +53,7 @@ type ITEM = {
   }>},
   childs: ITEM[]
 }
-const newElement: (gen?: (item: ITEM, idx: number) => ITEM | ITEM[]) => React.ReactNode;
+const newElement: (gen?: (item: ITEM, buildJS: (str:string) => Promise<string>) => Promise<ITEM | ITEM[]>) => React.ReactNode;
 const Local: <T extends Record<string, any>>(arg: {
   name: string;
   value: T;

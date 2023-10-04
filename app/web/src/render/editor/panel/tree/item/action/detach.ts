@@ -25,30 +25,30 @@ export const detachComp = async (
     );
 
     const pass: Record<string, string> = {};
-    const doc = p.comps.doc[item.get("component")?.get("id") || ""];
+    // const doc = p.comps.doc[item.get("component")?.get("id") || ""];
     let newitem = null as unknown as IItem;
-    const propChild: Record<string, MItem> = {};
-    if (doc) {
-      newitem = doc.getMap("map").get("content_tree")?.toJSON() as IItem;
-      const props = item.get("component")?.get("props");
+    // const propChild: Record<string, MItem> = {};
+    // if (doc) {
+    //   newitem = doc.getMap("map").get("content_tree")?.toJSON() as IItem;
+    //   const props = item.get("component")?.get("props");
 
-      props?.forEach((p, k) => {
-        const prop = p.toJSON() as FNCompDef;
-        const cprop = (newitem.component?.props || {})[k];
-        if (prop && cprop) {
-          if (cprop.meta?.type === "content-element") {
-            const content = p.get("content");
-            if (content) {
-              pass[k] = `<PassChild name={"_${k}_"}/>`;
-              content.set("name", `_${k}_`);
-              propChild[`_${k}_`] = content;
-            }
-          } else {
-            pass[k] = prop.value;
-          }
-        }
-      });
-    }
+    //   props?.forEach((p, k) => {
+    //     const prop = p.toJSON() as FNCompDef;
+    //     const cprop = (newitem.component?.props || {})[k];
+    //     if (prop && cprop) {
+    //       if (cprop.meta?.type === "content-element") {
+    //         const content = p.get("content");
+    //         if (content) {
+    //           pass[k] = `<PassChild name={"_${k}_"}/>`;
+    //           content.set("name", `_${k}_`);
+    //           propChild[`_${k}_`] = content;
+    //         }
+    //       } else {
+    //         pass[k] = prop.value;
+    //       }
+    //     }
+    //   });
+    // }
     let js = "";
     let js_compiled = "";
 
@@ -66,11 +66,11 @@ export const detachComp = async (
       newitem.adv.js = js;
       newitem.adv.jsBuilt = js_compiled;
     }
-    for (const child of Object.values(propChild)) {
-      const citem = child.toJSON() as any;
-      citem.hidden = "all";
-      newitem.childs.unshift(citem);
-    }
+    // for (const child of Object.values(propChild)) {
+    //   const citem = child.toJSON() as any;
+    //   citem.hidden = "all";
+    //   newitem.childs.unshift(citem);
+    // }
     newitem.id = id;
     delete newitem.component;
 
