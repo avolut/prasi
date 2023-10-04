@@ -201,6 +201,13 @@ export const site_edit_js = {
   args: ["site_id","src","compiled"],
   handler: import("../../../srv/api/site-edit-js")
 }
+export const site_export = {
+  name: "site_export",
+  url: "/site-export/:site_id",
+  path: "app/srv/api/site-export.ts",
+  args: ["site_id"],
+  handler: import("../../../srv/api/site-export")
+}
 export const site = {
   name: "site",
   url: "/site/**",

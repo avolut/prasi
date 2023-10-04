@@ -114,6 +114,9 @@ importers:
       busboy:
         specifier: ^1.6.0
         version: 1.6.0
+      compress-brotli:
+        specifier: ^1.3.11
+        version: 1.3.11
       dbgen:
         specifier: ../db/node_modules/.gen
         version: link:../db/node_modules/.gen
@@ -2997,6 +3000,10 @@ packages:
       parse5: 7.1.2
     dev: true
 
+  /@types/json-buffer@3.0.0:
+    resolution: {integrity: sha512-3YP80IxxFJB4b5tYC2SUPwkg0XQLiu0nWvhRgEatgjf+29IcWO9X1k8xRv5DGssJ/lCrjYTjQPcobJr2yWIVuQ==}
+    dev: false
+
   /@types/lodash.capitalize@4.2.7:
     resolution: {integrity: sha512-NKtwU9vJFCx7Q6RYMAKQS0Vo2QUF81tyjvfYnhMxw8+ZMj8R4iv2zmLq5ARy28dGXuK0MqqWg45zGRuTnsnFag==}
     dependencies:
@@ -3716,6 +3723,14 @@ packages:
   /commander@7.2.0:
     resolution: {integrity: sha512-QrWXB+ZQSVPmIWIhtEO9H+gwHaMGYiF5ChvoJ+K9ZGHG/sVsa6yiesAD1GC/x46sET00Xlwo1u49RVVVzvcSkw==}
     engines: {node: '>= 10'}
+
+  /compress-brotli@1.3.11:
+    resolution: {integrity: sha512-GHsEQCF+tp8QA+qv24CP9N9RsCoOhkVwG9rEe3PajbtN6jEx9DqhA/NUa9r26F3MmnHYHr6K1UhlcAJLq6a/Tg==}
+    engines: {node: '>= 12'}
+    dependencies:
+      '@types/json-buffer': 3.0.0
+      json-buffer: 3.0.1
+    dev: false
 
   /compress-commons@4.1.1:
     resolution: {integrity: sha512-QLdDLCKNV2dtoTorqgxngQCMA+gWXkM/Nwu7FpeBhk/RdkzimqC3jueb/FDmaZeXh+uby1jkBqE3xArsLBE5wQ==}
@@ -4842,6 +4857,10 @@ packages:
       - bufferutil
       - supports-color
       - utf-8-validate
+    dev: false
+
+  /json-buffer@3.0.1:
+    resolution: {integrity: sha512-4bV5BfR2mqfQTJm+V5tPPdf+ZpuhiIvTuAB5g8kcrXOZpTT/QwwVRWBywX1ozr6lEuPdbHxwaJlm9G6mI2sfSQ==}
     dev: false
 
   /json-parse-even-better-errors@2.3.1:

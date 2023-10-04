@@ -114,6 +114,10 @@ export const site_edit_js = {
   url: "/site-edit-js/:site_id",
   args: ["site_id","src","compiled"],
 }
+export const site_export = {
+  url: "/site-export/:site_id",
+  args: ["site_id"],
+}
 export const site = {
   url: "/site/**",
   args: [],

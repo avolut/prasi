@@ -65,8 +65,10 @@ export const treePropEval = (
                     return true;
                   },
                 });
-                p.treeMeta[prop.content.id].scopeAttached = scopes;
-
+                if (p.treeMeta[prop.content.id]) {
+                  p.treeMeta[prop.content.id].scopeAttached = scopes;
+                }
+                
                 return <EItem id={prop.content.id} fromProp={true} />;
               }
               return <></>;
