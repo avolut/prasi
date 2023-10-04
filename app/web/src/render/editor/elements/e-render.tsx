@@ -73,7 +73,7 @@ export const ERender: FC<{
                   childs.push(newMap(fillID(r)));
                 }
               } else {
-                childs.push(fillID(res));
+                childs.push(newMap(res));
               }
             });
             mitem.parent.insert(idx, childs);

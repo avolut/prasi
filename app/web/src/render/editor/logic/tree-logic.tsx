@@ -1,4 +1,6 @@
 import { createId } from "@paralleldrive/cuid2";
+import { syncronize } from "y-pojo";
+import * as Y from "yjs";
 import { produceCSS } from "../../../utils/css/gen";
 import { IContent, MContent } from "../../../utils/types/general";
 import { IItem, MItem } from "../../../utils/types/item";
@@ -8,9 +10,8 @@ import { createElProp } from "../elements/e-relprop";
 import { DefaultScript } from "../panel/script/monaco/monaco-el";
 import { fillID } from "../tools/fill-id";
 import { newMap } from "../tools/yjs-tools";
-import { closeEditComp, instantiateComp, loadComponent } from "./comp";
+import { instantiateComp, loadComponent } from "./comp";
 import { ItemMeta, PG, WithRequired } from "./global";
-import { syncronize } from "y-pojo";
 export type REBUILD_MODE = "update" | "reset";
 
 const DEBUG = false;
@@ -117,8 +118,10 @@ export const walk = async (
       } catch (e) {
         return;
       }
-    } else if (val.mitem) {
+    } else if (val.mitem && val.mitem.toJSON) {
       item = val.mitem.toJSON() as any;
+    } else {
+      delete val.mitem;
     }
   }
 
@@ -370,22 +373,26 @@ export const walk = async (
                       }
 
                       if (isNew) {
+                        console.log(isNew);
                         const defaultJSX = findDefaultJSX(p, mcontent);
                         if (defaultJSX && mcontent) {
                           syncronize(mcontent as any, defaultJSX);
                         }
+                        mcontent = jsx_prop.get("content");
                       }
-                      await walk(p, mode, {
-                        item: mcontent.toJSON() as any,
-                        mitem: mcontent,
-                        parent_id: item.id,
-                        parent_comp: val.parent_comp,
-                        parent_prop: meta,
-                        idx: mprop.idx,
-                        depth: (val.depth || 0) + 1,
-                        includeTree: p.comp?.id !== item.component?.id,
-                        instanceFound: val.instanceFound,
-                      });
+                      if (mcontent) {
+                        await walk(p, mode, {
+                          item: mcontent.toJSON() as any,
+                          mitem: mcontent,
+                          parent_id: item.id,
+                          parent_comp: val.parent_comp,
+                          parent_prop: meta,
+                          idx: mprop.idx,
+                          depth: (val.depth || 0) + 1,
+                          includeTree: p.comp?.id !== item.component?.id,
+                          instanceFound: val.instanceFound,
+                        });
+                      }
                     }
                   }
                 }
@@ -432,11 +439,13 @@ export const walk = async (
       if (item.type !== "text" && Array.isArray(item.childs)) {
         await Promise.all(
           item.childs.map(async (child, idx) => {
+            const rmchild = mitem?.get("childs")?.get(idx);
+            const mchild = rmchild instanceof Y.Map ? rmchild : undefined;
             return await walk(p, mode, {
               idx,
               item: child,
               parent_comp: val.parent_comp,
-              mitem: mitem?.get("childs")?.get(idx) as MContent,
+              mitem: mchild as MContent,
               parent_id: item.id || "",
               parent_prop: val.parent_prop,
               depth: (val.depth || 0) + 1,
