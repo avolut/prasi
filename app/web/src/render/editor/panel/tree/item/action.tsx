@@ -96,13 +96,6 @@ export const ETreeItemAction: FC<{
                     hidden: false,
                     originalId: ijson.originalId,
                   });
-                  setTimeout(async () => {
-                    await rebuildTree(p, { note: "Reset JSX" });
-
-                    setTimeout(async () => {
-                      await rebuildTree(p, { note: "Reset JSX" });
-                    }, 400);
-                  }, 200);
                 }
               }}
             >

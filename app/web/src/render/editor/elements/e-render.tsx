@@ -18,6 +18,7 @@ import { newMap } from "../tools/yjs-tools";
 import { fillID } from "../tools/fill-id";
 import { jscript } from "../panel/script/script-element";
 import trim from "lodash.trim";
+import { rebuildTree } from "../logic/tree-logic";
 
 export const ERender: FC<{
   id: string;
@@ -93,6 +94,11 @@ export const ERender: FC<{
             }
           })
         );
+        await rebuildTree(p, { note: "Reset JSX" });
+
+        setTimeout(async () => {
+          await rebuildTree(p, { note: "Reset JSX" });
+        }, 300);
       });
       return null;
     }
