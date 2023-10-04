@@ -85,7 +85,7 @@ export const ETreeItemAction: FC<{
             <Tooltip
               content="Reset JSX"
               className={cx("text-purple-600 mx-1")}
-              onClick={() => {
+              onClick={async () => {
                 if (mitem) {
                   const ijson = mitem.toJSON() as IItem;
 
@@ -96,9 +96,13 @@ export const ETreeItemAction: FC<{
                     hidden: false,
                     originalId: ijson.originalId,
                   });
-                  setTimeout(() => {
-                    rebuildTree(p, { note: "Reset JSX" });
-                  });
+                  setTimeout(async () => {
+                    await rebuildTree(p, { note: "Reset JSX" });
+
+                    setTimeout(async () => {
+                      await rebuildTree(p, { note: "Reset JSX" });
+                    }, 400);
+                  }, 200);
                 }
               }}
             >
