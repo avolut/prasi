@@ -42,6 +42,7 @@ export const ToolbarCenter = () => {
       return;
     }
 
+
     if (p.site.api_url) {
       try {
         local.apiStatus = "starting";
@@ -51,10 +52,13 @@ export const ToolbarCenter = () => {
         local.apiStatus = "started";
         local.render();
       } catch (e) {
+        console.log(e)
         local.apiStatus = "stopped";
         local.render();
       }
     }
+    console.log(local.apiStatus);
+
   };
   useEffect(() => {
     checkApi();

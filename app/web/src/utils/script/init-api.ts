@@ -1,3 +1,4 @@
+import { createStore, get, set } from "idb-keyval";
 import trim from "lodash.trim";
 import type { dbClient } from "web-init";
 const w = window as unknown as {
@@ -62,6 +63,9 @@ export const reloadDBAPI = async (url: string) => {
   if (!w.prasiApi) {
     w.prasiApi = {};
   }
+
+  const cache = createStore(`prasi-api`, "config");
+
   const forceReload = async () => {
     if (!w.prasiApi[url]) {
       w.prasiApi[url] = {};
@@ -94,12 +98,12 @@ export const reloadDBAPI = async (url: string) => {
       };
     }
 
-    localStorage.setItem(`prasi-api-${url}`, JSON.stringify(w.prasiApi[url]));
+    await set(url, JSON.stringify(w.prasiApi[url]), cache);
   };
 
-  const cache = localStorage.getItem(`prasi-api-${url}`);
-  if (cache) {
-    w.prasiApi[url] = JSON.parse(cache);
+  const found = await get(url, cache);
+  if (found) {
+    w.prasiApi[url] = JSON.parse(found);
     forceReload();
   } else {
     await forceReload();
