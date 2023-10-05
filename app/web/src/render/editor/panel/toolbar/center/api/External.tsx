@@ -1,6 +1,7 @@
 import { useGlobal, useLocal } from "web-utils";
 import { EditorGlobal } from "../../../../logic/global";
 import { createAPI } from "../../../../../../utils/script/init-api";
+import { ExternalDeploy } from "./ExternalDeploy";
 
 export const ExternalAPI = ({
   status,
@@ -9,14 +10,6 @@ export const ExternalAPI = ({
   status: "" | "started" | "starting" | "stopped";
   checkApi: (status?: boolean) => void;
 }) => {
-  const local = useLocal({}, async () => {
-    const api = await createAPI(p.site.api_url);
-    const res = await api._deploy({ type: "check" });
-    if (res && res.deployed) {
-    
-    }
-  });
-
   const p = useGlobal(EditorGlobal, "EDITOR");
   const site = p.site;
 
@@ -54,6 +47,8 @@ export const ExternalAPI = ({
           checkApi();
         }}
       />
+
+      <ExternalDeploy />
     </div>
   );
 };

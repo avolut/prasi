@@ -151,7 +151,7 @@ export const ERender: FC<{
   const adv = item.adv;
 
   let componentOver = null;
-  if (item.type === "item" && item.component?.id) {
+  if (item.type === "item" && item.component?.id && item.component.props) {
     if (
       !Object.values(item.component.props).find(
         (e) => e.meta?.type === "content-element"
