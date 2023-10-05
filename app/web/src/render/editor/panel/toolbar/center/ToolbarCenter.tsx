@@ -19,7 +19,7 @@ import { APIConfig } from "./api/APIConfig";
 export const ToolbarCenter = () => {
   const p = useGlobal(EditorGlobal, "EDITOR");
   const local = useLocal({
-    apiConfigOpen: true,
+    apiConfigOpen: false,
     siteJS: {
       timeout: null as any,
       editor: null as null | MonacoEditor,

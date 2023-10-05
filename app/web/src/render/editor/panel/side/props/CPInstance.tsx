@@ -122,25 +122,25 @@ export const CPInstance: FC<{ mitem: MItem }> = ({ mitem }) => {
                 if (!local.jsx && v.meta?.type === "content-element") return;
 
                 let visible = true;
-                const meta = p.treeMeta[p.item.active];
-                if (v.visible && meta) {
-                  try {
-                    const scopes = mergeScopeUpwards(p, meta);
-                    const args = {
-                      ...window.exports,
-                      ...scopes,
-                    };
+                // const meta = p.treeMeta[p.item.active];
+                // if (v.visible && meta) {
+                //   try {
+                //     const scopes = mergeScopeUpwards(p, meta);
+                //     const args = {
+                //       ...window.exports,
+                //       ...scopes,
+                //     };
 
-                    const fn = new Function(
-                      ...Object.keys(args),
-                      `return ${v.visible}`
-                    );
+                //     const fn = new Function(
+                //       ...Object.keys(args),
+                //       `return ${v.visible}`
+                //     );
 
-                    visible = fn(...Object.values(args));
-                  } catch (e) {
-                    console.log(e);
-                  }
-                }
+                //     visible = fn(...Object.values(args));
+                //   } catch (e) {
+                //     console.log(e);
+                //   }
+                // }
 
                 if (visible) {
                   return (

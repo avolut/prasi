@@ -53,7 +53,7 @@ type ITEM = {
   }>},
   childs: ITEM[]
 }
-const newElement: (gen?: (item: ITEM, buildJS: (str:string) => Promise<string>) => Promise<ITEM | ITEM[]>) => React.ReactNode;
+const newElement: (gen?: (item: ITEM) => ITEM | ITEM[]) => React.ReactNode;
 const Local: <T extends Record<string, any>>(arg: {
   name: string;
   value: T;

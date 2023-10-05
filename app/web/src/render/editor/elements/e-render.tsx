@@ -71,15 +71,7 @@ export const ERender: FC<{
 
               await Promise.all(
                 json.childs.map(async (e) => {
-                  const res = await fn(fillID(e), async (newsrc: string) => {
-                    if (jscript.build) {
-                      return await jscript.build(
-                        "element.tsx",
-                        `render(${trim((newsrc || "").trim(), ";")})`
-                      );
-                    }
-                    return "";
-                  });
+                  const res = await fn(fillID(e));
 
                   if (Array.isArray(res)) {
                     for (const r of res) {
@@ -94,11 +86,6 @@ export const ERender: FC<{
             }
           })
         );
-        await rebuildTree(p, { note: "Reset JSX" });
-
-        setTimeout(async () => {
-          await rebuildTree(p, { note: "Reset JSX" });
-        }, 300);
       });
       return null;
     }
