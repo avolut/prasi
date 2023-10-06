@@ -4,9 +4,15 @@ import { EditorGlobal, PG } from "../../../../logic/global";
 import { AutoHeightTextarea } from "../../../../../../utils/ui/auto-textarea";
 import { useEffect } from "react";
 import trim from "lodash.trim";
+import { formatDistance } from "date-fns/esm";
 
 const server = {
-  status: "ready" as "ready" | "saving" | "pulling" | "restarting",
+  status: "ready" as
+    | "ready"
+    | "deploying"
+    | "saving"
+    | "pulling"
+    | "restarting",
 };
 
 export const ExternalDeploy = () => {
@@ -17,6 +23,7 @@ export const ExternalDeploy = () => {
       db: { url: "" },
       domains: [],
       current: 0,
+      now: 0,
       deploys: [] as number[],
     },
     async () => {
@@ -28,6 +35,8 @@ export const ExternalDeploy = () => {
         });
         if (res) {
           local.db.url = res.db.url;
+          local.now = res.now;
+          local.current = res.current;
           local.domains = res.domains;
           local.deploys = res.deploys;
         }
@@ -63,11 +72,7 @@ export const ExternalDeploy = () => {
         <>
           <ExternalDeployDB api={local.api} url={local.db.url} />
           <ExternalDomainList api={local.api} domains={local.domains} />
-          <ExternalDeployList
-            api={local.api}
-            deploys={local.deploys}
-            current={local.current}
-          />
+          <ExternalDeployList api={local.api} local={local} />
         </>
       )}
     </div>
@@ -105,65 +110,69 @@ const ExternalDeployDB = ({ url, api }: { url: string; api: any }) => {
           local.render();
         }}
       />
-      {server.status === "saving" ? (
-        <div className="flex justify-between">
-          <div className="px-2 text-[12px] text-blue-500">Saving...</div>
-        </div>
-      ) : (
-        <div className="flex justify-between">
-          <div>
-            {server.status !== "pulling" && (
-              <div
-                className="border rounded-sm px-2 text-[12px] hover:bg-blue-100 cursor-pointer"
-                onClick={async () => {
-                  server.status = "pulling";
-                  local.render();
-                  await api._deploy({
-                    type: "db-pull",
-                    id_site: p.site.id,
-                  });
-                  server.status = "ready";
-                  local.render();
-                  alert("DB PULL & GENERATE: OK\nRESTART: OK");
-                }}
-              >
-                DB Pull
-              </div>
-            )}
-            {server.status === "pulling" && (
-              <div className="px-2 text-[12px] text-blue-500">
-                Pulling DB...
-              </div>
-            )}
+      <div className="flex flex-col items-stretch justify-center h-[20px]">
+        {server.status === "saving" || server.status === "deploying" ? (
+          <div className="flex justify-between">
+            <div className="px-2 text-[12px] text-blue-500 capitalize">
+              {server.status}...
+            </div>
           </div>
-          <div>
-            {server.status !== "restarting" && (
-              <div
-                className="border rounded-sm px-2 text-[12px] hover:bg-blue-100 cursor-pointer"
-                onClick={async () => {
-                  server.status = "restarting";
-                  local.render();
+        ) : (
+          <div className="flex justify-between">
+            <div>
+              {server.status !== "pulling" && (
+                <div
+                  className="border rounded-sm px-2 text-[12px] hover:bg-blue-100 cursor-pointer"
+                  onClick={async () => {
+                    server.status = "pulling";
+                    local.render();
+                    await api._deploy({
+                      type: "db-pull",
+                      id_site: p.site.id,
+                    });
+                    server.status = "ready";
+                    local.render();
+                    alert("DB PULL & GENERATE: OK\nRESTART: OK");
+                  }}
+                >
+                  DB Pull
+                </div>
+              )}
+              {server.status === "pulling" && (
+                <div className="px-2 text-[12px] text-blue-500">
+                  Pulling DB...
+                </div>
+              )}
+            </div>
+            <div>
+              {server.status !== "restarting" && (
+                <div
+                  className="border rounded-sm px-2 text-[12px] hover:bg-blue-100 cursor-pointer"
+                  onClick={async () => {
+                    server.status = "restarting";
+                    local.render();
 
-                  await api._deploy({
-                    type: "restart",
-                    id_site: p.site.id,
-                  });
-                  server.status = "ready";
-                  local.render();
-                  alert("RESTART: OK");
-                }}
-              >
-                Restart Server
-              </div>
-            )}
-            {server.status === "restarting" && (
-              <div className="px-2 text-[12px] text-blue-500">
-                Restarting...
-              </div>
-            )}
+                    await api._deploy({
+                      type: "restart",
+                      id_site: p.site.id,
+                    });
+                    server.status = "ready";
+                    local.render();
+                    alert("RESTART: OK");
+                  }}
+                >
+                  Restart Server
+                </div>
+              )}
+              {server.status === "restarting" && (
+                <div className="px-2 text-[12px] text-blue-500">
+                  Restarting...
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 };
@@ -182,7 +191,7 @@ const ExternalDomainList = ({
       <div>Domains:</div>
       {domains.map((e) => {
         return (
-          <div className="border flex items-stretch ">
+          <div className="border flex items-stretch" key={e}>
             <div className="border-r flex items-center px-1">{e}</div>
             <div
               className="flex items-center px-1 cursor-pointer hover:bg-red-500 hover:text-white text-red-500"
@@ -240,18 +249,51 @@ const ExternalDomainList = ({
 
 const ExternalDeployList = ({
   api,
-  deploys,
+  local,
 }: {
   api: any;
-  current: number;
-  deploys: number[];
+  local: {
+    current: number;
+    now: number;
+    deploys: number[];
+    render: () => void;
+  };
 }) => {
+  const p = useGlobal(EditorGlobal, "EDITOR");
+  const { deploys } = local;
   return (
     <div className="flex border-slate-200 boxed  flex flex-col items-stretch">
       <div className="flex justify-between py-2 px-2 ">
         <div>History:</div>
-        <div className="px-1 border border-blue-500 text-blue-500 cursor-pointer  hover:bg-blue-500 hover:text-white">
-          Deploy
+        <div
+          className={cx(
+            "px-1 border border-blue-500 text-blue-500 cursor-pointer hover:bg-blue-500 hover:text-white",
+            server.status === "deploying" && "opacity-50"
+          )}
+          onClick={async () => {
+            if (server.status !== "deploying") {
+              server.status = "deploying";
+              p.render();
+
+              const res = await api._deploy({
+                type: "deploy",
+                id_site: p.site.id,
+                dlurl: `${serverurl}/site-export/${p.site.id}`,
+              });
+
+              server.status = "ready";
+              p.render();
+              if (res && res.current && Array.isArray(res.deploys)) {
+                local.current = res.current;
+                local.deploys = res.deploys;
+                alert("DEPLOY: OK");
+              } else {
+                alert("DEPLOY: FAILED");
+              }
+            }
+          }}
+        >
+          {server.status === "deploying" ? "Deploying..." : "Deploy"}
         </div>
       </div>
       {deploys.length === 0 && (
@@ -259,6 +301,73 @@ const ExternalDeployList = ({
           No Deployment
         </div>
       )}
+      <div className="overflow-auto h-[200px] relative">
+        <div className="absolute inset-0">
+          {deploys
+            .sort()
+            .reverse()
+            .map((e) => {
+              return (
+                <div
+                  key={e}
+                  onClick={async () => {
+                    if (
+                      server.status !== "deploying" &&
+                      server.status !== "saving"
+                    ) {
+                      server.status = "deploying";
+                      p.render();
+
+                      const res = await api._deploy({
+                        type: "redeploy",
+                        id_site: p.site.id,
+                        ts: e,
+                      });
+
+                      server.status = "ready";
+                      p.render();
+                      if (res && res.current && Array.isArray(res.deploys)) {
+                        local.current = res.current;
+                        local.deploys = res.deploys;
+                        alert("DEPLOY: OK");
+                      } else {
+                        alert("DEPLOY: FAILED");
+                      }
+                    }
+                  }}
+                  className={cx(
+                    "px-4 py-1 hover:bg-blue-50 border-t flex justify-between items-center",
+                    local.current === e ? "bg-green-50" : "",
+                    server.status !== "deploying" &&
+                      server.status !== "saving" &&
+                      local.current !== e
+                      ? "cursor-pointer"
+                      : "",
+                    css`
+                      &:hover {
+                        .deploy {
+                          display: flex;
+                        }
+                      }
+                    `
+                  )}
+                >
+                  <div>{formatDistance(e, local.now, { addSuffix: true })}</div>
+                  {local.current !== e && (
+                    <div className="text-slate-400 hidden deploy">
+                      Re-deploy this
+                    </div>
+                  )}
+                  {local.current === e ? (
+                    <div className="text-green-800">✓</div>
+                  ) : (
+                    <div></div>
+                  )}
+                </div>
+              );
+            })}
+        </div>
+      </div>
     </div>
   );
 };

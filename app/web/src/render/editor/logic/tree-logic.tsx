@@ -364,6 +364,7 @@ export const walk = async (
                       const adv = icontent.adv as FNAdv;
                       if (
                         Object.keys(icontent).length === 6 &&
+                        adv &&
                         adv.js === undefined &&
                         adv.css === "" &&
                         adv.html === undefined &&
