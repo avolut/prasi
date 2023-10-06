@@ -375,7 +375,7 @@ const NPMModule: FC<{
               local.render();
               try {
                 const f = await fetch(
-                  `https://data.jsdelivr.com/v1/packages/npm/${e.name}`
+                  `https://data.jsdelivr.com/v1/packages/npm/${val}`
                 );
                 const j = await f.json();
                 const version = j.versions[0].version;
@@ -808,7 +808,7 @@ const NamedImport: FC<{
         local.render();
       }}
       content={
-        <div className="text-[12px] flex flex-col font-mono  space-y-1 py-1">
+        <div className="text-[12px] flex flex-col font-mono  space-y-1 py-1 overflow-y-auto max-h-[400px]">
           <div className={"flex items-center"}>
             <div>import {"{...}"}</div>
           </div>
