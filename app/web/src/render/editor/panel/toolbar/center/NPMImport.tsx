@@ -368,8 +368,31 @@ const NPMModule: FC<{
               }, 300);
             }
           }}
-          onKeyDown={(e) => {
+          onKeyDown={async (e) => {
             if (e.key === "Enter") {
+              const val = local.search.value;
+              local.search.value = "";
+              local.render();
+              try {
+                const f = await fetch(
+                  `https://data.jsdelivr.com/v1/packages/npm/${e.name}`
+                );
+                const j = await f.json();
+                const version = j.versions[0].version;
+                const res = await db.npm_site.create({
+                  data: {
+                    id_site: p.site?.id || "",
+                    module: val,
+                    version: version,
+                  },
+                });
+
+                w.npmImport.site.push(res);
+                local.render();
+              } catch (e: any) {
+                alert("Failed!");
+                console.log(e);
+              }
             }
           }}
         />
@@ -549,7 +572,17 @@ const ImportItem: FC<{
               </NamedImport>
               <CustomImport item={item} render={local.render} mode={mode} />
             </div>
-            <div className="text-slate-500">{item.version}</div>
+            <div className="flex items-end justify-end">
+              <input
+                className="text-slate-500 text-right outline-none bg-transparent h-[16px] "
+                type={"text"}
+                value={item.version}
+                onChange={(e) => {
+                  item.version = e.currentTarget.value;
+                  local.render();
+                }}
+              />
+            </div>
           </div>
         </div>
         <div
