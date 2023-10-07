@@ -2,8 +2,8 @@ import { apiContext } from "service-srv";
 
 import { dir } from "dir";
 import fs from "fs";
-import { exists, writeAsync } from "fs-jetpack";
-import { compress, compressToUint8Array } from "lz-string";
+import { exists } from "fs-jetpack";
+import { gzipSync } from "zlib";
 import path from "path";
 
 export const _ = {
@@ -42,8 +42,8 @@ export const _ = {
       }
     }
 
-    const str = JSON.stringify({ site, pages, npm, comps });
-    return str;
+    const str = gzipSync(JSON.stringify({ site, pages, npm, comps }));
+    res.send(str);
   },
 };
 

@@ -193,7 +193,13 @@ const ExternalDomainList = ({
       {domains.map((e) => {
         return (
           <div className="border flex items-stretch" key={e}>
-            <div className="border-r flex items-center px-1">{e}</div>
+            <a
+              className="border-r flex items-center px-1 hover:underline hover:text-blue-500"
+              href={e}
+              target="_blank"
+            >
+              {e}
+            </a>
             <div
               className="flex items-center px-1 cursor-pointer hover:bg-red-500 hover:text-white text-red-500"
               onClick={async () => {
