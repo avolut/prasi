@@ -1,12 +1,11 @@
+import get from "lodash.get";
 import { FC } from "react";
 import { useGlobal, useLocal } from "web-utils";
-import { EditorGlobal } from "../../../../logic/global";
 import { initApi } from "../../../../../../utils/script/init-api";
 import { Loading } from "../../../../../../utils/ui/loading";
+import { EditorGlobal } from "../../../../logic/global";
 import { ExternalAPI } from "./External";
 import { InternalAPI } from "./Internal";
-import get from "lodash.get";
-import { check } from "prettier";
 
 export const APIConfig: FC<{
   close: () => void;

@@ -1,7 +1,12 @@
 import { createRouter, type apiClient } from "web-init";
 import { validate } from "uuid";
 import importModule from "../../editor/tools/dynamic-import";
-import { createAPI, createDB, initApi } from "../../../utils/script/init-api";
+import {
+  createAPI,
+  createDB,
+  initApi,
+  reloadDBAPI,
+} from "../../../utils/script/init-api";
 import { PG } from "./global";
 
 const w = window as unknown as {
@@ -15,6 +20,12 @@ const w = window as unknown as {
   params: any;
   apiClient: typeof apiClient;
   apiurl: string;
+
+  externalAPI: {
+    mode: "dev" | "prod";
+    devUrl: string;
+    prodUrl: string;
+  };
 };
 
 export const initLive = async (p: PG, domain: string) => {
@@ -84,7 +95,31 @@ export const initLive = async (p: PG, domain: string) => {
       p.site.id = site.id;
       p.site.js = site.js_compiled || "";
       p.site.responsive = site.responsive as any;
-      p.site.api_url = await initApi(site.config, p.prod ? "prod" : "dev");
+
+      if (p.prod) {
+        p.site.api_url = await initApi(site.config, "prod");
+      } else {
+        w.externalAPI = {
+          mode: (localStorage.getItem(`prasi-ext-api-mode-${p.site.id}`) ||
+            "prod") as any,
+          devUrl: localStorage.getItem(`prasi-ext-dev-url-${p.site.id}`) || "",
+          prodUrl:
+            localStorage.getItem(`prasi-ext-prod-url-${p.site.id}`) || "",
+        };
+        p.site.api_url = await initApi(site.config);
+
+        if (w.externalAPI.prodUrl !== p.site.api_url) {
+          w.externalAPI.prodUrl = p.site.api_url;
+          localStorage.setItem(
+            `prasi-ext-prod-url-${p.site.id}`,
+            p.site.api_url
+          );
+        }
+        if (w.externalAPI.mode === "dev" && w.externalAPI.devUrl) {
+          p.site.api_url = w.externalAPI.devUrl;
+          await reloadDBAPI(w.externalAPI.devUrl, "dev");
+        }
+      }
       w.apiurl = p.site.api_url;
 
       let pages = [];

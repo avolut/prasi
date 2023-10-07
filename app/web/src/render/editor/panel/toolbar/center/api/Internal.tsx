@@ -202,7 +202,7 @@ export const InternalAPI: FC<{
               local.clearingCache = true;
               local.render();
               try {
-                await reloadDBAPI(p.site.api_url, false);
+                await reloadDBAPI(p.site.api_url, "dev");
               } catch (e) {}
               local.clearingCache = false;
               local.render();

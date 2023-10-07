@@ -1,10 +1,15 @@
 import get from "lodash.get";
-import { createAPI, createDB, initApi } from "../../../utils/script/init-api";
+import {
+  createAPI,
+  createDB,
+  initApi,
+  reloadDBAPI,
+} from "../../../utils/script/init-api";
 import importModule from "../tools/dynamic-import";
 import { PG } from "./global";
 import { jscript } from "../panel/script/script-element";
 
-const w = window as unknown as {
+export const w = window as unknown as {
   basepath: string;
   navigateOverride: (s: string) => string;
   isEditor: boolean;
@@ -13,6 +18,12 @@ const w = window as unknown as {
   apiHeaders: any;
   exports: any;
   apiurl: string;
+
+  externalAPI: {
+    mode: "dev" | "prod";
+    devUrl: string;
+    prodUrl: string;
+  };
 };
 
 export const initEditor = async (p: PG, site_id: string) => {
@@ -80,7 +91,25 @@ export const initEditor = async (p: PG, site_id: string) => {
       p.site.name = site.name;
       p.site.domain = site.domain;
       p.site.responsive = site.responsive as any;
+
+      w.externalAPI = {
+        mode: (localStorage.getItem(`prasi-ext-api-mode-${p.site.id}`) ||
+          "prod") as any,
+        devUrl: localStorage.getItem(`prasi-ext-dev-url-${p.site.id}`) || "",
+        prodUrl: localStorage.getItem(`prasi-ext-prod-url-${p.site.id}`) || "",
+      };
+
       p.site.api_url = await initApi(site.config);
+
+      if (w.externalAPI.prodUrl !== p.site.api_url) {
+        w.externalAPI.prodUrl = p.site.api_url;
+        localStorage.setItem(`prasi-ext-prod-url-${p.site.id}`, p.site.api_url);
+      }
+      if (w.externalAPI.mode === "dev" && w.externalAPI.devUrl) {
+        p.site.api_url = w.externalAPI.devUrl;
+        await reloadDBAPI(w.externalAPI.devUrl);
+      }
+
       w.apiurl = p.site.api_url;
       api.site_dts(p.site.id).then((e) => {
         p.site_dts = e || "";

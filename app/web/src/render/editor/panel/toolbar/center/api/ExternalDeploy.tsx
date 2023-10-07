@@ -16,20 +16,29 @@ const server = {
     | "restarting",
 };
 
+const DefaultLocal = {
+  api: null as any,
+  db: { url: "" },
+  domains: [],
+  current: 0,
+  now: 0,
+  deploys: [] as number[],
+};
+
 export const ExternalDeploy = () => {
   const p = useGlobal(EditorGlobal, "EDITOR");
-  const local = useLocal(
-    {
-      api: null as any,
-      db: { url: "" },
-      domains: [],
-      current: 0,
-      now: 0,
-      deploys: [] as number[],
-    },
-    async () => {
+  const local = useLocal(structuredClone(DefaultLocal));
+
+  useEffect(() => {
+    (async () => {
+      const newlocal = structuredClone(DefaultLocal);
+      for (const [k, v] of Object.entries(newlocal)) {
+        (local as any)[k] = v;
+      }
+      local.render();
+
       try {
-        local.api = await createAPI(p.site.api_url);
+        local.api = createAPI(p.site.api_url);
         let res = await local.api._deploy({
           type: "check",
           id_site: p.site.id,
@@ -41,10 +50,10 @@ export const ExternalDeploy = () => {
           local.domains = res.domains;
           local.deploys = res.deploys;
         }
-        local.render();
       } catch (e) {}
-    }
-  );
+      local.render();
+    })();
+  }, [p.site.api_url]);
 
   return (
     <div
@@ -91,7 +100,7 @@ const ExternalDeployDB = ({ url, api }: { url: string; api: any }) => {
   }, [url]);
 
   return (
-    <div className="flex border-y mt-1 py-2 px-2 border-slate-200 boxed  flex flex-col items-stretch">
+    <div className="flex border-y mt-1 py-2 px-2 border-slate-300 boxed  flex flex-col items-stretch">
       <AutoHeightTextarea
         value={local.url}
         className="text-[12px] border p-2 mb-2 "
@@ -188,7 +197,7 @@ const ExternalDomainList = ({
   const p = useGlobal(EditorGlobal, "EDITOR");
 
   return (
-    <div className="flex border-b py-2 px-2 border-slate-200 boxed  flex items-center space-x-1">
+    <div className="flex border-b py-2 px-2 border-slate-300 boxed  flex items-center space-x-1">
       <div>Domains:</div>
       {domains.map((e) => {
         return (
