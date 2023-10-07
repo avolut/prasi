@@ -23,7 +23,12 @@ export const createFrameCors = async (url: string, win?: any) => {
     const _url = new URL(url);
     _url.pathname = "/_api_frm";
     iframe.src = _url.toString();
-    await new Promise<void>((resolve) => {
+
+    await new Promise<void>((resolve, reject) => {
+      iframe.onload = () => {
+        if (!iframe.contentDocument) reject();
+      };
+
       const onInit = (e: any) => {
         if (e.data === "initialized") {
           iframe.setAttribute("loaded", "y");
