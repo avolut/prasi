@@ -1,6 +1,6 @@
-import globalExternals from "@fal-works/esbuild-plugin-global-externals";
 import { dir } from "dir";
-import { context } from "esbuild";
+import { Plugin, context } from "esbuild";
+import { $ } from "execa";
 import { copyAsync, existsAsync, removeAsync, writeAsync } from "fs-jetpack";
 
 export const build = async (mode: string) => {
@@ -36,6 +36,16 @@ export const build = async (mode: string) => {
 
 const buildSite = async (mode: string) => {
   await removeAsync(dir.root(".output/app/srv/site"));
+  const onEndPlugin: Plugin = {
+    name: "on-end",
+    setup(build) {
+      build.onEnd(async (result) => {
+        await removeAsync(dir.root(".output/app/srv/site.zip"));
+        await $({ cwd: dir.root(".output/app/srv") })`zip -r site.zip site`;
+      });
+    },
+  };
+
   const ctx = await context({
     bundle: true,
     absWorkingDir: dir.root(""),
@@ -47,6 +57,7 @@ const buildSite = async (mode: string) => {
     minify: true,
     sourcemap: true,
     logLevel: "error",
+    plugins: [onEndPlugin],
     define: {
       "process.env.NODE_ENV": `"production"`,
     },
@@ -55,7 +66,7 @@ const buildSite = async (mode: string) => {
     await ctx.watch({});
   } else {
     await ctx.rebuild();
-  } 
+  }
   await writeAsync(
     dir.root(".output/app/srv/site/index.html"),
     `

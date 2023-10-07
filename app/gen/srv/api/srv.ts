@@ -182,9 +182,9 @@ export const page_reload = {
 }
 export const site_bundle = {
   name: "site_bundle",
-  url: "/site-bundle",
+  url: "/site-bundle/:mode",
   path: "app/srv/api/site-bundle.ts",
-  args: [],
+  args: ["mode"],
   handler: import("../../../srv/api/site-bundle")
 }
 export const site_dts = {

@@ -103,8 +103,8 @@ export const page_reload = {
   args: ["page_id"],
 }
 export const site_bundle = {
-  url: "/site-bundle",
-  args: [],
+  url: "/site-bundle/:mode",
+  args: ["mode"],
 }
 export const site_dts = {
   url: "/site-dts/:site_id",
