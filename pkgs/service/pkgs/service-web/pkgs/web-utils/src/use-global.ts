@@ -18,6 +18,7 @@ export const GlobalContext = createContext({
   global: Record<string, any>;
   render: (reset?: boolean) => void;
 });
+
 export const uState = useState;
 export const useGlobal = <T extends object>(
   defaultValue: T,

@@ -87,6 +87,7 @@ export const createFrameCors = async (url: string, win?: any) => {
   };
 
   return {
+    sendRaw,
     async send(input: string | RequestInfo | URL, data?: any, _headers?: any) {
       const uri = input.toString();
       const headers = { ..._headers };

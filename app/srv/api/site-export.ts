@@ -1,12 +1,11 @@
 import { apiContext } from "service-srv";
-import createCompress from "compress-brotli";
 
-import fs from "fs";
-import path from "path";
 import { dir } from "dir";
-import { exists } from "fs-jetpack";
+import fs from "fs";
+import { exists, writeAsync } from "fs-jetpack";
+import { compress, compressToUint8Array } from "lz-string";
+import path from "path";
 
-const { compress } = createCompress();
 export const _ = {
   url: "/site-export/:site_id",
   async api(site_id: string) {
@@ -43,14 +42,15 @@ export const _ = {
       }
     }
 
-    const compressed = await compress(
-      JSON.stringify({ site, pages, npm, comps })
-    );
-    return compressed.toString();
+    const str = JSON.stringify({ site, pages, npm, comps });
+    return str;
   },
 };
 
-function readDirectoryRecursively(dirPath: string): Record<string, string> {
+function readDirectoryRecursively(
+  dirPath: string,
+  baseDir?: string[]
+): Record<string, string> {
   const result: Record<string, string> = {};
 
   const contents = fs.readdirSync(dirPath);
@@ -61,9 +61,12 @@ function readDirectoryRecursively(dirPath: string): Record<string, string> {
 
     if (stats.isFile()) {
       const content = fs.readFileSync(itemPath, "utf-8");
-      result[item] = content;
+      result[[...(baseDir || []), item].join("/")] = content;
     } else if (stats.isDirectory()) {
-      const subdirResult = readDirectoryRecursively(itemPath);
+      const subdirResult = readDirectoryRecursively(itemPath, [
+        ...(baseDir || []),
+        item,
+      ]);
       Object.assign(result, subdirResult);
     }
   }

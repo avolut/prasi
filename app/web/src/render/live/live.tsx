@@ -10,9 +10,12 @@ export const Live: FC<{
   domain: string;
   pathname: string;
   loader: Loader;
-}> = ({ domain, pathname, loader }) => {
+  mode: "dev" | "prod";
+}> = ({ domain, pathname, loader, mode = "dev" }) => {
   const p = useGlobal(LiveGlobal, "LIVE");
   p.loader = loader;
+
+  if (mode === "prod") p.prod = true;
 
   if (p.site.id) {
     if (!p.mode && !!p.site.responsive) {
@@ -57,6 +60,5 @@ export const Live: FC<{
   if (p.site.id) {
     routeLive(p, pathname);
   }
-
   return <LPage />;
 };

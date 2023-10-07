@@ -5,6 +5,8 @@ function toAbsoluteURL(url: string) {
 }
 
 export function importModule(url: string) {
+  if (!url) return "";
+
   return new Promise((resolve, reject) => {
     const vector = "$importModule$" + Math.random().toString(32).slice(2);
     const script = document.createElement("script");

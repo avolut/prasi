@@ -51,22 +51,29 @@ export const initLive = async (p: PG, domain: string) => {
 
     /** load site */
     let site = null as any;
-    try {
-      site = JSON.parse(localStorage.getItem(`prasi-site-${domain}`) || "");
-    } catch (e) {}
+    if (!p.prod) {
+      try {
+        site = JSON.parse(localStorage.getItem(`prasi-site-${domain}`) || "");
+      } catch (e) {}
 
-    if (!site) {
+      if (!site) {
+        site = await p.loader.site(
+          p,
+          validate(domain) ? { id: domain } : { domain }
+        );
+        localStorage.setItem(`prasi-site-${domain}`, JSON.stringify(site));
+      } else {
+        p.loader
+          .site(p, validate(domain) ? { id: domain } : { domain })
+          .then((site) => {
+            localStorage.setItem(`prasi-site-${domain}`, JSON.stringify(site));
+          });
+      }
+    } else {
       site = await p.loader.site(
         p,
         validate(domain) ? { id: domain } : { domain }
       );
-      localStorage.setItem(`prasi-site-${domain}`, JSON.stringify(site));
-    } else {
-      p.loader
-        .site(p, validate(domain) ? { id: domain } : { domain })
-        .then((site) => {
-          localStorage.setItem(`prasi-site-${domain}`, JSON.stringify(site));
-        });
     }
 
     if (site) {
@@ -77,27 +84,35 @@ export const initLive = async (p: PG, domain: string) => {
       p.site.id = site.id;
       p.site.js = site.js_compiled || "";
       p.site.responsive = site.responsive as any;
-      p.site.api_url = await initApi(site.config);
+      p.site.api_url = await initApi(site.config, p.prod ? "prod" : "dev");
       w.apiurl = p.site.api_url;
 
-      /** load pages */
-      const pagesLocal = localStorage.getItem(`prasi-pages-[${domain}]`);
       let pages = [];
-      if (pagesLocal) {
-        try {
-          pages = JSON.parse(pagesLocal);
-        } catch (e) {}
-      }
-      if (pages.length === 0) {
-        pages = await p.loader.pages(p, site.id);
-        localStorage.setItem(`prasi-pages-[${domain}]`, JSON.stringify(pages));
-      } else {
-        p.loader.pages(p, site.id).then((pages) => {
+      if (!p.prod) {
+        /** load pages */
+        const pagesLocal = localStorage.getItem(`prasi-pages-[${domain}]`);
+        if (pagesLocal) {
+          try {
+            pages = JSON.parse(pagesLocal);
+          } catch (e) {}
+        }
+
+        if (pages.length === 0) {
+          pages = await p.loader.pages(p, site.id);
           localStorage.setItem(
             `prasi-pages-[${domain}]`,
             JSON.stringify(pages)
           );
-        });
+        } else {
+          p.loader.pages(p, site.id).then((pages) => {
+            localStorage.setItem(
+              `prasi-pages-[${domain}]`,
+              JSON.stringify(pages)
+            );
+          });
+        }
+      } else {
+        pages = await p.loader.pages(p, site.id);
       }
 
       /** execute site module */
@@ -130,7 +145,7 @@ export const initLive = async (p: PG, domain: string) => {
       }
 
       /** create router */
-      p.route = createRouter({ strictTrailingSlash: false });
+      p.route = createRouter({ strictTrailingSlash: true });
       if (pages && pages.length > 0) {
         for (const page of pages) {
           p.route.insert(page.url, page);

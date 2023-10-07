@@ -307,6 +307,10 @@ const ExternalDeployList = ({
             .sort()
             .reverse()
             .map((e) => {
+              let text = "";
+              try {
+                text = formatDistance(e, local.now, { addSuffix: true });
+              } catch (e) {}
               return (
                 <div
                   key={e}
@@ -337,7 +341,9 @@ const ExternalDeployList = ({
                   }}
                   className={cx(
                     "px-4 py-1 hover:bg-blue-50 border-t flex justify-between items-center",
-                    local.current === e ? "bg-green-50" : "",
+                    local.current === e
+                      ? "bg-green-50 border-l-4 border-l-green-700"
+                      : "",
                     server.status !== "deploying" &&
                       server.status !== "saving" &&
                       local.current !== e
@@ -352,7 +358,7 @@ const ExternalDeployList = ({
                     `
                   )}
                 >
-                  <div>{formatDistance(e, local.now, { addSuffix: true })}</div>
+                  <div>{text}</div>
                   {local.current !== e && (
                     <div className="text-slate-400 hidden deploy">
                       Re-deploy this

@@ -3,12 +3,12 @@ import { useGlobal } from "web-utils";
 import { produceCSS } from "../../../utils/css/gen";
 import { IContent } from "../../../utils/types/general";
 import { FNAdv, FNCompDef, FNLinkTag } from "../../../utils/types/meta-fn";
+import { responsiveVal } from "../../editor/tools/responsive-val";
 import { LiveGlobal } from "../logic/global";
+import { preload } from "../logic/route";
 import { treePropEval } from "../logic/tree-prop";
 import { treeScopeEval } from "../logic/tree-scope";
 import { LTextInternal } from "./l-text";
-import { responsiveVal } from "../../editor/tools/responsive-val";
-import { preload } from "../logic/route";
 
 export const LRender: FC<{
   id: string;
@@ -32,16 +32,26 @@ export const LRender: FC<{
     return null;
   }
 
-  if (meta.comp && meta.comp.mcomp) {
+  if (meta.comp?.id) {
     const comp = meta.comp;
-    const props = meta.comp.mcomp
-      .get("component")
-      ?.get("props")
-      ?.toJSON() as Record<string, FNCompDef>;
 
-    const cprops = Object.entries(props).sort((a, b) => {
-      return a[1].idx - b[1].idx;
-    });
+    let props = {} as Record<string, FNCompDef>;
+    let cprops = {} as [string, FNCompDef][];
+    if (p.prod && meta.comp.mcomp) {
+      props = meta.comp.mcomp
+        .get("component")
+        ?.get("props")
+        ?.toJSON() as Record<string, FNCompDef>;
+
+      cprops = Object.entries(props).sort((a, b) => {
+        return a[1].idx - b[1].idx;
+      });
+    } else {
+      props = structuredClone(
+        p.comps.all[meta.comp.id]?.content_tree.component?.props || {}
+      );
+      cprops = Object.entries(props);
+    }
 
     comp.propval = treePropEval(p, meta, cprops);
   }

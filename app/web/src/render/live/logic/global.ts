@@ -50,12 +50,13 @@ export type LSite = {
 };
 export type Loader = {
   site: (p: PG, where: { domain: string } | { id: string }) => Promise<LSite>;
-  page: (p: PG, id: string) => Promise<LPage>;
+  page: (p: PG, id: string) => Promise<LPage | null>;
   pages: (p: PG, site_id: string) => Promise<LPage[]>;
   npm: (p: PG, type: "site" | "page", id: string) => string;
   comp: (p: PG, id: string) => Promise<PRASI_COMPONENT>;
 };
 export const LiveGlobal = {
+  prod: false,
   loader: undefined as unknown as Loader,
   mode: "" as "desktop" | "mobile",
   status: "init" as
@@ -93,6 +94,7 @@ export const LiveGlobal = {
     pending: {} as Record<string, Promise<PRASI_COMPONENT>>,
     resolve: {} as Record<string, (comp: PRASI_COMPONENT) => void>,
     doc: {} as Record<string, CompDoc>,
+    all: {} as Record<string, PRASI_COMPONENT>,
   },
   script: {
     db: null as any,

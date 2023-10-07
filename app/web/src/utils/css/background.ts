@@ -11,7 +11,7 @@ export const cssBackground = (
     pos: "center",
   });
 
-  let bgurl = `${siteApiUrl}${bg.url}`;
+  let bgurl = `${serverurl}${bg.url}`;
   if (bg && bg.url && bg.url.startsWith("http")) {
     bgurl = bg.url;
   }

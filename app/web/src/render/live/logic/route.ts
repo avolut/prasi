@@ -17,6 +17,7 @@ export const routeLive = (p: PG, pathname: string) => {
       page_id = pathname.substring(1);
     } else {
       const found = p.route.lookup(pathname);
+
       if (!found) {
         p.status = "not-found";
       } else {
@@ -48,9 +49,18 @@ export const routeLive = (p: PG, pathname: string) => {
       }
       if (!p.page || !p.page.content_tree) {
         p.status = "loading";
-        promises.push(streamPage(p, page_id));
+
+        if (!p.prod) {
+          promises.push(streamPage(p, page_id));
+        } else {
+          promises.push(loadPage(p, page_id));
+        }
       } else {
-        streamPage(p, page_id);
+        if (!p.prod) {
+          streamPage(p, page_id);
+        } else {
+          loadPage(p, page_id);
+        }
       }
 
       if (promises.length > 0) {
@@ -101,6 +111,23 @@ const loadNpmPage = async (p: PG, id: string) => {
     await importModule(p.loader.npm(p, "page", id));
   } catch (e) {
     console.error(e);
+  }
+};
+
+const loadPage = async (p: PG, id: string) => {
+  const dbpage = await p.loader.page(p, id);
+  if (dbpage) {
+    p.pages[dbpage.id] = {
+      id: dbpage.id,
+      url: dbpage.url,
+      name: dbpage.name,
+      content_tree: dbpage.content_tree as any,
+      js: (dbpage as any).js_compiled as any,
+    };
+    const page = p.pages[dbpage.id];
+    if (page && page.content_tree) {
+      await loadComponent(p, page.content_tree);
+    }
   }
 };
 

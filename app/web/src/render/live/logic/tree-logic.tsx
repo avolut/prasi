@@ -9,28 +9,20 @@ export const rebuildTree = async (
   p: PG,
   _: { note: string; render?: boolean; reset?: boolean }
 ) => {
-  if (!p.mpage) {
-    console.warn("MPage not loaded");
-  }
+  const treeMeta = p.treeMeta;
+  await Promise.all(
+    Object.values(p.page?.content_tree.childs || {}).map(async (item, idx) => {
+      await walk(p, {
+        treeMeta,
+        item,
+        parent_id: "root",
+        idx,
+      });
+    }) || []
+  );
 
-  if (p.mpage) {
-    const treeMeta = p.treeMeta;
-    await Promise.all(
-      Object.values(p.page?.content_tree.childs || {}).map(
-        async (item, idx) => {
-          await walk(p, {
-            treeMeta,
-            item,
-            parent_id: "root",
-            idx,
-          });
-        }
-      ) || []
-    );
-
-    if (_.render !== false) {
-      p.render();
-    }
+  if (_.render !== false) {
+    p.render();
   }
 };
 
@@ -64,9 +56,9 @@ const walk = async (
       comp = {
         id: item.component.id,
         child_ids: {},
-        mcomp: p.comps.doc[item.component.id]
-          ?.getMap("map")
-          .get("content_tree"),
+        mcomp: p.prod
+          ? undefined
+          : p.comps.doc[item.component.id]?.getMap("map").get("content_tree"),
       };
     }
 
@@ -84,79 +76,131 @@ const walk = async (
 
     if (item.type === "item" && item.component?.id) {
       const cid = item.component.id;
-      let doc = p.comps.doc[cid];
-      if (!doc) {
-        await loadComponent(p, cid);
-        doc = p.comps.doc[cid];
-      }
+      if (p.prod) {
+        let comp = p.comps.all[cid];
+        if (!comp) {
+          await loadComponent(p, cid);
+          comp = p.comps.all[cid];
+        }
 
-      if (doc) {
-        const mcomp = doc.getMap("map").get("content_tree") as MItem;
-        if (mcomp) {
+        if (comp) {
           if (!p.compInstance[item.id]) {
             p.compInstance[item.id] = {};
           }
           const child_ids = p.compInstance[item.id];
-          const itemnew = instantiateComp(p, item, mcomp, child_ids);
+          const itemnew = instantiateComp(
+            p,
+            item,
+            { type: "i", item: comp },
+            child_ids
+          );
           for (const [k, v] of Object.entries(itemnew)) {
             if (k !== "id") (item as any)[k] = v;
           }
 
-          meta.comp = {
-            id: cid,
-            mcomp,
-            child_ids,
-          };
-        }
-
-        let cprops: [string, FNCompDef][] = Object.entries(
-          item.component?.props || {}
-        ).sort((a, b) => {
-          return a[1].idx - b[1].idx;
-        });
-        if (mcomp) {
-          const mprops = mcomp.get("component")?.get("props");
+          const cprops = comp.content_tree.component?.props;
           const iprops = item.component.props;
 
-          if (mprops && iprops) {
-            for (const [name, cprop] of cprops) {
-              let mp = mprops.get(name);
-              if (mp) {
-                const mprop = mp?.toJSON() as FNCompDef;
-                const jsx_prop = iprops[name];
+          if (cprops && iprops) {
+            for (const [name, mprop] of Object.entries(cprops)) {
+              const jsx_prop = iprops[name];
 
-                if (jsx_prop) {
-                  if (mprop.meta?.type === "content-element") {
-                    let icontent = jsx_prop.content;
+              if (jsx_prop) {
+                if (mprop.meta?.type === "content-element") {
+                  let icontent = jsx_prop.content;
 
-                    if (icontent)
-                      await walk(p, {
-                        treeMeta,
-                        item: cprop.content,
-                        parent_id: item.id,
-                        parent_comp: val.parent_comp,
-                        idx: mprop.idx,
-                      });
+                  if (icontent)
+                    await walk(p, {
+                      treeMeta,
+                      item: mprop.content,
+                      parent_id: item.id,
+                      parent_comp: val.parent_comp,
+                      idx: mprop.idx,
+                    });
+                }
+              }
+            }
+          }
+        }
+      } else {
+        let doc = p.comps.doc[cid];
+        if (!doc) {
+          await loadComponent(p, cid);
+          doc = p.comps.doc[cid];
+        }
+
+        if (doc) {
+          const mcomp = doc.getMap("map").get("content_tree") as MItem;
+          if (mcomp) {
+            if (!p.compInstance[item.id]) {
+              p.compInstance[item.id] = {};
+            }
+            const child_ids = p.compInstance[item.id];
+            const itemnew = instantiateComp(
+              p,
+              item,
+              { type: "m", item: mcomp },
+              child_ids
+            );
+            for (const [k, v] of Object.entries(itemnew)) {
+              if (k !== "id") (item as any)[k] = v;
+            }
+
+            meta.comp = {
+              id: cid,
+              mcomp,
+              child_ids,
+            };
+          }
+
+          let cprops: [string, FNCompDef][] = Object.entries(
+            item.component?.props || {}
+          ).sort((a, b) => {
+            return a[1].idx - b[1].idx;
+          });
+          if (mcomp) {
+            const mprops = mcomp.get("component")?.get("props");
+            const iprops = item.component.props;
+
+            if (mprops && iprops) {
+              for (const [name, cprop] of cprops) {
+                let mp = mprops.get(name);
+                if (mp) {
+                  const mprop = mp?.toJSON() as FNCompDef;
+                  const jsx_prop = iprops[name];
+
+                  if (jsx_prop) {
+                    if (mprop.meta?.type === "content-element") {
+                      let icontent = jsx_prop.content;
+
+                      if (icontent)
+                        await walk(p, {
+                          treeMeta,
+                          item: cprop.content,
+                          parent_id: item.id,
+                          parent_comp: val.parent_comp,
+                          idx: mprop.idx,
+                        });
+                    }
                   }
                 }
               }
             }
           }
         }
-        await Promise.all(
-          item.childs.map(async (child, idx) => {
-            if (meta.comp && meta.comp.mcomp) {
-              return await walk(p, {
-                treeMeta,
-                item: child,
-                parent_comp: meta as any,
-                parent_id: item.id,
-                idx,
-              });
-            }
-          })
-        );
       }
+
+      await Promise.all(
+        item.childs.map(async (child, idx) => {
+          return await walk(p, {
+            treeMeta,
+            item: child,
+            parent_comp: meta as any,
+            parent_id: item.id,
+            idx,
+          });
+        })
+      );
     } else {
       if (item.type !== "text" && Array.isArray(item.childs)) {
         await Promise.all(

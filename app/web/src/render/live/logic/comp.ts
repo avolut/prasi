@@ -1,14 +1,12 @@
 import { createId } from "@paralleldrive/cuid2";
+import * as Y from "yjs";
 import { IContent } from "../../../utils/types/general";
 import { IItem, MItem } from "../../../utils/types/item";
 import { FNCompDef, FNComponent } from "../../../utils/types/meta-fn";
-import { PRASI_COMPONENT } from "../../../utils/types/render";
 import { IRoot } from "../../../utils/types/root";
-import { WS_MSG_GET_COMP } from "../../../utils/types/ws";
 import { fillID } from "../../editor/tools/fill-id";
 import { PG } from "./global";
-import { wsend } from "./ws";
-import * as Y from "yjs";
+import { PRASI_COMPONENT } from "../../../utils/types/render";
 
 export const scanComponent = (
   item: IRoot | IContent,
@@ -58,7 +56,11 @@ export const loadComponent = async (
   scanComponent(tree, compIds);
   const promises = [...compIds]
     .filter((id) => {
-      if (!p.comps.doc[id] && !p.comps.pending[id]) return true;
+      if (p.prod) {
+        if (!p.comps.all[id] && !p.comps.pending[id]) return true;
+      } else {
+        if (!p.comps.doc[id] && !p.comps.pending[id]) return true;
+      }
       return false;
     })
     .map(async (id) => {
@@ -79,22 +81,33 @@ const loadSingleComponent = (p: PG, comp_id: string) => {
 export const instantiateComp = (
   p: PG,
   item: IItem,
-  mcomp: MItem,
+  mcomp: { item: MItem; type: "m" } | { item: PRASI_COMPONENT; type: "i" },
   child_ids: Record<string, string>
 ) => {
   const comp = item.component as FNComponent;
-  let mprops = mcomp.get("component")?.get("props")?.toJSON() as Record<
-    string,
-    FNCompDef
-  >;
 
-  if (!mprops) {
-    mcomp.get("component")?.set("props", new Y.Map() as any);
-    mprops = mcomp.get("component")?.get("props")?.toJSON() as any;
+  let target = null as any;
+  let mprops = {} as Record<string, FNCompDef>;
+  if (mcomp.type === "m") {
+    const mitem = mcomp.item;
+
+    mprops = mitem.get("component")?.get("props")?.toJSON() as Record<
+      string,
+      FNCompDef
+    >;
+
+    if (!mprops) {
+      mitem.get("component")?.set("props", new Y.Map() as any);
+      mprops = mitem.get("component")?.get("props")?.toJSON() as any;
+    }
+    target = mitem.toJSON();
+  } else {
+    target = structuredClone(mcomp.item.content_tree);
+    mprops = target.component.props || {};
   }
 
   let nitem = {};
-  nitem = fillID(mcomp.toJSON() as any, (i) => {
+  nitem = fillID(target, (i) => {
     if (!i.originalId) {
       i.originalId = i.id;
     }
