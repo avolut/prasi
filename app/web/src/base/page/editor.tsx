@@ -25,20 +25,24 @@ export default page({
           } catch (e) {}
 
           await new Promise<void>(async (done) => {
-            if (!!ses) {
-              done();
-            }
-            let e = await api.session();
-            if (!e) {
-              (window as any).redirectTo = location.pathname;
-              navigate("/login");
-              localStorage.removeItem("prasi-session");
-            } else {
-              localStorage.setItem("prasi-session", JSON.stringify(e));
-            }
-            if (!ses) {
-              ses = e;
-              done();
+            try {
+              if (!!ses) {
+                done();
+              }
+              let e = await api.session();
+              if (!e) {
+                (window as any).redirectTo = location.pathname;
+                navigate("/login");
+                localStorage.removeItem("prasi-session");
+              } else {
+                localStorage.setItem("prasi-session", JSON.stringify(e));
+              }
+              if (!ses) {
+                ses = e;
+                done();
+              }
+            } catch (e) {
+              console.error(e);
             }
           });
 

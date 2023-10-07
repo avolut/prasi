@@ -26,7 +26,15 @@ export const createFrameCors = async (url: string, win?: any) => {
 
     await new Promise<void>((resolve, reject) => {
       iframe.onload = () => {
-        if (!iframe.contentDocument) reject();
+        if (!iframe.contentDocument) {
+          setTimeout(() => {
+            if (!iframe.contentDocument) {
+              reject(
+                `Cannot load iframe ${_url.toString()}. content document not found.`
+              );
+            }
+          }, 100);
+        }
       };
 
       const onInit = (e: any) => {
@@ -159,6 +167,7 @@ export const fetchSendApi = async (
   let frm: Awaited<ReturnType<typeof createFrameCors>>;
   if (!win.frmapi) {
     win.frmapi = {};
+
     win.frmapi[w.serverurl] = await createFrameCors(w.serverurl, win);
   }
 
@@ -185,5 +194,6 @@ export const fetchSendApi = async (
       return frm;
     });
   }
+
   return await frm.send(url, params, win.apiHeaders);
 };
