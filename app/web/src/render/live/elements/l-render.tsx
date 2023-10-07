@@ -37,7 +37,8 @@ export const LRender: FC<{
 
     let props = {} as Record<string, FNCompDef>;
     let cprops = {} as [string, FNCompDef][];
-    if (p.prod && meta.comp.mcomp) {
+
+    if (meta.comp.mcomp) {
       props = meta.comp.mcomp
         .get("component")
         ?.get("props")

@@ -4,7 +4,7 @@ import { w } from "../../../utils/types/general";
 import { WS_MSG_GET_PAGE } from "../../../utils/types/ws";
 import importModule from "../../editor/tools/dynamic-import";
 import { loadComponent } from "./comp";
-import { LiveGlobal, PG } from "./global";
+import { LPage, LiveGlobal, PG } from "./global";
 import { liveWS, wsend } from "./ws";
 import { rebuildTree } from "./tree-logic";
 
@@ -114,19 +114,27 @@ const loadNpmPage = async (p: PG, id: string) => {
   }
 };
 
+const loading = {} as Record<string, Promise<LPage | null>>;
+
 const loadPage = async (p: PG, id: string) => {
-  const dbpage = await p.loader.page(p, id);
-  if (dbpage) {
-    p.pages[dbpage.id] = {
-      id: dbpage.id,
-      url: dbpage.url,
-      name: dbpage.name,
-      content_tree: dbpage.content_tree as any,
-      js: (dbpage as any).js_compiled as any,
+  if (!loading[id]) {
+    loading[id] = p.loader.page(p, id);
+  }
+
+  const page = await loading[id];
+
+  if (page) {
+    p.pages[page.id] = {
+      id: page.id,
+      url: page.url,
+      name: page.name,
+      content_tree: page.content_tree as any,
+      js: (page as any).js_compiled as any,
     };
-    const page = p.pages[dbpage.id];
-    if (page && page.content_tree) {
-      await loadComponent(p, page.content_tree);
+    
+    const cur = p.pages[page.id];
+    if (cur && cur.content_tree) {
+      await loadComponent(p, cur.content_tree);
     }
   }
 };

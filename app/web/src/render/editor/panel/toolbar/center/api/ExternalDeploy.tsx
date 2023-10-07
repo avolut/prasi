@@ -5,6 +5,7 @@ import { AutoHeightTextarea } from "../../../../../../utils/ui/auto-textarea";
 import { useEffect } from "react";
 import trim from "lodash.trim";
 import { formatDistance } from "date-fns/esm";
+import { format } from "date-fns";
 
 const server = {
   status: "ready" as
@@ -301,20 +302,23 @@ const ExternalDeployList = ({
           No Deployment
         </div>
       )}
-      <div className="overflow-auto h-[200px] relative">
+      <div className="overflow-auto h-[200px] relative border-t">
         <div className="absolute inset-0">
           {deploys
             .sort()
             .reverse()
             .map((e) => {
-              let text = "";
+              let ago = "";
+              let date = "";
               try {
-                text = formatDistance(e, local.now, { addSuffix: true });
+                date = format(e, "yyyy-MM-dd HH:mm:ss");
+                ago = formatDistance(e, local.now, { addSuffix: true });
               } catch (e) {}
               return (
                 <div
                   key={e}
                   onClick={async () => {
+                    if (local.current === e) return;
                     if (
                       server.status !== "deploying" &&
                       server.status !== "saving"
@@ -340,10 +344,10 @@ const ExternalDeployList = ({
                     }
                   }}
                   className={cx(
-                    "px-4 py-1 hover:bg-blue-50 border-t flex justify-between items-center",
+                    "pr-4 pl-1 py-1 hover:bg-blue-50 border-b flex justify-between items-center h-[30px] font-mono text-[10px]",
                     local.current === e
                       ? "bg-green-50 border-l-4 border-l-green-700"
-                      : "",
+                      : "border-l-4 border-l-transparent",
                     server.status !== "deploying" &&
                       server.status !== "saving" &&
                       local.current !== e
@@ -358,16 +362,71 @@ const ExternalDeployList = ({
                     `
                   )}
                 >
-                  <div>{text}</div>
+                  <div className="">
+                    {date} · {ago}
+                  </div>
                   {local.current !== e && (
-                    <div className="text-slate-400 hidden deploy">
-                      Re-deploy this
-                    </div>
+                    <div className="text-slate-400 hidden deploy">Redeploy</div>
                   )}
                   {local.current === e ? (
-                    <div className="text-green-800">✓</div>
+                    <div className="text-green-800">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="15"
+                        height="15"
+                        fill="none"
+                        viewBox="0 0 15 15"
+                      >
+                        <path
+                          fill="currentColor"
+                          fillRule="evenodd"
+                          d="M11.467 3.727c.289.189.37.576.181.865l-4.25 6.5a.625.625 0 01-.944.12l-2.75-2.5a.625.625 0 01.841-.925l2.208 2.007 3.849-5.886a.625.625 0 01.865-.181z"
+                          clipRule="evenodd"
+                        ></path>
+                      </svg>
+                    </div>
                   ) : (
-                    <div></div>
+                    <div
+                      className="text-red-700 hidden deploy px-3 rounded-md hover:bg-red-100 -my-1 py-1 -mr-3 "
+                      onClick={async (evt) => {
+                        evt.stopPropagation();
+                        evt.preventDefault();
+                        if (!confirm("Delete this deploy ?")) return;
+                        server.status = "deploying";
+                        p.render();
+
+                        const res = await api._deploy({
+                          type: "deploy-del",
+                          id_site: p.site.id,
+                          ts: e,
+                        });
+
+                        server.status = "ready";
+                        p.render();
+                        if (res && res.current && Array.isArray(res.deploys)) {
+                          local.current = res.current;
+                          local.deploys = res.deploys;
+                          alert("DELETE: OK");
+                        } else {
+                          alert("DELETE: FAILED");
+                        }
+                      }}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="13"
+                        height="13"
+                        fill="none"
+                        viewBox="0 0 15 15"
+                      >
+                        <path
+                          fill="currentColor"
+                          fillRule="evenodd"
+                          d="M5.5 1a.5.5 0 000 1h4a.5.5 0 000-1h-4zM3 3.5a.5.5 0 01.5-.5h8a.5.5 0 010 1H11v8a1 1 0 01-1 1H5a1 1 0 01-1-1V4h-.5a.5.5 0 01-.5-.5zM5 4h5v8H5V4z"
+                          clipRule="evenodd"
+                        ></path>
+                      </svg>
+                    </div>
                   )}
                 </div>
               );
