@@ -125,11 +125,15 @@ export const reloadDBAPI = async (
     await set(url, JSON.stringify(w.prasiApi[url]), cache);
   };
 
-  const found = await get(url, cache);
-  if (found) {
-    w.prasiApi[url] = JSON.parse(found);
-    forceReload();
-  } else {
-    await forceReload();
+  try {
+    const found = await get(url, cache);
+    if (found) {
+      w.prasiApi[url] = JSON.parse(found);
+      forceReload();
+    } else {
+      await forceReload();
+    }
+  } catch (e) {
+    console.warn("Failed to load API");
   }
 };
