@@ -112,6 +112,10 @@ export const ExternalAPI = ({
           disabled={status === "starting"}
           value={w.externalAPI.devUrl}
           onInput={(e) => {
+            if (w.externalAPI.mode === "dev") {
+              w.externalAPI.mode = "prod";
+            }
+
             const val = e.currentTarget.value;
             w.externalAPI.devUrl = val;
             localStorage.setItem(`prasi-ext-dev-url-${p.site.id}`, val);
