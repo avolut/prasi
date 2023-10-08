@@ -93,7 +93,14 @@ export const createFrameCors = async (url: string, win?: any) => {
             }
           };
           w.addEventListener("message", wm[id]);
-          iframe.contentWindow.postMessage({ input, init, id }, "*");
+
+          let _input = input;
+          if (typeof input === "string") {
+            if (!input.startsWith("http")) {
+              _input = `${url}${input}`;
+            }
+          }
+          iframe.contentWindow.postMessage({ input: _input, init, id }, "*");
         }
       });
     }
