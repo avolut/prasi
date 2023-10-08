@@ -47,10 +47,10 @@ export const EScriptElement: FC<{}> = ({}) => {
 
   if (!jscript.editor) {
     Promise.all([
-      // import("@monaco-editor/react").then((e) => {
-      //   jscript.editor = e.Editor;
-      //   e.loader.config({ paths: { vs: "/min/vs" } });
-      // }),
+      import("@monaco-editor/react").then((e) => {
+        jscript.editor = e.Editor;
+        e.loader.config({ paths: { vs: "/min/vs" } });
+      }),
       jscript.init(),
     ]).then(() => {
       p.render();

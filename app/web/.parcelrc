@@ -4,8 +4,7 @@
   ],
   "reporters": [
     "...",
-    "@tinijs/parcel-reporter-copy-public",
-    "@parcel/reporter-bundle-analyzer"
+    "@tinijs/parcel-reporter-copy-public"
   ],
   "transformers": {
     "*.wasm": [
