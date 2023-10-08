@@ -1,15 +1,14 @@
+import { useEffect } from "react";
 import { useGlobal, useLocal } from "web-utils";
+import { w } from "../../../../../utils/types/general";
 import { ToolbarBox } from "../../../../../utils/ui/box";
 import { Modal } from "../../../../../utils/ui/modal";
-import { EditorGlobal } from "../../../logic/global";
-import { MonacoEditor } from "../../script/monaco/typings";
-import { useEffect } from "react";
-import { reloadDBAPI } from "../../../../../utils/script/init-api";
-import { w } from "../../../../../utils/types/general";
 import { Popover } from "../../../../../utils/ui/popover";
+import { EditorGlobal } from "../../../logic/global";
 import { execSiteJS } from "../../../logic/init";
 import { wsend } from "../../../logic/ws";
 import { customMonacoState } from "../../script/monaco/monaco-custom";
+import { MonacoEditor } from "../../script/monaco/typings";
 import { EScriptCustom } from "../../script/script-custom";
 import { AddElement } from "./AddElement";
 import { Export } from "./Export";
@@ -19,7 +18,7 @@ import { APIConfig } from "./api/APIConfig";
 export const ToolbarCenter = () => {
   const p = useGlobal(EditorGlobal, "EDITOR");
   const local = useLocal({
-    apiConfigOpen: true,
+    apiConfigOpen: false,
     siteJS: {
       timeout: null as any,
       editor: null as null | MonacoEditor,

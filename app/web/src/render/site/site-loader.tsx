@@ -32,7 +32,7 @@ export const SiteLoader: Loader = {
   },
   npm(p, type, id) {
     if (type === "site") return `/_web/${cache.site.id}/npm-site/site.js`;
-    return `/_web/${cache.site.id}/npm-page/page.js`;
+    return `/_web/${cache.site.id}/npm-page/${id}/page.js`;
   },
   async page(p, id) {
     const page = cache.pages.find((x: any) => x.id === id);

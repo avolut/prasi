@@ -22,6 +22,7 @@ export const rebuildTree = async (
   );
 
   if (_.render !== false) {
+    console.log("rendering");
     p.render();
   }
 };
@@ -112,7 +113,7 @@ const walk = async (
                   if (icontent)
                     await walk(p, {
                       treeMeta,
-                      item: mprop.content,
+                      item: icontent,
                       parent_id: item.id,
                       parent_comp: val.parent_comp,
                       idx: mprop.idx,

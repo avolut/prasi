@@ -4,6 +4,7 @@ import { FNCompDef } from "../../../utils/types/meta-fn";
 import { ItemMeta, PG } from "./global";
 import { mergeScopeUpwards } from "./tree-scope";
 import { LItem } from "../elements/l-item";
+import { extractNavigate, preload } from "./route";
 
 export type PropCompFC = FC<{}>;
 
@@ -40,6 +41,11 @@ export const treePropEval = (
         );
         try {
           value = fn(...Object.values(args)) || null;
+
+          const navs = extractNavigate(prop.valueBuilt || "");
+          if (navs.length > 0) {
+            navs.map((nav) => preload(p, nav));
+          }
         } catch (e) {
           const cname = meta.item.name;
           console.warn(e);
@@ -65,7 +71,7 @@ export const treePropEval = (
                       return true;
                     },
                   });
-                  
+
                   if (p.treeMeta[prop.content.id]) {
                     p.treeMeta[prop.content.id].scopeAttached = scopes;
                   }

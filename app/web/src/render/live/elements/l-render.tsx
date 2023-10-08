@@ -87,6 +87,7 @@ export const LRender: FC<{
       const html = renderHTML(className, adv);
       if (html) return html;
     } else if (adv.jsBuilt && adv.js) {
+
       const el = treeScopeEval(p, meta, _children, adv.jsBuilt);
       return el;
     }
@@ -146,7 +147,15 @@ export const LRender: FC<{
     );
   }
 
-  return <div className={className}>{_children}</div>;
+  return (
+    <div className={className}>
+      {/* <pre className={"text-[9px] font-mono text-black"}>
+        {item.id}-{item.name}
+        {item.name === "coba" && JSON.stringify(item.childs)}
+      </pre> */}
+      {_children}
+    </div>
+  );
 };
 
 export const renderHTML = (className: string, adv: FNAdv) => {

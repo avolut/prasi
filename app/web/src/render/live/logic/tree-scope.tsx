@@ -3,6 +3,7 @@ import { deepClone } from "web-utils";
 import { createAPI, createDB } from "../../../utils/script/init-api";
 import { ErrorBox } from "../../editor/elements/e-error";
 import { ItemMeta, PG } from "./global";
+import { extractNavigate, preload } from "./route";
 
 export const JS_DEBUG = false;
 
@@ -24,6 +25,13 @@ export const treeScopeEval = (
         Local: createLocal(p, meta),
         PassProp: createPassProp(p, meta),
       };
+    }
+
+    if (typeof adv?.js === "string") {
+      const navs = extractNavigate(adv.js || "");
+      if (navs.length > 0) {
+        navs.map((nav) => preload(p, nav));
+      }
     }
 
     // prepare args

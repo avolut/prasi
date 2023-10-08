@@ -21,6 +21,7 @@ export const routeLive = (p: PG, pathname: string) => {
       if (!found) {
         p.status = "not-found";
       } else {
+        if (!w.params) w.params = {};
         if (found.params) {
           for (const [k, v] of Object.entries(found.params)) {
             w.params[k] = v;
@@ -33,6 +34,7 @@ export const routeLive = (p: PG, pathname: string) => {
     if (page_id) {
       (window as any).prasiPageID = page_id;
       const promises: Promise<void>[] = [];
+      let hasCache = false;
       if (page_id !== p.page?.id) {
         if (p.page) {
           cacheMeta[p.page.id] = p.treeMeta;
@@ -42,12 +44,13 @@ export const routeLive = (p: PG, pathname: string) => {
 
         if (p.page && cacheMeta[p.page.id]) {
           p.treeMeta = cacheMeta[p.page.id];
+          hasCache = true;
         } else {
-          promises.push(loadNpmPage(p, page_id));
           p.treeMeta = {};
         }
       }
       if (!p.page || !p.page.content_tree) {
+        promises.push(loadNpmPage(p, page_id));
         p.status = "loading";
 
         if (!p.prod) {
@@ -58,8 +61,6 @@ export const routeLive = (p: PG, pathname: string) => {
       } else {
         if (!p.prod) {
           streamPage(p, page_id);
-        } else {
-          loadPage(p, page_id);
         }
       }
 
@@ -70,11 +71,17 @@ export const routeLive = (p: PG, pathname: string) => {
           p.render();
         });
       } else {
-        pageLoaded(p);
+        if (p.prod && !hasCache && !firstRender[page_id]) {
+          firstRender[page_id] = true;
+          pageLoaded(p).then(p.render);
+        } else {
+          pageLoaded(p);
+        }
       }
     }
   }
 };
+const firstRender = {} as Record<string, true>;
 
 const pageLoaded = async (p: PG) => {
   if (p.page) {
@@ -98,17 +105,22 @@ export const preload = async (p: PG, pathname: string) => {
           await loadComponent(p, page.content_tree);
         }
         delete p.pagePreload[found.id];
+        await loadNpmPage(p, dbpage.id);
       }
     }
   }
 };
 
+const npmPageLoaded = {} as Record<string, true>;
 const loadNpmPage = async (p: PG, id: string) => {
   try {
-    if (typeof window.exports === "undefined") {
-      window.exports = {};
+    if (!npmPageLoaded[id]) {
+      npmPageLoaded[id] = true;
+      if (typeof window.exports === "undefined") {
+        window.exports = {};
+      }
+      await importModule(p.loader.npm(p, "page", id));
     }
-    await importModule(p.loader.npm(p, "page", id));
   } catch (e) {
     console.error(e);
   }
@@ -131,7 +143,7 @@ const loadPage = async (p: PG, id: string) => {
       content_tree: page.content_tree as any,
       js: (page as any).js_compiled as any,
     };
-    
+
     const cur = p.pages[page.id];
     if (cur && cur.content_tree) {
       await loadComponent(p, cur.content_tree);

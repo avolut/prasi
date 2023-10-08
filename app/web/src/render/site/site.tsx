@@ -7,6 +7,7 @@ import { SiteLoader } from "./site-loader";
 
 const w = window as unknown as {
   prasiContext: any;
+  rootRender: any;
 };
 
 w.prasiContext = {
@@ -19,11 +20,13 @@ const Root: FC<{ url: URL; Live: any }> = ({ url, Live }) => {
   w.prasiContext.render = () => {
     render({});
   };
+  w.rootRender = w.prasiContext.render;
+
   return (
     <GlobalContext.Provider value={w.prasiContext}>
       <Live
         domain={url.host}
-        pathname={url.pathname}
+        pathname={location.pathname}
         loader={SiteLoader}
         mode="prod"
       />

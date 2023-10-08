@@ -63,11 +63,13 @@ function readDirectoryRecursively(
       const content = fs.readFileSync(itemPath, "utf-8");
       result[[...(baseDir || []), item].join("/")] = content;
     } else if (stats.isDirectory()) {
-      const subdirResult = readDirectoryRecursively(itemPath, [
-        ...(baseDir || []),
-        item,
-      ]);
-      Object.assign(result, subdirResult);
+      if (item !== "node_modules") {
+        const subdirResult = readDirectoryRecursively(itemPath, [
+          ...(baseDir || []),
+          item,
+        ]);
+        Object.assign(result, subdirResult);
+      }
     }
   }
 
