@@ -114,6 +114,10 @@ export const ExternalAPI = ({
           onInput={(e) => {
             if (w.externalAPI.mode === "dev") {
               w.externalAPI.mode = "prod";
+              localStorage.setItem(
+                `prasi-ext-api-mode-${p.site.id}`,
+                w.externalAPI.mode
+              );
             }
 
             const val = e.currentTarget.value;
