@@ -12,10 +12,10 @@ const w = window as any;
 new Function(decompress(w.royal))();
 
 export const initApp = async (name: string) => {
+  setup(React.createElement);
   defineReact();
   await defineWindow();
-  setup(React.createElement);
-  defineApi();
+  await defineApi();
 
   const pageImport = (await import(
     "../../../../../../app/gen/web/page/entry"
