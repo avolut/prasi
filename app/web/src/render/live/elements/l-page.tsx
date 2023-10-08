@@ -18,15 +18,24 @@ export const LPage = () => {
           "absolute flex flex-col items-stretch flex-1 bg-white ",
           mode === "mobile"
             ? css`
-                border-left: 1px solid #ccc;
-                border-right: 1px solid #ccc;
-                width: 375px;
-                top: 0px;
-                overflow-x: hidden;
-                overflow-y: auto;
-                bottom: 0px;
+                @media (min-width: 768px) {
+                  border-left: 1px solid #ccc;
+                  border-right: 1px solid #ccc;
+                  width: 375px;
+                  top: 0px;
+                  overflow-x: hidden;
+                  overflow-y: auto;
+                  bottom: 0px;
+                }
+                @media (max-width: 767px) {
+                  left: 0px;
+                  right: 0px;
+                  top: 0px;
+                  bottom: 0px;
+                  overflow-y: auto;
+                }
               `
-            : "inset-0  overflow-auto",
+            : "inset-0 overflow-auto",
 
           css`
             contain: content;

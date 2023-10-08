@@ -67,7 +67,7 @@ export const server = async ({
     });
   }
 
-  server.listen(port);
+  server.listen(port, '0.0.0.0');
 
   return server;
 };
