@@ -98,7 +98,7 @@ export const ScriptMonacoCustom: FC<{
               editor.restoreViewState(customMonacoState[monaco_id]);
             }
 
-            await jsMount(editor, monaco);
+            await jsMount(p, editor, monaco);
             const propVal: any = props || {};
 
             await monacoTypings(p, monaco, {

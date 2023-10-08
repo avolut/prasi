@@ -1,4 +1,4 @@
-import { Monaco } from "@monaco-editor/react";
+import type { Monaco } from "@monaco-editor/react";
 import { FC } from "react";
 import { useGlobal } from "web-utils";
 import { Loading } from "../../../../utils/ui/loading";

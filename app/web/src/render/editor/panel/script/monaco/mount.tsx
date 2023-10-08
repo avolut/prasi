@@ -1,6 +1,5 @@
 import type { OnMount } from "@monaco-editor/react";
 import trim from "lodash.trim";
-import { KeyCode, KeyMod } from "monaco-editor";
 import {
   MonacoJsxSyntaxHighlight,
   getWorker,
@@ -52,7 +51,8 @@ export const jsMount = async (p: PG, editor: MonacoEditor, monaco: Monaco) => {
   editor.addAction({
     id: "reloadPrasiEditorPage",
     label: "Reload Prasi Editor Page",
-    keybindings: [KeyMod.Alt | KeyCode.KeyR],
+    keybindings: [18 | 48],
+    // keybindings: [KeyMod.Alt | KeyCode.KeyR],
     run: async () => {
       p.render();
       p.script.active = false;

@@ -6,10 +6,9 @@ import * as Y from "yjs";
 import { Loading } from "../../../../utils/ui/loading";
 import { Modal } from "../../../../utils/ui/modal";
 import { EditorGlobal } from "../../logic/global";
+import { rebuildTree } from "../../logic/tree-logic";
 import { initJS } from "./monaco/init";
 import { DefaultScript, FBuild, ScriptMonacoElement } from "./monaco/monaco-el";
-import { rebuildTree } from "../../logic/tree-logic";
-import { Popover } from "../../../../utils/ui/popover";
 
 export const jscript = {
   editor: null as typeof MonacoEditor | null,
@@ -48,10 +47,10 @@ export const EScriptElement: FC<{}> = ({}) => {
 
   if (!jscript.editor) {
     Promise.all([
-      import("@monaco-editor/react").then((e) => {
-        jscript.editor = e.Editor;
-        e.loader.config({ paths: { vs: "/min/vs" } });
-      }),
+      // import("@monaco-editor/react").then((e) => {
+      //   jscript.editor = e.Editor;
+      //   e.loader.config({ paths: { vs: "/min/vs" } });
+      // }),
       jscript.init(),
     ]).then(() => {
       p.render();

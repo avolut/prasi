@@ -5,6 +5,7 @@
   "reporters": [
     "...",
     "@tinijs/parcel-reporter-copy-public",
+    "@parcel/reporter-bundle-analyzer"
   ],
   "transformers": {
     "*.wasm": [
