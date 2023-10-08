@@ -13,7 +13,7 @@ new Function(decompress(w.royal))();
 
 export const initApp = async (name: string) => {
   defineReact();
-  defineWindow();
+  await defineWindow();
   setup(React.createElement);
   defineApi();
 
