@@ -138,7 +138,6 @@ export const mergeScopeUpwards = (
       for (const [k, v] of Object.entries(scope)) {
         if (typeof finalScope[k] === "undefined") finalScope[k] = v;
       }
-
       if (opt?.each) {
         if (!opt.each(cur, scope)) {
           break;
@@ -169,6 +168,9 @@ const createPassProp = (p: PG, meta: ItemMeta) => {
 const cachedLocal = {} as Record<string, Record<string, any>>;
 
 const createLocal = (p: PG, meta: ItemMeta) => {
+  const conf = {
+    pathname: "",
+  };
   const Local = ({
     name,
     value,
@@ -190,41 +192,57 @@ const createLocal = (p: PG, meta: ItemMeta) => {
       meta.scope = {};
     }
     const genScope = () => {
-      if (!meta.scope[name]) {
-        try {
+      try {
+        const nval = deepClone(value);
+        const render = () => {
+          if (meta.render) meta.render();
+          else p.render();
+        };
+        if (!meta.scope[name]) {
           meta.scope[name] = {
-            ...deepClone(value),
-            render: () => {
-              if (meta.render) meta.render();
-              else p.render();
-            },
+            ...nval,
+            render,
           };
-        } catch (e) {
-          console.warn(e);
+        } else {
+          for (const [k, v] of Object.entries(nval)) {
+            meta.scope[name][k] = v;
+          }
+          meta.scope[name].render = render;
         }
+      } catch (e) {
+        console.warn(e);
       }
     };
 
-    if (cache === false) {
-      genScope();
-    } else {
-      const page_id = p.page?.id;
-      if (page_id) {
-        if (!cachedLocal[page_id]) {
-          cachedLocal[page_id] = {};
+    const page_id = p.page?.id;
+    if (page_id) {
+      if (!cachedLocal[page_id]) {
+        cachedLocal[page_id] = {};
+      }
+      if (cachedLocal[page_id][meta.item.originalId || meta.item.id]) {
+        let shouldReset = false;
+        if (cache === false && conf.pathname !== location.href) {
+          shouldReset = true;
+          if (!conf.pathname) {
+            shouldReset = false;
+          }
+          conf.pathname = location.href;
         }
-        if (cachedLocal[page_id][meta.item.originalId || meta.item.id]) {
+
+        if (shouldReset) {
+          genScope();
+        } else {
           meta.scope[name] =
             cachedLocal[page_id][meta.item.originalId || meta.item.id];
           meta.scope[name].render = () => {
             if (meta.render) meta.render();
             else p.render();
           };
-        } else {
-          genScope();
-          cachedLocal[page_id][meta.item.originalId || meta.item.id] =
-            meta.scope[name];
         }
+      } else {
+        genScope();
+        cachedLocal[page_id][meta.item.originalId || meta.item.id] =
+          meta.scope[name];
       }
     }
 
@@ -244,7 +262,7 @@ const createLocal = (p: PG, meta: ItemMeta) => {
           console.warn(e);
         }
       }
-    }, deps || []);
+    }, [...(deps || [])]);
 
     return children;
   };
