@@ -12,26 +12,29 @@ export const _ = {
     const { req, res } = apiContext(this);
     const site = await db.site.findFirst({ where: { id: site_id } });
     const pages = await db.page.findMany({
-      where: {
+      where: { 
         id_site: site_id,
         is_deleted: false,
         name: { not: { startsWith: "layout:" } },
       },
     });
 
-    const layout = await db.page.findFirst({
-      where: {
-        name: { startsWith: "layout:" },
-        is_default_layout: true,
-        is_deleted: false,
-      },
-      select: { content_tree: true },
-    });
+    if (site) {
+      const layout = await db.page.findFirst({
+        where: {
+          id_site: site.id,
+          name: { startsWith: "layout:" },
+          is_default_layout: true,
+          is_deleted: false,
+        },
+        select: { content_tree: true },
+      });
 
-    if (layout) {
-      const childs = (layout.content_tree as any).childs;
-      if (childs && childs.length > 0) {
-        (site as any).layout = childs[0];
+      if (layout) {
+        const childs = (layout.content_tree as any).childs;
+        if (childs && childs.length > 0) {
+          (site as any).layout = childs[0];
+        }
       }
     }
 

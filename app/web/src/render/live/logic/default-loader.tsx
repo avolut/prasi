@@ -4,7 +4,7 @@ import { LPage, LSite, Loader } from "./global";
 import { wsend } from "./ws";
 
 export const defaultLoader: Loader = {
-  async site(p, where) {
+  async site(_, where) {
     const site = (await db.site.findFirst({
       where,
       select: {
@@ -20,6 +20,7 @@ export const defaultLoader: Loader = {
 
     const layout = await db.page.findFirst({
       where: {
+        id_site: site.id,
         name: { startsWith: "layout:" },
         is_default_layout: true,
         is_deleted: false,

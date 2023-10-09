@@ -98,7 +98,7 @@ export const initLive = async (p: PG, domain: string) => {
       p.site.js = site.js_compiled || "";
       p.site.responsive = site.responsive as any;
 
-      validateLayout(p);
+      await validateLayout(p);
 
       if (p.prod) {
         p.site.api_url = await initApi(site.config, "prod");
@@ -190,6 +190,7 @@ export const initLive = async (p: PG, domain: string) => {
           p.route.insert(page.url, page);
         }
       }
+
       p.status = "ready";
       p.render();
     } else {

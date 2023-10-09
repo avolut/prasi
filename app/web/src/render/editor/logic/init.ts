@@ -8,6 +8,7 @@ import {
 import importModule from "../tools/dynamic-import";
 import { PG } from "./global";
 import { jscript } from "../panel/script/script-element";
+import { defaultLoader } from "../../live/logic/default-loader";
 
 export const w = window as unknown as {
   basepath: string;
@@ -64,18 +65,7 @@ export const initEditor = async (p: PG, site_id: string) => {
     } catch (e) {}
 
     const querySite = async () => {
-      const site = await db.site.findFirst({
-        where: site_id ? { id: site_id } : { id_user: p.session.data.user.id },
-        select: {
-          id: true,
-          config: true,
-          domain: true,
-          name: true,
-          js: true,
-          responsive: true,
-          js_compiled: true,
-        },
-      });
+      const site = await defaultLoader.site(p as any, { id: site_id });
       localStorage.setItem(`prasi-site-${site_id}`, JSON.stringify(site));
       return site;
     };
@@ -83,7 +73,7 @@ export const initEditor = async (p: PG, site_id: string) => {
       w.exports = {};
       await importModule(
         `${serverurl}/npm/site/${site.id}/site.js?${Date.now()}`
-      );
+      ); 
 
       p.site.id = site.id;
       p.site.js = site.js || "";
