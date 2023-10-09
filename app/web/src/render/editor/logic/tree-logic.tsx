@@ -56,10 +56,12 @@ export const rebuildTree = async (
     await mpage?.doc?.transact(async () => {
       let parent_id = "root";
       let includeTree = p.comp?.id ? false : true;
+
+      const pageName = p.mpage?.getMap("map").get("name") as string;
       if (
         p.layout.section &&
         p.layout.content &&
-        !p.page?.name.startsWith("layout:")
+        !pageName.startsWith("layout:")
       ) {
         await walk(p, mode, {
           item: p.layout.section,
@@ -74,6 +76,7 @@ export const rebuildTree = async (
           p.layout.content.childs = (p.page?.content_tree.childs ||
             []) as unknown as IItem[];
       }
+
       await Promise.all(
         mpage?.get("childs")?.map(async (mitem) => {
           await walk(p, mode, {
