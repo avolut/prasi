@@ -63,14 +63,6 @@ const walk = async (
       };
     }
 
-    if (
-      val.parent_comp &&
-      val.parent_comp.item.name === "loader" &&
-      item.name === "local"
-    ) {
-      console.log(item);
-    }
-
     const meta: ItemMeta = {
       item,
       parent_id: val.parent_id,

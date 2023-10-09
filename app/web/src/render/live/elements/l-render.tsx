@@ -62,10 +62,6 @@ export const LRender: FC<{
   if (children) {
     if (item.type === "text") _children = children([]);
     else {
-      if (item.name === "loader") {
-        console.log(item.childs[0].id, p.treeMeta[item.childs[0].id]);
-      }
-
       _children = children(item.childs || []);
     }
   }
