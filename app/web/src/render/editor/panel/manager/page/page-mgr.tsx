@@ -100,6 +100,7 @@ export const PageManager = () => {
           name: true,
           url: true,
           id_site: true,
+          is_default_layout: true,
           id_folder: true,
         },
       });

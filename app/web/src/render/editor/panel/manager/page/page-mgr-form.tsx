@@ -53,6 +53,10 @@ export const PageForm: FC<{
           onSubmit={async (e) => {
             e.preventDefault();
             if (form.name && p.session) {
+              if (!form.name.startsWith("layout:")) {
+                form.is_default_layout = false;
+              }
+
               local.saving = true;
               local.render();
               let id_folder = form.id_folder;
@@ -77,6 +81,7 @@ export const PageForm: FC<{
                   data: {
                     name: form.name,
                     url: form.url || "",
+                    is_default_layout: form.is_default_layout,
                   },
                   where: { id: form.id },
                 });
@@ -129,10 +134,42 @@ export const PageForm: FC<{
               }}
             />
           </label>
-          <label>
-            <span>url</span>
-            <Input form={form} name={"url"} />
-          </label>
+          {form.name?.startsWith("layout:") ? (
+            <label>
+              <span>Default Layout</span>
+              <div className="flex space-x-2">
+                <div
+                  className={cx(
+                    "border-[3px] px-4 cursor-pointer select-none border-black",
+                    form.is_default_layout && "bg-black text-white "
+                  )}
+                  onClick={() => {
+                    form.is_default_layout = true;
+                    form.render();
+                  }}
+                >
+                  YES
+                </div>
+                <div
+                  className={cx(
+                    "border-[3px] px-2 cursor-pointer select-none border-black",
+                    !form.is_default_layout && "bg-black text-white"
+                  )}
+                  onClick={() => {
+                    form.is_default_layout = false;
+                    form.render();
+                  }}
+                >
+                  NO
+                </div>
+              </div>
+            </label>
+          ) : (
+            <label>
+              <span>url</span>
+              <Input form={form} name={"url"} />
+            </label>
+          )}
 
           {form.id && (
             <label>

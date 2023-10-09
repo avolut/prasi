@@ -1,6 +1,6 @@
 import { produceCSS } from "../../../utils/css/gen";
 import { IContent } from "../../../utils/types/general";
-import { MItem } from "../../../utils/types/item";
+import { IItem, MItem } from "../../../utils/types/item";
 import { FNCompDef } from "../../../utils/types/meta-fn";
 import { instantiateComp, loadComponent } from "./comp";
 import { ItemMeta, LiveGlobal, PG } from "./global";
@@ -10,16 +10,32 @@ export const rebuildTree = async (
   _: { note: string; render?: boolean; reset?: boolean }
 ) => {
   const treeMeta = p.treeMeta;
-  await Promise.all(
-    Object.values(p.page?.content_tree.childs || {}).map(async (item, idx) => {
-      await walk(p, {
-        treeMeta,
-        item,
-        parent_id: "root",
-        idx,
-      });
-    }) || []
-  );
+
+  if (p.page) {
+    let childs = Object.values(p.page.content_tree.childs || []);
+    if (p.layout.section && p.layout.content) {
+      childs = [p.layout.section];
+
+      p.layout.content.type = "item";
+      if (p.layout.content.type === "item") {
+        p.layout.content.childs = p.page.content_tree.childs.map((e) => ({
+          ...e,
+          type: "item",
+        })) as IItem[];
+      }
+    }
+
+    await Promise.all(
+      childs.map(async (item, idx) => {
+        await walk(p, {
+          treeMeta,
+          item,
+          parent_id: "root",
+          idx,
+        });
+      }) || []
+    );
+  }
 
   if (_.render !== false) {
     console.log("rendering");

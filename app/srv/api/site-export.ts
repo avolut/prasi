@@ -15,8 +15,26 @@ export const _ = {
       where: {
         id_site: site_id,
         is_deleted: false,
+        name: { not: { startsWith: "layout:" } },
       },
     });
+
+    const layout = await db.page.findFirst({
+      where: {
+        name: { startsWith: "layout:" },
+        is_default_layout: true,
+        is_deleted: false,
+      },
+      select: { content_tree: true },
+    });
+
+    if (layout) {
+      const childs = (layout.content_tree as any).childs;
+      if (childs && childs.length > 0) {
+        (site as any).layout = childs[0];
+      }
+    }
+
     const comps = await db.component.findMany({
       where: {
         component_group: {

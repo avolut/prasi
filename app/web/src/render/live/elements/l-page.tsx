@@ -7,9 +7,14 @@ export const LPage = () => {
   const p = useGlobal(LiveGlobal, "LIVE");
   const mode = p.mode;
 
-  const rootChilds: string[] | undefined = Object.values(
-    p.page?.content_tree.childs || {}
-  ).map((e) => e.id);
+  let childs = Object.values(p.page?.content_tree.childs || []);
+  if (p.layout.section && p.layout.content) {
+    childs = [p.layout.section];
+  }
+
+  const rootChilds: string[] | undefined = Object.values(childs).map(
+    (e) => e.id
+  );
 
   return (
     <div className={cx("relative flex flex-1 items-center justify-center")}>

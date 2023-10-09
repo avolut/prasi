@@ -5,7 +5,7 @@ import { wsend } from "./ws";
 
 export const defaultLoader: Loader = {
   async site(p, where) {
-    return (await db.site.findFirst({
+    const site = (await db.site.findFirst({
       where,
       select: {
         id: true,
@@ -17,6 +17,24 @@ export const defaultLoader: Loader = {
         js_compiled: true,
       },
     })) as unknown as LSite;
+
+    const layout = await db.page.findFirst({
+      where: {
+        name: { startsWith: "layout:" },
+        is_default_layout: true,
+        is_deleted: false,
+      },
+      select: { content_tree: true },
+    });
+
+    if (layout) {
+      const childs = (layout.content_tree as any).childs;
+      if (childs && childs.length > 0) {
+        site.layout = childs[0];
+      }
+    }
+
+    return site;
   },
   async comp(p, comp_id) {
     p.comps.pending[comp_id] = new Promise<PRASI_COMPONENT>(async (resolve) => {
@@ -44,7 +62,7 @@ export const defaultLoader: Loader = {
   },
   async page(p, id) {
     const res = await db.page.findFirst({
-      where: { id: id },
+      where: { id: id, name: { not: { startsWith: "layout:" } } },
       select: {
         id: true,
         url: true,
@@ -74,6 +92,7 @@ export const defaultLoader: Loader = {
     return (await db.page.findMany({
       where: {
         id_site: site_id,
+        name: { not: { startsWith: "layout:" } },
         is_deleted: false,
       },
       select: { id: true, url: true },

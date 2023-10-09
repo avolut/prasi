@@ -5,6 +5,8 @@ import { IContent, MContent, MPage } from "../../../utils/types/general";
 import { IItem, MItem } from "../../../utils/types/item";
 import { PRASI_COMPONENT } from "../../../utils/types/render";
 import { IRoot } from "../../../utils/types/root";
+import { ISection } from "../../../utils/types/section";
+import { IText } from "../../../utils/types/text";
 
 type WithRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] };
 export type ItemMeta = {
@@ -47,6 +49,7 @@ export type LSite = {
   name: string;
   js: string;
   js_compiled: string;
+  layout?: ISection;
 };
 export type Loader = {
   site: (p: PG, where: { domain: string } | { id: string }) => Promise<LSite>;
@@ -59,6 +62,10 @@ export const LiveGlobal = {
   prod: false,
   loader: undefined as unknown as Loader,
   mode: "" as "desktop" | "mobile",
+  layout: {
+    section: null as null | ISection,
+    content: null as null | IItem | IText,
+  },
   status: "init" as
     | "init"
     | "loading"
@@ -79,7 +86,7 @@ export const LiveGlobal = {
     name: "",
     js: "",
     js_compiled: "",
-  },
+  } as LSite,
   page: null as null | LPage,
   mpage: null as null | MPage,
   mpageLoaded: null as null | ((mpage: MPage) => void),

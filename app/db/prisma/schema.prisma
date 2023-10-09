@@ -14,22 +14,23 @@ datasource db {
 }
 
 model page {
-  id           String       @id(map: "page_id") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name         String
-  url          String
-  content_tree Json
-  id_site      String       @db.Uuid
-  created_at   DateTime?    @default(now()) @db.Timestamp(6)
-  js_compiled  String?
-  js           String?
-  updated_at   DateTime?    @default(now()) @db.Timestamp(6)
-  id_folder    String?      @db.Uuid
-  is_deleted   Boolean      @default(false)
-  id_layout    String?      @db.Uuid
-  page_folder  page_folder? @relation(fields: [id_folder], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  page         page?        @relation("pageTopage", fields: [id_layout], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  other_page   page[]       @relation("pageTopage")
-  site         site         @relation(fields: [id_site], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  id                String       @id(map: "page_id") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name              String
+  url               String
+  content_tree      Json
+  id_site           String       @db.Uuid
+  created_at        DateTime?    @default(now()) @db.Timestamp(6)
+  js_compiled       String?
+  js                String?
+  updated_at        DateTime?    @default(now()) @db.Timestamp(6)
+  id_folder         String?      @db.Uuid
+  is_deleted        Boolean      @default(false)
+  id_layout         String?      @db.Uuid
+  is_default_layout Boolean      @default(false)
+  page_folder       page_folder? @relation(fields: [id_folder], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  page              page?        @relation("pageTopage", fields: [id_layout], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  other_page        page[]       @relation("pageTopage")
+  site              site         @relation(fields: [id_site], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
 
 model site {

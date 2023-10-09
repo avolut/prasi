@@ -8,6 +8,7 @@ import {
   reloadDBAPI,
 } from "../../../utils/script/init-api";
 import { PG } from "./global";
+import { validateLayout } from "./layout";
 
 const w = window as unknown as {
   basepath: string;
@@ -93,8 +94,11 @@ export const initLive = async (p: PG, domain: string) => {
       await importModule(p.loader.npm(p, "site", site.id));
 
       p.site.id = site.id;
+      p.site.layout = site.layout;
       p.site.js = site.js_compiled || "";
       p.site.responsive = site.responsive as any;
+
+      validateLayout(p);
 
       if (p.prod) {
         p.site.api_url = await initApi(site.config, "prod");
