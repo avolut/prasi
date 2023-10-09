@@ -49,7 +49,7 @@ export const EditorGlobal = {
   manager: {
     page: false,
     site: false,
-    comp: false,
+    comp: true,
     compActionLabel: "Pick",
     compCallback: (comp: any) => {},
   },

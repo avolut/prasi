@@ -33,11 +33,13 @@ export const CompManager: FC = () => {
       id: "",
       text: "",
     },
+    site_use: [] as string[],
     searchRef: null as any,
     trash_id: "",
     collapsed: new Set(),
     sharedPopup: false,
     checked: new Set<string>(),
+    site_use_loading: false,
   });
 
   useEffect(() => {
@@ -89,6 +91,16 @@ export const CompManager: FC = () => {
 
     if (p.site.id) {
       local.loading = true;
+      local.site_use = (
+        await db.site_use_comp.findMany({
+          where: {
+            id_site: p.site.id,
+          },
+          select: {
+            use_id_site: true,
+          },
+        })
+      ).map((e) => e.use_id_site);
       const group = await db.component_group.findMany({
         where: {
           component_site: {
@@ -97,10 +109,10 @@ export const CompManager: FC = () => {
                 {
                   id_site: p.site.id,
                 },
-                {
-                  id_site: "9e34f31f-4ebd-4630-b61d-597045171ebb",
+                ...local.site_use.map((e) => ({
+                  id_site: e,
                   component_group: { name: { not: "__TRASH__" } },
-                },
+                })),
               ],
             },
           },
@@ -356,6 +368,71 @@ export const CompManager: FC = () => {
               />
             </div>
             <div className="comp-list flex-1 overflow-auto flex h-full flex-col space-y-2 select-none">
+              {!local.site_use.includes(
+                "9e34f31f-4ebd-4630-b61d-597045171ebb"
+              ) && (
+                <div className="flex flex-col self-stretch mx-4 mt-3">
+                  <div className=" flex">
+                    <div
+                      className="border border-blue-400 text-sm px-3 cursor-pointer hover:bg-blue-200"
+                      onClick={async () => {
+                        local.site_use_loading = true;
+                        local.render();
+                        await db.site_use_comp.create({
+                          data: {
+                            id_site: p.site.id,
+                            use_id_site: "9e34f31f-4ebd-4630-b61d-597045171ebb",
+                          },
+                        });
+                        w.compGroup = {};
+                        await reloadComps();
+                        local.site_use_loading = false;
+                        local.render();
+                      }}
+                    >
+                      {local.site_use_loading
+                        ? "Loading..."
+                        : "Attach Prasi UI"}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {local.site_use.includes(
+                "9e34f31f-4ebd-4630-b61d-597045171ebb"
+              ) && (
+                <div className="flex flex-col self-stretch mx-4 mt-3">
+                  <div className=" flex">
+                    <div
+                      className="border border-slate-400 text-sm px-3 cursor-pointer hover:bg-blue-200"
+                      onClick={async () => {
+                        if (p.site.id) {
+                          local.site_use_loading = true;
+                          local.render();
+                          await db.site_use_comp.delete({
+                            where: {
+                              id_site_use_id_site: {
+                                id_site: p.site.id,
+                                use_id_site:
+                                  "9e34f31f-4ebd-4630-b61d-597045171ebb",
+                              },
+                            },
+                          });
+                          w.compGroup = {};
+                          await reloadComps();
+                          local.site_use_loading = false;
+                          local.render();
+                        }
+                      }}
+                    >
+                      {local.site_use_loading
+                        ? "Loading..."
+                        : "Detach Prasi UI"}
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {groups.map((g) => {
                 return (
                   <Fragment key={g.info.id}>

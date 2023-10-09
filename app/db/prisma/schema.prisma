@@ -274,3 +274,10 @@ model npm_site {
   import_as Json    @default("{\"main\": {\"mode\": \"default\", \"name\": \"\"}, \"names\": []}")
   site      site    @relation(fields: [id_site], references: [id], onDelete: NoAction, onUpdate: NoAction)
 }
+
+model site_use_comp {
+  id_site     String @db.Uuid
+  use_id_site String @db.Uuid
+
+  @@id([id_site, use_id_site])
+}
