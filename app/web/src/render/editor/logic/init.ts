@@ -10,6 +10,7 @@ import { PG } from "./global";
 import { jscript } from "../panel/script/script-element";
 import { defaultLoader } from "../../live/logic/default-loader";
 import { validateLayout } from "../../live/logic/layout";
+import { LSite } from "../../live/logic/global";
 
 export const w = window as unknown as {
   basepath: string;
@@ -70,8 +71,17 @@ export const initEditor = async (p: PG, site_id: string) => {
       localStorage.setItem(`prasi-site-${site_id}`, JSON.stringify(site));
       return site;
     };
-    const processSite = async (site: any) => {
+    const processSite = async (site: LSite) => {
       w.exports = {};
+
+      if (site.cgroup_ids) {
+        for (const id of site.cgroup_ids) {
+          await importModule(
+            `${serverurl}/npm/site/${id}/site.js?${Date.now()}`
+          );
+        }
+      }
+
       await importModule(
         `${serverurl}/npm/site/${site.id}/site.js?${Date.now()}`
       );

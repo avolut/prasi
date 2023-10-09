@@ -50,6 +50,8 @@ export type LSite = {
   js: string;
   js_compiled: string;
   layout?: ISection;
+  cgroup_ids?: string[];
+  config?: any;
 };
 export type Loader = {
   site: (p: PG, where: { domain: string } | { id: string }) => Promise<LSite>;

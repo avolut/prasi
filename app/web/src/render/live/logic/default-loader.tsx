@@ -18,6 +18,17 @@ export const defaultLoader: Loader = {
       },
     })) as unknown as LSite;
 
+    const cgroups = await db.site_use_comp.findMany({
+      where: { id_site: site.id },
+    });
+
+    if (cgroups) {
+      site.cgroup_ids = [];
+      for (const id of cgroups.map((c) => c.use_id_site)) {
+        site.cgroup_ids.push(id);
+      }
+    }
+
     const layout = await db.page.findFirst({
       where: {
         id_site: site.id,

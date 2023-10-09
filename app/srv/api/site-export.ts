@@ -10,9 +10,11 @@ export const _ = {
   url: "/site-export/:site_id",
   async api(site_id: string) {
     const { req, res } = apiContext(this);
-    const site = await db.site.findFirst({ where: { id: site_id } });
+    const site = (await db.site.findFirst({
+      where: { id: site_id },
+    })) as any;
     const pages = await db.page.findMany({
-      where: { 
+      where: {
         id_site: site_id,
         is_deleted: false,
         name: { not: { startsWith: "layout:" } },
@@ -29,6 +31,17 @@ export const _ = {
         },
         select: { content_tree: true },
       });
+
+      const cgroups = await db.site_use_comp.findMany({
+        where: { id_site: site.id },
+      });
+
+      if (cgroups) {
+        site.cgroup_ids = [];
+        for (const id of cgroups.map((c) => c.use_id_site)) {
+          site.cgroup_ids.push(id);
+        }
+      }
 
       if (layout) {
         const childs = (layout.content_tree as any).childs;

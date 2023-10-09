@@ -1,13 +1,13 @@
-import { createRouter, type apiClient } from "web-init";
 import { validate } from "uuid";
-import importModule from "../../editor/tools/dynamic-import";
+import { createRouter, type apiClient } from "web-init";
 import {
   createAPI,
   createDB,
   initApi,
   reloadDBAPI,
 } from "../../../utils/script/init-api";
-import { PG } from "./global";
+import importModule from "../../editor/tools/dynamic-import";
+import { LSite, PG } from "./global";
 import { validateLayout } from "./layout";
 
 const w = window as unknown as {
@@ -62,7 +62,7 @@ export const initLive = async (p: PG, domain: string) => {
     };
 
     /** load site */
-    let site = null as any;
+    let site = null as null | LSite;
     if (!p.prod) {
       try {
         site = JSON.parse(localStorage.getItem(`prasi-site-${domain}`) || "");
@@ -91,6 +91,13 @@ export const initLive = async (p: PG, domain: string) => {
     if (site) {
       /** import site module */
       w.exports = {};
+
+      if (site.cgroup_ids) {
+        for (const id of site.cgroup_ids) {
+          await importModule(p.loader.npm(p, "site", id));
+        }
+      }
+
       await importModule(p.loader.npm(p, "site", site.id));
 
       p.site.id = site.id;
