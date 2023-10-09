@@ -225,7 +225,6 @@ const ExternalDomainList = ({
                   domains.splice(idx, 1);
                   server.status = "ready";
                   p.render();
-                  alert("DOMAIN REMOVED");
                 }
               }}
             >
@@ -253,7 +252,6 @@ const ExternalDomainList = ({
             domains.push(name);
             server.status = "ready";
             p.render();
-            alert("DOMAIN ADDED");
           }
         }}
       >
@@ -352,7 +350,6 @@ const ExternalDeployList = ({
                       if (res && res.current && Array.isArray(res.deploys)) {
                         local.current = res.current;
                         local.deploys = res.deploys;
-                        alert("DEPLOY: OK");
                       } else {
                         alert("DEPLOY: FAILED");
                       }
@@ -421,7 +418,6 @@ const ExternalDeployList = ({
                         if (res && res.current && Array.isArray(res.deploys)) {
                           local.current = res.current;
                           local.deploys = res.deploys;
-                          alert("DELETE: OK");
                         } else {
                           alert("DELETE: FAILED");
                         }
