@@ -63,6 +63,14 @@ const walk = async (
       };
     }
 
+    if (
+      val.parent_comp &&
+      val.parent_comp.item.name === "loader" &&
+      item.name === "local"
+    ) {
+      console.log(item);
+    }
+
     const meta: ItemMeta = {
       item,
       parent_id: val.parent_id,
@@ -95,6 +103,7 @@ const walk = async (
             { type: "i", item: comp },
             child_ids
           );
+
           for (const [k, v] of Object.entries(itemnew)) {
             if (k !== "id") (item as any)[k] = v;
           }
@@ -137,12 +146,14 @@ const walk = async (
               p.compInstance[item.id] = {};
             }
             const child_ids = p.compInstance[item.id];
+
             const itemnew = instantiateComp(
               p,
               item,
               { type: "m", item: mcomp },
               child_ids
             );
+
             for (const [k, v] of Object.entries(itemnew)) {
               if (k !== "id") (item as any)[k] = v;
             }

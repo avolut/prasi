@@ -62,6 +62,10 @@ export const LRender: FC<{
   if (children) {
     if (item.type === "text") _children = children([]);
     else {
+      if (item.name === "loader") {
+        console.log(item.childs[0].id, p.treeMeta[item.childs[0].id]);
+      }
+
       _children = children(item.childs || []);
     }
   }
@@ -73,7 +77,7 @@ export const LRender: FC<{
   const className = meta.className;
   const adv = item.adv;
 
-  if (!adv?.js && (meta.scopeAttached || meta.comp)) {
+  if (!(adv?.jsBuilt && adv?.js) && (meta.scopeAttached || meta.comp)) {
     return treeScopeEval(
       p,
       meta,
@@ -87,7 +91,6 @@ export const LRender: FC<{
       const html = renderHTML(className, adv);
       if (html) return html;
     } else if (adv.jsBuilt && adv.js) {
-
       const el = treeScopeEval(p, meta, _children, adv.jsBuilt);
       return el;
     }

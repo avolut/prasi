@@ -75,7 +75,16 @@ export const routeLive = (p: PG, pathname: string) => {
           firstRender[page_id] = true;
           pageLoaded(p).then(p.render);
         } else {
-          pageLoaded(p);
+          if (!p.prod) {
+            pageLoaded(p).then(() => {
+              if (stream.page_id !== page_id) {
+                stream.page_id = page_id;
+                p.render();
+              }
+            });
+          } else {
+            pageLoaded(p);
+          }
         }
       }
     }
@@ -85,7 +94,7 @@ const firstRender = {} as Record<string, true>;
 
 const pageLoaded = async (p: PG) => {
   if (p.page) {
-    rebuildTree(p, { render: false, note: "render", reset: false });
+    await rebuildTree(p, { render: false, note: "render", reset: false });
     p.status = "ready";
   } else {
     p.status = "not-found";
@@ -150,6 +159,8 @@ const loadPage = async (p: PG, id: string) => {
     }
   }
 };
+
+const stream = { page_id: "" };
 
 const streamPage = (p: PG, id: string) => {
   return new Promise<void>(async (resolve) => {
