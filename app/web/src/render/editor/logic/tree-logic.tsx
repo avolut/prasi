@@ -56,7 +56,11 @@ export const rebuildTree = async (
     await mpage?.doc?.transact(async () => {
       let parent_id = "root";
       let includeTree = p.comp?.id ? false : true;
-      if (p.layout.section && p.layout.content) {
+      if (
+        p.layout.section &&
+        p.layout.content &&
+        !p.page?.name.startsWith("layout:")
+      ) {
         await walk(p, mode, {
           item: p.layout.section,
           parent_id: "root",

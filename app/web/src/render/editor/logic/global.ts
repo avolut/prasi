@@ -31,6 +31,7 @@ export type ItemMeta = {
     id: string;
     mcomp?: MItem;
     propval?: any;
+    propvis?: Record<string, boolean>;
     child_ids: Record<string, string>;
   };
 };

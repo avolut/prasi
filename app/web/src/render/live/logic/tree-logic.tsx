@@ -13,7 +13,11 @@ export const rebuildTree = async (
 
   if (p.page) {
     let childs = Object.values(p.page.content_tree.childs || []);
-    if (p.layout.section && p.layout.content) {
+    if (
+      p.layout.section &&
+      p.layout.content &&
+      !p.page?.name.startsWith("layout:")
+    ) {
       childs = [p.layout.section];
 
       p.layout.content.type = "item";

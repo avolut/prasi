@@ -68,7 +68,7 @@ export const treePropEval = (
                 if (p.treeMeta[prop.content.id]) {
                   p.treeMeta[prop.content.id].scopeAttached = scopes;
                 }
-                
+
                 return <EItem id={prop.content.id} fromProp={true} />;
               }
               return <></>;
@@ -82,4 +82,12 @@ export const treePropEval = (
 
     return result;
   }
+};
+
+export const treePropVis = (
+  p: PG,
+  meta: ItemMeta,
+  cprops: [string, FNCompDef][]
+) => {
+  return {};
 };
