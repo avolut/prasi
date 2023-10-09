@@ -17,6 +17,7 @@
     flex-direction: column;
     flex: 1;
 
+    -webkit-tap-highlight-color: transparent;
     overscroll-behavior-y: none;
   }
 
