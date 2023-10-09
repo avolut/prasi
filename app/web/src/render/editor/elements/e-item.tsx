@@ -12,7 +12,7 @@ export const EItem: FC<{
       <ERender id={id} fromProp={fromProp}>
         {(childs) => {
           return childs.map((e) => {
-            if (e.type === "item") {
+            if (e.type !== "text") {
               return <EItem id={e.id} key={e.id} fromProp={fromProp} />;
             } else {
               return <EText id={e.id} key={e.id} fromProp={fromProp} />;

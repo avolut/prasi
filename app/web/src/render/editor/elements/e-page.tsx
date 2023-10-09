@@ -3,7 +3,6 @@ import { EditorGlobal } from "../logic/global";
 import { ESection } from "./e-section";
 import { JS_DEBUG } from "../logic/tree-scope";
 
-
 export const EPage = () => {
   const p = useGlobal(EditorGlobal, "EDITOR");
   const local = useLocal({});
@@ -16,6 +15,16 @@ export const EPage = () => {
   }
   if (!p.page) return null;
   const mode = p.mode;
+
+  let childs = Object.values(p.page?.content_tree.childs || []);
+  if (p.layout.section && p.layout.content) {
+    childs = [p.layout.section];
+  }
+
+  const rootChilds: string[] | undefined = Object.values(childs).map(
+    (e) => e.id
+  );
+
   return (
     <div
       className={cx(
@@ -43,8 +52,8 @@ export const EPage = () => {
           `
         )}
       >
-        {p.page.content_tree.childs.map((e) => (
-          <ESection key={e.id} id={e.id} />
+        {rootChilds.map((id) => (
+          <ESection key={id} id={id} />
         ))}
       </div>
     </div>

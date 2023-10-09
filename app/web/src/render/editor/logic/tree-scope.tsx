@@ -1,9 +1,8 @@
 import { FC, ReactNode, Suspense, useEffect } from "react";
 import { deepClone } from "web-utils";
 import { createAPI, createDB } from "../../../utils/script/init-api";
-import { ItemMeta, PG } from "./global";
-import { ErrorBoundary } from "web-init";
 import { ErrorBox } from "../elements/e-error";
+import { ItemMeta, PG } from "./global";
 
 export const JS_DEBUG = false;
 

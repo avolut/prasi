@@ -3,9 +3,12 @@ import { createRouter } from "web-init";
 import { CompDoc } from "../../../base/global/content-editor";
 import { IContent, MContent, MPage } from "../../../utils/types/general";
 import { IItem, MItem } from "../../../utils/types/item";
-import { FMCompDef, FNCompDef } from "../../../utils/types/meta-fn";
+import { FNCompDef } from "../../../utils/types/meta-fn";
 import { PRASI_COMPONENT } from "../../../utils/types/render";
 import { IRoot } from "../../../utils/types/root";
+import { LSite } from "../../live/logic/global";
+import { ISection } from "../../../utils/types/section";
+import { IText } from "../../../utils/types/text";
 
 export type WithRequired<T, K extends keyof T> = T & { [P in K]-?: T[P] };
 export type NodeMeta = { meta: ItemMeta; idx: number };
@@ -49,7 +52,7 @@ export const EditorGlobal = {
   manager: {
     page: false,
     site: false,
-    comp: true,
+    comp: false,
     compActionLabel: "Pick",
     compCallback: (comp: any) => {},
   },
@@ -114,7 +117,13 @@ export const EditorGlobal = {
     name: "",
     js: "",
     js_compiled: "",
+  } as LSite,
+
+  layout: {
+    section: null as null | ISection,
+    content: null as null | IItem | IText,
   },
+
   site_dts: "",
   page: null as null | {
     id: string;

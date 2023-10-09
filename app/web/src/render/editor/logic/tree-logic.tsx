@@ -54,14 +54,30 @@ export const rebuildTree = async (
     const mpage = p.mpage.getMap("map").get("content_tree");
 
     await mpage?.doc?.transact(async () => {
+      let parent_id = "root";
+      let includeTree = p.comp?.id ? false : true;
+      if (p.layout.section && p.layout.content) {
+        await walk(p, mode, {
+          item: p.layout.section,
+          parent_id: "root",
+          depth: 0,
+          idx: 0,
+          includeTree: false,
+        });
+        parent_id = p.layout.content.id;
+        p.layout.content.type = "item";
+        if (p.layout.content.type === "item")
+          p.layout.content.childs = (p.page?.content_tree.childs ||
+            []) as unknown as IItem[];
+      }
       await Promise.all(
-        mpage?.get("childs")?.map(async (mitem, idx) => {
+        mpage?.get("childs")?.map(async (mitem) => {
           await walk(p, mode, {
             mitem,
-            parent_id: "root",
+            parent_id,
             depth: 0,
             idx: 0,
-            includeTree: p.comp?.id ? false : true,
+            includeTree,
           });
         }) || []
       );
@@ -426,10 +442,18 @@ export const walk = async (
       ) {
         if (
           p.treeFlatTemp.length > 0 ||
-          (p.treeFlatTemp.length === 0 && val.parent_id === "root")
+          (p.treeFlatTemp.length === 0 &&
+            (val.parent_id === "root" || item.type === "section"))
         ) {
+          let parent = val.parent_id;
+          if (
+            p.treeFlatTemp.length === 0 &&
+            (val.parent_id === "root" || item.type === "section")
+          ) {
+            parent = "root";
+          }
           p.treeFlatTemp.push({
-            parent: val.parent_id,
+            parent,
             data: { meta, idx: val.idx || 0 },
             id: meta.item.id,
             text: item.name,

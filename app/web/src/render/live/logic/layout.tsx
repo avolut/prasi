@@ -1,8 +1,11 @@
 import { IItem } from "../../../utils/types/item";
 import { IText } from "../../../utils/types/text";
-import { PG } from "./global";
+import { LSite, PG } from "./global";
 
-export const validateLayout = async (p: PG) => {
+export const validateLayout = async (p: {
+  site: LSite;
+  layout: PG["layout"];
+}) => {
   if (p.site.layout) {
     p.layout.section = p.site.layout;
 
@@ -16,7 +19,9 @@ export const validateLayout = async (p: PG) => {
   }
 };
 
-const walk = async (item: IItem | IText): Promise<IItem | IText | undefined> => {
+const walk = async (
+  item: IItem | IText
+): Promise<IItem | IText | undefined> => {
   if (item.name === "content") {
     return item;
   }

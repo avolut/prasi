@@ -2,6 +2,7 @@ import { FC, ReactNode } from "react";
 import { useGlobal } from "web-utils";
 import { produceCSS } from "../../../utils/css/gen";
 import { IContent } from "../../../utils/types/general";
+import { IItem } from "../../../utils/types/item";
 import { FNAdv, FNCompDef } from "../../../utils/types/meta-fn";
 import { Loading } from "../../../utils/ui/loading";
 import { EditorGlobal } from "../logic/global";
@@ -11,14 +12,10 @@ import {
   mergeScopeUpwards,
   treeScopeEval,
 } from "../logic/tree-scope";
+import { fillID } from "../tools/fill-id";
+import { newMap } from "../tools/yjs-tools";
 import { ComponentOver, ElProp, createElProp } from "./e-relprop";
 import { ETextInternal } from "./e-text";
-import { IItem } from "../../../utils/types/item";
-import { newMap } from "../tools/yjs-tools";
-import { fillID } from "../tools/fill-id";
-import { jscript } from "../panel/script/script-element";
-import trim from "lodash.trim";
-import { rebuildTree } from "../logic/tree-logic";
 
 export const ERender: FC<{
   id: string;

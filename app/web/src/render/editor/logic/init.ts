@@ -9,6 +9,7 @@ import importModule from "../tools/dynamic-import";
 import { PG } from "./global";
 import { jscript } from "../panel/script/script-element";
 import { defaultLoader } from "../../live/logic/default-loader";
+import { validateLayout } from "../../live/logic/layout";
 
 export const w = window as unknown as {
   basepath: string;
@@ -73,7 +74,7 @@ export const initEditor = async (p: PG, site_id: string) => {
       w.exports = {};
       await importModule(
         `${serverurl}/npm/site/${site.id}/site.js?${Date.now()}`
-      ); 
+      );
 
       p.site.id = site.id;
       p.site.js = site.js || "";
@@ -81,6 +82,9 @@ export const initEditor = async (p: PG, site_id: string) => {
       p.site.name = site.name;
       p.site.domain = site.domain;
       p.site.responsive = site.responsive as any;
+      p.site.layout = site.layout;
+
+      await validateLayout(p);
 
       w.externalAPI = {
         mode: (localStorage.getItem(`prasi-ext-api-mode-${p.site.id}`) ||
