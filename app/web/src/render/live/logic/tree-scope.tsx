@@ -49,7 +49,6 @@ export const treeScopeEval = (
         }
       }
     }
-
     const output = { jsx: null as any };
     args = {
       ...w.exports,
@@ -168,9 +167,7 @@ const createPassProp = (p: PG, meta: ItemMeta) => {
 const cachedLocal = {} as Record<string, Record<string, any>>;
 
 const createLocal = (p: PG, meta: ItemMeta) => {
-  const conf = {
-    pathname: "",
-  };
+  const cachedPath = {} as Record<string, string>;
   const Local = ({
     name,
     value,
@@ -219,21 +216,22 @@ const createLocal = (p: PG, meta: ItemMeta) => {
       if (!cachedLocal[page_id]) {
         cachedLocal[page_id] = {};
       }
-      if (cachedLocal[page_id][meta.item.originalId || meta.item.id]) {
+      const itemid = meta.item.id;
+      if (cachedLocal[page_id][itemid]) {
         let shouldReset = false;
-        if (cache === false && conf.pathname !== location.href) {
+
+        if (cache === false && cachedPath[itemid] !== location.href) {
           shouldReset = true;
-          if (!conf.pathname) {
+          if (!cachedPath[itemid]) {
             shouldReset = false;
           }
-          conf.pathname = location.href;
+          cachedPath[itemid] = location.href;
         }
 
         if (shouldReset) {
           genScope();
         } else {
-          meta.scope[name] =
-            cachedLocal[page_id][meta.item.originalId || meta.item.id];
+          meta.scope[name] = cachedLocal[page_id][itemid];
           meta.scope[name].render = () => {
             if (meta.render) meta.render();
             else p.render();
@@ -241,8 +239,7 @@ const createLocal = (p: PG, meta: ItemMeta) => {
         }
       } else {
         genScope();
-        cachedLocal[page_id][meta.item.originalId || meta.item.id] =
-          meta.scope[name];
+        cachedLocal[page_id][itemid] = meta.scope[name];
       }
     }
 
