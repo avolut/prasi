@@ -64,7 +64,7 @@ export const EMainEditor = () => {
           {p.manager.site && <SiteManager />}
           {p.manager.page && <PageManager />}
           {p.manager.comp && <CompManager />}
-          {p.script.active && <EScriptElement />}
+          {p.script.active && !p.script.siteActive && <EScriptElement />}
         </Suspense>
       )}
     </div>

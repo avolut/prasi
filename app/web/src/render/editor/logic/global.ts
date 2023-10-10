@@ -106,6 +106,7 @@ export const EditorGlobal = {
 
   /**  read-only */
   session: { id: "", data: { user: { id: "", username: "" } } },
+  lsite: null as any,
   site: {
     id: "",
     api_url: "",

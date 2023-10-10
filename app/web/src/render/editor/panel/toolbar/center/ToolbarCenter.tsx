@@ -1,3 +1,4 @@
+import { compress } from "lz-string";
 import { useEffect } from "react";
 import { useGlobal, useLocal } from "web-utils";
 import { w } from "../../../../../utils/types/general";
@@ -7,8 +8,6 @@ import { Popover } from "../../../../../utils/ui/popover";
 import { EditorGlobal } from "../../../logic/global";
 import { execSiteJS } from "../../../logic/init";
 import { wsend } from "../../../logic/ws";
-import { customMonacoState } from "../../script/monaco/monaco-custom";
-import { MonacoEditor } from "../../script/monaco/typings";
 import { EScriptCustom } from "../../script/script-custom";
 import { AddElement } from "./AddElement";
 import { Export } from "./Export";
@@ -19,10 +18,6 @@ export const ToolbarCenter = () => {
   const p = useGlobal(EditorGlobal, "EDITOR");
   const local = useLocal({
     apiConfigOpen: false,
-    siteJS: {
-      timeout: null as any,
-      editor: null as null | MonacoEditor,
-    },
     apiStatus: "" as "" | "started" | "starting" | "stopped",
   });
 
@@ -64,10 +59,6 @@ export const ToolbarCenter = () => {
       <Modal
         open={p.script.siteActive}
         onOpenChange={(open) => {
-          if (local.siteJS.editor) {
-            const state = local.siteJS.editor.saveViewState();
-            customMonacoState["site"] = state;
-          }
           if (!open) {
             p.script.siteActive = false;
             p.render();
@@ -78,29 +69,25 @@ export const ToolbarCenter = () => {
           <EScriptCustom
             monaco_id="site"
             src={p.site.js}
-            onLoad={(e) => {
-              local.siteJS.editor = e;
-            }}
             onChange={(src, compiled) => {
-              if (p.site && p.site.js && p.site.js !== p.site.js_compiled) {
-                p.site.js = src;
-                p.site.js_compiled = compiled;
-                execSiteJS(p);
-                p.render();
-                clearTimeout(local.siteJS.timeout);
-                local.siteJS.timeout = setTimeout(async () => {
-                  api.site_edit_js(p.site.id, src, compiled).then((e) => {
-                    p.site_dts = e.dts || "";
-                    p.render();
-                  });
+              p.site.js = src;
+              p.site.js_compiled = compiled;
+              execSiteJS(p);
 
-                  p.render();
-                  wsend(
-                    p,
-                    JSON.stringify({ type: "sitejs_reload", id: p.site?.id })
-                  );
-                }, 1000);
-              }
+              p.lsite.js = src;
+              p.site.js_compiled = compiled;
+              localStorage.setItem(
+                `prasi-site-${p.site.id}`,
+                JSON.stringify(p.lsite)
+              );
+              wsend(
+                p,
+                JSON.stringify({
+                  type: "site-js",
+                  id_site: p.site.id,
+                  src: compress(JSON.stringify({ src, compiled })),
+                })
+              );
             }}
             propTypes={{
               exports: "Record<string, any>",

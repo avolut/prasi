@@ -1,5 +1,3 @@
-import { WS_MSG_SITEJS_RELOAD } from "../../compo/editor/ws/msg";
-
 export type WS_MSG =
   | WS_MSG_GET_COMP
   | WS_MSG_SET_COMP
@@ -11,7 +9,14 @@ export type WS_MSG =
   | WS_MSG_UNDO
   | WS_MSG_REDO
   | WS_MSG_NEW_COMP
-  | WS_MSG_SITEJS_RELOAD;
+  | WS_SITE_JS
+  | { type: "ping" };
+
+export type WS_SITE_JS = {
+  type: "site-js";
+  id_site: string;
+  src: string;
+};
 
 export type WS_MSG_GET_COMP = {
   type: "get_comp";

@@ -74,7 +74,6 @@ export const initEditor = async (p: PG, site_id: string) => {
     const processSite = async (site: LSite) => {
       if (!w.exports) {
         w.exports = {};
-      
       }
       if (site.cgroup_ids) {
         for (const id of site.cgroup_ids) {
@@ -83,7 +82,7 @@ export const initEditor = async (p: PG, site_id: string) => {
       }
 
       await importModule(`${serverurl}/npm/site/${site.id}/site.js`);
-
+      p.lsite = site;
       p.site.id = site.id;
       p.site.js = site.js || "";
       p.site.js_compiled = site.js_compiled || "";

@@ -68,7 +68,7 @@ export const ScriptMonacoCustom: FC<{
             formatOnType: true,
             useTabStops: true,
           }}
-          defaultValue={src}
+          value={src}
           onMount={async (editor, monaco) => {
             local.editor = editor;
             editor.focus();

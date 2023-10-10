@@ -8,6 +8,7 @@ import { svLocal } from "./action/sv-local";
 import { svdiffRemote } from "./action/svdiff-remote";
 import { redo, undo } from "./action/undo-redo";
 import { eg } from "./edit-global";
+import { decompress } from "lz-string";
 
 eg.edit = {
   site: {},
@@ -15,6 +16,10 @@ eg.edit = {
   page: {},
   ws: new WeakMap(),
 };
+const site = {
+  saveTimeout: null as any,
+};
+
 export const collabEditHandler = (ws: Websocket) => {
   eg.edit.ws.set(ws, {
     clientID: createId(),
@@ -30,6 +35,21 @@ export const collabEditHandler = (ws: Websocket) => {
       }
 
       switch (msg.type) {
+        case "site-js":
+          clearTimeout(site.saveTimeout);
+          site.saveTimeout = setTimeout(async () => {
+            const js = JSON.parse(decompress(msg.src));
+            await db.site.update({
+              where: {
+                id: msg.id_site,
+              },
+              data: {
+                js: js.src,
+                js_compiled: js.compiled,
+              },
+            });
+          }, 1000);
+          break;
         case "get_page":
           await getPage(ws, msg);
           break;
@@ -50,31 +70,6 @@ export const collabEditHandler = (ws: Websocket) => {
           break;
         case "redo":
           redo(ws, msg);
-          break;
-        case "sitejs_reload":
-          {
-            const site = await db.site.findFirst({
-              where: { id: msg.id },
-              select: { js_compiled: true },
-            });
-            if (site) {
-              for (const p of Object.values(eg.edit.page)) {
-                if (p.doc.getMap("map").get("id_site") === msg.id) {
-                  p.ws.forEach((w) => {
-                    if (w !== ws) {
-                      w.send(
-                        JSON.stringify({
-                          type: "sitejs_reload",
-                          id: msg.id,
-                          js: site.js_compiled,
-                        })
-                      );
-                    }
-                  });
-                }
-              }
-            }
-          }
           break;
       }
     } catch (e) {

@@ -48,21 +48,6 @@ export const jsMount = async (p: PG, editor: MonacoEditor, monaco: Monaco) => {
   editor.onDidChangeModelContent(() => {
     highlighter();
   });
-  editor.addAction({
-    id: "reloadPrasiEditorPage",
-    label: "Reload Prasi Editor Page",
-    keybindings: [18 | 48],
-    // keybindings: [KeyMod.Alt | KeyCode.KeyR],
-    run: async () => {
-      p.render();
-      p.script.active = false;
-      await rebuildTree(p, { mode: "reset", note: "reload" });
-      setTimeout(() => {
-        p.script.active = true;
-        p.render();
-      }, 500);
-    },
-  });
 
   monaco.languages.registerDocumentFormattingEditProvider("typescript", {
     async provideDocumentFormattingEdits(model, options, token) {

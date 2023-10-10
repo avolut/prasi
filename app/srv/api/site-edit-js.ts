@@ -16,6 +16,8 @@ export const _ = {
       data: { js: src || "", js_compiled: compiled || "" },
     });
 
+    console.log(src);
+
     let dts = "";
     const host = ts.createCompilerHost(options);
     host.writeFile = (fileName, contents) => (dts = contents);
