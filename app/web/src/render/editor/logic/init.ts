@@ -72,8 +72,10 @@ export const initEditor = async (p: PG, site_id: string) => {
       return site;
     };
     const processSite = async (site: LSite) => {
-      w.exports = {};
-
+      if (!w.exports) {
+        w.exports = {};
+      
+      }
       if (site.cgroup_ids) {
         for (const id of site.cgroup_ids) {
           await importModule(`${serverurl}/npm/site/${id}/site.js`);
