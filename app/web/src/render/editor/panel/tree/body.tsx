@@ -9,7 +9,7 @@ import {
 import { FC, useCallback, useEffect } from "react";
 import { useGlobal, useLocal, waitUntil } from "web-utils";
 import { MContent } from "../../../../utils/types/general";
-import { EditorGlobal, NodeMeta } from "../../logic/global";
+import { EditorGlobal, ItemMeta, NodeMeta } from "../../logic/global";
 import { rebuildTree } from "../../logic/tree-logic";
 import { Adv } from "./item/action";
 import { ETreeItem } from "./item/item";
@@ -282,40 +282,35 @@ export const ETreeBody: FC<{ tree: NodeModel<NodeMeta>[]; meta?: any }> = ({
             }}
             render={(node, { depth, isOpen, onToggle }) => {
               if (!node) return <></>;
-              // const mmeta = node.data?.meta;
-              // if (mmeta) {
-              //   const mitem = mmeta.mitem;
-              //   if (
-              //     mitem &&
-              //     mitem.parent &&
-              //     (mitem.parent as any).get("content")
-              //   ) {
-              //     const pvis = (mitem.parent as any).get("visible");
+              const mmeta = node.data?.meta as ItemMeta;
+              if (mmeta) {
+                const mitem = mmeta.mitem;
+                if (
+                  mitem &&
+                  mitem.parent &&
+                  (mitem.parent as any).get("content")
+                ) {
+                  const pvis = (mitem.parent as any).get("visible");
 
-              //     let visible = true;
-              //     if (pvis && meta) {
-              //       try {
-              //         const scopes = mergeScopeUpwards(p, mmeta);
-              //         const args = {
-              //           ...window.exports,
-              //           ...scopes,
-              //         };
+                  let name = "";
+                  (mitem.parent.parent as any).forEach((e: any, k: string) => {
+                    if (e === mitem.parent) {
+                      name = k;
+                    }
+                  });
 
-              //         const fn = new Function(
-              //           ...Object.keys(args),
-              //           `return ${pvis}`
-              //         );
-
-              //         visible = fn(...Object.values(args));
-              //       } catch (e) {
-              //         console.log(e);
-              //       }
-              //     }
-              //     if (!visible) {
-              //       return <></>;
-              //     }
-              //   }
-              // }
+                  let visible = true;
+                  if (pvis && mmeta) {
+                    const propvis = mmeta.parent_prop?.comp?.propvis;
+                    if (propvis) {
+                      visible = propvis[name];
+                    }
+                  }
+                  if (!visible) {
+                    return <></>;
+                  }
+                }
+              }
 
               if (meta.search && node.data) {
                 const meta = node.data.meta;

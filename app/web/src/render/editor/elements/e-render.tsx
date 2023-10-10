@@ -6,7 +6,7 @@ import { IItem } from "../../../utils/types/item";
 import { FNAdv, FNCompDef } from "../../../utils/types/meta-fn";
 import { Loading } from "../../../utils/ui/loading";
 import { EditorGlobal } from "../logic/global";
-import { treePropEval, treePropVis } from "../logic/tree-prop";
+import { treePropEval } from "../logic/tree-prop";
 import {
   JS_DEBUG,
   mergeScopeUpwards,
@@ -112,7 +112,6 @@ export const ERender: FC<{
     }
 
     comp.propval = treePropEval(p, meta, cprops);
-    comp.propvis = treePropVis(p, meta, cprops);
   }
 
   let _children = null;

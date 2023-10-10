@@ -70,6 +70,7 @@ export const rebuildTree = async (
           idx: 0,
           includeTree: false,
         });
+
         parent_id = p.layout.content.id;
         p.layout.content.type = "item";
         if (p.layout.content.type === "item")

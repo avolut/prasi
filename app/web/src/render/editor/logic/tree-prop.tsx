@@ -80,14 +80,28 @@ export const treePropEval = (
       result[name] = value;
     }
 
+    const propvis: any = {};
+    for (const [name, _prop] of cprops) {
+      if (_prop.visible) {
+        const finalArgs = { ...args, ...result };
+        const fn = new Function(
+          ...Object.keys(finalArgs),
+          `return ${_prop.visible}`
+        );
+        try {
+          propvis[name] = fn(...Object.values(finalArgs));
+        } catch (e) {
+          const cname = meta.item.name;
+          console.warn(e);
+          console.warn(
+            `ERROR in Component [${cname}], in prop [${name}]:\n ` +
+              _prop.visible
+          );
+        }
+      }
+    }
+    if (meta.comp) meta.comp.propvis = propvis;
+
     return result;
   }
-};
-
-export const treePropVis = (
-  p: PG,
-  meta: ItemMeta,
-  cprops: [string, FNCompDef][]
-) => {
-  return {};
 };
