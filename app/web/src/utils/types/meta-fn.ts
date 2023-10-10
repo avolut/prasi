@@ -40,7 +40,7 @@ export type FNCompDef = {
 type FNCompMeta = {
   type: "text" | "option" | "content-element";
   options?: string;
-  oldName?: string;
+  option_mode?: "dropdown" | "button";
 };
 
 export type FMCompDef = TypedMap<

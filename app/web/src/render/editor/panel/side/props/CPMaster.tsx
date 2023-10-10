@@ -8,10 +8,6 @@ import { Popover } from "../../../../../utils/ui/popover";
 import { closeEditComp } from "../../../logic/comp";
 import { EditorGlobal, PG } from "../../../logic/global";
 import { newMap } from "../../../tools/yjs-tools";
-import { jscript } from "../../script/script-element";
-import { AutoHeightTextarea } from "../panel/link";
-import { CPCodeEdit } from "./CPCodeEdit";
-import { CPCoded } from "./CPCoded";
 
 const popover = {
   name: "",
@@ -552,6 +548,34 @@ const SinglePopover: FC<{
               </div>
             </>
           )}
+          {type === "option" && (
+            <div className="border-t border-slate-300 pl-2 pt-1 flex justify-between items-center select-none">
+              <div className="uppercase text-xs">MODE</div>
+
+              <div className="flex pr-1">
+                {["button", "dropdown"].map((e) => (
+                  <div
+                    key={e}
+                    onClick={() => {
+                      const meta = mprop.get("meta");
+                      if (meta) {
+                        meta.set("option_mode", e as any);
+                      }
+                    }}
+                    className={cx(
+                      "m-1 px-1 capitalize text-center cursor-pointer  font-mono border border-slate-300 text-[11px]",
+                      e === prop.meta?.option_mode ||
+                        (e === "button" && !prop.meta?.option_mode)
+                        ? "bg-blue-500 text-white"
+                        : `hover:bg-blue-500 hover:text-white bg-white hover:border-blue-500`
+                    )}
+                  >
+                    {e}
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {type === "option" && (
             <div className="border-t border-slate-300 pl-2 pt-1 flex justify-between items-center">
@@ -563,37 +587,6 @@ const SinglePopover: FC<{
               >
                 EDIT CODE
               </div>
-              {/* <AutoHeightTextarea
-                defaultValue={meta.options}
-                onChange={(e) => {
-                  meta.options = e.currentTarget.value as any;
-                  mmeta.set("options", meta.options);
-                  local.render();
-                }}
-                onBlur={() => {}}
-                minRows={5}
-                onFocus={(e) => {
-                  if (!e.currentTarget.value) {
-                    e.currentTarget.value = `\
-[
-  {
-    label: "YES",
-    value: "y"
-  },
-  {
-    label: "NO",
-    value: "n"
-  },
-]`;
-                    e.currentTarget.style.height = "220px";
-                    meta.options = e.currentTarget.value as any;
-                    mmeta.set("options", meta.options);
-                  }
-                }}
-                placeholder="OPTIONS"
-                className="p-1 outline-none font-mono text-[11px] border focus:border-blue-500"
-                spellCheck={false}
-              /> */}
             </div>
           )}
         </div>

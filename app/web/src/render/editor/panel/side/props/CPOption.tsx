@@ -1,15 +1,42 @@
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import { CPArgs } from "./types";
 import { CPCoded } from "./CPCoded";
 import { useLocal } from "web-utils";
+import { Loading } from "../../../../../utils/ui/loading";
+import Downshift from "downshift";
 
 export const CPOption: FC<CPArgs> = ({ prop, onChange, editCode, reset }) => {
-  const local = useLocal({ codeEditing: false });
+  const local = useLocal({
+    codeEditing: false,
+    loading: false,
+    loaded: false as any,
+    isOpen: false,
+    val: "",
+    metaFn: null as null | (() => Promise<{ label: string; value: any }[]>),
+  });
   let metaOptions: { label: string; value: any }[] = [];
+
   if (prop.meta?.options) {
-    try {
-      eval(`metaOptions = ${prop.meta.options}`);
-    } catch (e) {}
+    if (!local.loaded) {
+      try {
+        eval(`
+const resOpt = ${prop.meta.options};
+if (typeof resOpt === 'function') local.metaFn = resOpt;
+else metaOptions = resOpt;
+`);
+      } catch (e) {}
+    } else {
+      metaOptions = local.loaded;
+    }
+
+    if (local.metaFn && !local.loaded && !local.loading) {
+      local.loading = true;
+      local.metaFn().then((e) => {
+        local.loading = false;
+        local.loaded = e;
+        local.render();
+      });
+    }
   }
 
   let evalue: any = null;
@@ -17,11 +44,17 @@ export const CPOption: FC<CPArgs> = ({ prop, onChange, editCode, reset }) => {
     eval(`evalue = ${prop.value}`);
   } catch (e) {}
 
+  useEffect(() => {
+    local.val = evalue;
+    local.render();
+  }, [evalue]);
+
   if (
-    local.codeEditing ||
-    !metaOptions.find((e) => {
-      return e.value === evalue;
-    })
+    !local.metaFn &&
+    (local.codeEditing ||
+      !metaOptions.find((e) => {
+        return e.value === evalue;
+      }))
   ) {
     return (
       <CPCoded
@@ -38,28 +71,129 @@ export const CPOption: FC<CPArgs> = ({ prop, onChange, editCode, reset }) => {
     );
   }
 
+  let mode = prop.meta?.option_mode;
+  if (!mode) mode = "button";
+
   return (
-    <div className="flex items-center flex-wrap pt-1 space-x-1 justify-end px-2 flex-1 min-h-[30px]">
-      {Array.isArray(metaOptions) &&
-        metaOptions.map((item, idx) => {
-          return (
-            <div
-              key={idx}
-              className={cx(
-                "flex px-2 text-xs mb-1 border rounded-sm cursor-pointer  justify-center ",
-                item.value !== evalue
-                  ? "bg-white  text-blue-700 hover:bg-blue-50 hover:border-blue-500"
-                  : "bg-blue-700 text-white border-blue-700"
-              )}
-              onClick={() => {
-                const val = JSON.stringify(item.value);
-                onChange(val);
-              }}
-            >
-              {item.label}
+    <div className="flex items-center flex-wrap space-x-1 justify-end flex-1 min-h-[30px]">
+      {local.loading ? (
+        <Loading backdrop={false}></Loading>
+      ) : (
+        <>
+          {mode === "dropdown" && (
+            <>
+              <Downshift
+                inputValue={local.val}
+                isOpen={local.isOpen}
+                onOuterClick={() => {
+                  local.isOpen = false;
+                  local.render();
+                }}
+                onInputValueChange={(e) => {
+                  local.val = e;
+                  local.isOpen = true;
+                  local.render();
+                }}
+                onChange={(sel) => {
+                  if (!sel) {
+                    local.val = evalue;
+                    local.isOpen = false;
+                    local.render();
+                  } else {
+                    const val = JSON.stringify(sel.value);
+                    local.isOpen = false;
+                    onChange(val);
+                  }
+                }}
+                itemToString={(item) => (item ? item.value : "")}
+              >
+                {({
+                  getInputProps,
+                  getItemProps,
+                  getLabelProps,
+                  getMenuProps,
+                  isOpen,
+                  inputValue,
+                  highlightedIndex,
+                  selectedItem,
+                  getRootProps,
+                }) => (
+                  <div className="border-l self-stretch">
+                    <div
+                      style={{ display: "inline-block" }}
+                      {...getRootProps({}, { suppressRefError: true })}
+                    >
+                      <input
+                        {...getInputProps()}
+                        onFocus={() => {
+                          local.val = "";
+                          local.isOpen = true;
+                          local.render();
+                        }}
+                        className="flex-1 self-stretch font-mono border-2 border-transparent outline-none bg-transparent focus:bg-white focus:border-blue-500 border-slate-300 text-[11px] min-h-[30px] pl-1 "
+                      />
+                    </div>
+                    <ul
+                      {...getMenuProps()}
+                      className="absolute z-10 border right-0 bg-white"
+                    >
+                      {isOpen
+                        ? metaOptions
+                            .filter(
+                              (item) =>
+                                !inputValue || item.value.includes(inputValue)
+                            )
+                            .map((item, index) => (
+                              <li
+                                {...getItemProps({
+                                  key: item.value,
+                                  index,
+                                  item,
+                                })}
+                                className={cx(
+                                  "min-w-[180px] px-2 py-[2px] border-b",
+                                  selectedItem === item &&
+                                    highlightedIndex !== index &&
+                                    `bg-blue-500 text-white`,
+                                  highlightedIndex === index && `bg-blue-200`
+                                )}
+                              >
+                                {item.label || item.value}
+                              </li>
+                            ))
+                        : null}
+                    </ul>
+                  </div>
+                )}
+              </Downshift>
+            </>
+          )}
+          {mode === "button" && (
+            <div className="flex-1 pt-1 px-2 flex flex-wrap justify-end">
+              {Array.isArray(metaOptions) &&
+                metaOptions.map((item, idx) => {
+                  return (
+                    <div
+                      key={idx}
+                      className={cx(
+                        "flex px-2 text-xs mb-1 border rounded-sm cursor-pointer  justify-center ",
+                        item.value !== evalue
+                          ? "bg-white  text-blue-700 hover:bg-blue-50 hover:border-blue-500"
+                          : "bg-blue-700 text-white border-blue-700"
+                      )}
+                      onClick={() => {
+                        const val = JSON.stringify(item.value);
+                        onChange(val);
+                      }}
+                    >
+                      {item.label}
+                    </div>
+                  );
+                })}
             </div>
-          );
-        })}
+          )}
+        </>
+      )}
     </div>
   );
 };

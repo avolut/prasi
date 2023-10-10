@@ -25,8 +25,7 @@ const timeout = {
 };
 export const editorWS = async (p: PG) => {
   if (p.ws && p.ws.readyState === p.ws.OPEN) {
-    if (p.page) {
-    }
+    console.log("Cancelling reconnect, ws still open");
     return;
   }
   const render = () => {
@@ -48,13 +47,17 @@ export const editorWS = async (p: PG) => {
     }
 
     wsurl.pathname = "/edit";
-    clearTimeout(timeout.reconnect);
-
     p.ws = new WebSocket(wsurl);
     const ws = p.ws;
 
     if (ws) {
       const retry = (e: any) => {
+        if (p.ws && p.ws.readyState === p.ws.OPEN) {
+          return;
+        }
+        clearTimeout(timeout.reconnect);
+        timeout.reconnect = null;
+
         if (p.wsRetry.disabled) return;
 
         p.wsRetry.reconnecting = true;
@@ -62,20 +65,22 @@ export const editorWS = async (p: PG) => {
         if (p.wsRetry.fast) {
           editorWS(p);
         } else {
-          clearTimeout(timeout.reconnect);
+          clearInterval(timeout.reconnect);
+          timeout.reconnect = setInterval(() => {
+            if (p.ws && p.ws.readyState === p.ws.OPEN) {
+              clearInterval(timeout.reconnect);
+              return;
+            }
 
-          timeout.reconnect = setTimeout(() => {
             console.log("Reconnecting...");
             editorWS(p);
           }, 5000);
         }
       };
       ws.addEventListener("error", (e) => {
-        console.log("error", e);
         retry(e);
       });
       ws.addEventListener("close", (e) => {
-        console.log("close", e);
         retry(e);
       });
       ws.addEventListener("open", () => {
@@ -235,17 +240,6 @@ export const editorWS = async (p: PG) => {
                 delete p.comps.resolve[msg.comp_id];
               }
             }
-            break;
-          case "sitejs_reload":
-            p.site.js = msg.js || "";
-            execSiteJS(p);
-            console.log(`🔥 Site JS Reloaded: ${new Date().toLocaleString()}`);
-            render();
-            api.site_dts(p.site.id).then((e) => {
-              p.site_dts = e || "";
-              p.render();
-            });
-
             break;
           case "undo":
           case "redo":

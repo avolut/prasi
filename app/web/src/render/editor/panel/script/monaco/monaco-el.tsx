@@ -421,8 +421,6 @@ async () => {
                 ...scope,
               };
 
-              console.log(scope, meta);
-
               const propTypes: any = p.script.siteTypes;
               await jsMount(p, editor, monaco);
               await monacoTypings(p, monaco, {

@@ -10,7 +10,8 @@ export type WS_MSG =
   | WS_MSG_REDO
   | WS_MSG_NEW_COMP
   | WS_SITE_JS
-  | { type: "ping" };
+  | { type: "ping" }
+  | { type: "pong" };
 
 export type WS_SITE_JS = {
   type: "site-js";
