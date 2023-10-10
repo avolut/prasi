@@ -1,18 +1,25 @@
-import { withErrorBoundary, useErrorBoundary } from "react-use-error-boundary";
-import { useLocal } from "web-utils";
+import { useErrorBoundary, withErrorBoundary } from "react-use-error-boundary";
+import { useGlobal, useLocal } from "web-utils";
+import { EditorGlobal, ItemMeta } from "../logic/global";
 
 export const ErrorBox = withErrorBoundary(
-  ({ children, id }: { children: any; id?: string }) => {
+  ({ children, meta, id }: { children: any; meta?: ItemMeta; id?: string }) => {
     const local = useLocal({ retrying: false });
     const [error, resetError] = useErrorBoundary((error, errorInfo) => {
       console.warn(error);
     });
 
+    let _meta = meta;
+    if (id) {
+      const p = useGlobal(EditorGlobal, "EDITOR");
+      _meta = p.treeMeta[id];
+    }
+
     if (error) {
       return (
         <div className="bg-red-100 border border-red-300 rounded-sm text-xs flex flex-col items-center">
           <div className="text-[10px] font-bold text-red-900 self-stretch px-1">
-            ERROR
+            ERROR {_meta?.item.name ? "[" + _meta.item.name + "]:" : ""}
           </div>
           <p className="border-b border-red-300 px-1 pb-1 min-w-[100px]">
             {!local.retrying ? <>{(error as any).message}</> : <>Retrying...</>}

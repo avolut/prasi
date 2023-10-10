@@ -44,7 +44,8 @@ const w = window as unknown as {
 export type FBuild = (
   entryFileName: string,
   src: string,
-  files?: Record<string, string>
+  files?: Record<string, string>,
+  verbose?: boolean
 ) => Promise<string>;
 
 const monacoViewState = {} as Record<string, any>;

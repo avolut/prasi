@@ -69,7 +69,7 @@ export const treeScopeEval = (
     useEffect: useEffect,
     render: (jsx: ReactNode) => {
       output.jsx = (
-        <ErrorBox>
+        <ErrorBox meta={meta}>
           <Suspense
             fallback={
               <div className="flex flex-1 items-center justify-center w-full h-full relative">

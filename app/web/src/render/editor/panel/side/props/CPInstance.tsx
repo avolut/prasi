@@ -182,7 +182,12 @@ const SingleProp: FC<{
   const type = _prop.meta?.type || "text";
   const updateValue = async (val: string) => {
     if (jscript.build) {
-      const res = await jscript.build("el.tsx", `return ${val}`);
+      const res = await jscript.build(
+        "prop [" + name + "]    -> .tsx",
+        `return ${val}`,
+        undefined,
+        true
+      );
       let js = val;
       let jsBuilt = res.substring(6);
 

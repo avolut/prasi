@@ -16,6 +16,7 @@ import { fillID } from "../tools/fill-id";
 import { newMap } from "../tools/yjs-tools";
 import { ComponentOver, ElProp, createElProp } from "./e-relprop";
 import { ETextInternal } from "./e-text";
+import { jscript } from "../panel/script/script-element";
 
 export const ERender: FC<{
   id: string;
@@ -158,7 +159,26 @@ export const ERender: FC<{
     }
   }
 
-  if (!adv?.js && (meta.scopeAttached || meta.comp)) {
+  if (adv && adv.js && !adv.jsBuilt && meta.mitem) {
+    if (!jscript.build) {
+      jscript.init().then(() => {
+        p.render();
+      });
+      return null;
+    }
+    jscript
+      .build(
+        "item [" + meta.item.name + "]    -> .tsx",
+        `return ${adv.js}`,
+        undefined,
+        true
+      )
+      .then((js) => {});
+
+    return null;
+  }
+
+  if (!(adv?.jsBuilt && adv?.js) && (meta.scopeAttached || meta.comp)) {
     return treeScopeEval(
       p,
       meta,

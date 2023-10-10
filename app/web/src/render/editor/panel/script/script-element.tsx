@@ -20,7 +20,7 @@ export const jscript = {
       const { sendIPC } = await import("./esbuild/ipc");
       await initJS();
 
-      this.build = async (entry, src, files) => {
+      this.build = async (entry, src, files, verbose?: boolean) => {
         const options: BuildOptions = {
           entryPoints: [entry],
           jsx: "transform",
@@ -33,7 +33,12 @@ export const jscript = {
           input_: { ...files, [entry]: src },
           options_: options,
         });
+
+        if (verbose && res.stderr_) {
+          console.log(res.stderr_);
+        }
         if (res.outputFiles_) return res.outputFiles_[0].text;
+
         return "";
       };
 
