@@ -27,7 +27,10 @@ const walk = async (
   }
   if (item.type === "item") {
     for (const c of item.childs) {
-      return await walk(c);
+      const found = await walk(c);
+      if (found) {
+        return found;
+      }
     }
   }
 };

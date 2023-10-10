@@ -58,6 +58,7 @@ export const rebuildTree = async (
       let includeTree = p.comp?.id ? false : true;
 
       const pageName = p.mpage?.getMap("map").get("name") as string;
+
       if (
         p.layout.section &&
         p.layout.content &&

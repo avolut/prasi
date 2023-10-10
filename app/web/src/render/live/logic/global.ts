@@ -50,6 +50,7 @@ export type LSite = {
   js: string;
   js_compiled: string;
   layout?: ISection;
+  layout_id?: string;
   cgroup_ids?: string[];
   config?: any;
 };
