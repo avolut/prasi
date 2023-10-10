@@ -142,12 +142,13 @@ else metaOptions = resOpt;
                           local.isOpen = true;
                           local.render();
                         }}
+                        spellCheck={false}
                         className="flex-1 self-stretch font-mono border-2 border-transparent outline-none bg-transparent focus:bg-white focus:border-blue-500 border-slate-300 text-[11px] min-h-[30px] pl-1 "
                       />
                     </div>
                     <ul
                       {...getMenuProps()}
-                      className="absolute z-10 border right-0 bg-white max-h-[300px] overflow-y-auto"
+                      className="absolute z-10 border right-0 bg-white max-h-[300px] overflow-y-auto overflow-x-hidden"
                     >
                       {isOpen
                         ? metaOptions
