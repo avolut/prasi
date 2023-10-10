@@ -496,7 +496,17 @@ async () => {
                         newsrc || "",
                         local.idbstore
                       );
-                      applyChanges(async (ytext) => {});
+                      applyChanges(async (ytext) => {
+                        const text = ytext.toJSON();
+                        const compiled = await build(
+                          "element.tsx",
+                          `return ${text.trim()}`
+                        );
+                        const meta = mprop?.get("meta");
+                        if (meta) {
+                          meta.set("optionsBuilt", compiled.substring(6));
+                        }
+                      });
                     } else if (p.script.prop.mode === "master-gen") {
                       set(
                         `${id}#gen-${p.script.prop.name}-${ts}`,

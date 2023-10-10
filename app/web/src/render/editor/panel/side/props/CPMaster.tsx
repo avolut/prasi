@@ -351,7 +351,6 @@ const SinglePopover: FC<{
   const mmeta = mprop.get("meta");
   const meta = prop.meta;
   if (!mmeta || !meta) return null;
-  const state = useLocal({ visibleEdit: false });
 
   const args: any = {};
   for (const [k, v] of Object.entries(props)) {

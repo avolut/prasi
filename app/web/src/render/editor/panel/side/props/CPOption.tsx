@@ -1,9 +1,10 @@
 import { FC, useEffect } from "react";
 import { CPArgs } from "./types";
 import { CPCoded } from "./CPCoded";
-import { useLocal } from "web-utils";
+import { useGlobal, useLocal } from "web-utils";
 import { Loading } from "../../../../../utils/ui/loading";
 import Downshift from "downshift";
+import { EditorGlobal } from "../../../logic/global";
 
 export const CPOption: FC<CPArgs> = ({ prop, onChange, editCode, reset }) => {
   const local = useLocal({
@@ -14,17 +15,28 @@ export const CPOption: FC<CPArgs> = ({ prop, onChange, editCode, reset }) => {
     val: "",
     metaFn: null as null | (() => Promise<{ label: string; value: any }[]>),
   });
+  const p = useGlobal(EditorGlobal, "EDITOR");
   let metaOptions: { label: string; value: any }[] = [];
 
-  if (prop.meta?.options) {
+  if (prop.meta?.options || prop.meta?.optionsBuilt) {
     if (!local.loaded) {
       try {
+        const args = {
+          ...window.exports,
+          db: p.script.db,
+          api: p.script.api,
+        };
         eval(`
-const resOpt = ${prop.meta.options};
-if (typeof resOpt === 'function') local.metaFn = resOpt;
+${Object.entries(args)
+  .map((e) => `const ${e[0]} = args["${e[0]}"]`)
+  .join(";\n")}
+const resOpt = ${prop.meta.optionsBuilt || prop.meta.options};
+if (typeof resOpt === 'function')  local.metaFn = resOpt;
 else metaOptions = resOpt;
 `);
-      } catch (e) {}
+      } catch (e) {
+        console.error(e);
+      }
     } else {
       metaOptions = local.loaded;
     }
@@ -135,7 +147,7 @@ else metaOptions = resOpt;
                     </div>
                     <ul
                       {...getMenuProps()}
-                      className="absolute z-10 border right-0 bg-white"
+                      className="absolute z-10 border right-0 bg-white max-h-[300px] overflow-y-auto"
                     >
                       {isOpen
                         ? metaOptions

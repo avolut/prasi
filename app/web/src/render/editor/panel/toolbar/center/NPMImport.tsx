@@ -77,7 +77,7 @@ export const NPMImport = () => {
 
   return (
     <div
-      className={cx("text-sm w-[700px] h-[400px] relative flex items-stretch")}
+      className={cx("text-sm w-[1000px] h-[400px] relative flex items-stretch")}
     >
       {w.npmImport.loading ? (
         <Loading note="npm-import" backdrop={false} />
