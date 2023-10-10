@@ -388,8 +388,6 @@ async () => {
                 editor.focus();
               }, 300);
 
-              let restoreViewState = false;
-
               const value = editor.getValue();
               if (script.type === "js") {
                 monaco.editor.getModels().forEach((model) => {
@@ -422,6 +420,8 @@ async () => {
                 ...(window.exports || {}),
                 ...scope,
               };
+
+              console.log(scope, meta);
 
               const propTypes: any = p.script.siteTypes;
               await jsMount(p, editor, monaco);

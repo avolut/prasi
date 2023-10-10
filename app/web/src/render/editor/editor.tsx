@@ -122,7 +122,7 @@ export const Editor: FC<{ site_id: string; page_id: string; session: any }> = ({
       return p.ui.error;
     }
     if (!p.site.id) {
-      return <Loading note="load-site" />;
+      return <Loading note="editor-prepare" />;
     }
   }
 
