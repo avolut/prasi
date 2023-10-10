@@ -76,15 +76,11 @@ export const initEditor = async (p: PG, site_id: string) => {
 
       if (site.cgroup_ids) {
         for (const id of site.cgroup_ids) {
-          await importModule(
-            `${serverurl}/npm/site/${id}/site.js?${Date.now()}`
-          );
+          await importModule(`${serverurl}/npm/site/${id}/site.js`);
         }
       }
 
-      await importModule(
-        `${serverurl}/npm/site/${site.id}/site.js?${Date.now()}`
-      );
+      await importModule(`${serverurl}/npm/site/${site.id}/site.js`);
 
       p.site.id = site.id;
       p.site.js = site.js || "";

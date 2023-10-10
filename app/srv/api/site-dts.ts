@@ -1,6 +1,6 @@
 import { apiContext } from "service-srv";
 import ts from "typescript";
-
+import { createHash } from "crypto";
 export const _ = {
   url: "/site-dts/:site_id",
   async api(site_id: string) {
@@ -17,7 +17,7 @@ export const _ = {
         declaration: true,
       };
 
-      let dts;
+      let dts = "";
       const host = ts.createCompilerHost(options);
       host.writeFile = (fileName, contents) => (dts = contents);
       host.readFile = () =>
@@ -25,6 +25,10 @@ export const _ = {
 
       const program = ts.createProgram(["sitedts"], options, host);
       program.emit();
+
+      const etag = createHash("md5").update(dts).digest("hex");
+      res.setHeader("etag", etag);
+
       return dts;
     }
     return "";
