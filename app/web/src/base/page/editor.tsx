@@ -1,8 +1,11 @@
 import { page } from "web-init";
-import { Editor } from "../../render/editor/editor";
 import { useLocal } from "web-utils";
 import { Loading } from "../../utils/ui/loading";
-import { useEffect } from "react";
+import { Suspense, lazy, useEffect } from "react";
+
+const Editor = lazy(async () => ({
+  default: (await import("../../render/editor/editor")).Editor,
+}));
 
 export default page({
   url: "/editor/:site_id/:page_id",
@@ -129,7 +132,9 @@ export default page({
     if (local.loading) return <Loading note="base-page" />;
 
     return (
-      <Editor session={local.session} site_id={site_id} page_id={page_id} />
+      <Suspense fallback={<Loading note="editor-init" />}>
+        <Editor session={local.session} site_id={site_id} page_id={page_id} />
+      </Suspense>
     );
   },
 });
