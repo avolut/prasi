@@ -31,6 +31,8 @@ export const _ = {
 
       return dts;
     }
+    res.setHeader("etag", "empty");
+
     return "";
   },
 };
