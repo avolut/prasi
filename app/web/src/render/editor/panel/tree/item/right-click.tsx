@@ -265,17 +265,7 @@ export const ETreeRightClick: FC<{
                   p.compLoading[item.id] = true;
                   p.render();
                   if (!compitem) {
-                    loadComponent(p, comp.id);
-
-                    await new Promise<void>((resolve) => {
-                      const ival = setInterval(() => {
-                        if (p.comps.doc[comp.id]) {
-                          clearInterval(ival);
-                          resolve();
-                        }
-                      }, 200);
-                    });
-
+                    await loadComponent(p, comp.id);
                     compitem = p.comps.doc[comp.id];
                   }
                   mitem.doc.transact(() => {
@@ -285,27 +275,7 @@ export const ETreeRightClick: FC<{
                         .get("content_tree")
                         ?.toJSON() as IItem
                     ) as IItem;
-
                     const props: any = {};
-                    if (citem.component?.props) {
-                      for (const [k, v] of Object.entries(
-                        citem.component.props
-                      ).sort((a, b) => {
-                        return a[1].idx - b[1].idx;
-                      })) {
-                        if (v.meta?.type === "content-element") {
-                          props[k] = {
-                            meta: { type: "content-element" },
-                            content: {
-                              ...fillID(mitem.toJSON() as IItem),
-                              name: k,
-                            },
-                          };
-                          break;
-                        }
-                      }
-                    }
-
                     if (citem) {
                       syncronize(mitem as any, {
                         id: citem.id,
@@ -317,11 +287,6 @@ export const ETreeRightClick: FC<{
                         },
                         type: "item",
                       });
-
-                      // p.treeMeta[citem.id] = {
-                      //   item: citem,
-                      //   mitem,
-                      // };
                     }
 
                     delete p.compLoading[item.id];
