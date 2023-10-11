@@ -16,6 +16,7 @@ import { CPJsx } from "./CPJsx";
 import { CPOption } from "./CPOption";
 import { CPText } from "./CPText";
 import { mergeScopeUpwards } from "../../../logic/tree-scope";
+import { treePropEval } from "../../../logic/tree-prop";
 
 export const CPInstance: FC<{ mitem: MItem }> = ({ mitem }) => {
   const p = useGlobal(EditorGlobal, "EDITOR");
@@ -268,12 +269,18 @@ async () => {
             const meta = p.treeMeta[p.item.active];
             if (prop.genBuilt && meta && p.script.doEdit) {
               try {
+                const propEval = treePropEval(
+                  p,
+                  meta,
+                  Object.entries(mprops.toJSON())
+                );
                 const scopes = mergeScopeUpwards(p, meta);
                 let args = {
                   ...window.exports,
                   ...scopes,
                   db: p.script.db,
                   api: p.script.api,
+                  ...propEval,
                 };
 
                 const fn = new Function(
@@ -291,6 +298,7 @@ async () => {
                     result = promise;
                   }
                 }
+
                 if (typeof result === "string") {
                   p.script.doEdit(result, true);
                 }

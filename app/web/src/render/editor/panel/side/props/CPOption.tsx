@@ -187,7 +187,7 @@ else metaOptions = resOpt;
             </>
           )}
           {mode === "button" && (
-            <div className="flex-1 pt-1 px-2 flex flex-wrap justify-end">
+            <div className="flex-1 pt-1 px-2 flex flex-wrap justify-end space-x-1">
               {Array.isArray(metaOptions) &&
                 metaOptions.map((item, idx) => {
                   return (

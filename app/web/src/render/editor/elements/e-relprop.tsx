@@ -20,7 +20,7 @@ export const createElProp = (item: IContent, p: PG) => {
         p.softRender.all();
       }
     },
-    onClick: (e) => {
+    onClick: (e: React.PointerEvent<HTMLDivElement>) => {
       e.stopPropagation();
       e.preventDefault();
     },
@@ -147,7 +147,7 @@ export const ComponentOver: FC<{
         elprop.onPointerDown(e);
       }}
     >
-      <div
+      {/* <div
         className={cx(
           "flex items-center border border-slate-500 bg-white text-black rounded-sm text-[13px] px-[2px] min-h-[20px] text-center leading-3 absolute cursor-pointer z-10",
           css`
@@ -162,7 +162,7 @@ export const ComponentOver: FC<{
         }}
       >
         Edit
-      </div>
+      </div> */}
     </div>
   );
 };
