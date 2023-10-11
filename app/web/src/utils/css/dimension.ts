@@ -12,6 +12,14 @@ export const cssDimension = (
     w: "fit",
   });
 
+  if (dim.w === "full" && dim.h === "full") {
+    return `
+      width:100%;
+      height:100%;
+      flex:1;
+    `;
+  }
+
   return cx(
     dim.w === "fit" &&
       `

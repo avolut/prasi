@@ -87,7 +87,12 @@ else metaOptions = resOpt;
   if (!mode) mode = "button";
 
   return (
-    <div className="flex items-center flex-wrap space-x-1 justify-end flex-1 min-h-[30px]">
+    <div
+      className={cx(
+        "flex items-center flex-wrap space-x-1 justify-end flex-1",
+        mode === "dropdown" ? "max-h-[20px]" : "min-h-[30px]"
+      )}
+    >
       {local.loading ? (
         <Loading backdrop={false}></Loading>
       ) : (
@@ -148,7 +153,7 @@ else metaOptions = resOpt;
                         }}
                         type="search"
                         spellCheck={false}
-                        className="flex-1 self-stretch font-mono border-2 border-transparent outline-none bg-transparent focus:bg-white focus:border-blue-500 border-slate-300 text-[11px] min-h-[30px] pl-1 "
+                        className="flex-1 self-stretch font-mono border-2 border-transparent outline-none bg-transparent focus:bg-white focus:border-blue-500 border-slate-300 text-[11px] min-h-[25px] pl-1 "
                       />
                     </div>
                     <ul
