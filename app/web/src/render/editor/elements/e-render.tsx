@@ -12,12 +12,11 @@ import {
   mergeScopeUpwards,
   treeScopeEval,
 } from "../logic/tree-scope";
+import { jscript } from "../panel/script/script-element";
 import { fillID } from "../tools/fill-id";
 import { newMap } from "../tools/yjs-tools";
 import { ComponentOver, ElProp, createElProp } from "./e-relprop";
 import { ETextInternal } from "./e-text";
-import { jscript } from "../panel/script/script-element";
-import { rebuildTree } from "../logic/tree-logic";
 
 export const ERender: FC<{
   id: string;
@@ -43,13 +42,12 @@ export const ERender: FC<{
   ) {
     const mitem = meta.mitem;
     if (mitem && item.type === "item") {
-      mitem.doc?.transact(async () => {
+      (async () => {
+        let childs: any[] = [];
         await Promise.all(
           mitem.parent.map(async (e, idx) => {
             if (e === mitem && item.adv?.js) {
               const json = e.toJSON() as IItem;
-              mitem.parent.delete(idx);
-
               const scope = mergeScopeUpwards(p, meta);
               let fn: any = null;
               const args = {
@@ -66,8 +64,6 @@ export const ERender: FC<{
               );
               rawfn(...Object.values(args));
 
-              const childs: any[] = [];
-
               await Promise.all(
                 json.childs.map(async (e) => {
                   const res = await fn(fillID(e));
@@ -81,12 +77,19 @@ export const ERender: FC<{
                   }
                 })
               );
-              mitem.parent.insert(idx, childs);
             }
           })
         );
-      });
-      return null;
+        mitem.doc?.transact(() => {
+          mitem.parent.map(async (e, idx) => {
+            if (e === mitem && item.adv?.js) {
+              mitem.parent.delete(idx);
+              mitem.parent.insert(idx, childs);
+            }
+          });
+        });
+      })();
+      return <>Generating</>;
     }
   }
 

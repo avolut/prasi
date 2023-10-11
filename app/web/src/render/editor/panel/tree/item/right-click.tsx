@@ -275,15 +275,14 @@ export const ETreeRightClick: FC<{
                         .get("content_tree")
                         ?.toJSON() as IItem
                     ) as IItem;
-                    const props: any = {};
                     if (citem) {
                       syncronize(mitem as any, {
                         id: citem.id,
                         name: citem.name,
                         childs: [],
                         component: {
+                          ...citem.component,
                           id: citem.component?.id,
-                          props,
                         },
                         type: "item",
                       });

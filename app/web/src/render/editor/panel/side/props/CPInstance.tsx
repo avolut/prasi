@@ -26,7 +26,8 @@ export const CPInstance: FC<{ mitem: MItem }> = ({ mitem }) => {
     props: {} as Record<string, FNCompDef>,
     jsx: false,
   });
-  const comp = p.comps.doc[mitem.get("component")?.get("id") || ""];
+  const compid = mitem.get("component")?.get("id") || "";
+  const comp = p.comps.doc[compid];
 
   useEffect(() => {
     (async () => {
@@ -76,9 +77,7 @@ export const CPInstance: FC<{ mitem: MItem }> = ({ mitem }) => {
   }, [mitem]);
 
   if (!comp) {
-    loadComponent(p, mitem.get("component")?.get("id") || "").then(
-      local.render
-    );
+    loadComponent(p, compid).then(local.render);
 
     return <Loading note="cp-comp" backdrop={false} />;
   }

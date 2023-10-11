@@ -271,7 +271,6 @@ export const AddElement: FC<{}> = ({}) => {
                       const item = map.toJSON();
                       p.item.active = item.id;
                       p.item.activeOriginalId = item.id;
-
                       p.render();
                     }
                   } else {

@@ -13,6 +13,7 @@ import { createId } from "@paralleldrive/cuid2";
 import { syncronize } from "y-pojo";
 import { findDefaultJSX, rebuildTree } from "../../../logic/tree-logic";
 
+import * as Y from "yjs";
 export const ETreeItemAction: FC<{
   item: IContent;
   mode: "mobile" | "desktop";
@@ -89,12 +90,15 @@ export const ETreeItemAction: FC<{
                 if (mitem) {
                   const ijson = mitem.toJSON() as IItem;
 
-                  syncronize(mitem as any, {
-                    ...resetJSXProp,
-                    name: ijson.name,
-                    id: ijson.id,
-                    hidden: false,
-                    originalId: ijson.originalId,
+                  mitem.doc?.transact(() => {
+                    mitem.set("childs", new Y.Array());
+                    syncronize(mitem as any, {
+                      ...resetJSXProp,
+                      name: ijson.name,
+                      id: ijson.id,
+                      hidden: false,
+                      originalId: ijson.originalId,
+                    });
                   });
                 }
               }}

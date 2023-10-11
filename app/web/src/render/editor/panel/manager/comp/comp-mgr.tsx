@@ -873,6 +873,7 @@ const CompPreview: FC<{
   const p = useGlobal(EditorGlobal, "EDITOR");
   const comp = p.comps.doc[comp_id];
 
+  p.manager.compPreviewRendered = new Set();
   if (comp) {
     local.comp = comp.getMap("map").get("content_tree")?.toJSON() as IItem;
     if (local.comp) {

@@ -56,6 +56,7 @@ export const EditorGlobal = {
     comp: false,
     compActionLabel: "Pick",
     compCallback: (comp: any) => {},
+    compPreviewRendered: new Set<string>(),
   },
   script: {
     siteActive: false,

@@ -12,6 +12,11 @@ export const CItem = ({ item, comp_id }: { item: IItem; comp_id: string }) => {
   });
   const local = useLocal({});
 
+  if (p.manager.compPreviewRendered.has(item.id)) {
+    return null;
+  }
+  p.manager.compPreviewRendered.add(item.id);
+
   if (item.component && item.component.id && item.component.id !== comp_id) {
     if (
       !p.comps.doc[item.component.id] ||
