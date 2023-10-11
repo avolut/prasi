@@ -17,6 +17,7 @@ import { newMap } from "../tools/yjs-tools";
 import { ComponentOver, ElProp, createElProp } from "./e-relprop";
 import { ETextInternal } from "./e-text";
 import { jscript } from "../panel/script/script-element";
+import { rebuildTree } from "../logic/tree-logic";
 
 export const ERender: FC<{
   id: string;
