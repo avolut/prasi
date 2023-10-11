@@ -399,7 +399,6 @@ export const walk = async (
                       }
 
                       if (isNew) {
-                        console.log(isNew);
                         const defaultJSX = findDefaultJSX(p, mcontent);
                         if (defaultJSX && mcontent) {
                           syncronize(mcontent as any, defaultJSX);
