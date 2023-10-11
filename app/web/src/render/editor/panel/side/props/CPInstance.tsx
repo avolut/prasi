@@ -272,6 +272,8 @@ async () => {
                 let args = {
                   ...window.exports,
                   ...scopes,
+                  db: p.script.db,
+                  api: p.script.api,
                 };
 
                 const fn = new Function(
