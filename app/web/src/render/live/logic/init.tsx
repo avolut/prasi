@@ -15,6 +15,7 @@ const w = window as unknown as {
   navigateOverride: (s: string) => string;
   isEditor: boolean;
   isMobile: boolean;
+  isLayout: boolean;
   apiHeaders: any;
   isDesktop: boolean;
   exports: any;
@@ -34,6 +35,7 @@ export const initLive = async (p: PG, domain: string) => {
     p.status = "loading";
 
     w.isEditor = false;
+    w.isLayout = false;
     w.isMobile = p.mode === "mobile";
     w.isDesktop = p.mode === "desktop";
     w.apiHeaders = {};

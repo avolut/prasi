@@ -17,6 +17,7 @@ export const w = window as unknown as {
   navigateOverride: (s: string) => string;
   isEditor: boolean;
   isMobile: boolean;
+  isLayout: boolean;
   isDesktop: boolean;
   apiHeaders: any;
   exports: any;
@@ -34,9 +35,11 @@ export const initEditor = async (p: PG, site_id: string) => {
     p.status = "loading";
 
     w.isEditor = true;
+    w.isLayout = false;
     w.isMobile = p.mode === "mobile";
     w.isDesktop = p.mode === "desktop";
     w.apiHeaders = {};
+    
     w.navigateOverride = (_href) => {
       if (_href.startsWith("/ed")) return _href;
       return "";

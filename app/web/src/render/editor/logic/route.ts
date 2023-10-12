@@ -5,6 +5,7 @@ import { editorWS, wsend } from "./ws";
 import { MPage } from "../../../utils/types/general";
 import importModule from "../tools/dynamic-import";
 import { WS_MSG_GET_PAGE } from "../../../utils/types/ws";
+import { w } from "./init";
 
 export const pageNpmStatus: Record<string, "loaded" | "loading"> = {};
 const loadingCounter = {} as Record<string, number>;
@@ -54,6 +55,12 @@ const loadNpmPage = async (id: string) => {
 
 const loadPage = (p: PG, id: string) => {
   (window as any).prasiPageID = id;
+
+  if (id === p.site.layout_id) {
+    w.isLayout = true;
+  } else {
+    w.isLayout = false;
+  }
 
   return new Promise<MPage>(async (resolve) => {
     await editorWS(p);

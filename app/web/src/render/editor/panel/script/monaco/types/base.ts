@@ -10,6 +10,7 @@ const useEffect = React.useEffect;
 const useState = React.useState;
 
 const isEditor: boolean;
+const isLayout: boolean;
 const isMobile: boolean;
 const isDesktop: boolean;
 const apiHeaders: Record<string, any>;
