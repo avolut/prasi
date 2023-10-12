@@ -81,12 +81,14 @@ export const createFrameCors = async (url: string, win?: any) => {
               delete wm[id];
               if (e.data.error) {
                 let err = e.data.error;
-                reject(
-                  err.replace(
-                    /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
-                    ""
-                  )
-                );
+                if (typeof err === "string") {
+                  reject(
+                    err.replace(
+                      /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
+                      ""
+                    )
+                  );
+                }
               } else {
                 resolve(e.data.result);
               }
