@@ -36,13 +36,14 @@ export const defaultLoader: Loader = {
         is_default_layout: true,
         is_deleted: false,
       },
-      select: { content_tree: true },
+      select: { content_tree: true, id: true },
     });
 
     if (layout) {
       const childs = (layout.content_tree as any).childs;
       if (childs && childs.length > 0) {
         site.layout = childs[0];
+        site.layout_id = layout.id;
       }
     }
 

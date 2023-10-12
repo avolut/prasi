@@ -19,7 +19,7 @@ export const _ = {
         is_deleted: false,
         name: { not: { startsWith: "layout:" } },
       },
-    });
+    }); 
 
     if (site) {
       const layout = await db.page.findFirst({
@@ -29,7 +29,7 @@ export const _ = {
           is_default_layout: true,
           is_deleted: false,
         },
-        select: { content_tree: true },
+        select: { content_tree: true, id: true },
       });
 
       const cgroups = await db.site_use_comp.findMany({
@@ -47,6 +47,7 @@ export const _ = {
         const childs = (layout.content_tree as any).childs;
         if (childs && childs.length > 0) {
           (site as any).layout = childs[0];
+          (site as any).layout_id = layout.id;
         }
       }
     }

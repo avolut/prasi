@@ -35,11 +35,13 @@ export const initEditor = async (p: PG, site_id: string) => {
     p.status = "loading";
 
     w.isEditor = true;
-    w.isLayout = false;
+    if (typeof w.isLayout === "undefined") {
+      w.isLayout = false;
+    }
     w.isMobile = p.mode === "mobile";
     w.isDesktop = p.mode === "desktop";
     w.apiHeaders = {};
-    
+
     w.navigateOverride = (_href) => {
       if (_href.startsWith("/ed")) return _href;
       return "";
@@ -93,7 +95,8 @@ export const initEditor = async (p: PG, site_id: string) => {
       p.site.domain = site.domain;
       p.site.responsive = site.responsive as any;
       p.site.layout = site.layout;
-
+      p.site.layout_id = site.layout_id;
+ 
       await validateLayout(p);
 
       w.externalAPI = {
