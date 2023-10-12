@@ -24,6 +24,12 @@ export const _ = {
         if (npm) {
           res.setHeader("etag", npm.etag);
           res.setHeader("content-length", npm.file.byteLength.toString());
+
+          if (npm.etag === req.headers["if-none-match"]) {
+            res.sendStatus(304);
+            return;
+          }
+
           res.send(npm.file);
 
           readAsync(path, "buffer").then((file) => {
@@ -32,7 +38,6 @@ export const _ = {
                 file,
                 etag: crypto.createHash("md5").update(file).digest("hex"),
               };
-              const npm = glb.npm[mode][id];
             }
           });
           return;
@@ -50,8 +55,16 @@ export const _ = {
             etag: crypto.createHash("md5").update(file).digest("hex"),
           };
           const npm = glb.npm[mode][id];
-          if (npm) res.setHeader("etag", npm.etag);
+          if (npm) {
+            res.setHeader("etag", npm.etag);
+
+            if (npm.etag === req.headers["if-none-match"]) {
+              res.sendStatus(304);
+              return;
+            }
+          }
         }
+
         res.setHeader("content-length", file.byteLength.toString());
         res.send(file);
         return;
@@ -59,6 +72,7 @@ export const _ = {
         glb.npm[mode][id] = null;
       }
     }
+    res.setHeader("etag", "empty");
 
     res.send("");
   },
