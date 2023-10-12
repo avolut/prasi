@@ -11,9 +11,6 @@ export const _ = {
     const { req, res, mode: _mode } = apiContext(this);
     let path = dir.path(`../npm/${mode}/${id}/${req.params._}`);
 
-    res.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT");
-    res.setHeader("Access-Control-Allow-Headers", "content-type rid");
-    res.setHeader("Access-Control-Allow-Credentials", "true");
     res.setHeader("Access-Control-Allow-Origin", "*");
 
     const contentType = mime.lookup(path);
