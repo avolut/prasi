@@ -35,7 +35,7 @@ export const initLive = async (p: PG, domain: string) => {
     p.status = "loading";
 
     w.isEditor = false;
-    w.isLayout = false;
+    w.isLayout = true;
     w.isMobile = p.mode === "mobile";
     w.isDesktop = p.mode === "desktop";
     w.apiHeaders = {};
