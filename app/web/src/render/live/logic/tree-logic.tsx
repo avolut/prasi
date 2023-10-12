@@ -19,13 +19,13 @@ export const rebuildTree = async (
       !p.page?.name.startsWith("layout:")
     ) {
       childs = [p.layout.section];
- 
+
       p.layout.content.type = "item";
       if (p.layout.content.type === "item") {
-        p.layout.content.childs = p.page.content_tree.childs.map((e) => ({
-          ...e,
-          type: "item",
-        })) as IItem[];
+        // p.layout.content.childs = p.page.content_tree.childs.map((e) => ({
+        //   ...e,
+        //   type: "item",
+        // })) as IItem[];
       }
     }
 

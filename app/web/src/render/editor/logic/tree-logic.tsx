@@ -78,7 +78,7 @@ export const rebuildTree = async (
           p.layout.content.childs = (p.page?.content_tree.childs ||
             []) as unknown as IItem[];
         }
-      }
+      } 
 
       await Promise.all(
         mpage?.get("childs")?.map(async (mitem) => {
