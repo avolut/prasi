@@ -31,6 +31,13 @@ export const server = async ({
     else {
       res.setHeader("etag", asset.etag);
       if (asset.mime) res.setHeader("content-type", asset.mime);
+
+      if (asset.etag === req.headers["if-none-match"]) {
+        res.sendStatus(304);
+        res.send("");
+        return true;
+      }
+
       res.send(asset.content);
     }
     return true;
@@ -67,7 +74,7 @@ export const server = async ({
     });
   }
 
-  server.listen(port, '0.0.0.0');
+  server.listen(port, "0.0.0.0");
 
   return server;
 };
