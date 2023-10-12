@@ -74,9 +74,10 @@ export const rebuildTree = async (
 
         parent_id = p.layout.content.id;
         p.layout.content.type = "item";
-        if (p.layout.content.type === "item")
+        if (p.layout.content.type === "item") {
           p.layout.content.childs = (p.page?.content_tree.childs ||
             []) as unknown as IItem[];
+        }
       }
 
       await Promise.all(

@@ -25,7 +25,7 @@ const walk = async (
   if (item.name === "content") {
     return item;
   }
-  if (item.type === "item") {
+  if (item.type === "item" && !item.component?.id) {
     for (const c of item.childs) {
       const found = await walk(c);
       if (found) {

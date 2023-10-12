@@ -32,13 +32,17 @@ export const server = async ({
       res.setHeader("etag", asset.etag);
       if (asset.mime) res.setHeader("content-type", asset.mime);
 
-      if (asset.etag === req.headers["if-none-match"]) {
-        res.sendStatus(304);
-        res.send("");
-        return true;
-      }
+      if (mode === "dev") {
+        res.send(asset.content);
+      } else {
+        if (asset.etag === req.headers["if-none-match"]) {
+          res.sendStatus(304);
+          res.send("");
+          return true;
+        }
 
-      res.send(asset.content);
+        res.send(asset.content);
+      }
     }
     return true;
   };
