@@ -271,9 +271,7 @@ const NPMModule: FC<{
                       await loadComponent(p, e.id);
                       if (p.page) {
                         await importModule(
-                          `${serverurl}/npm/site/${
-                            p.site?.id
-                          }/site.js?${Date.now()}`
+                          `${serverurl}/npm/site/${p.site?.id}/site.js}`
                         );
                         await importModule(
                           `${serverurl}/npm/page/${p.page.id}/page.js`

@@ -66,7 +66,7 @@ export const defaultLoader: Loader = {
   },
   npm(p, type, id) {
     if (type === "site") {
-      return `${serverurl}/npm/site/${id}/site.js?${Date.now()}`;
+      return `${serverurl}/npm/site/${id}/site.js}`;
     } else if (type === "page") {
       return `${serverurl}/npm/page/${id}/page.js`;
     }
