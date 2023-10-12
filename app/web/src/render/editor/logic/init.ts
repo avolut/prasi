@@ -5,12 +5,12 @@ import {
   initApi,
   reloadDBAPI,
 } from "../../../utils/script/init-api";
+import { defaultLoader } from "../../live/logic/default-loader";
+import { LSite } from "../../live/logic/global";
+import { validateLayout } from "../../live/logic/layout";
+import { jscript } from "../panel/script/script-element";
 import importModule from "../tools/dynamic-import";
 import { PG } from "./global";
-import { jscript } from "../panel/script/script-element";
-import { defaultLoader } from "../../live/logic/default-loader";
-import { validateLayout } from "../../live/logic/layout";
-import { LSite } from "../../live/logic/global";
 
 export const w = window as unknown as {
   basepath: string;
@@ -22,6 +22,7 @@ export const w = window as unknown as {
   apiHeaders: any;
   exports: any;
   apiurl: string;
+  preload: (path: string) => void;
 
   externalAPI: {
     mode: "dev" | "prod";
@@ -41,6 +42,7 @@ export const initEditor = async (p: PG, site_id: string) => {
     w.isMobile = p.mode === "mobile";
     w.isDesktop = p.mode === "desktop";
     w.apiHeaders = {};
+    w.preload = () => {};
 
     w.navigateOverride = (_href) => {
       if (_href.startsWith("/ed")) return _href;
@@ -96,7 +98,7 @@ export const initEditor = async (p: PG, site_id: string) => {
       p.site.responsive = site.responsive as any;
       p.site.layout = site.layout;
       p.site.layout_id = site.layout_id;
- 
+
       await validateLayout(p);
 
       w.externalAPI = {

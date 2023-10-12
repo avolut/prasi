@@ -9,8 +9,9 @@ import {
 import importModule from "../../editor/tools/dynamic-import";
 import { LSite, PG } from "./global";
 import { validateLayout } from "./layout";
+import { preload } from "./route";
 
-const w = window as unknown as {
+export const w = window as unknown as {
   basepath: string;
   navigateOverride: (s: string) => string;
   isEditor: boolean;
@@ -22,6 +23,7 @@ const w = window as unknown as {
   params: any;
   apiClient: typeof apiClient;
   apiurl: string;
+  preload: (path: string) => void;
 
   externalAPI: {
     mode: "dev" | "prod";

@@ -13,6 +13,7 @@ const isEditor: boolean;
 const isLayout: boolean;
 const isMobile: boolean;
 const isDesktop: boolean;
+const preload: (pathname: string) => void;
 const apiHeaders: Record<string, any>;
 const navigate: (url:string) => void;
 const params: any;

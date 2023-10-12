@@ -3,8 +3,8 @@ import parseUA from "ua-parser-js";
 import { useGlobal } from "web-utils";
 import { LPage } from "./elements/l-page";
 import { LiveGlobal, Loader } from "./logic/global";
-import { initLive } from "./logic/init";
-import { routeLive } from "./logic/route";
+import { initLive, w } from "./logic/init";
+import { preload, routeLive } from "./logic/route";
 
 export const Live: FC<{
   domain: string;
@@ -14,6 +14,10 @@ export const Live: FC<{
 }> = ({ domain, pathname, loader, mode = "dev" }) => {
   const p = useGlobal(LiveGlobal, "LIVE");
   p.loader = loader;
+
+  w.preload = (url: string) => {
+    preload(p, url);
+  };
 
   if (mode === "prod") p.prod = true;
 
