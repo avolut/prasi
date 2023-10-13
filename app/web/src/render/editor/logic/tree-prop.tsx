@@ -33,11 +33,11 @@ export const treePropEval = (
 
       let value: any = null;
       if (prop.valueBuilt) {
-        const fn = new Function(
-          ...Object.keys(args),
-          `return ${prop.valueBuilt}`
-        );
         try {
+          const fn = new Function(
+            ...Object.keys(args),
+            `return ${prop.valueBuilt}`
+          );
           // note: by default set prop to null
           // if it is undefined then it will be overidden by parent scope
           // it is not desirable for prop to inherit from parent scope.
@@ -84,11 +84,11 @@ export const treePropEval = (
     for (const [name, _prop] of cprops) {
       if (_prop.visible) {
         const finalArgs = { ...args, ...result };
-        const fn = new Function(
-          ...Object.keys(finalArgs),
-          `return ${_prop.visible}`
-        );
         try {
+          const fn = new Function(
+            ...Object.keys(finalArgs),
+            `return ${_prop.visible}`
+          );
           propvis[name] = fn(...Object.values(finalArgs));
         } catch (e) {
           const cname = meta.item.name;

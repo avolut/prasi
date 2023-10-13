@@ -68,21 +68,23 @@ export const treeScopeEval = (
       },
     };
 
-    // execute
-    const fn = new Function(...Object.keys(args), js);
-    const res = fn(...Object.values(args));
-    if (res instanceof Promise) {
-      res.catch((e: any) => {
-        console.warn(e);
-        console.warn(
-          (
-            `ERROR in ${item.type} [${item.name}]:\n ` +
-            ((adv?.js || "") as any)
-          ).trim()
-        );
-        console.warn(`Available var:`, args, `\n\n`);
-      });
-    }
+    try {
+      // execute
+      const fn = new Function(...Object.keys(args), js);
+      const res = fn(...Object.values(args));
+      if (res instanceof Promise) {
+        res.catch((e: any) => {
+          console.warn(e);
+          console.warn(
+            (
+              `ERROR in ${item.type} [${item.name}]:\n ` +
+              ((adv?.js || "") as any)
+            ).trim()
+          );
+          console.warn(`Available var:`, args, `\n\n`);
+        });
+      }
+    } catch (e) {}
 
     return output.jsx;
   } catch (e) {
