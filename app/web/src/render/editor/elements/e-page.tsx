@@ -17,9 +17,9 @@ export const EPage = () => {
   const mode = p.mode;
 
   let childs = Object.values(p.page?.content_tree.childs || []);
-  if (p.layout.section && p.layout.content) {
-    childs = [p.layout.section];
-  }
+  // if (p.layout.section && p.layout.content) {
+  //   childs = [p.layout.section];
+  // }
 
   const rootChilds: string[] | undefined = Object.values(childs).map(
     (e) => e.id

@@ -56,27 +56,27 @@ export const rebuildTree = async (
     await mpage?.doc?.transact(async () => {
       let parent_id = "root";
       let includeTree = p.comp?.id ? false : true;
-      const pageName = p.mpage?.getMap("map").get("name") as string;
-      if (
-        p.layout.section &&
-        p.layout.content &&
-        !pageName.startsWith("layout:")
-      ) {
-        await walk(p, mode, {
-          item: p.layout.section,
-          parent_id: "root",
-          depth: 0,
-          idx: 0,
-          includeTree: false,
-        });
+      // const pageName = p.mpage?.getMap("map").get("name") as string;
+      // if (
+      //   p.layout.section &&
+      //   p.layout.content &&
+      //   !pageName.startsWith("layout:")
+      // ) {
+      //   await walk(p, mode, {
+      //     item: p.layout.section,
+      //     parent_id: "root",
+      //     depth: 0,
+      //     idx: 0,
+      //     includeTree: false,
+      //   });
 
-        parent_id = p.layout.content.id;
-        p.layout.content.type = "item";
-        if (p.layout.content.type === "item") {
-          p.layout.content.childs = (p.page?.content_tree.childs ||
-            []) as unknown as IItem[];
-        }
-      }
+      //   parent_id = p.layout.content.id;
+      //   p.layout.content.type = "item";
+      //   if (p.layout.content.type === "item") {
+      //     p.layout.content.childs = (p.page?.content_tree.childs ||
+      //       []) as unknown as IItem[];
+      //   }
+      // }
 
       await Promise.all(
         mpage?.get("childs")?.map(async (mitem) => {
