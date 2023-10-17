@@ -1,12 +1,10 @@
 import { compress } from "lz-string";
-import { Websocket } from "service-srv";
 import { syncronize } from "y-pojo";
 import * as Y from "yjs";
 import { MPage } from "../../web/src/utils/types/general";
 import { WS_MSG_SET_PAGE, WS_MSG_SV_LOCAL } from "../../web/src/utils/types/ws";
 import { eg } from "../edit/edit-global";
 import { loadPage } from "../edit/tools/load-page";
-import { getPage } from "../edit/action/get-page";
 
 export const _ = {
   url: "/page-reload/:page_id",

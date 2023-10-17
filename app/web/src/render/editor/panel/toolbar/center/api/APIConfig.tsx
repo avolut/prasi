@@ -45,7 +45,7 @@ export const APIConfig: FC<{
           >
             Use Existing API Server
           </div>
-          <div>&mdash; OR &mdash;</div>
+          {/* <div>&mdash; OR &mdash;</div>
           <div
             className="border-2 border-slate-500 text-blue-5 px-2 py-1 rounded cursor-pointer hover:bg-blue-100 hover:border-blue-500"
             onClick={async () => {
@@ -69,7 +69,7 @@ export const APIConfig: FC<{
             }}
           >
             Create New API Server
-          </div>
+          </div> */}
         </>
       )}
       {local.creating && (

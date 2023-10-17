@@ -19,6 +19,7 @@ export const _ = {
     try {
       const result = await service.db.query(body);
 
+      console.log(result);
       res.json(result);
     } catch (e: any) {
       res.sendStatus(500);
